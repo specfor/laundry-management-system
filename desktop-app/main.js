@@ -44,7 +44,7 @@ function createLoadingWindow(){
 
 
 //Getting user email and password
-ipcMain.on("emailAndPassword",function(event,data){
+ipcMain.on("usernameAndPassword",function(event,data){
     sendLoginDataToTheServer(data)
 })
 
@@ -63,11 +63,9 @@ function sendLoginDataToTheServer(data){
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   createLoadingWindow()
-  const url = "https://www.google.com/";
   
-  //Infinity loop
-  
-
+  //checking internet connetion
+  const url = "https://www.google.com/"; 
   https.get(url,function(respone){
     if(respone.statusCode==200){
       createMainWindow()
