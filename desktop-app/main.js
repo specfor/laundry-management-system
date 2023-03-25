@@ -1,37 +1,57 @@
 // main.js
 
 // Modules to control application life and create native browser window
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow,ipcMain } = require('electron')
 const path = require('path')
 
-const createWindow = () => {
+
+let mainWindow;
+
+const createMainWindow = () => {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+    mainWindow = new BrowserWindow({
     minWidth: 1250,
     minHeight: 700,
     autoHideMenuBar: true,
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
-    }
+    webPreferences:{
+      contextIsolation:true,
+      nodeIntegration:true,
+      preload: path.join(__dirname,'preload.js')
+  }
   })
 
   // and load the index.html of the app.
-  mainWindow.loadFile('./index.html')
+  mainWindow.loadFile(__dirname+'/html/index.html')
 
   //Open the DevTools.
   mainWindow.webContents.openDevTools()
+}
+
+//Getting user email and password
+ipcMain.on("emailAndPassword",function(event,data){
+    sendLoginDataToTheServer(data)
+})
+
+//This function send userIput email and password to the server
+function sendLoginDataToTheServer(data){
+  try{ 
+    console.log(data)
+
+  }catch(error){
+
+  }
 }
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  createWindow()
+  createMainWindow()
 
   app.on('activate', () => {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+    if (BrowserWindow.getAllWindows().length === 0) createMainWindow()
   })
 })
 
