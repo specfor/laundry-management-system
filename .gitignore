@@ -4,3 +4,4 @@ desktop-app/node_modules/.bin/acorn.cmd
 desktop-app/node_modules/tailwindcss/lib/util/cloneNodes.js
 desktop-app/node_modules/tailwindcss/defaultConfig.js
 *.ps1
+api/vendor/
