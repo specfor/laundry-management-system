@@ -3,7 +3,7 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow,ipcMain } = require('electron')
 const path = require('path')
-
+const https = require('https')
 
 let mainWindow;
 
@@ -24,8 +24,24 @@ const createMainWindow = () => {
   mainWindow.loadFile(__dirname+'/html/index.html')
 
   //Open the DevTools.
-  mainWindow.webContents.openDevTools()
+  //mainWindow.webContents.openDevTools()
 }
+
+let loadWindow;
+//creating loading window
+function createLoadingWindow(){
+    loadWindow = new BrowserWindow({
+    height:300,
+    width:500,
+    autoHideMenuBar:true,
+    frame:false
+  })
+
+  loadWindow.loadFile(__dirname+"/html/loading.html")
+
+}
+
+
 
 //Getting user email and password
 ipcMain.on("emailAndPassword",function(event,data){
@@ -46,12 +62,26 @@ function sendLoginDataToTheServer(data){
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  createMainWindow()
+  createLoadingWindow()
+  const url = "https://www.google.com/";
+  
+  //Infinity loop
+  
+
+  https.get(url,function(respone){
+    if(respone.statusCode==200){
+      createMainWindow()
+      loadWindow.hide()
+    }
+  }).on('error',function(err){
+    loadWindow.loadFile(__dirname+"/html/noConnection.html")
+  })
+
 
   app.on('activate', () => {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createMainWindow()
+    if (BrowserWindow.getAllWindows().length === 0) createLoadingWindow()
   })
 })
 
@@ -61,6 +91,7 @@ app.whenReady().then(() => {
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit()
 })
+
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
