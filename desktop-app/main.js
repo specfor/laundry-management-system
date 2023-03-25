@@ -4,6 +4,8 @@
 const { app, BrowserWindow,ipcMain } = require('electron')
 const path = require('path')
 const https = require('https')
+const superagent = require('superagent')
+
 
 let mainWindow;
 
@@ -52,9 +54,17 @@ ipcMain.on("usernameAndPassword",function(event,data){
 function sendLoginDataToTheServer(data){
   try{ 
     console.log(data)
+    superagent
+    .post('http://localhost/api/v1/login')
+    .send(data) 
+    .set('X-API-Key', 'foobar')
+    .set('accept', 'json')
+    .end((err, res) => {
+      console.log(res.text)
+    });
 
   }catch(error){
-
+    console.log(error)
   }
 }
 

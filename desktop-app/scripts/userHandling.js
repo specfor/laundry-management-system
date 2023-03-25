@@ -6,7 +6,7 @@ function login(){
 
         //sending user input data to the main process
         ipcRenderer.send("usernameAndPassword",{
-            loginUsername:loginUsername,
-            loginPassword:loginPassword
+            username:loginUsername,
+            password:loginPassword
         })
 }

@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "electronmon": "^2.0.2",
+    "superagent": "^8.0.9",
     "to-regex-range": "^5.0.1",
     "toastify": "^2.0.1",
     "toastify-js": "^1.12.0",
