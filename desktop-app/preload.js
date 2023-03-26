@@ -13,11 +13,3 @@ contextBridge.exposeInMainWorld('Toastify',{
     alertToast:(info)=>
         Toastify(info).showToast()
 })
-
-contextBridge.exposeInMainWorld('superagent',{
-    post:(url)=>superagent.post(url),
-    send:(data)=>superagent.send(data),
-    set:(key,e)=>superagent.set(key,e),
-    end:(error,response)=>superagent.end(error,response)
-}
-    )
