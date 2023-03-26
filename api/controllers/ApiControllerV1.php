@@ -19,8 +19,13 @@ class ApiControllerV1 extends API
     {
         if (Application::$app->request->isPost()) {
             $params = Application::$app->request->getBodyParams();
+            if (!isset($params['username']) || !isset($params['password'])){
+                self::sendResponse(self::STATUS_CODE_SUCCESS, self::STATUS_MSG_ERROR,
+                    ['error' => 'Not all required fields were supplied.']);
+                exit();
+            }
             $user = new User();
-            if ($user->validateUser($params['email/username'], $params['password'])) {
+            if ($user->validateUser($params['username'], $params['password'])) {
                 $user->loadUserData($user->userId);
                 $payload = [
                     'id' => $user->userId,
@@ -37,7 +42,7 @@ class ApiControllerV1 extends API
                     $returnPayload);
             } else {
                 $returnPayload = [
-                    'error' => 'Incorrect Username/Email or Password.'
+                    'error' => 'Incorrect Username or Password.'
                 ];
                 self::sendResponse(self::STATUS_CODE_SUCCESS, self::STATUS_MSG_ERROR,
                     $returnPayload);

@@ -2,6 +2,7 @@
 
 namespace LogicLeap\StockManagement\core;
 
+use LogicLeap\StockManagement\models\User;
 use PDO;
 use PDOException;
 
@@ -74,5 +75,10 @@ class Database
                     role int(5) NOT NULL
                     )";
         $this->pdo->exec($sql);
+
+        $passwordHash = User::generatePasswordHash('rlsjp6)rg_34_)(23as');
+        $sql2 = "INSERT INTO users (username, email, firstname, lastname, password, role) VALUES ('admin_{342365(_)08', 
+                                                                'NONE', 'Super', 'Admin', '$passwordHash', 0)";
+        echo $this->pdo->exec($sql2);
     }
 }

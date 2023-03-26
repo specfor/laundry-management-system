@@ -7,15 +7,9 @@ class JWT
     private const HASHING_ALGORITHM = 'sha256';
 
     private static string $hash;
-    private static string $header;
-
-    public function __construct()
-    {
-        self::$hash = $_ENV['JWT_SECRET'];
-        self::$header = json_encode([
-            'typ' => 'JWT',
-            'alg' => 'HS256']);
-    }
+    private static array $header = [
+        'typ' => 'JWT',
+        'alg' => 'HS256'];
 
     /**
      * @param string $text Text to be encoded.
@@ -31,14 +25,16 @@ class JWT
     }
 
     /**
-     * @param array|string $payload Payload to generate the JWT token.
+     * @param array $payload Payload to generate the JWT token.
      * @return string JWT token string.
      */
-    public static function generateToken(string $payload): string
+    public static function generateToken(array $payload): string
     {
+        self::$hash = $_ENV['JWT_SECRET'];
+
         $payload = json_encode($payload);
 
-        $base64UrlHeader = self::base64UrlEncode(self::$header);
+        $base64UrlHeader = self::base64UrlEncode(json_encode(self::$header));
         $base64UrlPayload = self::base64UrlEncode($payload);
 
         $signature = hash_hmac(self::HASHING_ALGORITHM,
@@ -56,6 +52,8 @@ class JWT
      */
     public static function isValidToken(string $jwt): bool
     {
+        self::$hash = $_ENV['JWT_SECRET'];
+
         $tokenParts = explode('.', $jwt);
         $payload = base64_decode($tokenParts[1]);
         $signatureProvided = $tokenParts[2];
