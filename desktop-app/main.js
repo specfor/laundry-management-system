@@ -54,9 +54,9 @@ ipcMain.on("usernameAndPassword",function(event,data){
 function sendLoginDataToTheServer(data){
   try{ 
     console.log(data)
-    userHandler.sendLoginDataToTheServer(data)
+    //userHandler.sendLoginDataToTheServer(data)
   }catch(err){
-    
+
   }
 }
 
