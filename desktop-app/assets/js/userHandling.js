@@ -18,4 +18,7 @@ window.addEventListener('load', () => {
         login()
     })
 })
+<<<<<<< HEAD
 
+=======
+>>>>>>> 9262d07abd0df5927b6bea2b3adeae4a453fdf2f

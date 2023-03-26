@@ -14,6 +14,7 @@ class User extends DbModel
     private const TABLE_COLUMNS = ['id', 'username', 'email', 'firstname', 'lastname', 'password', 'role'];
 
     // User Roles
+    public const ROLE_SUPER_ADMINISTRATOR = 0;
     public const ROLE_ADMINISTRATOR = 1;
     public const ROLE_USER = 2;
 
@@ -30,7 +31,7 @@ class User extends DbModel
      * @param string $password String Password
      * @return string Hashed password string
      */
-    private static function generatePasswordHash(string $password): string
+    public static function generatePasswordHash(string $password): string
     {
         return password_hash($password, PASSWORD_DEFAULT);
     }
@@ -91,7 +92,7 @@ class User extends DbModel
         if(self::insertIntoTable(self::TABLE_NAME, $params)){
             return 'user created.';
         }
-        return 'Unknown error occured.';
+        return 'Unknown error occurred.';
     }
 
     /**

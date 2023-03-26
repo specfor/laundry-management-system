@@ -1,17 +1,14 @@
-const superagent = require('superagent')
+const superagent = require('superagent').agent()
 
 //This function send user Iput email and password to the server
-function sendLoginDataToTheServer(data) {
+async function sendLoginDataToTheServer(data) {
     try {
         console.log(data)
-        superagent
+        data['dev'] = true;
+        let data2 = await superagent
             .post('http://localhost/api/v1/login')
-            .send(data)
-            .set('accept', 'json')
-            .end((err, res) => {
-                console.log(res.text)
-            });
-
+            .send(data);
+        console.log(data2.text)
     } catch (error) {
         console.log(error)
     }

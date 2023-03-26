@@ -33,6 +33,10 @@ abstract class API
             'statusMessage' => $statusMessage,
             'body' => $payload
         ];
+        $data = json_decode(file_get_contents('php://input'), true);
+        if (isset($data['dev'])){
+            $finalPayload['dev'] = $data;
+        }
         echo json_encode($finalPayload);
     }
 

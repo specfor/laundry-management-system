@@ -55,7 +55,6 @@ function sendLoginDataToTheServer(data){
   try{ 
     console.log(data)
     userHandler.sendLoginDataToTheServer(data)
-
   }catch(err){
 
   }

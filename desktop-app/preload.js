@@ -12,5 +12,9 @@ contextBridge.exposeInMainWorld('ipcRenderer',{
 contextBridge.exposeInMainWorld('Toastify',{
     alertToast:(info)=>
         Toastify(info).showToast()
+<<<<<<< HEAD
 })
 
+=======
+})
+>>>>>>> 9262d07abd0df5927b6bea2b3adeae4a453fdf2f
