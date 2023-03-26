@@ -1,3 +1,4 @@
+
 //function to send login data info to the main 
 function login() {
     const loginUsername = document.getElementById('userNameInput').value
@@ -18,3 +19,25 @@ window.addEventListener('load', () => {
         login()
     })
 })
+
+ipcRenderer.on("error",function(event){
+    Toastify.alertToast({
+        text: "Email or password is incorrect!",
+        className: "info",
+        style: {
+            background: "red",
+            color:"white"
+  }
+    })
+  })
+  
+ipcRenderer.on("success",function(event){
+    Toastify.alertToast({
+        text: "Login successfull!",
+        className: "info",
+        style: {
+            background: "green",
+            color:"white"
+  }
+    })
+  })

@@ -1,6 +1,6 @@
 const { contextBridge,ipcRenderer } = require('electron')
 const Toastify = require("toastify-js")
-const superagent = require('superagent');
+
 
 contextBridge.exposeInMainWorld('ipcRenderer',{
     send:(channel,info)=>
@@ -12,4 +12,8 @@ contextBridge.exposeInMainWorld('ipcRenderer',{
 contextBridge.exposeInMainWorld('Toastify',{
     alertToast:(info)=>
         Toastify(info).showToast()
+
 })
+
+
+
