@@ -12,15 +12,15 @@ let mainWindow;
 const createMainWindow = () => {
     // Create the browser window.
     mainWindow = new BrowserWindow({
-    minWidth: 1250,
-    minHeight: 700,
-    autoHideMenuBar: true,
-    webPreferences:{
-      contextIsolation:true,
-      nodeIntegration:true,
-      preload: path.join(__dirname,'preload.js')
-  }
-  })
+        minWidth: 1250,
+        minHeight: 700,
+        autoHideMenuBar: true,
+        webPreferences: {
+            contextIsolation: true,
+            nodeIntegration: true,
+            preload: path.join(__dirname, 'preload.js')
+        }
+    })
 
     // and load the index.html of the app.
     mainWindow.loadFile(__dirname + '/html/index.html')
@@ -46,20 +46,20 @@ function createLoadingWindow() {
 
 
 //Getting user email and password
-ipcMain.on("usernameAndPassword",function(event,data){
+ipcMain.on("usernameAndPassword", function (event, data) {
     sendLoginDataToTheServer(data)
 })
 
-//This function send userIput email and password to the server
-function sendLoginDataToTheServer(data){
-  try{ 
-    console.log(data)
-    userHandler.sendLoginDataToTheServer(data)
-  }catch(err){
+//This function send user Input email and password to the server
+async function sendLoginDataToTheServer(data) {
+    try {
+        console.log(data)
+        global.authToken = await userHandler.getAuthToken(data)
+        console.log(authToken)
+    } catch (err) {
 
-  }
+    }
 }
-
 
 
 // This method will be called when Electron has finished
