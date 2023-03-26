@@ -5,13 +5,14 @@ async function sendLoginDataToTheServer(data) {
     try {
         console.log(data)
         data['dev'] = true;
-        let data2 = await superagent
+        data2 = await superagent
             .post('http://localhost/api/v1/login')
             .send(data);
-        console.log(data2.text)
+
+
     } catch (error) {
         console.log(error)
     }
 }
 
-module.exports = {sendLoginDataToTheServer}
+module.exports = {sendLoginDataToTheServer,data2}

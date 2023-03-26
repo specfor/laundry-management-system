@@ -48,16 +48,27 @@ function createLoadingWindow() {
 //Getting user email and password
 ipcMain.on("usernameAndPassword",function(event,data){
     sendLoginDataToTheServer(data)
+   
 })
 
 //This function send userIput email and password to the server
 function sendLoginDataToTheServer(data){
   try{ 
-    console.log(data)
     userHandler.sendLoginDataToTheServer(data)
+       
+
   }catch(err){
 
   }
+}
+
+//this function checks the login response from the server
+function checkResponse(respone){
+    if(respone=="success"){
+      mainWindow.webContents.send("success")
+    }else{
+      mainWindow.webContents.send("error")
+    }
 }
 
 
@@ -78,8 +89,7 @@ app.whenReady().then(() => {
     }).on('error', function (err) {
         loadWindow.loadFile(__dirname + "/html/noConnection.html")
     })
-
-
+   
     app.on('activate', () => {
         // On macOS it's common to re-create a window in the app when the
         // dock icon is clicked and there are no other windows open.
