@@ -19,17 +19,3 @@ window.addEventListener('load', () => {
     })
 })
 
-
-//function to send data to the server
-function sendLoginDataToTheServer(data){
-    superagent
-  .post('http://localhost/api/v1/login')
-  .send(data) // sends a JSON post body
-  .set('X-API-Key', 'foobar')
-  .set('accept', 'json')
-  .end((err, res) => {
-    console.log(res)
-  });
-}
-
-module.exports = sendLoginDataToTheServer()
