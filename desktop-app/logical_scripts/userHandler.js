@@ -15,4 +15,4 @@ async function sendLoginDataToTheServer(data) {
     }
 }
 
-module.exports = {sendLoginDataToTheServer,data2}
+module.exports = {sendLoginDataToTheServer}
