@@ -14,7 +14,7 @@ const createMainWindow = () => {
     mainWindow = new BrowserWindow({
     minWidth: 1250,
     minHeight: 700,
-    autoHideMenuBar: true,
+    autoHideMenuBar: false,
     webPreferences:{
       contextIsolation:true,
       nodeIntegration:true,
@@ -30,6 +30,7 @@ const createMainWindow = () => {
 }
 
 let loadWindow;
+
 //creating loading window
 function createLoadingWindow(){
     loadWindow = new BrowserWindow({
@@ -45,7 +46,7 @@ function createLoadingWindow(){
 
 
 
-//Getting user email and password
+//Getting username and password
 ipcMain.on("usernameAndPassword",function(event,data){
     sendLoginDataToTheServer(data)
 })
