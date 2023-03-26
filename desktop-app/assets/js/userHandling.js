@@ -23,11 +23,13 @@ window.addEventListener('load', () => {
 //function to send data to the server
 function sendLoginDataToTheServer(data){
     superagent
-  .post('http://localhost/')
-  .send({ name: 'Manny', species: 'cat' }) // sends a JSON post body
+  .post('http://localhost/api/v1/login')
+  .send(data) // sends a JSON post body
   .set('X-API-Key', 'foobar')
   .set('accept', 'json')
   .end((err, res) => {
-    // Calling the end function will send the request
+    console.log(res)
   });
 }
+
+module.exports = sendLoginDataToTheServer()
