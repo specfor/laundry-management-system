@@ -56,6 +56,11 @@ async function sendLoginDataToTheServer(data) {
         console.log(data)
         global.authToken = await userHandler.getAuthToken(data)
         console.log(authToken)
+        if(authToken==false){
+            mainWindow.webContents.send("error")
+        }else{
+            
+        }
     } catch (err) {
 
     }

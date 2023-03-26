@@ -23,10 +23,11 @@ window.addEventListener('load', () => {
 ipcRenderer.on("error",function(event){
     Toastify.alertToast({
         text: "Email or password is incorrect!",
+        duration:5000,
         className: "info",
         style: {
             background: "red",
-            color:"white"
+            color:"white",
   }
     })
   })
