@@ -32,13 +32,3 @@ ipcRenderer.on("error",function(event){
     })
   })
   
-ipcRenderer.on("success",function(event){
-    Toastify.alertToast({
-        text: "Login successfull!",
-        className: "info",
-        style: {
-            background: "green",
-            color:"white"
-  }
-    })
-  })

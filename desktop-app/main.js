@@ -6,6 +6,7 @@ const path = require('path')
 const https = require('https')
 const superagent = require('superagent')
 const userHandler = require('./logical_scripts/userHandler')
+const checkInternetConnected = require('check-internet-connected')
 
 let mainWindow;
 
@@ -74,16 +75,17 @@ app.whenReady().then(() => {
     createLoadingWindow()
 
     //checking internet connetion
-    const url = "https://www.google.com/";
-    https.get(url, function (respone) {
-        if (respone.statusCode == 200) {
-            createMainWindow()
-            loadWindow.close()
-        }
-    }).on('error', function (err) {
-        loadWindow.loadFile(__dirname + "/html/noConnection.html")
-    })
-
+    checkInternetConnected()
+  .then((result) => {
+    createMainWindow()
+    loadWindow.close()    
+    //successfully connected to a server
+  })
+  .catch((ex) => {
+    loadWindow.loadFile(__dirname + "/html/noConnection.html")
+    // cannot connect to a server or error occurred.
+  });
+    
 
     app.on('activate', () => {
         // On macOS it's common to re-create a window in the app when the
