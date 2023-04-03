@@ -26,7 +26,7 @@ const createMainWindow = () => {
     mainWindow.loadFile(__dirname + '/html/index.html')
 
     //Open the DevTools.
-    //mainWindow.webContents.openDevTools()
+    mainWindow.webContents.openDevTools()
 }
 
 let loadWindow;
