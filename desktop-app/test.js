@@ -37,5 +37,7 @@ ipcRenderer.on("error",function(event){
 
 
 
-//admin_3sd_b_34_)age
-//a4sd98_g_4_)_24gs
+
+
+//admin_{342365(_)08
+  //rlsjp6)rg_34_)(23as

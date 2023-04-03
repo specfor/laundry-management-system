@@ -4,7 +4,6 @@
 const {app, BrowserWindow, ipcMain} = require('electron')
 const path = require('path')
 const https = require('https')
-const superagent = require('superagent')
 const userHandler = require('./logical_scripts/userHandler')
 const checkInternetConnected = require('check-internet-connected')
 
@@ -56,22 +55,22 @@ async function sendLoginDataToTheServer(data) {
     try {
         console.log(data)
         global.authToken = await userHandler.getAuthToken(data)
-        console.log(authToken)
         if(authToken==false){
+            console.log(authToken)
             mainWindow.webContents.send("error")
         }else{
-            
+            console.log(authToken)
         }
     } catch (err) {
 
     }
 }
 
-//this funtion checks the internet availability
+//This function runs every 1 sec to see internet connection
 setInterval(checkInternetConnection,1000)
 
 
-
+//this funtion checks the internet availability
 function checkInternetConnection(){
     checkInternetConnected().then(function(result){
         if(mainWindow?.isDestroyed()){
