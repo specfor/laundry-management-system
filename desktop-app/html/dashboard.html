@@ -14,15 +14,13 @@
         .bo{
             border:1px solid black;
         }
-        .c-btn{
-            
-        }
-        .background-image {
-            background-image: url('../assets/login-cover.png');
+        .bgs{
+            background-image: url('../assets/Images/bb.jpg');
             background-repeat: no-repeat;
             background-size: cover;
             height: 100vh;
         }
+        
         @media (min-width: 576px) {
             .background-image {
                 background-position: right;
@@ -53,21 +51,22 @@
 
     </style>
 </head>
-<body class="overflow-y-hidden">
+<body class="overflow-y-hidden bgs">
     <!--dashboard-->
     <div class="container-fluid bg-light" style="height:100vh;" >
-        <div class="row p-2 align-items-center" style="height:100vh;">
+        <div class="row  align-items-center" style="height:100vh;">
             
             <div class="col-3 p-5 justify-content-center align-items-center" style="max-width: fit-content; height: max-content;">
                 <div class="btn-group-vertical justify-content-center align-items-center position-relative mt-xxl-4" role="group" aria-label="Vertical button group" >
-                    <button type="button" class="btn btn-outline-secondary p-5 m-1 rounded mb-3">Button</button>
-                    <button type="button" class="btn btn-outline-secondary p-5 m-1 rounded mb-3">Button</button>
-                    <button type="button" class="btn btn-outline-secondary p-5 m-1 rounded mb-3">Button</button>
-                    <button type="button" class="btn btn-outline-secondary p-5 m-1 rounded ">Button</button>
+                    <button type="button" class="btn btn-outline-secondary p-4 m-1 rounded mb-3" ><img src="../assets/Images/home.png" alt="" srcset="" width="40px" ></button>
+                    <button type="button" class="btn btn-outline-secondary p-4 m-1 rounded mb-3"><img src="../assets/Images/search.png" alt="" srcset="" width="40px" ></button>
+                    <button type="button" class="btn btn-outline-secondary p-4 m-1 rounded mb-3"><img src="../assets/Images/menu-burger.png" alt="" srcset="" width="40px" ></button>
+                    <button type="button" class="btn btn-outline-secondary p-4 m-1 rounded "><img src="../assets/Images/user.png" alt="" srcset="" width="40px" ></button>
                   </div>
             </div>
 
-            <div class="col justify-content-evenly align-items-evenly p-3 ">
+            <div class="col justify-content-evenly align-items-evenly p-3">
+
 
                     <div class="justify-content-evenly align-items-evenly p-5 position-relative bo" >
                         <div class="row bo">
@@ -81,6 +80,7 @@
                                             <option>Three</option>
                                         </select>
                                         <button type="button" class="btn btn-outline-secondary" style="width: 100px;" id="dataSubmit">Submit</button>
+
 
                                     <div class="input-group mb-4">
                                         <span class="input-group-text">First and last name</span>
