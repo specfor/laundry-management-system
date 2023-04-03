@@ -67,7 +67,23 @@ async function sendLoginDataToTheServer(data) {
     }
 }
 
+//this funtion checks the internet availability
+setInterval(checkInternetConnection,1000)
 
+
+
+function checkInternetConnection(){
+    checkInternetConnected().then(function(result){
+        if(mainWindow?.isDestroyed()){
+            createMainWindow()
+            loadWindow.close()
+        }
+    }).catch(function(err){
+        mainWindow.close()
+        createLoadingWindow()
+        loadWindow.loadFile(__dirname + "/html/noConnection.html")
+    })
+}
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
