@@ -14,7 +14,7 @@ const createMainWindow = () => {
     mainWindow = new BrowserWindow({
         minWidth: 1250,
         minHeight: 700,
-        autoHideMenuBar: true,
+        autoHideMenuBar: false,
         webPreferences: {
             contextIsolation: true,
             nodeIntegration: true,
@@ -36,7 +36,7 @@ function createLoadingWindow() {
     loadWindow = new BrowserWindow({
         height: 300,
         width: 500,
-        autoHideMenuBar: true,
+        autoHideMenuBar:false,
         frame: false
     })
 
