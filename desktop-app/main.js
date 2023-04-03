@@ -23,7 +23,7 @@ const createMainWindow = () => {
     })
 
     // and load the index.html of the app.
-    mainWindow.loadFile(__dirname + '/html/dashboard.html')
+    mainWindow.loadFile(__dirname + '/html/login.html')
 
     //Open the DevTools.
 
