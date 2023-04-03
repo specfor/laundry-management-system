@@ -29,6 +29,10 @@ const createMainWindow = () => {
 
 }
 
+ipcMain.on("clientData",function(event,data){
+    console.log(data)
+})
+
 let loadWindow;
 
 //creating loading window
