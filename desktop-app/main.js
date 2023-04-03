@@ -23,10 +23,10 @@ const createMainWindow = () => {
     })
 
     // and load the index.html of the app.
-    mainWindow.loadFile(__dirname + '/html/index.html')
+    mainWindow.loadFile(__dirname + '/html/login.html')
 
     //Open the DevTools.
-    mainWindow.webContents.openDevTools()
+
 }
 
 let loadWindow;
@@ -60,6 +60,7 @@ async function sendLoginDataToTheServer(data) {
             mainWindow.webContents.send("error")
         }else{
             console.log(authToken)
+            mainWindow.loadFile(__dirname+"/html/dashboard.html")
         }
     } catch (err) {
 
