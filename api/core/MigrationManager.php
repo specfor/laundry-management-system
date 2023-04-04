@@ -41,7 +41,6 @@ class MigrationManager
 
     private function markCompletedMigration(string $migrationName, bool $success): void
     {
-        echo $migrationName;
         $time = new DateTime("now");
         $time = $time->format("Y-m-d H:i:s");
         $sql = "INSERT INTO migrations (migration_name, time, status) VALUES (?, '$time', $success)";
