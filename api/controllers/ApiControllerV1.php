@@ -26,10 +26,14 @@ class ApiControllerV1 extends API
         if (Application::$app->request->isPost()) {
             $params = Application::$app->request->getBodyParams();
             if (!isset($params['username']) || !isset($params['password'])) {
-               $this->sendError('Not all required fields were supplied.');
+                $this->sendError('Not all required fields were supplied.');
             }
             $user = new User();
-            if ($user->validateUser($params['username'], $params['password'])) {
+            $username = $params['username'] ?? "";
+            $password = $params['password'] ?? "";
+            if (!$username || !$password)
+                $this->sendError("Not");
+            if ($user->validateUser($username, $password)) {
                 $user->loadUserData($user->userId);
                 $payload = [
                     'id' => $user->userId,
@@ -45,11 +49,7 @@ class ApiControllerV1 extends API
                 self::sendResponse(self::STATUS_CODE_SUCCESS, self::STATUS_MSG_SUCCESS,
                     $returnPayload);
             } else {
-                $returnPayload = [
-                    'error' => 'Incorrect Username or Password.'
-                ];
-                self::sendResponse(self::STATUS_CODE_SUCCESS, self::STATUS_MSG_ERROR,
-                    $returnPayload);
+                $this->sendError('Incorrect Username or Password.');
             }
         }
     }

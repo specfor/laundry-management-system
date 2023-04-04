@@ -107,9 +107,9 @@ class User extends DbModel
         if ($userData) {
             $this->userId = $userData['id'];
             $this->username = $userData['username'];
-            $this->email = $userData['email'];
-            $this->firstname = $userData['firstname'];
-            $this->lastname = $userData['lastname'];
+            $this->email = $userData['email'] ?? "";
+            $this->firstname = $userData['firstname'] ?? "";
+            $this->lastname = $userData['lastname'] ?? "";
             $this->role = $userData['role'];
             return true;
         }
