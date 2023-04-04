@@ -43,7 +43,7 @@ class MigrationManager
     {
         $time = new DateTime("now");
         $time = $time->format("Y-m-d H:i:s");
-        $sql = "INSERT INTO migrations (migration_name, time, status) VALUES (?, '$time', $success)";
+        $sql = "INSERT INTO migrations (migration_name, time, status) VALUES (?, '$time', '$success')";
         $statement = $this->pdo->prepare($sql);
         $statement->bindValue(1, $migrationName);
         $statement->execute();
@@ -51,7 +51,6 @@ class MigrationManager
 
     public function startMigration(): void
     {
-        var_dump(self::$migrations);
         foreach (self::$migrations as $migration) {
             $migrationName = explode(".", $migration)[0];
             if ($this->isApplierMigration($migrationName))
@@ -70,7 +69,7 @@ class MigrationManager
     }
 
     private function isApplierMigration(string $migrationName):bool{
-        $sql = "SELECT id FROM migrations WHERE migration_name=?";
+        $sql = "SELECT id FROM migrations WHERE migration_name=? AND status=1";
         $statement = $this->pdo->prepare($sql);
         $statement->bindValue(1, $migrationName);
         $statement->execute();

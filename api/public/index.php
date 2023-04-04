@@ -24,5 +24,6 @@ $app = new Application($config);
 // API routes
 $app->router->addPostRoute('/api/v1/login', [ApiControllerV1::class, 'login']);
 //$app->router->addPostRoute('/api/v1/register', [ApiControllerV1::class, 'register']);
+$app->router->addPostRoute('/api/v1/customers/add', [ApiControllerV1::class, 'addCustomer']);
 
 $app->run();
