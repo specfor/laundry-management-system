@@ -51,20 +51,32 @@ class MigrationManager
 
     public function startMigration(): void
     {
-        $i = 1;
+        var_dump(self::$migrations);
         foreach (self::$migrations as $migration) {
-            echo $i;
-            $i++;
+            $migrationName = explode(".", $migration)[0];
+            if ($this->isApplierMigration($migrationName))
+                continue;
             require_once Application::$ROOT_DIR . "/migrations/" . $migration;
-            $className = explode(".", $migration)[0];
-            $mig = new $className;
+            $mig = new $migrationName;
             if ($mig->up()) {
-                $this->markCompletedMigration($className, true);
+                $this->markCompletedMigration($migrationName, true);
             } else {
-                $this->markCompletedMigration($className, false);
+                if ($mig->isReversible())
+                    $mig->down();
+                $this->markCompletedMigration($migrationName, false);
                 break;
             }
         }
+    }
+
+    private function isApplierMigration(string $migrationName):bool{
+        $sql = "SELECT id FROM migrations WHERE migration_name=?";
+        $statement = $this->pdo->prepare($sql);
+        $statement->bindValue(1, $migrationName);
+        $statement->execute();
+        if ($statement->fetch(PDO::FETCH_ASSOC))
+            return true;
+        return false;
     }
 
     public function __destruct()
