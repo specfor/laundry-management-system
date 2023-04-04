@@ -14,7 +14,7 @@ const createMainWindow = () => {
     mainWindow = new BrowserWindow({
         minWidth: 1250,
         minHeight: 700,
-        autoHideMenuBar: false,
+        autoHideMenuBar: true,
         webPreferences: {
             contextIsolation: true,
             nodeIntegration: true,
@@ -23,7 +23,7 @@ const createMainWindow = () => {
     })
 
     // and load the index.html of the app.
-    mainWindow.loadFile(__dirname + '/html/login.html')
+    mainWindow.loadFile(__dirname + '/html/dashboard.html')
 
     //Open the DevTools.
 
