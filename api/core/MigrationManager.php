@@ -43,7 +43,7 @@ class MigrationManager
     {
         $time = new DateTime("now");
         $time = $time->format("Y-m-d H:i:s");
-        $sql = "INSERT INTO migrations (migration_name, time, status) VALUES (?, '$time', $success)";
+        $sql = "INSERT INTO migrations (migration_name, time, status) VALUES (?, '$time', '$success')";
         $statement = $this->pdo->prepare($sql);
         $statement->bindValue(1, $migrationName);
         $statement->execute();
@@ -51,20 +51,31 @@ class MigrationManager
 
     public function startMigration(): void
     {
-        $i = 1;
         foreach (self::$migrations as $migration) {
-            echo $i;
-            $i++;
+            $migrationName = explode(".", $migration)[0];
+            if ($this->isApplierMigration($migrationName))
+                continue;
             require_once Application::$ROOT_DIR . "/migrations/" . $migration;
-            $className = explode(".", $migration)[0];
-            $mig = new $className;
+            $mig = new $migrationName;
             if ($mig->up()) {
-                $this->markCompletedMigration($className, true);
+                $this->markCompletedMigration($migrationName, true);
             } else {
-                $this->markCompletedMigration($className, false);
+                if ($mig->isReversible())
+                    $mig->down();
+                $this->markCompletedMigration($migrationName, false);
                 break;
             }
         }
+    }
+
+    private function isApplierMigration(string $migrationName):bool{
+        $sql = "SELECT id FROM migrations WHERE migration_name=? AND status=1";
+        $statement = $this->pdo->prepare($sql);
+        $statement->bindValue(1, $migrationName);
+        $statement->execute();
+        if ($statement->fetch(PDO::FETCH_ASSOC))
+            return true;
+        return false;
     }
 
     public function __destruct()

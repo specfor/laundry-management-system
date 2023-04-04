@@ -4,7 +4,7 @@ namespace LogicLeap\StockManagement\core;
 
 abstract class MigrationScheme
 {
-    protected abstract static function isReversible(): bool;
+    public abstract static function isReversible(): bool;
 
     public abstract static function up(): bool;
 

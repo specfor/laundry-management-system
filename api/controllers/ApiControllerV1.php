@@ -5,6 +5,7 @@ namespace LogicLeap\StockManagement\controllers;
 use LogicLeap\StockManagement\core\Application;
 use LogicLeap\StockManagement\core\JWT;
 use LogicLeap\StockManagement\models\API;
+use LogicLeap\StockManagement\models\Customers;
 use LogicLeap\StockManagement\models\User;
 
 class ApiControllerV1 extends API
@@ -19,6 +20,25 @@ class ApiControllerV1 extends API
         self::sendResponse(self::STATUS_CODE_SUCCESS, self::STATUS_MSG_ERROR,
             ['error' => $message]);
         exit();
+    }
+
+    private function sendSuccess(array $body): void
+    {
+        self::sendResponse(self::STATUS_CODE_SUCCESS, self::STATUS_MSG_SUCCESS, $body);
+    }
+
+    public function addCustomer(): void
+    {
+        $params = Application::$app->request->getBodyParams();
+        $email = $params['email'] ?? "";
+        $firstname = $params['firstname'] ?? "";
+        $lastname = $params['lastname'] ?? "";
+        $phoneNumber = $params['phone-number'] ?? "";
+        $address = $params['address'] ?? "";
+
+        if (Customers::addNewCustomer($firstname, $lastname, $email, $phoneNumber, $address)) {
+            $this->sendSuccess(['message' => 'New customer was added successfully.']);
+        }
     }
 
     public function login(): void

@@ -8,7 +8,7 @@ class m00001_initDb extends MigrationScheme
     /** Database name */
     protected const DB_NAME = 'laundry_database';
 
-    protected static function isReversible(): bool
+    public static function isReversible(): bool
     {
         return true;
     }
