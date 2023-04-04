@@ -12,17 +12,21 @@ class ApiControllerV1 extends API
     // Interval is in seconds.
     private const JWT_TOKEN_EXPIRE_INTERVAL = 3600;
 
-
     private int $userId;
+
+    private function sendError(string $message): void
+    {
+        self::sendResponse(self::STATUS_CODE_SUCCESS, self::STATUS_MSG_ERROR,
+            ['error' => $message]);
+        exit();
+    }
 
     public function login(): void
     {
         if (Application::$app->request->isPost()) {
             $params = Application::$app->request->getBodyParams();
-            if (!isset($params['username']) || !isset($params['password'])){
-                self::sendResponse(self::STATUS_CODE_SUCCESS, self::STATUS_MSG_ERROR,
-                    ['error' => 'Not all required fields were supplied.']);
-                exit();
+            if (!isset($params['username']) || !isset($params['password'])) {
+               $this->sendError('Not all required fields were supplied.');
             }
             $user = new User();
             if ($user->validateUser($params['username'], $params['password'])) {

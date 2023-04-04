@@ -16,7 +16,7 @@ class User extends DbModel
     // User Roles
     public const ROLE_SUPER_ADMINISTRATOR = 0;
     public const ROLE_ADMINISTRATOR = 1;
-    public const ROLE_USER = 2;
+    public const ROLE_CASHIER = 2;
 
     public int $userId;
     public string $username;
@@ -81,7 +81,7 @@ class User extends DbModel
         $params['password'] = self::generatePasswordHash($params['password']);
 
         //For now set user role to 1
-        $params['role'] = 1;
+        $params['role'] = self::ROLE_CASHIER;
 
         // Filter user passed variables against actual database available columns.
         foreach ($params as $key => $value){
@@ -146,7 +146,7 @@ class User extends DbModel
     {
         if ($this->userId == User::ROLE_ADMINISTRATOR)
             return 'admin';
-        elseif ($this->userId == User::ROLE_USER)
+        elseif ($this->userId == User::ROLE_CASHIER)
             return 'user';
         else
             return 'none';

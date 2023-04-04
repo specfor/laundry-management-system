@@ -3,7 +3,6 @@
 namespace LogicLeap\StockManagement\core;
 
 use Exception;
-use LogicLeap\StockManagement\controllers\ApiControllerV1;
 use LogicLeap\StockManagement\models\API;
 
 /**
@@ -15,7 +14,6 @@ class Application
     public Database $db;
     public Router $router;
     public Request $request;
-    public Response $response;
 
     public static string $ROOT_DIR;
 
@@ -23,6 +21,7 @@ class Application
      * If this file in this path exits, then website will go to maintenance mode
      */
     private static string $maintenanceModeFilePath;
+    private static string $migrationModeFilePath;
 
     /**
      * Return an instance of Application
@@ -33,18 +32,25 @@ class Application
         self::$app = $this;
         self::$ROOT_DIR = $config['rootPath'];
         self::$maintenanceModeFilePath = self::$ROOT_DIR . "/maintenanceLock.lock";
+        self::$migrationModeFilePath = self::$ROOT_DIR . "/migrationLock.lock";
 
-        // If in maintenance mode, maintenance page is displayed. Application exits.
-        if (is_file(self::$maintenanceModeFilePath)) {
-            $api = new ApiControllerV1();
-            $api->sendResponse(API::STATUS_CODE_MAINTENANCE, API::STATUS_MSG_MAINTENANCE,
-                ['error' => 'Server is under maintenance']);
-            exit();
-        }
 
         $this->request = new Request();
         $this->router = new Router($this->request);
-        $this->db = new Database($config['db']['servername'], $config['db']['username'], $config['db']['password']);
+        $this->db = new Database($config['db']['servername'], $config['db']['username'], $config['db']['password'],
+            $config['db']['dbName']);
+
+        if (is_file(self::$migrationModeFilePath)) {
+            $migrationManager = new MigrationManager();
+            $migrationManager->startMigration();
+        }
+
+        // If in maintenance mode, maintenance page is displayed. Application exits.
+        if (is_file(self::$maintenanceModeFilePath)) {
+            API::sendResponse(API::STATUS_CODE_MAINTENANCE, API::STATUS_MSG_MAINTENANCE,
+                ['error' => 'Server is under maintenance']);
+            exit();
+        }
     }
 
     /**

@@ -15,12 +15,12 @@ $config = [
     'db' => [
         "servername" => $_ENV['DB_SERVERNAME'],
         "username" => $_ENV['DB_USERNAME'],
-        "password" => $_ENV['DB_PASSWORD']
+        "password" => $_ENV['DB_PASSWORD'],
+        "dbName"=>$_ENV['DB_NAME']
     ]
 ];
 
 $app = new Application($config);
-
 // API routes
 $app->router->addPostRoute('/api/v1/login', [ApiControllerV1::class, 'login']);
 $app->router->addPostRoute('/api/v1/register', [ApiControllerV1::class, 'register']);

@@ -2,83 +2,50 @@
 
 namespace LogicLeap\StockManagement\core;
 
-use LogicLeap\StockManagement\models\User;
 use PDO;
 use PDOException;
 
 class Database
 {
-    /** Database name */
-    protected const DB_NAME = 'laundry_database';
-
     protected static string $servername;
     protected static string $username;
     protected static string $password;
+    protected static string $dbName;
 
     public PDO $pdo;
 
 
-    function __construct($servername, $username, $password)
+    function __construct($servername, $username, $password, $dbName)
     {
         self::$servername = $servername;
         self::$username = $username;
         self::$password = $password;
+        self::$dbName = $dbName;
 
         try {
             // Try to connect to mysql service.
             $this->pdo = new PDO("mysql:host=$servername", $username, $password);
+            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         }catch (PDOException $e) {
-            $errPage = new Page(Page::BLANK_HEADER, Page::BLANK_FOOTER,
-                Page::ERROR_PAGE, 'Internal Server Error');
-            Application::$app->renderer->renderPage($errPage,
-                ['errorPage:err-message' => 'Internal Server Error occurred.']);
+            echo "Failed to connect to the database server";
             exit();
         }
 
         try {
            $this->connectDatabase();
-            // set the PDO error mode to exception
-            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
-            // This part runs when there is no database.
-            $this->createDatabase();
+            echo "Failed to connect to the database";
+            exit();
         }
     }
 
     /**
      * Set class instance pdo object to the pdo object with database connection.
      */
-    protected function connectDatabase(){
-        // Try to connect to the relevant database.
-        $this->pdo = new PDO("mysql:host=".self::$servername.";dbname=" . self::DB_NAME,
-            self::$username, self::$password);
-    }
-
-    /**
-     * Create the database and tables.
-     */
-    private function createDatabase()
+    protected function connectDatabase(): void
     {
-        $sql = "CREATE DATABASE " . self::DB_NAME;
-        $this->pdo->exec($sql);
-
-        // Connect to newly created database.
-        $this->connectDatabase();
-
-        $sql = "CREATE TABLE users (
-                    id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                    username varchar(255) NOT NULL,
-                    email varchar(255) NOT NULL,
-                    firstname varchar(255) NOT NULL,
-                    lastname varchar(255) NOT NULL,
-                    password varchar(255) NOT NULL,
-                    role int(5) NOT NULL
-                    )";
-        $this->pdo->exec($sql);
-
-        $passwordHash = User::generatePasswordHash('rlsjp6)rg_34_)(23as');
-        $sql2 = "INSERT INTO users (username, email, firstname, lastname, password, role) VALUES ('admin_{342365(_)08', 
-                                                                'NONE', 'Super', 'Admin', '$passwordHash', 0)";
-        echo $this->pdo->exec($sql2);
+        // Try to connect to the relevant database.
+        $this->pdo = new PDO("mysql:host=".self::$servername.";dbname=" . self::$dbName,
+            self::$username, self::$password);
     }
 }
