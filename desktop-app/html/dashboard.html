@@ -59,7 +59,7 @@
             
             <!-- style="max-width: fit-content; height: max-content; position: relative; top: -8vh; background-color: rgba(182, 174, 174, 0.319); border-top-right-radius: 30px; border-bottom-right-radius: 40px;"  -->
 
-            <div class="col-3 p-5 justify-content-center align-items-center " style="max-width: fit-content; height: max-content; position: relative; top: -8vh; ">
+            <div class="col-3 p-5 justify-content-center align-items-center bo" style="max-width: fit-content; height: max-content; position: relative; top: 2vh; ">
                 <div class="btn-group-vertical justify-content-center align-items-center position-relative mt-xxl-4" role="group" aria-label="Vertical button group" >
                     <button type="button" class="btn btn-outline-light p-4 my-2 rounded mb-3 shadow" ><img src="../assets/Images/home.png" alt="" srcset="" width="40px" ></button>
                     <button type="button" class="btn btn-outline-light p-4 my-2 rounded mb-3 shadow"><img src="../assets/Images/search.png" alt="" srcset="" width="40px" ></button>
@@ -67,24 +67,32 @@
                     <button type="button" class="btn btn-outline-light p-4 my-2 rounded shadow"><img src="../assets/Images/user.png" alt="" srcset="" width="40px" ></button>
                   </div>
             </div>
-
-            <div class="col justify-content-evenly align-items-evenly p-3">
-
-
+            <!-- first page of billing process-->
+            <div class="col justify-content-evenly align-items-evenly p-3 d-none">
                     <div class="justify-content-evenly align-items-evenly p-5 position-relative " >
                         <div class="row align-items-center justify-content-center">
                             <div class="col-7 align-items-center justify-content-center">
                                 <div class="align-items-center justify-content-center p-5 rounded shadow" style="height:100vh;background-color: rgba(0, 0, 0, 0.25);">
-
-                                        <select class="form-select my-3" aria-label="Select Company" id="companyDrop">
-                                            <option value="-1">Select Client</option>
-                                            <option>one</option>
-                                            <option>Two</option>
-                                            <option>Three</option>
-                                        </select>
+                                    <h4 class=" ">Order-section</h4>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <select class="form-select my-3" aria-label="Select Company" id="companyDrop">
+                                                <option value="-1">Select Client</option>
+                                                <option>one</option>
+                                                <option>Two</option>
+                                                <option>Three</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-6">
+                                            <select class="form-select my-3" aria-label="Select Company" id="companyDrop">
+                                                <option value="-1">Action</option>
+                                                <option>Reguler</option>
+                                                <option>2 day</option>
+                                                <option>1 day</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                         <!--<button type="button" class="btn btn-outline-secondary" style="width: 100px;" id="dataSubmit">Submit</button> -->
-
-
                                     <div class="input-group mb-4">
                                         <span class="input-group-text">First and last name</span>
                                         <input type="text" aria-label="First name" class="form-control" id="fname">
@@ -159,8 +167,18 @@
 
                         </div>
                     </div>
-
             </div>
+
+
+            
+            <!-- secound page of billing process-->
+            <div class="col justify-content-evenly align-items-evenly p-3 bo">
+                <div class="container">
+                    <h5>put that table here</h5>  <!-- table over here--->
+                </div>
+            </div>
+
+
         </div>
     </div>
     <!---->
