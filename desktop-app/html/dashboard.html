@@ -15,10 +15,11 @@
             border:1px solid black;
         }
         .bgs{
-            background-image: url('../assets/Images/bb.jpg');
-            background-repeat: no-repeat;
-            background-size: cover;
+            background-image: url('../assets/Images/bg_s.jpg');
+            background-repeat:no-repeat;
+            background-size:cover;
             height: 100vh;
+            box-sizing: content-box;
         }
         
         @media (min-width: 576px) {
@@ -53,33 +54,35 @@
 </head>
 <body class="overflow-y-hidden bgs">
     <!--dashboard-->
-    <div class="container-fluid bg-light" style="height:100vh;" >
-        <div class="row  align-items-center" style="height:100vh;">
+    <div class="container-fluid bo" style="height:100vh;" >
+        <div class="row align-items-center bo" style="height:100vh;">
             
-            <div class="col-3 p-5 justify-content-center align-items-center" style="max-width: fit-content; height: max-content;">
+            <!-- style="max-width: fit-content; height: max-content; position: relative; top: -8vh; background-color: rgba(182, 174, 174, 0.319); border-top-right-radius: 30px; border-bottom-right-radius: 40px;"  -->
+
+            <div class="col-3 p-5 justify-content-center align-items-center " style="max-width: fit-content; height: max-content; position: relative; top: -8vh; ">
                 <div class="btn-group-vertical justify-content-center align-items-center position-relative mt-xxl-4" role="group" aria-label="Vertical button group" >
-                    <button type="button" class="btn btn-outline-secondary p-4 m-1 rounded mb-3" ><img src="../assets/Images/home.png" alt="" srcset="" width="40px" ></button>
-                    <button type="button" class="btn btn-outline-secondary p-4 m-1 rounded mb-3"><img src="../assets/Images/search.png" alt="" srcset="" width="40px" ></button>
-                    <button type="button" class="btn btn-outline-secondary p-4 m-1 rounded mb-3"><img src="../assets/Images/menu-burger.png" alt="" srcset="" width="40px" ></button>
-                    <button type="button" class="btn btn-outline-secondary p-4 m-1 rounded "><img src="../assets/Images/user.png" alt="" srcset="" width="40px" ></button>
+                    <button type="button" class="btn btn-outline-light p-4 my-2 rounded mb-3 shadow" ><img src="../assets/Images/home.png" alt="" srcset="" width="40px" ></button>
+                    <button type="button" class="btn btn-outline-light p-4 my-2 rounded mb-3 shadow"><img src="../assets/Images/search.png" alt="" srcset="" width="40px" ></button>
+                    <button type="button" class="btn btn-outline-light p-4 my-2 rounded mb-3 shadow"><img src="../assets/Images/app.png" alt="" srcset="" width="40px" ></button>
+                    <button type="button" class="btn btn-outline-light p-4 my-2 rounded shadow"><img src="../assets/Images/user.png" alt="" srcset="" width="40px" ></button>
                   </div>
             </div>
 
             <div class="col justify-content-evenly align-items-evenly p-3">
 
 
-                    <div class="justify-content-evenly align-items-evenly p-5 position-relative bo" >
-                        <div class="row bo">
-                            <div class="col-7 bo ">
-                                <div class="align-items-center justify-content-center bo p-5">
+                    <div class="justify-content-evenly align-items-evenly p-5 position-relative " >
+                        <div class="row align-items-center justify-content-center">
+                            <div class="col-7 align-items-center justify-content-center">
+                                <div class="align-items-center justify-content-center p-5 rounded shadow" style="height:100vh;background-color: rgba(0, 0, 0, 0.25);">
 
-                                        <select class="form-select" aria-label="Select Company" id="companyDrop">
+                                        <select class="form-select my-3" aria-label="Select Company" id="companyDrop">
                                             <option value="-1">Select Client</option>
                                             <option>one</option>
                                             <option>Two</option>
                                             <option>Three</option>
                                         </select>
-                                        <button type="button" class="btn btn-outline-secondary" style="width: 100px;" id="dataSubmit">Submit</button>
+                                        <!--<button type="button" class="btn btn-outline-secondary" style="width: 100px;" id="dataSubmit">Submit</button> -->
 
 
                                     <div class="input-group mb-4">
@@ -120,17 +123,17 @@
                                           </div>
                                     </div>
     
-                                    <form action="#" class="row mt-3">
+                                    <form action="#" class="row mt-3 ">
                                         <div class="col-md-6">
-                                            <div class="form-group">
+                                            <div class="form-group ">
                                                 <label for="input_from">From</label>
-                                              <input type="date" class="form-control" placeholder="Start Date" id="from">
+                                                <input type="date" class="form-control my-2" placeholder="Start Date" id="from">
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="input_to">To</label>
-                                              <input type="date" class="form-control"  placeholder="End Date" id="to">
+                                                <input type="date" class="form-control  my-2"  placeholder="End Date" id="to">
                                             </div>
                                         </div>
                                       </form>
@@ -140,8 +143,8 @@
 
                             <div class="col align-items-center justify-content-center p-4">
                                 <div class="row align-items-center justify-content-center ">
-                                    <div class="card" style="min-width: 20rem; min-height: 70vh; ">
-                                        <img src="..." class="card-img-top" alt="...">
+                                    <div class="card bg-transparent" style="min-width: 20rem; max-width: 25vw; min-height: 70vh; ">
+                                        <img src="../assets/Images/bg2.jpg" class="card-img-top" alt="...">
                                         <div class="card-body">
                                           <h5 class="card-title">upcomig update</h5>
                                           <p class="card-text">upcoming update info</p>
@@ -149,8 +152,8 @@
                                         </div>
                                       </div>
                                 </div>
-                                <div class="row align-items-center justify-content-center  my-3" >
-                                    <button type="button" class="btn btn-secondary fs-4  shadow" style="height: 8vh; width: 15vw; " id="continue">Continue</button>
+                                <div class="row align-items-center justify-content-center p-0" style="height:20vh">
+                                    <button type="button" class="btn btn-light fs-4 shadow rounded" style="height: 8vh; width: 15vw;margin-top: -5vh;" id="continue">Continue</button>
                                 </div>
                             </div>
 
