@@ -4,6 +4,7 @@ namespace LogicLeap\StockManagement\controllers;
 
 use LogicLeap\StockManagement\core\Application;
 use LogicLeap\StockManagement\core\JWT;
+use LogicLeap\StockManagement\core\Request;
 use LogicLeap\StockManagement\models\API;
 use LogicLeap\StockManagement\models\Customers;
 use LogicLeap\StockManagement\models\User;
@@ -62,6 +63,7 @@ class ApiControllerV1 extends API
                     'exp' => time() + self::JWT_TOKEN_EXPIRE_INTERVAL
                 ];
                 $jwt = JWT::generateToken($payload);
+                $user->markSuccessfulLogin($user->userId, $jwt, Request::getRequestIp());
                 $returnPayload = [
                     'message' => 'Login successful.',
                     'token' => $jwt
