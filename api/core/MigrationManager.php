@@ -53,7 +53,7 @@ class MigrationManager
     {
         foreach (self::$migrations as $migration) {
             $migrationName = explode(".", $migration)[0];
-            if ($this->isApplierMigration($migrationName))
+            if ($this->isAppliedMigration($migrationName))
                 continue;
             require_once Application::$ROOT_DIR . "/migrations/" . $migration;
             $mig = new $migrationName;
@@ -68,11 +68,15 @@ class MigrationManager
         }
     }
 
-    private function isApplierMigration(string $migrationName):bool{
+    private function isAppliedMigration(string $migrationName):bool{
         $sql = "SELECT id FROM migrations WHERE migration_name=? AND status=1";
         $statement = $this->pdo->prepare($sql);
         $statement->bindValue(1, $migrationName);
-        $statement->execute();
+        try {
+            $statement->execute();
+        }catch (\Exception){
+            return false;
+        }
         if ($statement->fetch(PDO::FETCH_ASSOC))
             return true;
         return false;
