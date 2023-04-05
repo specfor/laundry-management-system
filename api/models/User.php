@@ -2,6 +2,7 @@
 
 namespace LogicLeap\StockManagement\models;
 
+use DateTime;
 use PDO;
 
 class User extends DbModel
@@ -145,5 +146,22 @@ class User extends DbModel
             return 'user';
         else
             return 'none';
+    }
+
+    public function markSuccessfulLogin(int $userId, string $authToken, string $idAddress):void
+    {
+        $time = new DateTime('now');
+        $time= $time->format('Y-m-d H:i:s');
+
+        $sql = "SELECT id FROM user_status WHERE user_id=$userId";
+        $statement = self::prepare($sql);
+        $statement->execute();
+        if ($statement->fetch(PDO::FETCH_ASSOC)){
+            $sql = "UPDATE user_status SET auth_token='$authToken', last_active='$time', ip_addr='$idAddress' WHERE user_id=$userId";
+        }else{
+            $sql = "INSERT INTO user_status (user_id, auth_token, last_active, ip_addr) VALUES 
+                                                                ($userId, '$authToken', '$time', '$idAddress')";
+        }
+        self::exec($sql);
     }
 }

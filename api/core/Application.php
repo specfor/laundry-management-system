@@ -34,6 +34,7 @@ class Application
         self::$maintenanceModeFilePath = self::$ROOT_DIR . "/maintenanceLock.lock";
         self::$migrationModeFilePath = self::$ROOT_DIR . "/migrationLock.lock";
 
+        date_default_timezone_set('Asia/Colombo');
 
         $this->request = new Request();
         $this->router = new Router($this->request);
