@@ -14,7 +14,7 @@ const createMainWindow = () => {
     mainWindow = new BrowserWindow({
         minWidth: 1250,
         minHeight: 700,
-        autoHideMenuBar: true,
+        autoHideMenuBar: false,
         webPreferences: {
             contextIsolation: true,
             nodeIntegration: true,
@@ -30,6 +30,10 @@ const createMainWindow = () => {
 }
 
 ipcMain.on("clientData",function(event,data){
+    console.log(data)
+})
+
+ipcMain.on("clientOrderDetails",function(event,data){
     console.log(data)
 })
 
