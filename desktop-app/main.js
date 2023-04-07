@@ -70,7 +70,7 @@ function createInvoice(orderInfo){
     let b = 1
     
     while(b <= orderInfo.length){
-        orderInfo["products"] = []
+        data["products"] = []
 
         let obj = {
             "quantity": orderInfo[b].amount,
@@ -79,7 +79,7 @@ function createInvoice(orderInfo){
             "price": 1000
         }
         
-        orderInfo["products"].push(obj)
+        data["products"].push(obj)
 
         b++
     
