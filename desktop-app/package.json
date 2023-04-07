@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "check-internet-connected": "^2.0.6",
+    "easyinvoice": "^3.0.12",
     "electronmon": "^2.0.2",
     "superagent": "^8.0.9",
     "to-regex-range": "^5.0.1",

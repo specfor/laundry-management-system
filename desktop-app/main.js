@@ -3,9 +3,10 @@
 // Modules to control application life and create native browser window
 const {app, BrowserWindow, ipcMain} = require('electron')
 const path = require('path')
-const https = require('https')
 const userHandler = require('./logical_scripts/userHandler')
 const checkInternetConnected = require('check-internet-connected')
+const easyinvoice = require('easyinvoice')
+const fs = require('fs')
 
 let mainWindow;
 
@@ -14,7 +15,7 @@ const createMainWindow = () => {
     mainWindow = new BrowserWindow({
         minWidth: 1250,
         minHeight: 700,
-        autoHideMenuBar: false,
+        autoHideMenuBar: true,
         webPreferences: {
             contextIsolation: true,
             nodeIntegration: true,
@@ -24,7 +25,6 @@ const createMainWindow = () => {
 
     // and load the index.html of the app.
     mainWindow.loadFile(__dirname + '/html/dashboard.html')
-    mainWindow.webContents.openDevTools()
     //Open the DevTools.
 
 }
@@ -33,9 +33,63 @@ ipcMain.on("clientData",function(event,data){
     console.log(data)
 })
 
+//sending order details to the server
 ipcMain.on("clientOrderDetails",function(event,data){
     console.log(data)
+    //createInvoice(data)
 })
+
+function createInvoice(orderInfo){
+    //This describes the layout of the invoice
+    let data = {
+        "client": {
+            "company": orderInfo[0].name,
+            "address": orderInfo[0].address,
+            "country": "Sri Lanka"
+        },
+
+        "sender": {
+            "company": "LogicLeap Soltions",
+            "address": "Rahula Rd.",
+            "zip": "81000",
+            "city": "Matara",
+            "country": "Sri Lanka"
+        },
+
+        "images":{
+            logo: fs.readFileSync('./assets/Images/logoMain.png', 'base64'),
+        },
+
+        "bottomNotice": "Kindly pay your invoice within 15 days.",
+
+        "settings": {
+            "currency": "lkr"
+        },
+    }
+    
+    let b = 1
+    
+    while(b <= orderInfo.length){
+        orderInfo["products"] = []
+
+        let obj = {
+            "quantity": orderInfo[b].amount,
+            "description": orderInfo[b].item,
+            "tax-rate": 0,
+            "price": 1000
+        }
+        
+        orderInfo["products"].push(obj)
+
+        b++
+    
+    }
+    
+    
+    easyinvoice.createInvoice(data,function(result){
+        fs.writeFileSync(`./invoices/${orderInfo[0].name}.pdf`,result.pdf, 'base64')
+    })
+}
 
 let loadWindow;
 

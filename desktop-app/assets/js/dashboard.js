@@ -15,10 +15,11 @@ function addItemTotheTable(){
     let itemTable = document.getElementById("itemBody")
 
     let item = document.getElementById("itemId").value
+    let quantity = document.getElementById("quantity").value
     let priority = document.getElementById("priorityId").value
     let action = document.getElementById("actionId").value
 
-    if(item=="" || priority=="" || action ==""){
+    if(item=="" || priority=="" || action =="" || quantity==""){
         
         alert("All the fields must be filled.")
             
@@ -26,8 +27,9 @@ function addItemTotheTable(){
         let row = itemTable.insertRow(-1)
 
         row.insertCell(0).innerHTML = item
-        row.insertCell(1).innerHTML = priority
-        row.insertCell(2).innerHTML = action
+        row.insertCell(1).innerHTML = quantity
+        row.insertCell(2).innerHTML = priority
+        row.insertCell(3).innerHTML = action
     }
     
 
@@ -37,6 +39,7 @@ function addItemTotheTable(){
 function sendDataToTheServer(){
    let name = document.getElementById("name").value
    let contactNum= document.getElementById("contactNum").value
+   let quantity= document.getElementById("quantity").value
    let address = document.getElementById("address").value
    let itemTableLen = document.getElementById("itemBody").rows.length
    let itemTable = document.getElementById("itemBody")
@@ -51,7 +54,7 @@ function sendDataToTheServer(){
         let clientOrder = [
             {
                 "name":name,
-                "contact-number":contactNum,
+                "contactNumber":contactNum,
                 "address":address
             }
            ]
@@ -59,11 +62,13 @@ function sendDataToTheServer(){
         let a = 0
         while(a < itemTableLen){
             let item = itemTable.rows[a].cells[0].innerText
+            let amount = itemTable.rows[a].cells[0].innerText
             let priority = itemTable.rows[a].cells[1].innerText
             let action = itemTable.rows[a].cells[2].innerText
 
             let obj = {
                 "item":item,
+                "amount":amount,
                 "priority":priority,
                 "action":action
             }
