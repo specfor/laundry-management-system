@@ -1,50 +1,86 @@
 
 
+
 window.addEventListener("load",function(){
     
     //document.getElementById("dataSubmit").addEventListener("click",autoFill)
     document.getElementById("continue").addEventListener("click",sendDataToTheServer)
+    document.getElementById("btnAddItem").addEventListener("click",addItemTotheTable)
+
+
 
 })
 
+function addItemTotheTable(){
+    let itemTable = document.getElementById("itemBody")
+
+    let item = document.getElementById("itemId").value
+    let quantity = document.getElementById("quantity").value
+    let priority = document.getElementById("priorityId").value
+    let action = document.getElementById("actionId").value
+
+    if(item=="" || priority=="" || action =="" || quantity==""){
+        
+        alert("All the fields must be filled.")
+            
+    }else{
+        let row = itemTable.insertRow(-1)
+
+        row.insertCell(0).innerHTML = item
+        row.insertCell(1).innerHTML = quantity
+        row.insertCell(2).innerHTML = priority
+        row.insertCell(3).innerHTML = action
+    }
+    
+
+
+}
 
 function sendDataToTheServer(){
-   let firstName = document.getElementById("fname").value
-   let lastName = document.getElementById("lname").value
-   let email = document.getElementById("email").value
-   let mobileNumber = document.getElementById("mobiNum").value
+   let name = document.getElementById("name").value
+   let contactNum= document.getElementById("contactNum").value
+   let quantity= document.getElementById("quantity").value
    let address = document.getElementById("address").value
-   let urgency = document.getElementById("urgency")
-   let from = document.getElementById("from").value
-   let to = document.getElementById("to").value
+   let itemTableLen = document.getElementById("itemBody").rows.length
+   let itemTable = document.getElementById("itemBody")
 
-    console.log(urgency) 
 
-    //checks whether fields are enpty or not
-    if(firstName=="" || lastName=="" || email=="" || mobileNumber=="" || address=="" || 
-    from=="" ||to==""){
-        
-        Toastify.alertToast({
-            text: "All the Fields must be Filled!",
-            duration:5000,
-            className: "info",
-            style: {
-                background: "red",
-                color:"white",
-      }
-        })
+   if(itemTableLen==0){
+      alert("Items must be added to continue")  
+    }else if(name=="" || contactNum==""){
+        alert("All the fields must be filled.")
     }else{
-              
-        ipcRenderer.send("clientData",{
-            "first-name":firstName,
-            "last-name":lastName,
-            "email":email,
-            "mobile-number":mobileNumber,
-            "address":address,
-            "urgent":urgency.checked,
-            "took-date":from,
-            "should-give":to,
-        })
-    }
+        
+        let clientOrder = [
+            {
+                "name":name,
+                "contactNumber":contactNum,
+                "address":address
+            }
+           ]
+        
+        let a = 0
+        while(a < itemTableLen){
+            let item = itemTable.rows[a].cells[0].innerText
+            let amount = itemTable.rows[a].cells[0].innerText
+            let priority = itemTable.rows[a].cells[1].innerText
+            let action = itemTable.rows[a].cells[2].innerText
 
+            let obj = {
+                "item":item,
+                "amount":amount,
+                "priority":priority,
+                "action":action
+            }
+
+            clientOrder.push(obj)
+            
+            a++
+
+        }
+        //console.log(clientOrder)
+
+        ipcRenderer.send("clientOrderDetails",clientOrder)
+    }
+        
 }
