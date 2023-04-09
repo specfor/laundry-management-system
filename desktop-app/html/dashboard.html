@@ -109,102 +109,125 @@
 -->
 <body class="overflow-y-hidden bgs"> 
     
-    <div class="container-fluid justify-content-center align-items-center" style="height:100vh;" >
+    <div class="container-fluid justify-content-center align-items-center d-none" style="height:100vh;" >
         <div class="row align-items-center" style="height:100vh;">
-            <div class="col-3 p-5 justify-content-center align-items-center " style="max-width: fit-content; height: max-content; position: relative; top: 2vh; ">
-                <div class="btn-group-vertical justify-content-center align-items-center position-relative mt-xxl-4" role="group" aria-label="Vertical button group" >
-                    <button type="button" class="btn btn-outline-light p-4 my-2 rounded mb-3 shadow" ><img src="../assets/Images/home.png" alt="" srcset="" width="40px" ></button>
-                    <button type="button" class="btn btn-outline-light p-4 my-2 rounded mb-3 shadow"><img src="../assets/Images/search.png" alt="" srcset="" width="40px" ></button>
-                    <button type="button" class="btn btn-outline-light p-4 my-2 rounded mb-3 shadow"><img src="../assets/Images/app.png" alt="" srcset="" width="40px" ></button>
-                    <button type="button" class="btn btn-outline-light p-4 my-2 rounded shadow"><img src="../assets/Images/user.png" alt="" srcset="" width="40px" ></button>
-                  </div>
-            </div>
-
-            <div class="col position-relative justify-content-around" >
-                <div class="row" justify-content-around style="height:95vh ">
-
-                    <div class="col-7 justify-content-around">
-                        <div class="col-12 ">
-                            <table class="table mt-2" id="itemTable">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th scope="col">item</th>
-                                        <th scope="col">Quantity</th>
-                                        <th scope="col">priority</th>
-                                        <th scope="col">Action</th> 
-                                    </tr>
-                                </thead>
-                                <tbody>
-
-                                </tbody>
-                            </table>
-
-                        </div>
-                        <button class="btn btn-dark">+</button>
-                    </div>
 
 
- 
-                    
-                    
-
-
-
-
-
-
-                    <div class="col-5 justify-content-center align-self-center data-set-c" >
-                        <div class="data-set">
-                            <div class="widget text-end p-2" >
-                                <h1>09:00AM | </h1>
-                                <label for="exampleDataList" class="form-label">Good morning! - Sunday 2023-04-04</label>
-                            </div>
-                            <input class="form-control form-control-md my-3" list="datalistOptions" id="exampleDataList" placeholder="Type to search...">
-                            <datalist id="datalistOptions">
-                                <option value="San Francisco">
-                                <option value="New York">
-                                <option value="Seattle">
-                                <option value="Los Angeles">
-                                <option value="Chicago">
-                            </datalist>
-                            <div class="input-group input-group-md flex-nowrap my-3">
-                                <span class="input-group-text" id="addon-wrapping">Customer's name</span>
-                                <input type="text" class="form-control" placeholder="customer's name" aria-label="name" aria-describedby="addon-wrapping" id="name">
-                            </div>
-                            <div class="input-group input-group-md flex-nowrap my-3">
-                                <span class="input-group-text" id="addon-wrapping">Contact Number</span>
-                                <input type="number" class="form-control" placeholder="Mobile number ,etc" aria-label="number" aria-describedby="addon-wrapping" id="contactNum">
-                            </div>
-                            <div class="input-group">
-                                <span class="input-group-text">Address</span>
-                                <textarea class="form-control py-2" aria-label="With textarea" style="height: 10vh;" id="address"></textarea>
-                            </div>
-                            
-                            <div class="row text-center mt-3 justify-content-center">
-                                <button class="btn btn-secoundary c-btn text-center" id="continue"> Continue</button>
-                            </div>
-                        </div>
-                    </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    
-
+                <div class="col-3 p-5 justify-content-center align-items-center " style="max-width: fit-content; height: max-content; position: relative; top: 2vh; ">
+                    <div class="btn-group-vertical justify-content-center align-items-center position-relative mt-xxl-4" role="group" aria-label="Vertical button group" >
+                        <button type="button" class="btn btn-outline-light p-4 my-2 rounded mb-3 shadow" ><img src="../assets/Images/home.png" alt="" srcset="" width="40px" ></button>
+                        <button type="button" class="btn btn-outline-light p-4 my-2 rounded mb-3 shadow"><img src="../assets/Images/search.png" alt="" srcset="" width="40px" ></button>
+                        <button type="button" class="btn btn-outline-light p-4 my-2 rounded mb-3 shadow"><img src="../assets/Images/app.png" alt="" srcset="" width="40px" ></button>
+                        <button type="button" class="btn btn-outline-light p-4 my-2 rounded shadow"><img src="../assets/Images/user.png" alt="" srcset="" width="40px" ></button>
+                      </div>
                 </div>
-
-            </div>
+                <!-------------------[PLACING ORDER UI .1]---------------------->
+                <div class="col position-relative justify-content-around" >
+                    <div class="row" justify-content-around style="height:95vh ">
+                        <div class="col-7 justify-content-around">
+                            <div class="col-12 ">
+                                <table class="table mt-2" id="itemTable">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th scope="col">item</th>
+                                            <th scope="col">Quantity</th>
+                                            <th scope="col">priority</th>
+                                            <th scope="col">Action</th> 
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+    
+                                    </tbody>
+                                </table>
+    
+                            </div>
+                            <button class="btn btn-dark">+</button>
+                        </div>
+    
+                        <div class="col-5 justify-content-center align-self-center data-set-c" >
+                            <div class="data-set">
+                                <div class="widget text-end p-2" >
+                                    <h1>09:00AM | </h1>
+                                    <label for="exampleDataList" class="form-label">Good morning! - Sunday 2023-04-04</label>
+                                </div>
+                                <input class="form-control form-control-md my-3" list="datalistOptions" id="exampleDataList" placeholder="Type to search...">
+                                <datalist id="datalistOptions">
+                                    <option value="San Francisco">
+                                    <option value="New York">
+                                    <option value="Seattle">
+                                    <option value="Los Angeles">
+                                    <option value="Chicago">
+                                </datalist>
+                                <div class="input-group input-group-md flex-nowrap my-3">
+                                    <span class="input-group-text" id="addon-wrapping">Customer's name</span>
+                                    <input type="text" class="form-control" placeholder="customer's name" aria-label="name" aria-describedby="addon-wrapping" id="name">
+                                </div>
+                                <div class="input-group input-group-md flex-nowrap my-3">
+                                    <span class="input-group-text" id="addon-wrapping">Contact Number</span>
+                                    <input type="number" class="form-control" placeholder="Mobile number ,etc" aria-label="number" aria-describedby="addon-wrapping" id="contactNum">
+                                </div>
+                                <div class="input-group">
+                                    <span class="input-group-text">Address</span>
+                                    <textarea class="form-control py-2" aria-label="With textarea" style="height: 10vh;" id="address"></textarea>
+                                </div>
+                                
+                                <div class="row text-center mt-3 justify-content-center">
+                                    <button class="btn btn-secoundary c-btn text-center" id="continue"> Continue</button>
+                                </div>
+                            </div>
+                        </div>
+    
+                    </div>
+                </div>
+                <!-------------------[PLACING ORDER UI .1]---------------------->
+        </div>
     </div>
+<!------------------------------------------------------------------------------------------------------------------------------------------------------------------------>
+<!------------------------------------------------------------------------------------------------------------------------------------------------------------------------>
+
+<div class="container-fluid justify-content-center align-items-center" style="height:100vh;" >
+    <div class="row align-items-center" style="height:100vh;">
+    
+        <div class="col-3 p-5 justify-content-center align-items-center " style="max-width: fit-content; height: max-content; position: relative; top: 2vh; ">
+            <div class="btn-group-vertical justify-content-center align-items-center position-relative mt-xxl-4" role="group" aria-label="Vertical button group" >
+                <button type="button" class="btn btn-outline-light p-4 my-2 rounded mb-3 shadow" ><img src="../assets/Images/home.png" alt="" srcset="" width="40px" ></button>
+                <button type="button" class="btn btn-outline-light p-4 my-2 rounded mb-3 shadow"><img src="../assets/Images/search.png" alt="" srcset="" width="40px" ></button>
+                <button type="button" class="btn btn-outline-light p-4 my-2 rounded mb-3 shadow"><img src="../assets/Images/app.png" alt="" srcset="" width="40px" ></button>
+                <button type="button" class="btn btn-outline-light p-4 my-2 rounded shadow"><img src="../assets/Images/user.png" alt="" srcset="" width="40px" ></button>
+              </div>
+        </div>
+        <!-------------------[PLACING ORDER UI .2]---------------------->
+        <div class="col-5">
+            <div class="form-floating bg-transparent">
+                <input type="email" class="form-control bg-transparent" id="floatingInputDisabled" placeholder="name@example.com" disabled style="outline: none;border: none;">
+                <label for="floatingInputDisabled ">buyer name</label>
+            </div>
+            <div class="form-floating ">
+                <textarea class="form-control bg-transparent" placeholder="Leave a comment here" id="floatingTextareaDisabled" disabled></textarea>
+                <label for="floatingTextareaDisabled">Comments</label>
+            </div>
+            <div class="form-floating ">
+                <textarea class="form-control bg-transparent" placeholder="Leave a comment here" id="floatingTextarea2Disabled" style="height: 100px" disabled></textarea>
+                <label for="floatingTextarea2Disabled">Comments</label>
+            </div>
+        </div>
+        <div class="col">
+            <h6>update coming up</h6>
+        </div>
+        <!-------------------[PLACING ORDER UI .2]---------------------->
+    </div>
+</div>
+
+<!------------------------------------------------------------------------------------------------------------------------------------------------------------------------>
+<!------------------------------------------------------------------------------------------------------------------------------------------------------------------------>
+
+
+
+
+
+
+
+
 
 
     <!-- This modle add item to the table-->
