@@ -93,7 +93,7 @@ function createInvoice(orderInfo){
 
 let loadWindow;
 
-//creating loading window
+
 function createLoadingWindow() {
     loadWindow = new BrowserWindow({
         height: 300,
