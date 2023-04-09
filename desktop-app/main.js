@@ -15,7 +15,7 @@ const createMainWindow = () => {
     mainWindow = new BrowserWindow({
         minWidth: 1250,
         minHeight: 700,
-        autoHideMenuBar: true,
+        autoHideMenuBar: false,
         webPreferences: {
             contextIsolation: true,
             nodeIntegration: true,
@@ -66,29 +66,11 @@ function createInvoice(orderInfo){
             "currency": "lkr"
         },
     }
-    
-    let b = 1
-    
-    while(b <= orderInfo.length){
-        data["products"] = []
 
-        let obj = {
-            "quantity": orderInfo[b].amount,
-            "description": orderInfo[b].item,
-            "tax-rate": 0,
-            "price": 1000
-        }
-        
-        data["products"].push(obj)
-
-        b++
     
-    }
-    
-    
-    easyinvoice.createInvoice(data,function(result){
-        fs.writeFileSync(`./invoices/${orderInfo[0].name}.pdf`,result.pdf, 'base64')
-    })
+    //easyinvoice.createInvoice(data,function(result){
+      //  fs.writeFileSync(`./invoices/${orderInfo[0].name}.pdf`,result.pdf, 'base64')
+    //})
 }
 
 let loadWindow;

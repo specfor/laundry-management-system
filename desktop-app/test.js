@@ -41,3 +41,23 @@ ipcRenderer.on("error",function(event){
 
 //admin_{342365(_)08
   //rlsjp6)rg_34_)(23as
+
+      
+  let b = 1
+    
+  while(b <= orderInfo.length){
+      data["products"] = []
+
+      let obj = {
+          "quantity": orderInfo[b].amount,
+          "description": orderInfo[b].item,
+          "tax-rate": 0,
+          "price": 1000
+      }
+      
+      data["products"].push(obj)
+
+      b++
+  
+  }
+  
