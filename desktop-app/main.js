@@ -15,7 +15,7 @@ const createMainWindow = () => {
     mainWindow = new BrowserWindow({
         minWidth: 1250,
         minHeight: 700,
-        autoHideMenuBar: true,
+        autoHideMenuBar: false,
         webPreferences: {
             contextIsolation: true,
             nodeIntegration: true,
@@ -26,7 +26,7 @@ const createMainWindow = () => {
     // and load the index.html of the app.
     mainWindow.loadFile(__dirname + '/html/dashboard.html')
     //Open the DevTools.
-    mainWindow.webContents.openDevTools()
+    //mainWindow.webContents.openDevTools()
 }
 
 ipcMain.on("clientData",function(event,data){
@@ -36,7 +36,8 @@ ipcMain.on("clientData",function(event,data){
 //sending order details to the server
 ipcMain.on("clientOrderDetails",function(event,data){
     console.log(data)
-    //createInvoice(data)
+    
+    createInvoice(data)
 })
 
 function createInvoice(orderInfo){
@@ -67,10 +68,28 @@ function createInvoice(orderInfo){
         },
     }
 
-    
-    //easyinvoice.createInvoice(data,function(result){
-      //  fs.writeFileSync(`./invoices/${orderInfo[0].name}.pdf`,result.pdf, 'base64')
-    //})
+    data["products"] = []
+
+    let b = 1;      
+    while(b < orderInfo.length){
+
+
+        let obj = {
+            "quantity": orderInfo[b].amount,
+            "description": orderInfo[b].item,
+            "tax-rate": 0,
+            "price": 1000
+        }
+        
+        data["products"].push(obj)
+        
+        b++
+ 
+    }
+
+    easyinvoice.createInvoice(data,function(result){
+        fs.writeFileSync(`./invoices/${orderInfo[0].name}.pdf`,result.pdf, 'base64')
+    })
 }
 
 let loadWindow;

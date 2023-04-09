@@ -62,9 +62,9 @@ function sendDataToTheServer(){
         let a = 0
         while(a < itemTableLen){
             let item = itemTable.rows[a].cells[0].innerText
-            let amount = itemTable.rows[a].cells[0].innerText
-            let priority = itemTable.rows[a].cells[1].innerText
-            let action = itemTable.rows[a].cells[2].innerText
+            let amount = itemTable.rows[a].cells[1].innerText
+            let priority = itemTable.rows[a].cells[2].innerText
+            let action = itemTable.rows[a].cells[3].innerText
 
             let obj = {
                 "item":item,
