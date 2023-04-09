@@ -15,7 +15,7 @@ const createMainWindow = () => {
     mainWindow = new BrowserWindow({
         minWidth: 1250,
         minHeight: 700,
-        autoHideMenuBar: false,
+        autoHideMenuBar: true,
         webPreferences: {
             contextIsolation: true,
             nodeIntegration: true,
@@ -26,7 +26,7 @@ const createMainWindow = () => {
     // and load the index.html of the app.
     mainWindow.loadFile(__dirname + '/html/dashboard.html')
     //Open the DevTools.
-    //mainWindow.webContents.openDevTools()
+    mainWindow.webContents.openDevTools()
 }
 
 ipcMain.on("clientData",function(event,data){
