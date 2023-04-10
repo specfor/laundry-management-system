@@ -35,7 +35,7 @@ function addItemTotheTable(){
 }
 
 function sendDataToTheServer(){
-    let orderPlaceDiv = document.getElementsById("orderPlaceDiv")
+    let orderPlace = document.getElementById("orderPlaceDiv")
    
     let name = document.getElementById("name").value
    let contactNum= document.getElementById("contactNum").value
@@ -86,7 +86,7 @@ function sendDataToTheServer(){
 
     ipcRenderer.on("done",function(data){
         console.log("working fine")
-        orderPlaceDiv.style.display = "none"
+        orderPlace.style.display = "none"
 
     })
 }
