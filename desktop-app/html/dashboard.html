@@ -117,7 +117,7 @@
 
 <!--section 1-->
 <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------>
-<div class="container-fluid justify-content-center align-items-center " style="height:100vh;" id="orderPlaceDiv">
+<div class="container-fluid justify-content-center align-items-center d-none" style="height:100vh;" id="orderPlaceDiv">
         <div class="row align-items-center" style="height:100vh;">
         <!-------------------[Reguler menu]---------------------->
             <div class="col-3 p-5 justify-content-center align-items-center " style="max-width: fit-content; height: max-content; position: relative; top: 2vh; ">
@@ -198,7 +198,7 @@
 
 <!--section 2-->
 <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------>
-<div class="container-fluid justify-content-center align-items-center" style="height:100vh;display:block;" id="summaryDiv">
+<div class="container-fluid justify-content-center align-items-center d-none" style="height:100vh;display:block;" id="summaryDiv">
 
     <div class="row align-items-center " style="height:100vh;">
         <!-------------------[Reguler menu]----------------------------->
@@ -301,6 +301,90 @@
 <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------>
 
 
+<!------------------------------------------------------------------------------------------------------------------------------------------------------------------------>
+<div class="container-fluid justify-content-center align-items-center " style="height:100vh;display:block;" id="summaryDiv">
+
+    <div class="row align-items-center " style="height:100vh;">
+        <!-------------------[Reguler menu]----------------------------->
+        <div class="col-3  p-5 justify-content-center align-items-center " style="max-width: fit-content; height: max-content; position: relative; top: 2vh; ">
+            <div class="btn-group-vertical justify-content-center align-items-center position-relative mt-xxl-4" role="group" aria-label="Vertical button group" >
+                <button type="button" class="btn btn-outline-light p-4 my-2 rounded mb-3 shadow" ><img src="../assets/Images/home.png" alt="" srcset="" width="40px" ></button>
+                <button type="button" class="btn btn-outline-light p-4 my-2 rounded mb-3 shadow"><img src="../assets/Images/search.png" alt="" srcset="" width="40px" ></button>
+                <button type="button" class="btn btn-outline-light p-4 my-2 rounded mb-3 shadow"><img src="../assets/Images/app.png" alt="" srcset="" width="40px" ></button>
+                <button type="button" class="btn btn-outline-light p-4 my-2 rounded shadow"><img src="../assets/Images/user.png" alt="" srcset="" width="40px" ></button>
+              </div>
+        </div>
+        <!-------------------[Reguler menu]----------------------------->
+
+        <!-------------------[home-screen]---------------------->
+        <div class="col justify-content-center align-items-center text-center m-4 mt-5 rounded" style="height:100vh;background: linear-gradient(rgba(255, 255, 255, 0.798), #ffffff37); ">
+            <div class="row mb-0">
+                <div class=" mt-0">
+                    <div class="row row-cols-1 row-cols-md-2 g-3 " style="">
+
+                        <div class="col align-items-center justify-content-center p-0 SHADOW">
+                            <div class="card bg-transparent bo mt-3 align-items-center justify-content-center p-0" style="min-height: 40vh; border: none; ">
+                                <ul class="list-group p-0" style="min-width: 30vw ;">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                                      Urgent upcoming orders
+                                      <span class="badge bg-primary rounded-pill">14</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                                      Freshly Arrived cloths
+                                      <span class="badge bg-primary rounded-pill">2</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                                      About to transfer and clear
+                                      <span class="badge bg-primary rounded-pill">5</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                                      Daily Order limit
+                                      <span class="badge bg-primary rounded-pill">34</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                                        Massages from Headoffice
+                                      <span class="badge bg-primary rounded-pill">9</span>
+                                    </li>
+                                </ul>
+                              </div>
+                        </div>
+
+                        <div class="col">
+                          <div class="card bg-transparent align-items-center justify-content-center text-dark" style="min-height: 40vh; border: none;">
+                            <h1> LAUNDRY SERVICE </h1>
+                            <h5>Wait for the  new upcoming changes with features</h5>
+                          </div>
+                        </div>
+
+                        <div class="col" >
+                            <div class="card" style="min-height: 40vh;background-color: rgba(0, 0, 0, 0.209);">
+                                <img src="..." class="card-img-top" alt="...">
+                                <div class="card-body">
+                                  <h5 class="card-title">Upcoming Update</h5>
+                                  <p class="card-text">upcoming update !</p>
+                                </div>
+                              </div>
+                        </div>
+
+                        <div class="col">
+                          <div class="card " style="min-height: 40vh;background-color: rgba(0, 0, 0, 0.209);">
+                            <img src="..." class="card-img-top" alt="...">
+                            <div class="card-body">
+                              <h5 class="card-title">Upcoming Update</h5>
+                              <p class="card-text">upcoming Update</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                </div>
+            </div>
+        </div>
+        <!-------------------[home-screen]---------------------->
+    </div>
+</div>
+<!------------------------------------------------------------------------------------------------------------------------------------------------------------------------>
+
 
 
 
@@ -311,7 +395,7 @@
 
 
     <!-- This modle add item to the table-->
-    <div class="container">
+<div class="container">
         <div class="container">
             <div class="modal fade" id="addNewItem" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-theme="dark">
                 <div class="modal-dialog">
@@ -359,6 +443,9 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
     
     
 
