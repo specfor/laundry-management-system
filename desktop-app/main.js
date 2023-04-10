@@ -15,7 +15,7 @@ const createMainWindow = () => {
     mainWindow = new BrowserWindow({
         minWidth: 1250,
         minHeight: 700,
-        autoHideMenuBar: true,
+        autoHideMenuBar: false,
         webPreferences: {
             contextIsolation: true,
             nodeIntegration: true,
@@ -26,7 +26,7 @@ const createMainWindow = () => {
     // and load the index.html of the app.
     mainWindow.loadFile(__dirname + '/html/dashboard.html')
     //Open the DevTools.
-    mainWindow.webContents.openDevTools()
+    //mainWindow.webContents.openDevTools()
 }
 
 ipcMain.on("clientData",function(event,data){
@@ -38,9 +38,12 @@ ipcMain.on("clientOrderDetails",function(event,data){
     console.log(data)
     
     createInvoice(data)
+
+    mainWindow.webContents.send("done")
 })
 
-function createInvoice(orderInfo){
+ 
+async function createInvoice(orderInfo){
     //This describes the layout of the invoice
     let data = {
         "client": {
@@ -87,9 +90,11 @@ function createInvoice(orderInfo){
  
     }
 
-    easyinvoice.createInvoice(data,function(result){
+    await easyinvoice.createInvoice(data,function(result){
         fs.writeFileSync(`./invoices/${orderInfo[0].name}.pdf`,result.pdf, 'base64')
     })
+
+    
 }
 
 let loadWindow;

@@ -1,6 +1,4 @@
 
-
-
 window.addEventListener("load",function(){
     
     //document.getElementById("dataSubmit").addEventListener("click",autoFill)
@@ -37,7 +35,9 @@ function addItemTotheTable(){
 }
 
 function sendDataToTheServer(){
-   let name = document.getElementById("name").value
+    let orderPlaceDiv = document.getElementsById("orderPlaceDiv")
+   
+    let name = document.getElementById("name").value
    let contactNum= document.getElementById("contactNum").value
    let quantity= document.getElementById("quantity").value
    let address = document.getElementById("address").value
@@ -83,4 +83,10 @@ function sendDataToTheServer(){
         ipcRenderer.send("clientOrderDetails",clientOrder)
     }
         
+
+    ipcRenderer.on("done",function(data){
+        console.log("working fine")
+        orderPlaceDiv.style.display = "none"
+
+    })
 }

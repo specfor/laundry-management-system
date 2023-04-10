@@ -117,7 +117,7 @@
 
 <!--section 1-->
 <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------>
-<div class="container-fluid justify-content-center align-items-center d-none" style="height:100vh;" >
+<div class="container-fluid justify-content-center align-items-center " style="height:100vh;" id="orderPlaceDiv">
         <div class="row align-items-center" style="height:100vh;">
         <!-------------------[Reguler menu]---------------------->
             <div class="col-3 p-5 justify-content-center align-items-center " style="max-width: fit-content; height: max-content; position: relative; top: 2vh; ">
@@ -144,13 +144,13 @@
                                         <th scope="col">Action</th> 
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="itemBody" style="color:white;">
 
                                 </tbody>
                             </table>
 
                         </div>
-                        <button class="btn btn-dark">+</button>
+                        <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#addNewItem">+</button>
                     </div>
 
                     <div class="col-5 justify-content-center align-self-center data-set-c" >
@@ -198,7 +198,7 @@
 
 <!--section 2-->
 <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------>
-<div class="container-fluid justify-content-center align-items-center" style="height:100vh;" >
+<div class="container-fluid justify-content-center align-items-center" style="height:100vh;display:block;" id="summaryDiv">
 
     <div class="row align-items-center " style="height:100vh;">
         <!-------------------[Reguler menu]----------------------------->
