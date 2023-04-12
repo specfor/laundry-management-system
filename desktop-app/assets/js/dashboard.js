@@ -4,10 +4,34 @@ window.addEventListener("load",function(){
     //document.getElementById("dataSubmit").addEventListener("click",autoFill)
     document.getElementById("continue").addEventListener("click",sendDataToTheServer)
     document.getElementById("btnAddItem").addEventListener("click",addItemTotheTable)
-
+    document.getElementById("goBack").addEventListener("click",goBackOrder)
 
 
 })
+
+setInterval(function(){
+    const date = new Date()
+    
+    let hours = date.getHours()
+    let minutes = date.getMinutes()
+
+    let year = date.getFullYear()
+    let month = date.getMonth()
+    let day = date.getDate()
+
+    //let dayW = date.getDay()
+
+    document.getElementById("timeNow").innerText = `${hours}:${minutes} |`
+
+    document.getElementById("dateNow").innerText = `${year}-${month}-${day}`
+},1000)
+
+function goBackOrder(){
+    document.getElementById("summaryDiv").style.display = "none" 
+    document.getElementById("orderPlaceDiv").style.display = "block"
+
+}
+
 
 function addItemTotheTable(){
     let itemTable = document.getElementById("itemBody")
@@ -45,13 +69,15 @@ function sendDataToTheServer(){
    let itemTable = document.getElementById("itemBody")
 
 
+    let clientOrder;
+
    if(itemTableLen==0){
       alert("Items must be added to continue")  
     }else if(name=="" || contactNum==""){
         alert("All the fields must be filled.")
     }else{
         
-        let clientOrder = [
+         clientOrder = [
             {
                 "name":name,
                 "contactNumber":contactNum,
@@ -87,6 +113,25 @@ function sendDataToTheServer(){
     ipcRenderer.on("done",function(data){
         console.log("working fine")
         orderPlace.style.display = "none"
-
+        document.getElementById("summaryDiv").style.display = "block"
+        checkout(clientOrder)
     })
+
+    
+}
+
+
+function checkout(clientOrder){
+    document.getElementById("cusName").value = clientOrder[0].name
+    document.getElementById("contactInfo").value = clientOrder[0].contactNumber
+
+    const date = new Date()
+
+
+    let year = date.getFullYear()
+    let month = date.getMonth()
+    let day = date.getDate()
+
+    document.getElementById("Orderdate").value = `${year}-${month}-${day}`
+    
 }
