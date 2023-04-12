@@ -43,6 +43,7 @@ function addItemTotheTable(){
     let quantity = document.getElementById("quantity").value
     let priority = document.getElementById("priorityId").value
     let action = document.getElementById("actionId").value
+    let deliveryDate = document.getElementById("deliveryDate").value
 
     document.querySelectorAll("#check").forEach(function(i){
         if(i.checked==true){
@@ -52,7 +53,7 @@ function addItemTotheTable(){
 
     if(item=="" || priority=="" || action =="" || quantity==""){
         
-        alert("All the fields must be filled.")
+        alert("All the required fields must be filled.")
             
     }else{
         let row = itemTable.insertRow(-1)
@@ -62,6 +63,7 @@ function addItemTotheTable(){
         row.insertCell(2).innerHTML = priority
         row.insertCell(3).innerHTML = action
         row.insertCell(4).innerHTML = array1.join("")
+        row.insertCell(5).innerHTML = deliveryDate
     }
     
 
@@ -77,7 +79,7 @@ function sendDataToTheServer(){
    let address = document.getElementById("address").value
    let itemTableLen = document.getElementById("itemBody").rows.length
    let itemTable = document.getElementById("itemBody")
-
+   let deliveryDate = document.getElementById("deliveryDate").value
 
     let clientOrder;
 
@@ -108,7 +110,8 @@ function sendDataToTheServer(){
                 "amount":amount,
                 "priority":priority,
                 "action":action,
-                "defects":defects
+                "defects":defects,
+                "deliveryDate":deliveryDate,
             }
 
             clientOrder.push(obj)
