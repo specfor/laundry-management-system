@@ -140,6 +140,8 @@ function checkout(clientOrder){
     document.getElementById("cusName").value = clientOrder[0].name
     document.getElementById("contactInfo").value = clientOrder[0].contactNumber
 
+    document.getElementById("delDate").value = document.getElementById("deliveryDate").value
+
     const date = new Date()
 
 
@@ -148,5 +150,7 @@ function checkout(clientOrder){
     let day = date.getDate()
 
     document.getElementById("Orderdate").value = `${year}-${month}-${day}`
+
+
     
 }
