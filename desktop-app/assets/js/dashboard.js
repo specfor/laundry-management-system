@@ -34,12 +34,21 @@ function goBackOrder(){
 
 
 function addItemTotheTable(){
+    
+    let array1 = []
+    
     let itemTable = document.getElementById("itemBody")
 
     let item = document.getElementById("itemId").value
     let quantity = document.getElementById("quantity").value
     let priority = document.getElementById("priorityId").value
     let action = document.getElementById("actionId").value
+
+    document.querySelectorAll("#check").forEach(function(i){
+        if(i.checked==true){
+            array1.push(`${i.value}<br>`)
+        }
+    })
 
     if(item=="" || priority=="" || action =="" || quantity==""){
         
@@ -52,6 +61,7 @@ function addItemTotheTable(){
         row.insertCell(1).innerHTML = quantity
         row.insertCell(2).innerHTML = priority
         row.insertCell(3).innerHTML = action
+        row.insertCell(4).innerHTML = array1.join("")
     }
     
 
@@ -91,12 +101,14 @@ function sendDataToTheServer(){
             let amount = itemTable.rows[a].cells[1].innerText
             let priority = itemTable.rows[a].cells[2].innerText
             let action = itemTable.rows[a].cells[3].innerText
+            let defects = itemTable.rows[a].cells[4].innerText
 
             let obj = {
                 "item":item,
                 "amount":amount,
                 "priority":priority,
-                "action":action
+                "action":action,
+                "defects":defects
             }
 
             clientOrder.push(obj)

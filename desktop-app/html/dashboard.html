@@ -7,7 +7,7 @@
    <!--<link rel="stylesheet" href="../css/style.css">--> 
     <link rel="stylesheet" href="../assets/css/style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
-    <title>Dashboard</title>
+    <title>Laundry Management system 1.0 </title>
     <script src="../assets/js/dashboard.js"></script>
 
     <style>
@@ -138,10 +138,11 @@
                             <table class="table mt-2" id="itemTable">
                                 <thead class="table-light">
                                     <tr>
-                                        <th scope="col">item</th>
+                                        <th scope="col">Item</th>
                                         <th scope="col">Quantity</th>
-                                        <th scope="col">priority</th>
-                                        <th scope="col">Action</th> 
+                                        <th scope="col">Priority</th>
+                                        <th scope="col">Action</th>
+                                        <th scope="col">Defects</th> 
                                     </tr>
                                 </thead>
                                 <tbody id="itemBody" style="color:white;">
@@ -173,7 +174,7 @@
                             </div>
                             <div class="input-group input-group-md flex-nowrap my-3">
                                 <span class="input-group-text" id="addon-wrapping">Contact Number</span>
-                                <input type="number" class="form-control" placeholder="Mobile number ,etc" aria-label="number" aria-describedby="addon-wrapping" id="contactNum">
+                                <input type="number" class="form-control" placeholder="Mobile number" aria-label="number" aria-describedby="addon-wrapping" id="contactNum">
                             </div>
                             <div class="input-group">
                                 <span class="input-group-text">Address</span>
@@ -429,10 +430,64 @@
                             <div class="input-group mb-3">
                                 <span class="input-group-text" id="basic-addon3">Action</span>
                                 <select class="form-select" aria-label="Select Company" id="actionId">
-                                    <option>Dry</option>
-                                    <option>wash</option>
-                                    <option>spin</option>
+                                    <option>Dry Cleaning</option>
+                                    <option>Washing</option>
+                                    <option>Pressing</option>
+                                    <option>Pressing & Dry Cleaning</option>
+                                    <option>Pressing & Washing</option>
+                                    <option>Washing & Dry Cleaning</option>
                                 </select>
+                            </div>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="basic-addon3">Defects</span>
+                                
+                                <div class="ms-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="Stains" id="check">
+                                        <label class="form-check-label" for="flexCheckDefault">
+                                          Stains
+                                        </label>
+                                      </div class="container">
+                                      <div class="form-check ps-4">
+                                        <input class="form-check-input" type="checkbox" value="Burnt Marks" id="check">
+                                        <label class="form-check-label" for="flexCheckChecked">
+                                          Burnt Marks
+                                        </label>
+                                      </div>
+                                      <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="Dyes Bleeded" id="check">
+                                        <label class="form-check-label" for="flexCheckDefault">
+                                          Dyes Bleeded
+                                        </label>
+                                      </div>
+                                      <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="Colours Faded" id="check">
+                                        <label class="form-check-label" for="flexCheckChecked">
+                                          Colours Faded
+                                        </label>
+                                      </div>
+                                      <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="Missing Buttons" id="check">
+                                        <label class="form-check-label" for="flexCheckDefault">
+                                          Missing Buttons
+                                        </label>
+                                      </div>
+                                      <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="Torn or Damaged" id="check">
+                                        <label class="form-check-label" for="flexCheckChecked">
+                                          Torn or Damaged
+                                        </label>
+                                      </div>
+                                      <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="None" id="check" >
+                                        <label class="form-check-label" for="flexCheckChecked">
+                                          None
+                                        </label>
+                                      </div>
+                                </div>
+                                
+                                  
+                                
                             </div>
                         </div>
                         <div class="modal-footer">
