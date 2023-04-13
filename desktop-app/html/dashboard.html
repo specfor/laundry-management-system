@@ -113,9 +113,8 @@
 
 -->
 <body class="overflow-y-hidden bgs"> 
-
 <!--section 1-->
-<!------------------------------------------------------------------------------------------------------------------------------------------------------------------------>
+<!-----------------------------------------------------------place order section------------------------------------------------------------------------------------------------>
 <div class="container-fluid justify-content-center align-items-center d-none" style="height:100vh;display: block;" id="orderPlaceDiv">
         <div class="row align-items-center" style="height:100vh;">
         <!-------------------[Reguler menu]---------------------->
@@ -292,10 +291,10 @@
         <!-------------------[PLACING ORDER UI .2]---------------------->
     </div>
 </div>
-<!------------------------------------------------------------------------------------------------------------------------------------------------------------------------>
+<!------------------------------------------------------------place order section------------------------------------------------------------------------------------------>
 
-<!------------------------------------------------------------------------------------------------------------------------------------------------------------------------>
-<div class="container-fluid justify-content-center align-items-centerd-none" style="height:100vh;display: none;" >
+<!------------------------------------------------------------home page-------------------------------------------------------------------------------------->
+<div class="container-fluid justify-content-center align-items-center d-none" style="height:100vh;" >
 
     <div class="row align-items-center " style="height:100vh;">
         <!-------------------[Reguler menu]----------------------------->
@@ -377,10 +376,10 @@
         
     </div>
 </div>
-<!------------------------------------------------------------------------------------------------------------------------------------------------------------------------>
+<!-------------------------------------------------------------home page------------------------------------------------------------------------------------------------------->
 
+<!------------------------------------------------------------management page-------------------------------------------------------------------------------------->
 <div class="container-fluid justify-content-center align-items-center " style="height:100vh;" >
-
     <div class="row align-items-center " style="height:100vh;">
         <!-------------------[Reguler menu]----------------------------->
         <div class="col-3  p-5 justify-content-center align-items-center " style="max-width: fit-content; height: max-content; position: relative; top: 2vh; ">
@@ -398,9 +397,9 @@
             <div class="row p-2" style="height:100vh;">
                 <div class="col-9">
                     <div class="container tab-content" id="nav-tabContent">
-                        <div class="tab-pane fade show active" id="list-home" role="tabpanel" aria-labelledby="list-home-list">
+                        <div class="tab-pane fade  show active" id="list-home" role="tabpanel" aria-labelledby="list-home-list">
 
-                            <table class="table table-striped table-hover">
+                            <table class="table table-striped table-hover text-light">
                                 <thead>
                                     <tr>
                                       <th scope="col">#</th>
@@ -411,13 +410,13 @@
                                   </thead>
                                   <tbody>
                                     <tr>
-                                      <th scope="row">1</th>
+                                      <th scope="row text-light">1</th>
                                       <td>Mark</td>
                                       <td>Otto</td>
                                       <td>@mdo</td>
                                     </tr>
                                     <tr>
-                                      <th scope="row">2</th>
+                                      <th scope="row text-light">2</th>
                                       <td>Jacob</td>
                                       <td>Thornton</td>
                                       <td>@fat</td>
@@ -459,6 +458,7 @@
         
     </div>
 </div>
+<!------------------------------------------------------------management page-------------------------------------------------------------------------------------->
 
 
 
@@ -481,95 +481,100 @@
                         <div class="modal-body">
                         </div>
                         <div class="row text-center  ps-4 pe-4">
-                            <div class="input-group mb-3">
-                                <span class="input-group-text" id="basic-addon1">Item</span>
-                                <select class="form-select" aria-label="Select Company" id="itemId">
-                                    <option>Denim</option>
-                                    <option>short</option>
-                                </select>
-                            </div>
-                            <div class="row text-center  ps-4 pe-4">
+                            <div class="col">
+
+
                                 <div class="input-group mb-3">
-                                    <span class="input-group-text" id="basic-addon3">Quantity</span>
-                                    <input type="number" class="form-control" aria-describedby="basic-addon3" id="quantity">
+                                    <span class="input-group-text" id="basic-addon1">Item</span>
+                                    <select class="form-select" aria-label="Select Company" id="itemId">
+                                        <option>Denim</option>
+                                        <option>short</option>
+                                    </select>
                                 </div>
-                            </div>    
-                            <div class="input-group mb-3">
-                                <span class="input-group-text" id="basic-addon2">Urgency</span>
-                                <select class="form-select" aria-label="Select Company" id="priorityId">
-                                    <option>Urgent</option>
-                                    <option>None</option>
-                                    
-                                </select>
-                            </div>
-                           
-                            <div class="input-group mb-3">
-                                <span class="input-group-text" id="basic-addon3">Action</span>
-                                <select class="form-select" aria-label="Select Company" id="actionId">
-                                    <option>Dry Cleaning</option>
-                                    <option>Washing</option>
-                                    <option>Pressing</option>
-                                    <option>Pressing & Dry Cleaning</option>
-                                    <option>Pressing & Washing</option>
-                                    <option>Washing & Dry Cleaning</option>
-                                    <option>Washing, Pressing & Dry Cleaning</option>
-                                </select>
-                            </div>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text" id="basic-addon3">Defects</span>
-                                
-                                <div class="ms-4">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Stains" id="check">
-                                        <label class="form-check-label" for="flexCheckDefault">
-                                          Stains
-                                        </label>
-                                      </div class="container">
-                                      <div class="form-check ps-4">
-                                        <input class="form-check-input" type="checkbox" value="Burnt Marks" id="check">
-                                        <label class="form-check-label" for="flexCheckChecked">
-                                          Burnt Marks
-                                        </label>
-                                      </div>
-                                      <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Dyes Bleeded" id="check">
-                                        <label class="form-check-label" for="flexCheckDefault">
-                                          Dyes Bleeded
-                                        </label>
-                                      </div>
-                                      <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Colours Faded" id="check">
-                                        <label class="form-check-label" for="flexCheckChecked">
-                                          Colours Faded
-                                        </label>
-                                      </div>
-                                      <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Missing Buttons" id="check">
-                                        <label class="form-check-label" for="flexCheckDefault">
-                                          Missing Buttons
-                                        </label>
-                                      </div>
-                                      <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Torn or Damaged" id="check">
-                                        <label class="form-check-label" for="flexCheckChecked">
-                                          Torn or Damaged
-                                        </label>
-                                      </div>
-                                      <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="None" id="check" >
-                                        <label class="form-check-label" for="flexCheckChecked">
-                                          None
-                                        </label>
-                                      </div>
-                                </div>
-                                <div class="row text-center  ps-4 pe-4 mt-3">
-                                    <div class="input-group mb-3">
-                                        <span class="input-group-text" id="basic-addon3">Delivery Date</span>
-                                        <input type="date" class="form-control" aria-describedby="basic-addon3" id="deliveryDate">
+                                <div class="row text-center " >
+                                    <div class="input-group mb-3 c">
+                                        <span class="input-group-text" id="basic-addon3">Quantity</span>
+                                        <input type="number" class="form-control" aria-describedby="basic-addon3" id="quantity">
                                     </div>
-                                </div> 
-                                  
-                                
+                                </div>    
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" id="basic-addon2">Urgency</span>
+                                    <select class="form-select" aria-label="Select Company" id="priorityId">
+                                        <option>Urgent</option>
+                                        <option>None</option>
+                                        
+                                    </select>
+                                </div>
+                               
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" id="basic-addon3">Action</span>
+                                    <select class="form-select" aria-label="Select Company" id="actionId">
+                                        <option>Dry Cleaning</option>
+                                        <option>Washing</option>
+                                        <option>Pressing</option>
+                                        <option>Pressing & Dry Cleaning</option>
+                                        <option>Pressing & Washing</option>
+                                        <option>Washing & Dry Cleaning</option>
+                                        <option>Washing, Pressing & Dry Cleaning</option>
+                                    </select>
+                                </div>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" id="basic-addon3">Defects</span>
+                                    
+                                    <div class="ms-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="Stains" id="check">
+                                            <label class="form-check-label" for="flexCheckDefault">
+                                              Stains
+                                            </label>
+                                          </div class="container">
+                                          <div class="form-check ps-4">
+                                            <input class="form-check-input" type="checkbox" value="Burnt Marks" id="check">
+                                            <label class="form-check-label" for="flexCheckChecked">
+                                              Burnt Marks
+                                            </label>
+                                          </div>
+                                          <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="Dyes Bleeded" id="check">
+                                            <label class="form-check-label" for="flexCheckDefault">
+                                              Dyes Bleeded
+                                            </label>
+                                          </div>
+                                          <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="Colours Faded" id="check">
+                                            <label class="form-check-label" for="flexCheckChecked">
+                                              Colours Faded
+                                            </label>
+                                          </div>
+                                          <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="Missing Buttons" id="check">
+                                            <label class="form-check-label" for="flexCheckDefault">
+                                              Missing Buttons
+                                            </label>
+                                          </div>
+                                          <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="Torn or Damaged" id="check">
+                                            <label class="form-check-label" for="flexCheckChecked">
+                                              Torn or Damaged
+                                            </label>
+                                          </div>
+                                          <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="None" id="check" >
+                                            <label class="form-check-label" for="flexCheckChecked">
+                                              None
+                                            </label>
+                                          </div>
+                                    </div>
+                                    <div class="row text-center  ps-4 pe-4 mt-3">
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text" id="basic-addon3">Delivery Date</span>
+                                            <input type="date" class="form-control" aria-describedby="basic-addon3" id="deliveryDate">
+                                        </div>
+                                    </div> 
+                                      
+                                    
+                                </div>
+
                             </div>
                         </div>
                         <div class="modal-footer">
