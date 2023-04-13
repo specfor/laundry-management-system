@@ -120,16 +120,16 @@
         <!-------------------[Reguler menu]----------------------------->
         <div class="col-3  p-5 justify-content-center align-items-center " style="max-width: fit-content; height: max-content; position: relative; top: 2vh; ">
             <div class="btn-group-vertical justify-content-center align-items-center position-relative mt-xxl-4" role="group" aria-label="Vertical button group" >
-                <button type="button" class="btn btn-outline-light p-4 my-2 rounded mb-3 shadow" ><img src="../assets/Images/home.png" alt="" srcset="" width="40px" ></button>
-                <button type="button" class="btn btn-outline-light p-4 my-2 rounded mb-3 shadow"><img src="../assets/Images/search.png" alt="" srcset="" width="40px" ></button>
-                <button type="button" class="btn btn-outline-light p-4 my-2 rounded mb-3 shadow"><img src="../assets/Images/app.png" alt="" srcset="" width="40px" ></button>
-                <button type="button" class="btn btn-outline-light p-4 my-2 rounded shadow"><img src="../assets/Images/user.png" alt="" srcset="" width="40px" ></button>
+                <button id="btn-section-home" type="button" class="btn btn-outline-light p-4 my-2 rounded mb-3 shadow" ><img src="../assets/Images/home.png" alt="" srcset="" width="40px" ></button>
+                <button id="btn-section-place-order-1" type="button" class="btn btn-outline-light p-4 my-2 rounded mb-3 shadow"><img src="../assets/Images/search.png" alt="" srcset="" width="40px" ></button>
+                <button id="btn-section-maintain-view" type="button" class="btn btn-outline-light p-4 my-2 rounded mb-3 shadow"><img src="../assets/Images/app.png" alt="" srcset="" width="40px" ></button>
+                <button id="btn-section-profile" type="button" class="btn btn-outline-light p-4 my-2 rounded shadow"><img src="../assets/Images/user.png" alt="" srcset="" width="40px" ></button>
               </div>
         </div>
         <!-------------------[Reguler menu]----------------------------->
 
         <!-------------------[home-view]---------------------->
-        <div class="col justify-content-center align-items-center text-center m-4 mt-5 rounded " style="height:100vh;background: linear-gradient(rgba(255, 255, 255, 0.798), #ffffff37);">
+        <div id="section-home-view" class="col justify-content-center align-items-center text-center m-4 mt-5 rounded " style="height:100vh;background: linear-gradient(rgba(255, 255, 255, 0.798), #ffffff37);">
             <div class="row mb-0">
                 <div class=" mt-0">
                     <div class="row row-cols-1 row-cols-md-2 g-3 " >
@@ -195,7 +195,7 @@
         <!-------------------[home-view]---------------------->
 
         <!-------------------[place order view 1]---------------------->
-        <div class="col d-none">
+        <div id="section-place-order-1" class="col d-none">
             <div class="row justify-content-center align-items-center" style="height:100vh;" >
                 <div class="col-7 p-4 rounded bg-dark shadow justify-content-center align-items-center shadow-lg" style="margin-top: 5vh; height: fit-content;">
                     <div class="row d-flex flex-row-betwwen " style="border-bottom: 2px solid rgba(255, 255, 255, 0.312);">
@@ -279,8 +279,10 @@
         </div>
         <!-------------------[place order view 1]---------------------->
 
+        <div id="section-profile" class="col d-none"></div>
+
         <!-------------------[place order view 2]---------------------->
-        <div class="col position-relative justify-content-around d-none">
+        <div id="section-place-order-2" class="col position-relative justify-content-around d-none">
                     <div class="row" justify-content-around style="height:95vh ">
     
                         <div class="col-7 justify-content-around">
@@ -343,7 +345,7 @@
         <!-------------------[place order view 2]---------------------->
 
         <!-------------------[maintain-view]---------------------->
-        <div class="col justify-content-center align-items-center text-center m-4 mt-5 rounded d-none" style="height:100vh;">
+        <div id="section-maintain-view" class="col justify-content-center align-items-center text-center m-4 mt-5 rounded d-none" style="height:100vh;">
                     <div class="row p-2" style="height:100vh;">
                         <div class="col-9">
                             <div class="container tab-content" id="nav-tabContent">

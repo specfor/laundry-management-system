@@ -1,17 +1,44 @@
+let activeTab = 'home-view'
 
-window.addEventListener("load",function(){
-    
+window.addEventListener("load", function () {
+
     //document.getElementById("dataSubmit").addEventListener("click",autoFill)
-    document.getElementById("continue").addEventListener("click",sendDataToTheServer)
-    document.getElementById("btnAddItem").addEventListener("click",addItemTotheTable)
-    document.getElementById("goBack").addEventListener("click",goBackOrder)
+    document.getElementById("continue").addEventListener("click", sendDataToTheServer)
+    document.getElementById("btnAddItem").addEventListener("click", addItemTotheTable)
+    document.getElementById("goBack").addEventListener("click", goBackOrder)
 
-
+    // Event listeners for main menu buttons
+    document.getElementById("btn-section-home").addEventListener("click",
+        () => {
+            setActiveTab('home-view')
+        })
+    document.getElementById("btn-section-place-order-1").addEventListener("click",
+        () => {
+            setActiveTab('place-order-1')
+        })
+    document.getElementById("btn-section-maintain-view").addEventListener("click",
+        () => {
+            setActiveTab('maintain-view')
+        })
+    document.getElementById("btn-section-profile").addEventListener("click",
+        () => {
+            setActiveTab('profile')
+        })
 })
 
-setInterval(function(){
+function setActiveTab(tabName) {
+    if (tabName === activeTab)
+        return
+    let activeSection = document.getElementById('section-' + activeTab)
+    let section = document.getElementById('section-' + tabName)
+    section.classList.remove('d-none')
+    activeSection.classList.add('d-none')
+    activeTab = tabName
+}
+
+setInterval(function () {
     const date = new Date()
-    
+
     let hours = date.getHours()
     let minutes = date.getMinutes()
 
@@ -24,19 +51,19 @@ setInterval(function(){
     document.getElementById("timeNow").innerText = `${hours}:${minutes} |`
 
     document.getElementById("dateNow").innerText = `${year}-${month}-${day}`
-},1000)
+}, 1000)
 
-function goBackOrder(){
-    document.getElementById("summaryDiv").style.display = "none" 
+function goBackOrder() {
+    document.getElementById("summaryDiv").style.display = "none"
     document.getElementById("orderPlaceDiv").style.display = "block"
 
 }
 
 
-function addItemTotheTable(){
-    
+function addItemTotheTable() {
+
     let array1 = []
-    
+
     let itemTable = document.getElementById("itemBody")
 
     let item = document.getElementById("itemId").value
@@ -45,17 +72,17 @@ function addItemTotheTable(){
     let action = document.getElementById("actionId").value
     let deliveryDate = document.getElementById("deliveryDate").value
 
-    document.querySelectorAll("#check").forEach(function(i){
-        if(i.checked==true){
+    document.querySelectorAll("#check").forEach(function (i) {
+        if (i.checked == true) {
             array1.push(`${i.value}<br>`)
         }
     })
 
-    if(item=="" || priority=="" || action =="" || quantity==""){
-        
+    if (item == "" || priority == "" || action == "" || quantity == "") {
+
         alert("All the required fields must be filled.")
-            
-    }else{
+
+    } else {
         let row = itemTable.insertRow(-1)
 
         row.insertCell(0).innerHTML = item
@@ -65,40 +92,39 @@ function addItemTotheTable(){
         row.insertCell(4).innerHTML = array1.join("")
         row.insertCell(5).innerHTML = deliveryDate
     }
-    
 
 
 }
 
-function sendDataToTheServer(){
+function sendDataToTheServer() {
     let orderPlace = document.getElementById("orderPlaceDiv")
-   
+
     let name = document.getElementById("name").value
-   let contactNum= document.getElementById("contactNum").value
-   let quantity= document.getElementById("quantity").value
-   let address = document.getElementById("address").value
-   let itemTableLen = document.getElementById("itemBody").rows.length
-   let itemTable = document.getElementById("itemBody")
-   let deliveryDate = document.getElementById("deliveryDate").value
+    let contactNum = document.getElementById("contactNum").value
+    let quantity = document.getElementById("quantity").value
+    let address = document.getElementById("address").value
+    let itemTableLen = document.getElementById("itemBody").rows.length
+    let itemTable = document.getElementById("itemBody")
+    let deliveryDate = document.getElementById("deliveryDate").value
 
     let clientOrder;
 
-   if(itemTableLen==0){
-      alert("Items must be added to continue")  
-    }else if(name=="" || contactNum==""){
+    if (itemTableLen == 0) {
+        alert("Items must be added to continue")
+    } else if (name == "" || contactNum == "") {
         alert("All the fields must be filled.")
-    }else{
-        
-         clientOrder = [
+    } else {
+
+        clientOrder = [
             {
-                "name":name,
-                "contactNumber":contactNum,
-                "address":address
+                "name": name,
+                "contactNumber": contactNum,
+                "address": address
             }
-           ]
-        
+        ]
+
         let a = 0
-        while(a < itemTableLen){
+        while (a < itemTableLen) {
             let item = itemTable.rows[a].cells[0].innerText
             let amount = itemTable.rows[a].cells[1].innerText
             let priority = itemTable.rows[a].cells[2].innerText
@@ -106,37 +132,37 @@ function sendDataToTheServer(){
             let defects = itemTable.rows[a].cells[4].innerText
 
             let obj = {
-                "item":item,
-                "amount":amount,
-                "priority":priority,
-                "action":action,
-                "defects":defects,
-                "deliveryDate":deliveryDate,
+                "item": item,
+                "amount": amount,
+                "priority": priority,
+                "action": action,
+                "defects": defects,
+                "deliveryDate": deliveryDate,
             }
 
             clientOrder.push(obj)
-            
+
             a++
 
         }
         //console.log(clientOrder)
 
-        ipcRenderer.send("clientOrderDetails",clientOrder)
+        ipcRenderer.send("clientOrderDetails", clientOrder)
     }
-        
 
-    ipcRenderer.on("done",function(data){
+
+    ipcRenderer.on("done", function (data) {
         console.log("working fine")
         orderPlace.style.display = "none"
         document.getElementById("summaryDiv").style.display = "block"
         checkout(clientOrder)
     })
 
-    
+
 }
 
 
-function checkout(clientOrder){
+function checkout(clientOrder) {
     document.getElementById("cusName").value = clientOrder[0].name
     document.getElementById("contactInfo").value = clientOrder[0].contactNumber
 
@@ -152,5 +178,4 @@ function checkout(clientOrder){
     document.getElementById("Orderdate").value = `${year}-${month}-${day}`
 
 
-    
 }
