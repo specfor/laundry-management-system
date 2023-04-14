@@ -50,12 +50,12 @@ setInterval(function () {
 
     document.getElementById("timeNow").innerText = `${hours}:${minutes} |`
 
-    document.getElementById("dateNow").innerText = `${year}-${month}-${day}`
+    document.getElementById("dateNow").innerText = `${year}-${month+1}-${day}`
 }, 1000)
 
 function goBackOrder() {
-    document.getElementById("summaryDiv").style.display = "none"
-    document.getElementById("orderPlaceDiv").style.display = "block"
+    document.getElementById("section-place-order-2").classList.add("d-none")
+    document.getElementById("section-place-order-1").classList.remove("d-none")
 
 }
 
@@ -97,7 +97,7 @@ function addItemTotheTable() {
 }
 
 function sendDataToTheServer() {
-    let orderPlace = document.getElementById("orderPlaceDiv")
+    let orderPlace = document.getElementById("section-place-order-1")
 
     let name = document.getElementById("name").value
     let contactNum = document.getElementById("contactNum").value
@@ -153,9 +153,11 @@ function sendDataToTheServer() {
 
     ipcRenderer.on("done", function (data) {
         console.log("working fine")
-        orderPlace.style.display = "none"
-        document.getElementById("summaryDiv").style.display = "block"
+        orderPlace.classList.add('d-none')
+        document.getElementById("section-place-order-2").classList.remove('d-none')
         checkout(clientOrder)
+    
+        
     })
 
 
@@ -175,7 +177,7 @@ function checkout(clientOrder) {
     let month = date.getMonth()
     let day = date.getDate()
 
-    document.getElementById("Orderdate").value = `${year}-${month}-${day}`
+    document.getElementById("Orderdate").value = `${year}-${month+1}-${day}`
 
 
 }
