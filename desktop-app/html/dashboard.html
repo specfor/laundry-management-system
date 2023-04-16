@@ -86,6 +86,11 @@
         .c-card:hover{
             border: 2px solid white;
         }
+        /*styles for hover effect in home screen*/
+        .he:hover{
+            background-color: rgb(255, 255, 255);
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        }
     </style>
 </head>
 
@@ -129,11 +134,10 @@
         <!-------------------[Reguler menu]----------------------------->
 
         <!-------------------[home-view]---------------------->
-        <div id="section-home-view" class="col justify-content-center align-items-center text-center m-4 mt-5 rounded " style="background: linear-gradient(rgba(255, 255, 255, 0.798), #ffffff37);">
-            <div class="row mb-0">
+        <div id="section-home-view" class="col justify-content-center align-items-center text-center m-4 mt-5 rounded " >
+            <div class="row mb-0 rounded" style="background: linear-gradient(rgba(255, 255, 255, 0), #ffffff10);">
                 <div class=" mt-0">
-                    <div class="row row-cols-1 row-cols-md-2 g-3 " >
-
+                    <div class="row row-cols-1 row-cols-md-2 g-3 p-2 " >
                         <div class="col align-items-center justify-content-center p-0 SHADOW">
                             <div class="card bg-transparent bo mt-3 align-items-center justify-content-center p-0" style="min-height: 40vh; border: none; ">
                                 <ul class="list-group p-0" style="min-width: 30vw ;">
@@ -160,34 +164,64 @@
                                 </ul>
                               </div>
                         </div>
-
                         <div class="col">
-                          <div class="card bg-transparent align-items-center justify-content-center text-dark" style="min-height: 40vh; border: none;">
-                            <h1> LAUNDRY SERVICE </h1>
-                            <h5>Wait for the  new upcoming changes with features</h5>
-                          </div>
-                        </div>
-
-                        <div class="col" >
-                            <div class="card p-5" style="min-height: 40vh;background-color: rgba(0, 0, 0, 0.209);">
-                                <!--<img src="..." class="card-img-top" alt="...">-->
-                                <div class="card-body">
-                                  <h5 class="card-title">Upcoming Update</h5>
-                                  <p class="card-text">upcoming update !</p>
+                          <div class="card bg-transparent text-dark" style="min-height: 40vh; border: none;">
+                            <div class="row justify-self-end ">
+                                <div class="d-flex flex-row-reverse">
+                                    <div class="dropdown">
+                                        <button class="btn btn-lg btn-transparent he" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="border:none; padding: 5px;">
+                                          <img src="../assets/Images/more.png" width="35vw" alt="" srcset="">
+                                        </button>
+                                        <ul class="dropdown-menu text-center mt-2">
+                                          <li><a class="dropdown-item" href="#">update</a></li>
+                                          <li><a class="dropdown-item" href="#">restart</a></li>
+                                          <li><hr class="dropdown-divider"></li>
+                                          <li><a class="dropdown-item" href="#"><b>LOG OUT</b></a></li>
+                                        </ul>
+                                    </div>
+                                    <button type="button" class="btn btn-secondary mx-3 px-3" disabled>
+                                        <img src="../assets/Images/notice.png" alt="" srcset="" width="35vw">
+                                        <img src="../assets/Images/messages.png" alt="" srcset="" width="35vw">
+                                    </button>
                                 </div>
-                              </div>
-                        </div>
-
-                        <div class="col  ">
-                          <div class="card p-5" style="min-height: 40vh;background-color: rgba(0, 0, 0, 0.209);">
-                            <!--<img src="..." class="card-img-top" alt="...">-->
-                            <div class="card-body ">
-                              <h5 class="card-title">Upcoming Update</h5>
-                              <p class="card-text">upcoming Update</p>
+                            </div>
+                            <div class="row"  style="z-index: 2;">
+                                <div class="d-flex flex-row align-content-center justify-content-center">
+                                    <img src="../assets/Images/handshake.png" class="text-center justify-self-center align-items-center" alt="" srcset="" style="position: relative;;height: 40vh;width:24vw;">
+                                    <div class="col align-content-center" style="position: relative; z-index: 1; align-self: center; justify-self: center; width: 100%; left: -30px;">
+                                        <span class="fs-4 fs-lg text-light m-0"><h1><b>Welcome back</b></h1></span>
+                                        <blockquote class="blockquote text-center">
+                                            <p class="mb-0"></p>
+                                            <footer class="blockquote-footer mt-1 text-center text-light">ASK LAUNDRY FACTORY</footer>
+                                        </blockquote>
+                                    </div>
+                                </div>
                             </div>
                           </div>
                         </div>
-                      </div>
+                        <div class="container">
+                            <!-- put something here if there is neccesary-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-1" style="height:40vh">
+                <div class="container">
+                    <div class="d-flex container bo text-dark rounded align-content-center" style="background-image: url(../assets/Images/bg2.jpg); background-repeat: no-repeat;">
+                        <div class="col-5 bo p-2" style="height:40vh ;overflow:hidden;align-items:center;z-index: 1;opacity: 1;">
+                            <div class="card ">
+                                <img src="../assets/Images/graph.jpg" style="height:27vh;" class="card-img-top" alt="...">
+                                <div class="card-body">
+                                  <a href="#" class="btn btn-dark">Click here to get more info</a>
+                                </div>
+                              </div>
+                        </div>
+                        <div class="col bo">
+                            <div class="box">
+                                
+                            </div>
+                        </div>
+                    </div>
 
                 </div>
             </div>
