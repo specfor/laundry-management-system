@@ -28,6 +28,22 @@ class User extends DbModel
 
 
     /**
+     * @param int $userId User id to search for
+     * @return int Branch id if the user has a branch id. Returns "0" if user does not have a branch id.
+     */
+    public static function getUserBranchId(int $userId): int
+    {
+        $sql = "SELECT branch_id FROM " . self::TABLE_NAME . " WHERE id=$userId";
+        $statement = self::prepare($sql);
+        $statement->execute();
+        $id = $statement->fetch(PDO::FETCH_ASSOC);
+        if (!$id)
+            return 0;
+        else
+            return $id['id'];
+    }
+
+    /**
      * Generate a password hash.
      * @param string $password String Password
      * @return string Hashed password string
@@ -80,12 +96,12 @@ class User extends DbModel
         $params['role'] = self::ROLE_CASHIER;
 
         // Filter user passed variables against actual database available columns.
-        foreach ($params as $key => $value){
-            if (!in_array($key, self::TABLE_COLUMNS)){
+        foreach ($params as $key => $value) {
+            if (!in_array($key, self::TABLE_COLUMNS)) {
                 unset($params[$key]);
             }
         }
-        if(self::insertIntoTable(self::TABLE_NAME, $params)){
+        if (self::insertIntoTable(self::TABLE_NAME, $params)) {
             return 'user created.';
         }
         return 'Unknown error occurred.';
@@ -118,7 +134,7 @@ class User extends DbModel
      * @param string $password Password of the user.
      * @return bool Return true if user exists, false if not.
      */
-    public function validateUser(string $username, string $password):bool
+    public function validateUser(string $username, string $password): bool
     {
         $sql = "SELECT id, password FROM " . self::TABLE_NAME . " WHERE username=:username OR email=:username";
         $statement = self::prepare($sql);
@@ -148,17 +164,17 @@ class User extends DbModel
             return 'none';
     }
 
-    public function markSuccessfulLogin(int $userId, string $authToken, string $idAddress):void
+    public function markSuccessfulLogin(int $userId, string $authToken, string $idAddress): void
     {
         $time = new DateTime('now');
-        $time= $time->format('Y-m-d H:i:s');
+        $time = $time->format('Y-m-d H:i:s');
 
         $sql = "SELECT id FROM user_status WHERE user_id=$userId";
         $statement = self::prepare($sql);
         $statement->execute();
-        if ($statement->fetch(PDO::FETCH_ASSOC)){
+        if ($statement->fetch(PDO::FETCH_ASSOC)) {
             $sql = "UPDATE user_status SET auth_token='$authToken', last_active='$time', ip_addr='$idAddress' WHERE user_id=$userId";
-        }else{
+        } else {
             $sql = "INSERT INTO user_status (user_id, auth_token, last_active, ip_addr) VALUES 
                                                                 ($userId, '$authToken', '$time', '$idAddress')";
         }

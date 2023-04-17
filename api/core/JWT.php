@@ -2,6 +2,9 @@
 
 namespace LogicLeap\StockManagement\core;
 
+use DateTime;
+use Exception;
+
 class JWT
 {
     private const HASHING_ALGORITHM = 'sha256';
@@ -55,7 +58,7 @@ class JWT
         self::$hash = $_ENV['JWT_SECRET'];
 
         $tokenParts = explode('.', $jwt);
-        $payload = base64_decode($tokenParts[1]);
+        $payload = json_decode(base64_decode($tokenParts[1]));
         $signatureProvided = $tokenParts[2];
 
         $generatedSignature = self::generateToken($payload);
@@ -67,16 +70,18 @@ class JWT
     /**
      * @param string $jwt JWT token to check.
      * @return bool True if expired, False if not
-     * @throws \Exception Throws an error if any occured.
      */
     public static function isExpired(string $jwt): bool
     {
         $tokenParts = explode('.', $jwt);
         $payload = base64_decode($tokenParts[1]);
-
-        $expiration = new \DateTime(json_decode($payload)->exp);
-        $now = new \DateTime();
-        return ($now->diff($expiration) > 0);
+        try {
+            $expiration = new DateTime(json_decode($payload)->exp);
+            $now = new DateTime();
+            return ($now->diff($expiration) > 0);
+        }catch (Exception){
+            return true;
+        }
     }
 
     /**

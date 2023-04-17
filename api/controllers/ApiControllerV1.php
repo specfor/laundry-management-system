@@ -12,10 +12,12 @@ use LogicLeap\StockManagement\models\User;
 class ApiControllerV1 extends API
 {
     // Interval is in seconds.
-    private const JWT_TOKEN_EXPIRE_INTERVAL = 3600;
+    private const JWT_TOKEN_EXPIRE_INTERVAL = 43200;
 
-    private int $userId;
-
+    /**
+     * Send an error message to requested user and exit program execution.
+     * @param string $message Error message to send.
+     */
     private function sendError(string $message): void
     {
         self::sendResponse(self::STATUS_CODE_SUCCESS, self::STATUS_MSG_ERROR,
@@ -30,6 +32,9 @@ class ApiControllerV1 extends API
 
     public function addCustomer(): void
     {
+        if (!self::isLoggedIn()) {
+            $this->sendError('You are not authorized to perform the action.');
+        }
         $params = Application::$app->request->getBodyParams();
         $email = $params['email'] ?? "";
         $firstname = $params['firstname'] ?? "";
@@ -37,7 +42,9 @@ class ApiControllerV1 extends API
         $phoneNumber = $params['phone-number'] ?? "";
         $address = $params['address'] ?? "";
 
-        if (Customers::addNewCustomer($firstname, $lastname, $email, $phoneNumber, $address)) {
+        $userId = self::getUserId();
+        $branchId = User::getUserBranchId($userId);
+        if (Customers::addNewCustomer($firstname, $lastname, $email, $phoneNumber, $address, $branchId)) {
             $this->sendSuccess(['message' => 'New customer was added successfully.']);
         }
     }
@@ -91,10 +98,10 @@ class ApiControllerV1 extends API
     }
 
     /**
-     * Check whether requests are coming from authorized users. If user is authorized, set userId variable in this class.
-     * @return bool Return true if requests contain proper Authorization header,
+     * Check whether requests are coming from authorized users.
+     * @return bool Return true if requests contain proper Authorization header and token is not expired.
      */
-    private function isLoggedIn(): bool
+    private static function isLoggedIn(): bool
     {
         if (!preg_match('/Bearer\s(\S+)/', $_SERVER['HTTP_AUTHORIZATION'], $matches)) {
             return false;
@@ -104,7 +111,11 @@ class ApiControllerV1 extends API
         if (!JWT::isValidToken($matches[1]) || JWT::isExpired($matches[1]))
             return false;
 
-        $this->userId = JWT::getTokenPayload($matches[1])['id'];
         return true;
+    }
+
+    private static function getUserId():int{
+        preg_match('/Bearer\s(\S+)/', $_SERVER['HTTP_AUTHORIZATION'], $matches);
+        return JWT::getTokenPayload($matches[1])['id'];
     }
 }
