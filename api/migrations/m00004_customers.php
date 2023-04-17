@@ -2,7 +2,7 @@
 
 use LogicLeap\StockManagement\core\MigrationScheme;
 
-class m00003_customers extends MigrationScheme
+class m00004_customers extends MigrationScheme
 {
 
     public static function isReversible(): bool
@@ -18,7 +18,9 @@ class m00003_customers extends MigrationScheme
                     phone_num varchar(20),
                     firstname varchar(255),
                     lastname varchar(255),                    
-                    address varchar(255)                    
+                    address varchar(255),
+                    branch_id int(5),
+                    banned bool NOT NULL              
                 )";
         try {
             self::$pdo->exec($sql);

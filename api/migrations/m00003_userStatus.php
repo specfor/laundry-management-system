@@ -2,7 +2,7 @@
 
 use LogicLeap\StockManagement\core\MigrationScheme;
 
-class m00002_userStatus extends MigrationScheme
+class m00003_userStatus extends MigrationScheme
 {
 
     public static function isReversible(): bool
