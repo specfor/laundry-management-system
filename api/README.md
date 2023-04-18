@@ -14,6 +14,8 @@ migrations one by one in the alphabetical order of the naming</p>
 <h4>POST -  /api/v1/login</h4>
 <p>Parameters - username , password</p>
 <p>Used to log in Users.</p>
+<p>Returned token should be set as a header named
+"HTTP_AUTHORIZATION". This header should be sent with every request.</p>
 
 <br>
 
@@ -24,3 +26,10 @@ migrations one by one in the alphabetical order of the naming</p>
 
 <br>
 
+<h4>GET - /api/v1/customers </h4>
+<p>Parameters 
+<br>
+- start -> when there are more than 30 results 
+results are broken into pages. index to start retrieving results
+</p>
+<p>Returns customer data</p>

@@ -2,6 +2,7 @@
 
 namespace LogicLeap\StockManagement\controllers;
 
+use Exception;
 use LogicLeap\StockManagement\core\Application;
 use LogicLeap\StockManagement\core\JWT;
 use LogicLeap\StockManagement\core\Request;
@@ -18,23 +19,21 @@ class ApiControllerV1 extends API
      * Send an error message to requested user and exit program execution.
      * @param string $message Error message to send.
      */
-    private function sendError(string $message): void
+    private static function sendError(string $message): void
     {
         self::sendResponse(self::STATUS_CODE_SUCCESS, self::STATUS_MSG_ERROR,
             ['error' => $message]);
         exit();
     }
 
-    private function sendSuccess(array $body): void
+    private static function sendSuccess(array $body): void
     {
         self::sendResponse(self::STATUS_CODE_SUCCESS, self::STATUS_MSG_SUCCESS, $body);
     }
 
     public function addCustomer(): void
     {
-        if (!self::isLoggedIn()) {
-            $this->sendError('You are not authorized to perform the action.');
-        }
+        self::checkLoggedIn();
         $params = Application::$app->request->getBodyParams();
         $email = $params['email'] ?? "";
         $firstname = $params['firstname'] ?? "";
@@ -45,8 +44,19 @@ class ApiControllerV1 extends API
         $userId = self::getUserId();
         $branchId = User::getUserBranchId($userId);
         if (Customers::addNewCustomer($firstname, $lastname, $email, $phoneNumber, $address, $branchId)) {
-            $this->sendSuccess(['message' => 'New customer was added successfully.']);
+            self::sendSuccess(['message' => 'New customer was added successfully.']);
         }
+    }
+
+    public function getCustomers(): void
+    {
+        self::checkLoggedIn();
+        $params = Application::$app->request->getBodyParams();
+
+        $startIndex = self::getConvertedTo('start', $params['start'] ?? '0', 'int');
+        $branchId = User::getUserBranchId(self::getUserId());
+        $data = Customers::getCustomers($branchId, $startIndex);
+        self::sendSuccess(['customers' => $data]);
     }
 
     public function login(): void
@@ -54,13 +64,13 @@ class ApiControllerV1 extends API
         if (Application::$app->request->isPost()) {
             $params = Application::$app->request->getBodyParams();
             if (!isset($params['username']) || !isset($params['password'])) {
-                $this->sendError('Not all required fields were supplied.');
+                self::sendError('Not all required fields were supplied.');
             }
             $user = new User();
             $username = $params['username'] ?? "";
             $password = $params['password'] ?? "";
             if (!$username || !$password)
-                $this->sendError("Not");
+                self::sendError("Not all required fields are provided.");
             if ($user->validateUser($username, $password)) {
                 $user->loadUserData($user->userId);
                 $payload = [
@@ -78,7 +88,7 @@ class ApiControllerV1 extends API
                 self::sendResponse(self::STATUS_CODE_SUCCESS, self::STATUS_MSG_SUCCESS,
                     $returnPayload);
             } else {
-                $this->sendError('Incorrect Username or Password.');
+                self::sendError('Incorrect Username or Password.');
             }
         }
     }
@@ -98,24 +108,51 @@ class ApiControllerV1 extends API
     }
 
     /**
-     * Check whether requests are coming from authorized users.
-     * @return bool Return true if requests contain proper Authorization header and token is not expired.
+     * Check whether requests are coming from authorized users. If not send "401" unauthorized error message.
      */
-    private static function isLoggedIn(): bool
+    private static function checkLoggedIn(): void
     {
-        if (!preg_match('/Bearer\s(\S+)/', $_SERVER['HTTP_AUTHORIZATION'], $matches)) {
-            return false;
+        if (!isset($_SERVER['HTTP_AUTHORIZATION'])){
+            self::sendResponse(self::STATUS_CODE_UNAUTHORIZED, self::STATUS_MSG_UNAUTHORIZED,
+                ['message' => 'You are not authorized to perform this action.']);
+            exit();
         }
-        if (!$matches[1])
-            return false;
-        if (!JWT::isValidToken($matches[1]) || JWT::isExpired($matches[1]))
-            return false;
+        !preg_match('/Bearer\s(\S+)/', $_SERVER['HTTP_AUTHORIZATION'], $matches);
 
-        return true;
+        if (!$matches[1] || !JWT::isValidToken($matches[1]) || JWT::isExpired($matches[1])) {
+            self::sendResponse(self::STATUS_CODE_UNAUTHORIZED, self::STATUS_MSG_UNAUTHORIZED,
+                ['message' => 'You are not authorized to perform this action.']);
+            exit();
+        }
     }
 
-    private static function getUserId():int{
+    private static function getUserId(): int
+    {
         preg_match('/Bearer\s(\S+)/', $_SERVER['HTTP_AUTHORIZATION'], $matches);
         return JWT::getTokenPayload($matches[1])['id'];
+    }
+
+    /**
+     * Convert to a specific data type. If value cannot be converted, send an error to user.
+     * @param string $parameterName request parameter to send with error message
+     * @param mixed $value value to be converted
+     * @param string $dataType 'int', 'float', 'bool'. Should be one of those
+     * @return mixed Converted data
+     */
+    private static function getConvertedTo(string $parameterName, mixed $value, string $dataType): mixed
+    {
+        try {
+            if ($dataType == 'int')
+                $value = intval($value);
+            elseif ($dataType == 'float')
+                $value = floatval($value);
+            elseif ($dataType == 'bool')
+                $value = boolval($value);
+
+            return $value;
+        } catch (Exception) {
+            self::sendError("$parameterName must be type '$dataType'");
+            return null;
+        }
     }
 }
