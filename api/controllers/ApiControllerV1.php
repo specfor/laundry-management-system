@@ -97,12 +97,7 @@ class ApiControllerV1 extends API
      */
     private static function checkLoggedIn(): void
     {
-        if (!isset($_SERVER['HTTP_AUTHORIZATION'])){
-            self::sendResponse(self::STATUS_CODE_UNAUTHORIZED, self::STATUS_MSG_UNAUTHORIZED,
-                ['message' => 'You are not authorized to perform this action.']);
-            exit();
-        }
-        !preg_match('/Bearer\s(\S+)/', $_SERVER['HTTP_AUTHORIZATION'], $matches);
+        !preg_match('/Bearer\s(\S+)/', self::getAuthorizationHeader(), $matches);
 
         if (!$matches[1] || !JWT::isValidToken($matches[1]) || JWT::isExpired($matches[1])) {
             self::sendResponse(self::STATUS_CODE_UNAUTHORIZED, self::STATUS_MSG_UNAUTHORIZED,
@@ -113,8 +108,27 @@ class ApiControllerV1 extends API
 
     private static function getUserId(): int
     {
-        preg_match('/Bearer\s(\S+)/', $_SERVER['HTTP_AUTHORIZATION'], $matches);
+        preg_match('/Bearer\s(\S+)/', self::getAuthorizationHeader(), $matches);
         return JWT::getTokenPayload($matches[1])['id'];
+    }
+
+    private static function getAuthorizationHeader():string|null{
+        $authHeader = null;
+        if (isset($_SERVER['Authorization'])) {
+            $authHeader = trim($_SERVER["Authorization"]);
+        }
+        else if (isset($_SERVER['HTTP_AUTHORIZATION'])) { //Nginx or fast CGI
+            $authHeader = trim($_SERVER["HTTP_AUTHORIZATION"]);
+        } elseif (function_exists('apache_request_headers')) {
+            $requestHeaders = apache_request_headers();
+            // Server-side fix for bug in old Android versions (a nice side-effect of this fix means we don't care about capitalization for Authorization)
+            $requestHeaders = array_combine(array_map('ucwords', array_keys($requestHeaders)), array_values($requestHeaders));
+            //print_r($requestHeaders);
+            if (isset($requestHeaders['Authorization'])) {
+                $authHeader = trim($requestHeaders['Authorization']);
+            }
+        }
+        return $authHeader;
     }
 
     /**
