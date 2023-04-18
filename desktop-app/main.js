@@ -7,6 +7,8 @@ const userHandler = require('./logical_scripts/userHandler')
 const checkInternetConnected = require('check-internet-connected')
 const easyinvoice = require('easyinvoice')
 const fs = require('fs')
+const superagent = require('superagent').agent()
+
 
 let mainWindow;
 
@@ -26,7 +28,7 @@ const createMainWindow = () => {
     // and load the index.html of the app.
     mainWindow.loadFile(__dirname + '/html/login.html')
     //Open the DevTools.
-    //mainWindow.webContents.openDevTools()
+    mainWindow.webContents.openDevTools()
 }
 
 ipcMain.on("clientData",function(event,data){
@@ -35,9 +37,7 @@ ipcMain.on("clientData",function(event,data){
 
 //sending order details to the server
 ipcMain.on("clientOrderDetails",function(event,data){
-    data[0]["HTTP_AUTHORIZATION"] = authToken
-       
-    sendClientDataToTheServer(data[0])
+    sendClientDataToTheServer('http://localhost/api/v1/customers/add',data[0])
     //createInvoice(data)
 
     mainWindow.webContents.send("done")
@@ -137,19 +137,23 @@ async function sendLoginDataToTheServer(data) {
 }
 
 //send order details  to the server
-async function sendClientDataToTheServer(data) {
+async function sendClientDataToTheServer(url, data) {
     try {
         console.log(data)
-        global.authToken = await userHandler.getAuthToken2(data)
-        if(authToken==false){
-            console.log(authToken)
-            
+        console.log(authToken)
+        let data2 = await superagent
+            .post(url)
+            .auth(authToken, { type: 'bearer'})
+            .send(data);
+        console.log(data2.text)
+        let resp = JSON.parse(data2.text)
+        if (resp['statusMessage'] === 'success'){
+            console.log('data added to database successfully.')
         }else{
-            console.log(authToken)
-            
+            console.log(resp['body']['message'])
         }
-    } catch (err) {
-
+    } catch (error) {
+        console.log(error)
     }
 }
 
