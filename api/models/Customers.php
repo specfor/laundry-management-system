@@ -2,6 +2,7 @@
 
 namespace LogicLeap\StockManagement\models;
 
+use DateTime;
 use PDO;
 
 class Customers extends DbModel
@@ -20,8 +21,9 @@ class Customers extends DbModel
         if ($branchID == 0)
             $branchID = null;
 
-        $sql = "INSERT INTO " . self::TABLE_NAME . " (email, name, phone_num, address, branch_id) VALUES 
-                (':email', ':name', ':phone_num', ':address', $branchID)";
+        $today = (new DateTime('now'))->format('Y-m-d');
+        $sql = "INSERT INTO " . self::TABLE_NAME . " (email, name, phone_num, address, branch_id, joined_date) VALUES 
+                (':email', ':name', ':phone_num', ':address', $branchID, $today)";
         $statement = self::prepare($sql);
         $statement->bindValue(':email', $email);
         $statement->bindValue(':name', $name);

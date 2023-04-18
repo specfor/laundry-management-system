@@ -19,7 +19,8 @@ class m00004_customers extends MigrationScheme
                     name varchar(255),                   
                     address varchar(255),
                     branch_id int(5),
-                    banned bool NOT NULL              
+                    banned bool NOT NULL,
+                    joined_date datetime NOT NULL             
                 )";
         try {
             self::$pdo->exec($sql);
