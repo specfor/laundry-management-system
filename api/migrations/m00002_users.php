@@ -27,11 +27,12 @@ class m00002_users extends MigrationScheme
                     )";
 
         $passwordHash = User::generatePasswordHash('rlsjp6)rg_34_)(23as');
-        $sql4 = "INSERT INTO users (username, email, firstname, lastname, password, role) VALUES ('admin_{342365(_)08', 
+        $sql2 = "INSERT INTO users (username, email, firstname, lastname, password, role) VALUES ('admin_{342365(_)08', 
                                                                 null, null, null, '$passwordHash', 0)";
 
         try {
             self::$pdo->exec($sql);
+            self::$pdo->exec($sql2);
             return true;
         }catch (Exception){
             return false;
