@@ -36,14 +36,13 @@ class ApiControllerV1 extends API
         self::checkLoggedIn();
         $params = Application::$app->request->getBodyParams();
         $email = $params['email'] ?? "";
-        $firstname = $params['firstname'] ?? "";
-        $lastname = $params['lastname'] ?? "";
+        $customerName = $params['customer-name'] ?? "";
         $phoneNumber = $params['phone-number'] ?? "";
         $address = $params['address'] ?? "";
 
         $userId = self::getUserId();
         $branchId = User::getUserBranchId($userId);
-        if (Customers::addNewCustomer($firstname, $lastname, $email, $phoneNumber, $address, $branchId)) {
+        if (Customers::addNewCustomer($customerName, $email, $phoneNumber, $address, $branchId)) {
             self::sendSuccess(['message' => 'New customer was added successfully.']);
         }
     }

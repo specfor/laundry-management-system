@@ -16,8 +16,7 @@ class m00004_customers extends MigrationScheme
                     customer_id int AUTO_INCREMENT NOT NULL PRIMARY KEY,
                     email varchar(255),
                     phone_num varchar(20),
-                    firstname varchar(255),
-                    lastname varchar(255),                    
+                    name varchar(255),                   
                     address varchar(255),
                     branch_id int(5),
                     banned bool NOT NULL              

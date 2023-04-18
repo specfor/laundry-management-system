@@ -20,7 +20,7 @@ migrations one by one in the alphabetical order of the naming</p>
 <br>
 
 <h4>POST -  /api/v1/customers/add</h4>
-<p>Parameters - email , firstname , lastname , phone-number
+<p>Parameters - email , customer-name, phone-number
  , address</p>
 <p>Used to add new customer to the database.</p>
 
