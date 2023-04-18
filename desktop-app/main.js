@@ -24,9 +24,9 @@ const createMainWindow = () => {
     })
 
     // and load the index.html of the app.
-    mainWindow.loadFile(__dirname + '/html/dashboard.html')
+    mainWindow.loadFile(__dirname + '/html/login.html')
     //Open the DevTools.
-    mainWindow.webContents.openDevTools()
+    //mainWindow.webContents.openDevTools()
 }
 
 ipcMain.on("clientData",function(event,data){
@@ -35,9 +35,10 @@ ipcMain.on("clientData",function(event,data){
 
 //sending order details to the server
 ipcMain.on("clientOrderDetails",function(event,data){
-    console.log(data)
-    
-    createInvoice(data)
+    data[0]["HTTP_AUTHORIZATION"] = authToken
+       
+    sendClientDataToTheServer(data[0])
+    //createInvoice(data)
 
     mainWindow.webContents.send("done")
 })
@@ -129,6 +130,23 @@ async function sendLoginDataToTheServer(data) {
         }else{
             console.log(authToken)
             mainWindow.loadFile(__dirname+"/html/dashboard.html")
+        }
+    } catch (err) {
+
+    }
+}
+
+//send order details  to the server
+async function sendClientDataToTheServer(data) {
+    try {
+        console.log(data)
+        global.authToken = await userHandler.getAuthToken2(data)
+        if(authToken==false){
+            console.log(authToken)
+            
+        }else{
+            console.log(authToken)
+            
         }
     } catch (err) {
 

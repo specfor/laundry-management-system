@@ -20,4 +20,22 @@ async function getAuthToken(data) {
     }
 }
 
-module.exports = {getAuthToken}
+async function getAuthToken2(data) {
+    try {
+        console.log(data)
+        data['dev'] = true;
+        let data2 = await superagent
+            .post('http://localhost/api/v1/customers/add')
+            .send(data);
+        let resp = JSON.parse(data2.text)
+        if (resp['statusMessage'] === 'success'){
+            return resp['body']['token']
+        }
+        return false
+    } catch (error) {
+        console.log(error)
+        return false
+    }
+}
+
+module.exports = {getAuthToken,getAuthToken2}

@@ -3,6 +3,7 @@
 namespace LogicLeap\StockManagement\core;
 
 use DateTime;
+use Exception;
 use PDO;
 
 class MigrationManager
@@ -68,13 +69,14 @@ class MigrationManager
         }
     }
 
-    private function isAppliedMigration(string $migrationName):bool{
+    private function isAppliedMigration(string $migrationName): bool
+    {
         $sql = "SELECT id FROM migrations WHERE migration_name=? AND status=1";
         $statement = $this->pdo->prepare($sql);
         $statement->bindValue(1, $migrationName);
         try {
             $statement->execute();
-        }catch (\Exception){
+        } catch (Exception) {
             return false;
         }
         if ($statement->fetch(PDO::FETCH_ASSOC))
