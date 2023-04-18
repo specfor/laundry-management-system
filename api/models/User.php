@@ -56,7 +56,8 @@ class User extends DbModel
     // Password Requirements
     private const MAX_PASSWORD_LENGTH = 24;
     private const MIN_PASSWORD_LENGTH = 8;
-
+    private const MIN_USERNAME_LENGTH = 6;
+    private const MAX_USERNAME_LENGTH = 30;
     /**
      * Create a new user in the database.
      * @param array $params An array of [key=> value] pairs.
@@ -90,10 +91,22 @@ class User extends DbModel
             return 'Password is too long.';
         }
 
-        $params['password'] = self::generatePasswordHash($params['password']);
+        if (strlen($params['username']) < self::MIN_USERNAME_LENGTH) {
+            return 'Username is too short.';
+        }
+
+        if (strlen($params['username']) > self::MAX_USERNAME_LENGTH) {
+            return 'Username is too long.';
+        }
+
+        $usernameRegEx = '^[A-Za-z][A-Za-z0-9_]{5,29}$';
+        if (!preg_match($usernameRegEx, $params['username']))
+            return 'Username should only contain english letters, numbers and underscore(_)';
 
         //For now set user role to 1
         $params['role'] = self::ROLE_CASHIER;
+
+        $params['password'] = self::generatePasswordHash($params['password']);
 
         // Filter user passed variables against actual database available columns.
         foreach ($params as $key => $value) {

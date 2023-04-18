@@ -15,21 +15,7 @@ class ApiControllerV1 extends API
     // Interval is in seconds.
     private const JWT_TOKEN_EXPIRE_INTERVAL = 43200;
 
-    /**
-     * Send an error message to requested user and exit program execution.
-     * @param string $message Error message to send.
-     */
-    private static function sendError(string $message): void
-    {
-        self::sendResponse(self::STATUS_CODE_SUCCESS, self::STATUS_MSG_ERROR,
-            ['error' => $message]);
-        exit();
-    }
 
-    private static function sendSuccess(array $body): void
-    {
-        self::sendResponse(self::STATUS_CODE_SUCCESS, self::STATUS_MSG_SUCCESS, $body);
-    }
 
     public function addCustomer(): void
     {
@@ -153,5 +139,21 @@ class ApiControllerV1 extends API
             self::sendError("$parameterName must be type '$dataType'");
             return null;
         }
+    }
+
+    /**
+     * Send an error message to requested user and exit program execution.
+     * @param string $message Error message to send.
+     */
+    private static function sendError(string $message): void
+    {
+        self::sendResponse(self::STATUS_CODE_SUCCESS, self::STATUS_MSG_ERROR,
+            ['error' => $message]);
+        exit();
+    }
+
+    private static function sendSuccess(array $body): void
+    {
+        self::sendResponse(self::STATUS_CODE_SUCCESS, self::STATUS_MSG_SUCCESS, $body);
     }
 }
