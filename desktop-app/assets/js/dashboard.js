@@ -101,6 +101,7 @@ function sendDataToTheServer() {
 
     let name = document.getElementById("name").value
     let contactNum = document.getElementById("contactNum").value
+    let email = document.getElementById("email").value
     let quantity = document.getElementById("quantity").value
     let address = document.getElementById("address").value
     let itemTableLen = document.getElementById("itemBody").rows.length
@@ -119,7 +120,8 @@ function sendDataToTheServer() {
             {
                 "name": name,
                 "contactNumber": contactNum,
-                "address": address
+                "address": address,
+                "email":email
             }
         ]
 
