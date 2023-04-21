@@ -169,10 +169,10 @@ class User extends DbModel
      */
     public function getUserRoleText(): string
     {
-        if ($this->userId == User::ROLE_ADMINISTRATOR)
+        if ($this->role == User::ROLE_ADMINISTRATOR)
             return 'admin';
-        elseif ($this->userId == User::ROLE_CASHIER)
-            return 'user';
+        elseif ($this->role == User::ROLE_CASHIER)
+            return 'cashier';
         else
             return 'none';
     }
