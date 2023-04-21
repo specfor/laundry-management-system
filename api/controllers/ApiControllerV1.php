@@ -89,7 +89,7 @@ class ApiControllerV1 extends API
     {
         preg_match('/Bearer\s(\S+)/', self::getAuthorizationHeader(), $matches);
 
-        if (!$matches[1] || !Authorization::isValidToken($matches[1])) {
+        if (!$matches || !Authorization::isValidToken($matches[1])) {
             self::sendResponse(self::STATUS_CODE_UNAUTHORIZED, self::STATUS_MSG_UNAUTHORIZED,
                 ['message' => 'You are not authorized to perform this action.']);
             exit();
