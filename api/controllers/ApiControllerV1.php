@@ -85,7 +85,7 @@ class ApiControllerV1 extends API
     /**
      * Check whether requests are coming from authorized users. If not send "401" unauthorized error message.
      */
-    private static function checkLoggedIn(): void
+    private static function checkLoggedIn(bool $requireAdmin = false): void
     {
         preg_match('/Bearer\s(\S+)/', self::getAuthorizationHeader(), $matches);
 
@@ -93,6 +93,13 @@ class ApiControllerV1 extends API
             self::sendResponse(self::STATUS_CODE_UNAUTHORIZED, self::STATUS_MSG_UNAUTHORIZED,
                 ['message' => 'You are not authorized to perform this action.']);
             exit();
+        }
+        if ($requireAdmin){
+            if (!User::isAdmin(self::getUserId())){
+                self::sendResponse(self::STATUS_CODE_UNAUTHORIZED, self::STATUS_MSG_UNAUTHORIZED,
+                    ['message' => 'You are not authorized to perform this action.']);
+                exit();
+            }
         }
     }
 

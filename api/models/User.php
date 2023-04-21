@@ -177,4 +177,14 @@ class User extends DbModel
             return 'none';
     }
 
+    public static function isAdmin(int $userId):bool
+    {
+        $sql = "SELECT role FROM users WHERE id=$userId";
+        $statement = self::prepare($sql);
+        $statement->execute();
+        $role = $statement->fetch(PDO::FETCH_ASSOC)['role'];
+        if ($role == self::ROLE_ADMINISTRATOR || $role == self::ROLE_SUPER_ADMINISTRATOR)
+            return true;
+        return false;
+    }
 }
