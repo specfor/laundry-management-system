@@ -18,17 +18,14 @@ class Customers extends DbModel
     public static function addNewCustomer(string $name, string $email,
                                           string $phoneNumber, string $address, int $branchID): bool
     {
-        if ($branchID == 0)
-            $branchID = null;
-
         $today = (new DateTime('now'))->format('Y-m-d');
-        $sql = "INSERT INTO " . self::TABLE_NAME . " (email, name, phone_num, address, branch_id, joined_date) VALUES 
-                (':email', ':name', ':phone_num', ':address', $branchID, $today)";
+        $sql = "INSERT INTO " . self::TABLE_NAME . " (email, name, phone_num, address, branch_id, joined_date, banned) VALUES 
+                (?, ?, ?, ?, $branchID, '$today', false)";
         $statement = self::prepare($sql);
-        $statement->bindValue(':email', $email);
-        $statement->bindValue(':name', $name);
-        $statement->bindValue(':phone_num', $phoneNumber);
-        $statement->bindValue(':address', $address);
+        $statement->bindValue(1, $email);
+        $statement->bindValue(2, $name);
+        $statement->bindValue(3, $phoneNumber);
+        $statement->bindValue(4, $address);
         return $statement->execute();
     }
 
