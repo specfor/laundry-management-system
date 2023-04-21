@@ -28,7 +28,7 @@ const createMainWindow = () => {
     // and load the index.html of the app.
     mainWindow.loadFile(__dirname + '/html/login.html')
     //Open the DevTools.
-    mainWindow.webContents.openDevTools()
+    //mainWindow.webContents.openDevTools()
 }
 
 ipcMain.on("clientData",function(event,data){
@@ -135,6 +135,12 @@ async function sendLoginDataToTheServer(data) {
 
     }
 }
+ipcMain.on("addNewClient",function(event,data){
+    console.log(data)
+    //sendClientDataToTheServer('http://localhost/api/v1/customers/add',data)
+    mainWindow.webContents.send("successfullyAddedClient")
+})
+
 
 //send order details  to the server
 async function sendClientDataToTheServer(url, data) {

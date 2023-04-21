@@ -302,35 +302,24 @@
                         <div class="col-9">
                             <div class="container tab-content" id="nav-tabContent">
                                 <div class="tab-pane fade show active p-4 rounded mt-5" id="list-home" role="tabpanel" aria-labelledby="list-home-list" style="background-color: rgba(240, 248, 255, 0.326);">
+                                    <h1 class="h1">Client Table</h1>
                                     <table class="table my-5 table-hover  text-light " style="color:aqua;">
                                         <thead>
                                             <tr>
                                             <th scope="col">C-id</th>
-                                            <th scope="col">Company name</th>
-                                            <th scope="col">Contact info</th>
-                                            <th scope="col">Payment period</th>
-                                            <th scope="col">Custom-name</th>
+                                            <th scope="col">Client Name</th>
+                                            <th scope="col">Contact No.</th>
+                                            <th scope="col">Email</th>
+                                            <th scope="col">Address</th>
                                             </tr>
                                         </thead>
-                                        <tbody class="table-group-divider">
-                                            <tr>
-                                                <th scope="row text-light">C220</th>
-                                                <td>KRC HOTEL PVT LIMITED</td>
-                                                <td>+9471 6749324</td>
-                                                <td>20 DAYS</td>
-                                                <td>KRC HOTEL</td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row text-light">C224</th>
-                                                <td>GGG EXPRESS LANKA</td>
-                                                <td>+9470 4567984</td>
-                                                <td>30 DAYS</td>
-                                                <td>GG EXPRESS</td>
-                                                </tr>
+                                        <tbody class="table-group-divider" id="clientTable">
+                                            
+                                                
                                         </tbody>
                                     </table>
                                     <div class="d-flex justify-content-end">
-                                        <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#addNewItem">+</button>
+                                        <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#addNewClient">+</button>
                                     </div>
                                     <div class="d-flex justify-content-center">
                                         <nav aria-label="Page navigation example">
@@ -355,31 +344,19 @@
 
                                 <div class="tab-pane fade" id="list-profile" role="tabpanel" aria-labelledby="list-profile-list">
                                     <div class="tab-pane fade show active p-4 rounded mt-5" id="list-home" role="tabpanel" aria-labelledby="list-home-list" style="background-color: rgba(240, 248, 255, 0.326);">
+                                        <h1 class="h1">Order Table</h1>
                                         <table class="table my-5 table-hover  text-light " style="color:aqua;">
                                             <thead>
                                                 <tr>
                                                 <th scope="col">Ref</th>
-                                                <th scope="col">info</th>
+                                                <th scope="col">Client Name</th>
                                                 <th scope="col">Priority</th>
-                                                <th scope="col">Balance (Rs.)</th>
+                                                <th scope="col">Amount</th>
                                                 <th scope="col">Status</th>
                                                 </tr>
                                             </thead>
-                                            <tbody class="table-group-divider">
-                                                <tr>
-                                                <th scope="row text-light">E2304</th>
-                                                <td>Mark</td>
-                                                <td>Normal</td>
-                                                <td>Rs.3,600.00</td>
-                                                <td>Paid</td>
-                                                </tr>
-                                                <tr>
-                                                <th scope="row text-light">E4501</th>
-                                                <td>Jacob</td>
-                                                <td> <b>Urgent</b> </td>
-                                                <td>Rs.1,200.00</td>
-                                                <td>Non-paid</td>
-                                                </tr>
+                                            <tbody class="table-group-divider" id="orderConfirmedTable">
+                                                
                                             </tbody>
                                         </table>
                                         <div class="d-flex justify-content-end">
@@ -409,49 +386,23 @@
 
                                 <div class="tab-pane fade" id="list-messages" role="tabpanel" aria-labelledby="list-messages-list">
                                     <div class="tab-pane fade show active p-4 rounded mt-5" id="list-home" role="tabpanel" aria-labelledby="list-home-list" style="background-color: rgba(240, 248, 255, 0.326);">
+                                        <h1 class="h1">All Items</h1>
                                         <table class="table my-5 table-hover  text-light " style="color:aqua;">
                                             <thead>
                                                 <tr>
                                                 <th scope="col">#</th>
-                                                <th scope="col">block</th>
-                                                <th scope="col">block</th>
-                                                <th scope="col">block</th>
-                                                <th scope="col">block</th>
+                                                <th scope="col">Item</th>
+                                                <th scope="col">Action</th>
+                                                <th scope="col">Unit Price</th>
+                                                <th scope="col">Edit</th>
                                                 </tr>
                                             </thead>
-                                            <tbody class="table-group-divider">
-                                                <tr>
-                                                    <th scope="row text-light">1</th>
-                                                    <td>here</td>
-                                                    <td>here</td>
-                                                    <td>here</td>
-                                                    <td>here</td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row text-light">2</th>
-                                                    <td>here</td>
-                                                    <td>here</td>
-                                                    <td>here</td>
-                                                    <td>here</td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row text-light">1</th>
-                                                    <td>here</td>
-                                                    <td>here</td>
-                                                    <td>here</td>
-                                                    <td>here</td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row text-light">2</th>
-                                                    <td>here</td>
-                                                    <td>here</td>
-                                                    <td>here</td>
-                                                    <td>here</td>
-                                                </tr>
+                                            <tbody class="table-group-divider" id="itemInputTable">
+                                                
                                             </tbody>
                                         </table>
                                         <div class="d-flex justify-content-end">
-                                            <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#addNewItem">+</button>
+                                            <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#addNewProduct">+</button>
                                         </div>
                                         <div class="d-flex justify-content-center">
                                             <nav aria-label="Page navigation example">
@@ -485,9 +436,9 @@
                             <h2 style="border-bottom:2px solid whitesmoke; padding-bottom: 1vh;">Customize Panel</h2>
                             <br>
                             <div class="list-group w-100" id="list-tab" role="tablist">
-                                <a class="list-group-item list-group-item-action active" id="list-home-list" data-bs-toggle="list" href="#list-home" role="tab" aria-controls="list-home">Manage customers</a>
-                                <a class="list-group-item list-group-item-action" id="list-profile-list" data-bs-toggle="list" href="#list-profile" role="tab" aria-controls="list-profile">Daily order Summery</a>
-                                <a class="list-group-item list-group-item-action" id="list-messages-list" data-bs-toggle="list" href="#list-messages" role="tab" aria-controls="list-messages">Change Packages</a>
+                                <a class="list-group-item list-group-item-action active" id="list-home-list" data-bs-toggle="list" href="#list-home" role="tab" aria-controls="list-home">All Clients</a>
+                                <a class="list-group-item list-group-item-action" id="list-profile-list" data-bs-toggle="list" href="#list-profile" role="tab" aria-controls="list-profile">Orders</a>
+                                <a class="list-group-item list-group-item-action" id="list-messages-list" data-bs-toggle="list" href="#list-messages" role="tab" aria-controls="list-messages">Add Item</a>
                                 <a class="list-group-item list-group-item-action" id="list-settings-list" data-bs-toggle="list" href="#list-settings" role="tab" aria-controls="list-settings">Manage offers</a>
                             </div>
                             <div class="row mt-4">
@@ -561,11 +512,20 @@
                             <input type="email" readonly class="form-control-plaintext " id="floatingPlaintextInput" placeholder="#" value="Rs.456.00 (0.45%)" style="color: whitesmoke; position: relative; left: 2vw;">
                             <label for="floatingPlaintextInput" >Discounts</label>
                         </div>
-                    </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="basic-addon3">Payment</span>
+                            <select class="form-select" aria-label="Select Company" id="">
+                                <option>Pay at once</option>
+                                <option>Pay when done</option>                    
+                            </select>
+                        </div>
+                </div>
+                
                 </div>
                 <div class="form-floating mt-2 mx-5 text-center justify-content-center align-items-center align-self-center">
                     <input type="email" class="form-control" id="floatingInputDisabled" placeholder="here" disabled>
                     <label for="floatingInputDisabled" class="text-center text-success" >Net value : Rs.34,000.00 </label>
+                                       
                 </div>
                 <div class="row justify-content-center">
                     <div class="d-flex align-items-center justify-content-center my-3 rounded p-3" style="width: fit-content; background-color: rgba(0, 0, 0, 0.434);">
@@ -714,6 +674,107 @@
             </div>
         </div>
     </div>
+</div>
+
+
+<div class="container">
+    <div class="container">
+        <div class="modal fade" id="addNewClient" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-theme="dark">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Add Client</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                    </div>
+                    <div class="row text-center  ps-4 pe-4">
+                        <div class="col">
+
+
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="basic-addon1">Client Name</span>
+                                <input type="text" class="form-control" aria-describedby="basic-addon3" id="cName">
+                            </div>
+                            <div class="row text-center " >
+                                <div class="input-group mb-3 c">
+                                    <span class="input-group-text" id="basic-addon3">Contact No.</span>
+                                    <input type="number" class="form-control" aria-describedby="basic-addon3" id="cNo">
+                                </div>
+                            </div>    
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="basic-addon2">Email</span>
+                                <input type="email" class="form-control" aria-describedby="basic-addon3" id="cEmail">
+                            </div>
+                           
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="basic-addon3">Address</span>
+                               <textarea class="form-control"  id="cAddress"></textarea>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="btnAddClient">Add Client</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+
+<div class="container">
+    <div class="container">
+        <div class="modal fade" id="addNewProduct" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-theme="dark">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Add Item</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                    </div>
+                    <div class="row text-center  ps-4 pe-4">
+                        <div class="col">
+
+
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="basic-addon1">Item</span>
+                                <input type="text" class="form-control" aria-describedby="basic-addon3" id="newProduct">
+                            </div>
+                            <div class="row text-center " >
+                                <div class="input-group mb-3 c">
+                                    <span class="input-group-text" id="basic-addon3">Action</span>
+                                    <select class="form-select" aria-label="Select Company" id="newActionId">
+                                        <option>Dry Cleaning</option>
+                                        <option>Washing</option>
+                                        <option>Pressing</option>
+                                        <option>Pressing & Dry Cleaning</option>
+                                        <option>Pressing & Washing</option>
+                                        <option>Washing & Dry Cleaning</option>
+                                        <option>Washing, Pressing & Dry Cleaning</option>
+                                    </select>
+                                </div>
+                            </div>    
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="basic-addon2">Unit Price</span>
+                                <input type="number" class="form-control" aria-describedby="basic-addon3" id="unitPrice" placeholder="LKR>">
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="btnNewAddItem">Add Item</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 </div>
     
     

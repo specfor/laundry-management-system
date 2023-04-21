@@ -1,3 +1,5 @@
+
+
 let activeTab = 'home-view'
 
 window.addEventListener("load", function () {
@@ -6,6 +8,8 @@ window.addEventListener("load", function () {
     document.getElementById("continue").addEventListener("click", sendDataToTheServer)
     document.getElementById("btnAddItem").addEventListener("click", addItemTotheTable)
     document.getElementById("goBack").addEventListener("click", goBackOrder)
+    document.getElementById("btnAddClient").addEventListener("click",addNewClient)
+    document.getElementById("btnNewAddItem").addEventListener("click",sendNewProductToTheServer)
 
     // Event listeners for main menu buttons
     document.getElementById("btn-section-home").addEventListener("click",
@@ -31,6 +35,8 @@ function setActiveTab(tabName) {
         return
     let activeSection = document.getElementById('section-' + activeTab)
     let section = document.getElementById('section-' + tabName)
+    let checkout = document.getElementById("section-place-order-2")
+    checkout.classList.add("d-none")
     section.classList.remove('d-none')
     activeSection.classList.add('d-none')
     activeTab = tabName
@@ -182,4 +188,93 @@ function checkout(clientOrder) {
     document.getElementById("Orderdate").value = `${year}-${month+1}-${day}`
 
 
+}
+
+//Add new client 
+function addNewClient(){
+    let cName = document.getElementById("cName").value
+    let cNo = document.getElementById("cNo").value
+    let cEmail = document.getElementById("cEmail").value
+    let address = document.getElementById("cAddress").value
+
+    if(cName == "" || cNo == "" || address == "" ){
+        alert("All the required fields must be filled!")
+    }else{
+        
+        ipcRenderer.send("addNewClient",{
+            "name":cName,
+            "contactNumber":cNo,
+            "address":address,
+            "email":cEmail
+        })
+
+        updateTheClientTable(cName,cNo,cEmail,address)
+    }
+}
+
+//Updating the client table
+function updateTheClientTable(name,cNo,email,address){
+    ipcRenderer.on("successfullyAddedClient",function(event){
+        let clientTable = document.getElementById("clientTable")
+
+        let row = clientTable.insertRow(-1)
+
+        row.insertCell(0).innerHTML = "1"
+        row.insertCell(1).innerHTML = name
+        row.insertCell(2).innerHTML = cNo
+        row.insertCell(3).innerHTML = email
+        row.insertCell(4).innerHTML = address
+    })
+}
+
+
+//update order confirmed table
+function updateOrderConfirmedTable(ref,name,prior,amount,status){
+    ipcRenderer.on("succusfullyOrderAdded",function(event){
+        let orderTable = document.getElementById("orderConfirmedTable")
+
+        let row = orderTable.insertRow(-1)
+
+        row.insertCell(0).innerHTML = ref 
+        row.insertCell(1).innerHTML = name
+        row.insertCell(2).innerHTML = prior
+        row.insertCell(3).innerHTML = amount
+        row.insertCell(4).innerHTML = status
+    })
+}
+
+//Sending new items to the server
+function sendNewProductToTheServer(){
+    let itemName = document.getElementById("newProduct").value 
+    let action = document.getElementById("newActionId").value
+    let unitP = document.getElementById("unitPrice").value
+
+    if(itemName == "" || action == "" || unitP == ""){
+        alert("All the required fields must be filled!")
+    }else{
+        ipcRenderer.send("newItem",{
+            "Item-name":itemName,
+            "Action":action,
+            "Unit-Price":unitP
+        })
+        
+        ipcRenderer.on("NewItemAddedSuccessfully",function(event){
+            updateAllItemsTable(itemName,action,unitP)
+        })
+    }
+
+}
+
+//Updating the all items table
+function updateAllItemsTable(itemName,action,unitPrice){
+    let allItemsTable  = document.getElementById("itemInputTable")
+
+    let row  = allItemsTable.insertRow(-1)
+
+    row.insertCell(0).innerHTML = "1"
+    row.insertCell(1).innerHTML = itemName
+    row.insertCell(2).innerHTML = action
+    row.insertCell(3).innerHTML = unitPrice
+    row.insertCell(4).innerHTML = `<button class="btn btn-primary" type="button"data-bs-toggle="modal" data-bs-target="#editDetail">Edit Details</button>
+    <button class="btn btn-danger" type="button">Delete</button>`
 }
