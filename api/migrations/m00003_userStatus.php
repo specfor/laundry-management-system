@@ -17,7 +17,8 @@ class m00003_userStatus extends MigrationScheme
                     user_id int NOT NULL,
                     auth_token varchar(255) NOT NULL, 
                     last_active datetime NOT NULL,
-                    ip_addr varchar(30) NOT NULL
+                    ip_addr varchar(30) NOT NULL,
+                    exp_time datetime NOT NULL
                 )";
         try {
             self::$pdo->exec($sql);

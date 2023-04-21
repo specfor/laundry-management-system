@@ -6,17 +6,14 @@ use Exception;
 use LogicLeap\StockManagement\core\Application;
 use LogicLeap\StockManagement\core\JWT;
 use LogicLeap\StockManagement\core\Request;
+use LogicLeap\StockManagement\core\SecureToken;
 use LogicLeap\StockManagement\models\API;
+use LogicLeap\StockManagement\models\Authorization;
 use LogicLeap\StockManagement\models\Customers;
 use LogicLeap\StockManagement\models\User;
 
 class ApiControllerV1 extends API
 {
-    // Interval is in seconds.
-    private const JWT_TOKEN_EXPIRE_INTERVAL = 43200;
-
-
-
     public function addCustomer(): void
     {
         self::checkLoggedIn();
@@ -57,18 +54,11 @@ class ApiControllerV1 extends API
             if (!$username || !$password)
                 self::sendError("Not all required fields are provided.");
             if ($user->validateUser($username, $password)) {
-                $user->loadUserData($user->userId);
-                $payload = [
-                    'id' => $user->userId,
-                    'email' => $user->email,
-                    'role' => $user->getUserRoleText(),
-                    'exp' => time() + self::JWT_TOKEN_EXPIRE_INTERVAL
-                ];
-                $jwt = JWT::generateToken($payload);
-                $user->markSuccessfulLogin($user->userId, $jwt, Request::getRequestIp());
+                $token = SecureToken::generateToken();
+                Authorization::markSuccessfulLogin($user->userId, $token, Request::getRequestIp());
                 $returnPayload = [
                     'message' => 'Login successful.',
-                    'token' => $jwt
+                    'token' => $token
                 ];
                 self::sendResponse(self::STATUS_CODE_SUCCESS, self::STATUS_MSG_SUCCESS,
                     $returnPayload);
@@ -97,9 +87,9 @@ class ApiControllerV1 extends API
      */
     private static function checkLoggedIn(): void
     {
-        !preg_match('/Bearer\s(\S+)/', self::getAuthorizationHeader(), $matches);
+        preg_match('/Bearer\s(\S+)/', self::getAuthorizationHeader(), $matches);
 
-        if (!$matches[1] || !JWT::isValidToken($matches[1]) || JWT::isExpired($matches[1])) {
+        if (!$matches[1] || !Authorization::isValidToken($matches[1])) {
             self::sendResponse(self::STATUS_CODE_UNAUTHORIZED, self::STATUS_MSG_UNAUTHORIZED,
                 ['message' => 'You are not authorized to perform this action.']);
             exit();
@@ -109,7 +99,7 @@ class ApiControllerV1 extends API
     private static function getUserId(): int
     {
         preg_match('/Bearer\s(\S+)/', self::getAuthorizationHeader(), $matches);
-        return JWT::getTokenPayload($matches[1])['id'];
+        return Authorization::getUserId($matches[1]);
     }
 
     private static function getAuthorizationHeader():string|null{
