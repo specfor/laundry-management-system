@@ -17,7 +17,8 @@ class User extends DbModel
     // User Roles
     public const ROLE_SUPER_ADMINISTRATOR = 0;
     public const ROLE_ADMINISTRATOR = 1;
-    public const ROLE_CASHIER = 2;
+    public const ROLE_MANAGER = 2;
+    public const ROLE_CASHIER = 3;
 
     public int $userId;
     public string $username;
@@ -173,6 +174,8 @@ class User extends DbModel
             return 'admin';
         elseif ($this->role == User::ROLE_CASHIER)
             return 'cashier';
+        elseif ($this->role == User::ROLE_MANAGER)
+            return 'manager';
         else
             return 'none';
     }
