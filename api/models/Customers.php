@@ -39,4 +39,31 @@ class Customers extends DbModel
         $statement->execute();
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public static function updateCustomer(int    $customerId, string $name = null, string $email = null,
+                                          string $phoneNumber = null, string $address = null,
+                                          int    $branchID = null, bool $banned = null): bool
+    {
+        $updateFieldsWithValues = [];
+        if ($name) {
+            $updateFieldsWithValues['name'] = $name;
+        }
+        if ($email) {
+            $updateFieldsWithValues['email'] = $email;
+        }
+        if ($phoneNumber) {
+            $updateFieldsWithValues['phone_num'] = $phoneNumber;
+        }
+        if ($address) {
+            $updateFieldsWithValues['address'] = $address;
+        }
+        if ($branchID) {
+            $updateFieldsWithValues['branch_id'] = $branchID;
+        }
+        if ($banned) {
+            $updateFieldsWithValues['banned'] = $banned;
+        }
+
+        return self::updateTableData('customers', $updateFieldsWithValues, "customer_id=$customerId");
+    }
 }
