@@ -5,10 +5,10 @@ namespace LogicLeap\StockManagement\models;
 class Employees extends DbModel
 {
     public static function addEmployee(string $name, string $address, string $email, string $phoneNumber,
-                                       int $branchId, string $joinDate, string $left_date = null):bool
+                                       int    $branchId, string $joinDate, string $left_date = null): bool
     {
         $isLeft = false;
-        if ($left_date){
+        if ($left_date) {
             $isLeft = true;
         }
 
@@ -23,10 +23,25 @@ class Employees extends DbModel
         return $statement->execute();
     }
 
-    public static function updateEmployee(string $name = null, string $address = null, string $email = null,
+    public static function updateEmployee(int    $employeeId, string $name = null, string $address = null, string $email = null,
                                           string $phoneNumber = null, int $branchId = null, string $joinDate = null,
-                                          string $left_date = null)
+                                          string $left_date = null): bool
     {
-        $sql = "UPDATE TABLE employees ";
+        $updateFieldsWithValues = [];
+        if ($name)
+            $updateFieldsWithValues['name'] = $name;
+        if ($address)
+            $updateFieldsWithValues['address'] = $address;
+        if ($email)
+            $updateFieldsWithValues['email'] = $email;
+        if ($phoneNumber)
+            $updateFieldsWithValues['phone_num'] = $phoneNumber;
+        if ($branchId)
+            $updateFieldsWithValues['branch_id'] = $branchId;
+        if ($left_date) {
+            $updateFieldsWithValues['left_date'] = $left_date;
+            $updateFieldsWithValues['is_left'] = true;
+        }
+        return self::updateTableData('employees', $updateFieldsWithValues, "employee_id=$employeeId");
     }
 }
