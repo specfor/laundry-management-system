@@ -4,27 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-   <!--<link rel="stylesheet" href="../css/style.css">--> 
+    <!--<link rel="stylesheet" href="../css/style.css">-->
     <link rel="stylesheet" href="../assets/css/style.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
     <title>Laundry Management system 1.0 </title>
     <script src="../assets/js/dashboard.js"></script>
 
     <style>
-        body{
+        body {
             color: white;
         }
-        .bo{
-            border:1px solid white;
+
+        .bo {
+            border: 1px solid white;
         }
-        .bgs{
+
+        .bgs {
             background-image: url('../assets/Images/bg1.jpg');
-            background-repeat:no-repeat;
-            background-size:cover;
+            background-repeat: no-repeat;
+            background-size: cover;
             height: 100vh;
             box-sizing: content-box;
         }
-        
+
         @media (min-width: 576px) {
             .background-image {
                 background-position: right;
@@ -32,8 +35,9 @@
                 height: 100vh;
             }
         }
+
         @media (min-width: 1410px) {
-            .added-change{
+            .added-change {
                 height: 450px;
             }
         }
@@ -43,18 +47,19 @@
             border-radius: 32px;
             color: black;
         }
+
         .partially button span {
             background-color: orange;
             border-radius: 32px;
             color: black;
         }
 
-        .c-box{
+        .c-box {
             max-width: 65%;
         }
 
         /* styles for place order section*/
-        .data-set{
+        .data-set {
             padding: 20px;
             background-color: #2223271f;
             box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
@@ -65,45 +70,51 @@
             align-self: center;
             align-content: center;
             justify-content: center;
-            height: 100vh;  
+            height: 100vh;
             max-width: 30vw;
         }
 
-        .c-btn{
+        .c-btn {
             background-color: rgba(255, 255, 255, 0.307);
             color: rgba(0, 0, 0, 0.775);
             width: 200px;
             padding: 10px;
         }
-        .c-btn:hover{
+
+        .c-btn:hover {
             color: black;
             background-color: rgba(240, 248, 255, 0.693);
             box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         }
-        .c-card{
+
+        .c-card {
             width: fit-content;
         }
-        .c-card:hover{
+
+        .c-card:hover {
             border: 2px solid white;
         }
+
         /*styles for hover effect in home screen*/
-        .he:hover{
+        .he:hover {
             background-color: rgb(255, 255, 255);
             box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         }
+
         /*styles for customize page*/
-        .shader{
+        .shader {
             background-color: transparent;
-            border:none; 
-            outline:none; 
-            color:white; 
-            height: 8vh; 
+            border: none;
+            outline: none;
+            color: white;
+            height: 8vh;
             align-items: center;
-            justify-content: center ;
-            display: flex; 
-            font-size:20px;
+            justify-content: center;
+            display: flex;
+            font-size: 20px;
         }
-        .shader:hover{
+
+        .shader:hover {
             background-color: rgba(0, 0, 0, 0.2);
             color: white;
         }
@@ -133,66 +144,82 @@
                         </div>
 
 -->
-<body class="overflow-y-hidden bgs"> 
+<body class="overflow-y-hidden bgs">
 
-<div class="container-fluid justify-content-center align-items-center " style="height:100vh;" >
+<div class="container-fluid justify-content-center align-items-center " style="height:100vh;">
 
-        <div class="row align-items-center " style="height:100vh;">
-            <!-------------------[Reguler menu]----------------------------->
-            <div class="col-3  p-5 justify-content-center align-items-center " style="max-width: fit-content; height: max-content; position: relative; top: 2vh; ">
-                <div class="btn-group-vertical justify-content-center align-items-center position-relative mt-xxl-4" role="group" aria-label="Vertical button group" >
-                    <button id="btn-section-home" type="button" class="btn btn-outline-light p-4 my-2 rounded mb-3 shadow" ><img src="../assets/Images/home.png" alt="" srcset="" width="40px" ></button>
-                    <button id="btn-section-place-order-1" type="button" class="btn btn-outline-light p-4 my-2 rounded mb-3 shadow"><img src="../assets/Images/menu.png" alt="" srcset="" width="40px" ></button>
-                    <button id="btn-section-maintain-view" type="button" class="btn btn-outline-light p-4 my-2 rounded mb-3 shadow"><img src="../assets/Images/edit.png" alt="" srcset="" width="40px" ></button>
-                    <button id="btn-section-profile" type="button" class="btn btn-outline-light p-4 my-2 rounded shadow"><img src="../assets/Images/user.png" alt="" srcset="" width="40px" ></button>
-                </div>
+    <div class="row align-items-center " style="height:100vh;">
+        <!-------------------[Reguler menu]----------------------------->
+        <div class="col-3  p-5 justify-content-center align-items-center "
+             style="max-width: fit-content; height: max-content; position: relative; top: 2vh; ">
+            <div class="btn-group-vertical justify-content-center align-items-center position-relative mt-xxl-4"
+                 role="group" aria-label="Vertical button group">
+                <button id="btn-section-home" type="button" class="btn btn-outline-light p-4 my-2 rounded mb-3 shadow">
+                    <img src="../assets/Images/home.png" alt="" srcset="" width="40px"></button>
+                <button id="btn-section-place-order-1" type="button"
+                        class="btn btn-outline-light p-4 my-2 rounded mb-3 shadow"><img src="../assets/Images/menu.png"
+                                                                                        alt="" srcset="" width="40px">
+                </button>
+                <button id="btn-section-maintain-view" type="button"
+                        class="btn btn-outline-light p-4 my-2 rounded mb-3 shadow"><img src="../assets/Images/edit.png"
+                                                                                        alt="" srcset="" width="40px">
+                </button>
+                <button id="btn-section-profile" type="button" class="btn btn-outline-light p-4 my-2 rounded shadow">
+                    <img src="../assets/Images/user.png" alt="" srcset="" width="40px"></button>
             </div>
-            <!-------------------[Reguler menu]----------------------------->
+        </div>
+        <!-------------------[Reguler menu]----------------------------->
 
-            <!-------------------[home-view]-------------------------------->
-            <div id="section-home-view" class="col justify-content-center align-items-center text-center m-4 mt-5 rounded " >
-                <div class="row mb-0 rounded pt-4" style="background: linear-gradient(rgba(255, 255, 255, 0.2), #ffffff00);">
-                    <div class=" mt-0">
-                        <div class="row row-cols-1 row-cols-md-2 g-3 p-2 " >
-                            <div class="col align-items-center justify-content-center p-0 SHADOW">
-                                <div class="card bg-transparent bo mt-3 align-items-center justify-content-center p-0" style="min-height: 40vh; border: none; ">
-                                    <ul class="list-group p-0" style="min-width: 30vw ;">
-                                        <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+        <!-------------------[home-view]-------------------------------->
+        <div id="section-home-view" class="col justify-content-center align-items-center text-center m-4 mt-5 rounded ">
+            <div class="row mb-0 rounded pt-4"
+                 style="background: linear-gradient(rgba(255, 255, 255, 0.2), #ffffff00);">
+                <div class=" mt-0">
+                    <div class="row row-cols-1 row-cols-md-2 g-3 p-2 ">
+                        <div class="col align-items-center justify-content-center p-0 SHADOW">
+                            <div class="card bg-transparent bo mt-3 align-items-center justify-content-center p-0"
+                                 style="min-height: 40vh; border: none; ">
+                                <ul class="list-group p-0" style="min-width: 30vw ;">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
                                         Urgent upcoming orders
                                         <span class="badge bg-primary rounded-pill">14</span>
-                                        </li>
-                                        <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
                                         Freshly Arrived cloths
                                         <span class="badge bg-primary rounded-pill">2</span>
-                                        </li>
-                                        <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
                                         About to transfer and clear
                                         <span class="badge bg-primary rounded-pill">5</span>
-                                        </li>
-                                        <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
                                         Daily Order limit
                                         <span class="badge bg-primary rounded-pill">34</span>
-                                        </li>
-                                        <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                                            Massages from Headoffice
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                                        Massages from Headoffice
                                         <span class="badge bg-primary rounded-pill">9</span>
-                                        </li>
-                                    </ul>
-                                </div>
+                                    </li>
+                                </ul>
                             </div>
-                            <div class="col">
+                        </div>
+                        <div class="col">
                             <div class="card bg-transparent text-dark" style="min-height: 40vh; border: none;">
                                 <div class="row justify-self-end ">
                                     <div class="d-flex flex-row-reverse">
                                         <div class="dropdown">
-                                            <button class="btn btn-lg btn-transparent he" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="border:none; padding: 5px;">
-                                            <img src="../assets/Images/more.png" width="35vw" alt="" srcset="">
+                                            <button class="btn btn-lg btn-transparent he" type="button"
+                                                    data-bs-toggle="dropdown" aria-expanded="false"
+                                                    style="border:none; padding: 5px;">
+                                                <img src="../assets/Images/more.png" width="35vw" alt="" srcset="">
                                             </button>
                                             <ul class="dropdown-menu text-center mt-3">
-                                            <li><a class="dropdown-item" href="#">update</a></li>
-                                            <li><a class="dropdown-item" href="#">restart</a></li>
-                                            <li><hr class="dropdown-divider"></li>
-                                            <li><a class="dropdown-item" href="#"><b>LOG OUT</b></a></li>
+                                                <li><a class="dropdown-item" href="#">update</a></li>
+                                                <li><a class="dropdown-item" href="#">restart</a></li>
+                                                <li>
+                                                    <hr class="dropdown-divider">
+                                                </li>
+                                                <li><a class="dropdown-item" href="#"><b>LOG OUT</b></a></li>
                                             </ul>
                                         </div>
                                         <button type="button" class="btn btn-secondary mx-3 px-3" disabled>
@@ -201,316 +228,364 @@
                                         </button>
                                     </div>
                                 </div>
-                                <div class="row"  style="z-index: 2;">
+                                <div class="row" style="z-index: 2;">
                                     <div class="d-flex flex-row align-content-center justify-content-center">
-                                        <img src="../assets/Images/handshake.png" class="text-center justify-self-center align-items-center" alt="" srcset="" style="position: relative;;height: 40vh;width:24vw;">
-                                        <div class="col align-content-center" style="position: relative; z-index: 1; align-self: center; justify-self: center; width: 100%; left: -30px;">
+                                        <img src="../assets/Images/handshake.png"
+                                             class="text-center justify-self-center align-items-center" alt="" srcset=""
+                                             style="position: relative;;height: 40vh;width:24vw;">
+                                        <div class="col align-content-center"
+                                             style="position: relative; z-index: 1; align-self: center; justify-self: center; width: 100%; left: -30px;">
                                             <span class="fs-4 fs-lg text-light m-0"><h1><b>Welcome back</b></h1></span>
                                             <blockquote class="blockquote text-center">
                                                 <p class="mb-0"></p>
-                                                <footer class="blockquote-footer mt-1 text-center text-light">ASK LAUNDRY FACTORY</footer>
+                                                <footer class="blockquote-footer mt-1 text-center text-light">ASK
+                                                    LAUNDRY FACTORY
+                                                </footer>
                                             </blockquote>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            </div>
-                            <div class="container">
-                                <!-- put something here if there is neccesary-->
-                            </div>
+                        </div>
+                        <div class="container">
+                            <!-- put something here if there is neccesary-->
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!--UPCOMING MORE FEATURES-->
-                <!--<div class="row mt-1" style="height:40vh">
-                    <div class="container">
-                        <div class="d-flex container bo text-dark rounded align-content-center" style="background-image: url(../assets/Images/bg2.jpg); background-repeat: no-repeat;">
-                            <div class="col-5 bo p-2" style="height:40vh ;overflow:hidden;align-items:center;z-index: 1;opacity: 1;">
-                                <div class="card ">
-                                    <img src="../assets/Images/graph.jpg" style="height:27vh;" class="card-img-top" alt="...">
-                                    <div class="card-body">
-                                    <a href="#" class="btn btn-dark">Click here to get more info</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col bo">
-                                <div class="box">
-                                    
+            <!--UPCOMING MORE FEATURES-->
+            <!--<div class="row mt-1" style="height:40vh">
+                <div class="container">
+                    <div class="d-flex container bo text-dark rounded align-content-center" style="background-image: url(../assets/Images/bg2.jpg); background-repeat: no-repeat;">
+                        <div class="col-5 bo p-2" style="height:40vh ;overflow:hidden;align-items:center;z-index: 1;opacity: 1;">
+                            <div class="card ">
+                                <img src="../assets/Images/graph.jpg" style="height:27vh;" class="card-img-top" alt="...">
+                                <div class="card-body">
+                                <a href="#" class="btn btn-dark">Click here to get more info</a>
                                 </div>
                             </div>
                         </div>
+                        <div class="col bo">
+                            <div class="box">
 
+                            </div>
+                        </div>
                     </div>
+
                 </div>
-            </div>-->
+            </div>
+        </div>-->
 
             <!-------------------[home-view]---------------------->
-            </div>
-            <!-------------------[place order view 1]----------------------->
-            <div id="section-place-order-1" class="col position-relative justify-content-around d-none">
-                <div class="row" justify-content-around style="height:95vh ">
+        </div>
+        <!-------------------[place order view 1]----------------------->
+        <div id="section-place-order-1" class="col position-relative justify-content-around d-none">
+            <div class="row" justify-content-around style="height:95vh ">
 
-                    <div class="col-7 justify-content-around">
-                        <div class="col-12 ">
-                            <table class="table mt-2" id="itemTable">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th scope="col">Item</th>
-                                        <th scope="col">Quantity</th>
-                                        <th scope="col">Priority</th>
-                                        <th scope="col">Action</th>
-                                        <th scope="col">Defects</th> 
-                                        <th scope="col">Delivery</th> 
-                                    </tr>
+                <div class="col-7 justify-content-around">
+                    <div class="col-12 ">
+                        <table class="table mt-2" id="itemTable">
+                            <thead class="table-light">
+                            <tr>
+                                <th scope="col">Item</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col">Priority</th>
+                                <th scope="col">Action</th>
+                                <th scope="col">Defects</th>
+                                <th scope="col">Delivery</th>
+                            </tr>
+                            </thead>
+                            <tbody id="itemBody" style="color:white;">
+
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#addNewItem">+</button>
+                </div>
+
+                <div class="col-5 justify-content-center align-self-center data-set-c">
+                    <div class="data-set">
+                        <div class="widget text-end p-2">
+                            <h1 id="timeNow"></h1>
+                            <label for="exampleDataList" class="form-label" id="dateNow"></label>
+                        </div>
+                        <input class="form-control form-control-md my-3" list="datalistOptions" id="exampleDataList"
+                               placeholder="Type to search...">
+                        <datalist id="datalistOptions">
+                            <option value="San Francisco">
+                            <option value="New York">
+                            <option value="Seattle">
+                            <option value="Los Angeles">
+                            <option value="Chicago">
+                        </datalist>
+                        <div class="input-group input-group-md flex-nowrap my-3">
+                            <span class="input-group-text" id="addon-wrapping">Customer's name</span>
+                            <input type="text" class="form-control" placeholder="customer's name" aria-label="name"
+                                   aria-describedby="addon-wrapping" id="name">
+                        </div>
+                        <div class="input-group input-group-md flex-nowrap my-3">
+                            <span class="input-group-text" id="addon-wrapping">Contact Number</span>
+                            <input type="number" class="form-control" placeholder="Mobile number" aria-label="number"
+                                   aria-describedby="addon-wrapping" id="contactNum">
+                        </div>
+                        <div class="input-group input-group-md flex-nowrap my-3">
+                            <span class="input-group-text" id="addon-wrapping">Email</span>
+                            <input type="text" class="form-control" placeholder="Optional" aria-label="number"
+                                   aria-describedby="addon-wrapping" id="email">
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-text">Address</span>
+                            <textarea class="form-control py-2" aria-label="With textarea" style="height: 10vh;"
+                                      id="address"></textarea>
+                        </div>
+
+                        <div class="row text-center mt-3 justify-content-center">
+                            <button class="btn btn-secoundary c-btn text-center" id="continue"
+                                    style="background-color: rgb(75, 132, 205); color: white;"> Continue
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!-------------------[maintain-view]-------------------------------->
+        <div id="section-maintain-view"
+             class="col justify-content-center align-items-center text-center rounded d-none">
+            <div class="row p-2" style="height:100vh;">
+                <div class="col-9">
+                    <div class="container tab-content" id="nav-tabContent">
+                        <div class="tab-pane fade show active p-4 rounded mt-5" id="list-home" role="tabpanel"
+                             aria-labelledby="list-home-list" style="background-color: rgba(240, 248, 255, 0.326);">
+                            <h1 class="h1 p-0">Client Table</h1>
+                            <table class="table mb-3 table-hover  text-light " style="color:aqua;">
+                                <thead>
+                                <tr>
+                                    <th scope="col">C-id</th>
+                                    <th scope="col">Client Name</th>
+                                    <th scope="col">Contact No.</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Address</th>
+                                </tr>
                                 </thead>
-                                <tbody id="itemBody" style="color:white;">
+                                <tbody class="table-group-divider" id="clientTable">
+
 
                                 </tbody>
                             </table>
-
-                        </div>
-                        <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#addNewItem">+</button>
-                    </div>
-
-                    <div class="col-5 justify-content-center align-self-center data-set-c" >
-                        <div class="data-set">
-                            <div class="widget text-end p-2" >
-                                <h1 id="timeNow"></h1>
-                                <label for="exampleDataList" class="form-label" id="dateNow"></label>
+                            <div class="d-flex justify-content-end">
+                                <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#addNewClient">+
+                                </button>
                             </div>
-                            <input class="form-control form-control-md my-3" list="datalistOptions" id="exampleDataList" placeholder="Type to search...">
-                            <datalist id="datalistOptions">
-                                <option value="San Francisco">
-                                <option value="New York">
-                                <option value="Seattle">
-                                <option value="Los Angeles">
-                                <option value="Chicago">
-                            </datalist>
-                            <div class="input-group input-group-md flex-nowrap my-3">
-                                <span class="input-group-text" id="addon-wrapping">Customer's name</span>
-                                <input type="text" class="form-control" placeholder="customer's name" aria-label="name" aria-describedby="addon-wrapping" id="name">
-                            </div>
-                            <div class="input-group input-group-md flex-nowrap my-3">
-                                <span class="input-group-text" id="addon-wrapping">Contact Number</span>
-                                <input type="number" class="form-control" placeholder="Mobile number" aria-label="number" aria-describedby="addon-wrapping" id="contactNum">
-                            </div>
-                            <div class="input-group input-group-md flex-nowrap my-3">
-                                <span class="input-group-text" id="addon-wrapping">Email</span>
-                                <input type="text" class="form-control" placeholder="Optional" aria-label="number" aria-describedby="addon-wrapping" id="email">
-                            </div>
-                            <div class="input-group">
-                                <span class="input-group-text">Address</span>
-                                <textarea class="form-control py-2" aria-label="With textarea" style="height: 10vh;" id="address"></textarea>
-                            </div>
-                            
-                            <div class="row text-center mt-3 justify-content-center">
-                                <button class="btn btn-secoundary c-btn text-center" id="continue" style="background-color: rgb(75, 132, 205); color: white;"> Continue</button>
+                            <div class="d-flex justify-content-center">
+                                <nav aria-label="Page navigation example">
+                                    <ul class="pagination">
+                                        <li class="page-item">
+                                            <a class="page-link" href="#" aria-label="Previous">
+                                                <span aria-hidden="true">&laquo;</span>
+                                            </a>
+                                        </li>
+                                        <li class="page-item"><a class="page-link" href="#">1</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="#" aria-label="Next">
+                                                <span aria-hidden="true">&raquo;</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
                             </div>
                         </div>
-                    </div>
 
+                        <div class="tab-pane fade" id="list-profile" role="tabpanel"
+                             aria-labelledby="list-profile-list">
+                            <div class="tab-pane fade show active p-4 rounded mt-5" id="list-home" role="tabpanel"
+                                 aria-labelledby="list-home-list" style="background-color: rgba(240, 248, 255, 0.326);">
+                                <h1 class="h1 p-0">Order Table</h1>
+                                <table class="table mb-3 table-hover  text-light " style="color:aqua;">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">Ref</th>
+                                        <th scope="col">Client Name</th>
+                                        <th scope="col">Priority</th>
+                                        <th scope="col">Amount</th>
+                                        <th scope="col">Status</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody class="table-group-divider" id="orderConfirmedTable">
+
+                                    </tbody>
+                                </table>
+                                <div class="d-flex justify-content-end">
+                                    <!---->
+                                </div>
+                                <div class="d-flex justify-content-center">
+                                    <nav aria-label="Page navigation example">
+                                        <ul class="pagination">
+                                            <li class="page-item">
+                                                <a class="page-link" href="#" aria-label="Previous">
+                                                    <span aria-hidden="true">&laquo;</span>
+                                                </a>
+                                            </li>
+                                            <li class="page-item"><a class="page-link" href="#">1</a></li>
+                                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                            <li class="page-item">
+                                                <a class="page-link" href="#" aria-label="Next">
+                                                    <span aria-hidden="true">&raquo;</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="list-messages" role="tabpanel"
+                             aria-labelledby="list-messages-list">
+                            <div class="tab-pane fade show active p-4 rounded mt-5" id="list-home" role="tabpanel"
+                                 aria-labelledby="list-home-list" style="background-color: rgba(240, 248, 255, 0.326);">
+                                <h1 class="h1 p-0">All Items</h1>
+                                <table class="table mb-3 table-hover  text-light " style="color:aqua;">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Item</th>
+                                        <th scope="col">Action</th>
+                                        <th scope="col">Unit Price</th>
+                                        <th scope="col">Edit</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody class="table-group-divider" id="itemInputTable">
+
+                                    </tbody>
+                                </table>
+                                <div class="d-flex justify-content-end">
+                                    <button class="btn btn-light" data-bs-toggle="modal"
+                                            data-bs-target="#addNewProduct">+
+                                    </button>
+                                </div>
+                                <div class="d-flex justify-content-center">
+                                    <nav aria-label="Page navigation example">
+                                        <ul class="pagination">
+                                            <li class="page-item">
+                                                <a class="page-link" href="#" aria-label="Previous">
+                                                    <span aria-hidden="true">&laquo;</span>
+                                                </a>
+                                            </li>
+                                            <li class="page-item"><a class="page-link" href="#">1</a></li>
+                                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                            <li class="page-item">
+                                                <a class="page-link" href="#" aria-label="Next">
+                                                    <span aria-hidden="true">&raquo;</span>
+                                                </a>
+                                                20px
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade " id="list-settings" role="tabpanel"
+                             aria-labelledby="list-settings-list">
+
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col p-4">
+                    <h2 style="border-bottom:2px solid whitesmoke; padding-bottom: 1vh;">Customize Panel</h2>
+                    <br>
+                    <div class="list-group w-100 " id="list-tab" role="tablist">
+                        <a class="list-group-item list-group-item-action shader active" id="list-home-list"
+                           data-bs-toggle="list" href="#list-home" role="tab" aria-controls="list-home">All Clients</a>
+                        <a class="list-group-item list-group-item-action shader" id="list-profile-list"
+                           data-bs-toggle="list" href="#list-profile" role="tab" aria-controls="list-profile">Orders</a>
+                        <a class="list-group-item list-group-item-action shader" id="list-messages-list"
+                           data-bs-toggle="list" href="#list-messages" role="tab" aria-controls="list-messages">Add
+                            Item</a>
+                        <a class="list-group-item list-group-item-action shader" id="list-settings-list"
+                           data-bs-toggle="list" href="#list-settings" role="tab" aria-controls="list-settings">Manage
+                            offers</a>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col ">
+                            <button type="button" class="btn  m-2 p-3 rounded"
+                                    style="background-color: rgba(240, 248, 255, 0.085);"><img
+                                    src="../assets/Images/checklist.png" alt="" srcset="" width="40vw"></button>
+                            <button type="button" class="btn  m-2 p-3 rounded"
+                                    style="background-color: rgba(240, 248, 255, 0.085);"><img
+                                    src="../assets/Images/share.png" alt="" srcset="" width="40vw"></button>
+                            <button type="button" class="btn  m-2 p-3 rounded"
+                                    style="background-color: rgba(240, 248, 255, 0.085);"><img
+                                    src="../assets/Images/upload.png" alt="" srcset="" width="40vw"></button>
+                        </div>
+                    </div>
                 </div>
             </div>
-        <!-------------------[maintain-view]-------------------------------->
-            <div id="section-maintain-view" class="col justify-content-center align-items-center text-center rounded d-none">
-                        <div class="row p-2" style="height:100vh;">
-                            <div class="col-9">
-                                <div class="container tab-content" id="nav-tabContent">
-                                    <div class="tab-pane fade show active p-4 rounded mt-5" id="list-home" role="tabpanel" aria-labelledby="list-home-list" style="background-color: rgba(240, 248, 255, 0.326);">
-                                        <h1 class="h1 p-0">Client Table</h1>
-                                        <table class="table mb-3 table-hover  text-light " style="color:aqua;">
-                                            <thead>
-                                                <tr>
-                                                <th scope="col">C-id</th>
-                                                <th scope="col">Client Name</th>
-                                                <th scope="col">Contact No.</th>
-                                                <th scope="col">Email</th>
-                                                <th scope="col">Address</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody class="table-group-divider" id="clientTable">
-                                                
-                                                    
-                                            </tbody>
-                                        </table>
-                                        <div class="d-flex justify-content-end">
-                                            <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#addNewClient">+</button>
-                                        </div>
-                                        <div class="d-flex justify-content-center">
-                                            <nav aria-label="Page navigation example">
-                                                <ul class="pagination">
-                                                <li class="page-item">
-                                                    <a class="page-link" href="#" aria-label="Previous">
-                                                    <span aria-hidden="true">&laquo;</span>
-                                                    </a>
-                                                </li>
-                                                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                                                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                                <li class="page-item">
-                                                    <a class="page-link" href="#" aria-label="Next">
-                                                    <span aria-hidden="true">&raquo;</span>
-                                                    </a>
-                                                </li>
-                                                </ul>
-                                            </nav>
-                                        </div>
-                                    </div>
-
-                                    <div class="tab-pane fade" id="list-profile" role="tabpanel" aria-labelledby="list-profile-list">
-                                        <div class="tab-pane fade show active p-4 rounded mt-5" id="list-home" role="tabpanel" aria-labelledby="list-home-list" style="background-color: rgba(240, 248, 255, 0.326);">
-                                            <h1 class="h1 p-0">Order Table</h1>
-                                            <table class="table mb-3 table-hover  text-light " style="color:aqua;">
-                                                <thead>
-                                                    <tr>
-                                                    <th scope="col">Ref</th>
-                                                    <th scope="col">Client Name</th>
-                                                    <th scope="col">Priority</th>
-                                                    <th scope="col">Amount</th>
-                                                    <th scope="col">Status</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody class="table-group-divider" id="orderConfirmedTable">
-                                                    
-                                                </tbody>
-                                            </table>
-                                            <div class="d-flex justify-content-end">
-                                                <!---->
-                                            </div>
-                                            <div class="d-flex justify-content-center">
-                                                <nav aria-label="Page navigation example">
-                                                    <ul class="pagination">
-                                                    <li class="page-item">
-                                                        <a class="page-link" href="#" aria-label="Previous">
-                                                        <span aria-hidden="true">&laquo;</span>
-                                                        </a>
-                                                    </li>
-                                                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                                    <li class="page-item">
-                                                        <a class="page-link" href="#" aria-label="Next">
-                                                        <span aria-hidden="true">&raquo;</span>
-                                                        </a>
-                                                    </li>
-                                                    </ul>
-                                                </nav>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="tab-pane fade" id="list-messages" role="tabpanel" aria-labelledby="list-messages-list">
-                                        <div class="tab-pane fade show active p-4 rounded mt-5" id="list-home" role="tabpanel" aria-labelledby="list-home-list" style="background-color: rgba(240, 248, 255, 0.326);">
-                                            <h1 class="h1 p-0">All Items</h1>
-                                            <table class="table mb-3 table-hover  text-light " style="color:aqua;">
-                                                <thead>
-                                                    <tr>
-                                                    <th scope="col">#</th>
-                                                    <th scope="col">Item</th>
-                                                    <th scope="col">Action</th>
-                                                    <th scope="col">Unit Price</th>
-                                                    <th scope="col">Edit</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody class="table-group-divider" id="itemInputTable">
-                                                    
-                                                </tbody>
-                                            </table>
-                                            <div class="d-flex justify-content-end">
-                                                <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#addNewProduct">+</button>
-                                            </div>
-                                            <div class="d-flex justify-content-center">
-                                                <nav aria-label="Page navigation example">
-                                                    <ul class="pagination">
-                                                    <li class="page-item">
-                                                        <a class="page-link" href="#" aria-label="Previous">
-                                                        <span aria-hidden="true">&laquo;</span>
-                                                        </a>
-                                                    </li>
-                                                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                                    <li class="page-item">
-                                                        <a class="page-link" href="#" aria-label="Next">
-                                                        <span aria-hidden="true">&raquo;</span>
-                                                        </a>
-                                                    20px
-                                                    </ul>
-                                                </nav>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="tab-pane fade " id="list-settings" role="tabpanel" aria-labelledby="list-settings-list">
-
-                                    </div>
-
-                                </div>
-                            </div>
-                            <div class="col p-4">
-                                <h2 style="border-bottom:2px solid whitesmoke; padding-bottom: 1vh;">Customize Panel</h2>
-                                <br>
-                                <div class="list-group w-100 " id="list-tab" role="tablist" >
-                                    <a class="list-group-item list-group-item-action shader active" id="list-home-list" data-bs-toggle="list" href="#list-home" role="tab" aria-controls="list-home" >All Clients</a>
-                                    <a class="list-group-item list-group-item-action shader" id="list-profile-list" data-bs-toggle="list" href="#list-profile" role="tab" aria-controls="list-profile" >Orders</a>
-                                    <a class="list-group-item list-group-item-action shader" id="list-messages-list" data-bs-toggle="list" href="#list-messages" role="tab" aria-controls="list-messages" >Add Item</a>
-                                    <a class="list-group-item list-group-item-action shader" id="list-settings-list" data-bs-toggle="list" href="#list-settings" role="tab" aria-controls="list-settings" >Manage offers</a>
-                                </div>
-                                <div class="row mt-4">
-                                    <div class="col " >
-                                        <button type="button" class="btn  m-2 p-3 rounded" style="background-color: rgba(240, 248, 255, 0.085);"><img src="../assets/Images/checklist.png" alt="" srcset="" width="40vw" ></button>
-                                        <button type="button" class="btn  m-2 p-3 rounded" style="background-color: rgba(240, 248, 255, 0.085);"><img src="../assets/Images/share.png" alt="" srcset="" width="40vw" ></button>
-                                        <button type="button" class="btn  m-2 p-3 rounded" style="background-color: rgba(240, 248, 255, 0.085);"><img src="../assets/Images/upload.png" alt="" srcset="" width="40vw"  ></button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-            </div>
+        </div>
         <!-------------------[maintain-view]-------------------------------->
 
         <!-------------------[place order view 2]------------------------->
         <div id="section-place-order-2" class="col d-none">
-            <div class="row justify-content-center align-items-center" style="height:100vh;" >
-                <div class="col-7 p-4 rounded bg-dark shadow justify-content-center align-items-center shadow-lg" style="margin-top: 5vh; height: fit-content;">
-                    <div class="row d-flex flex-row-betwwen " style="border-bottom: 2px solid rgba(255, 255, 255, 0.312);">
+            <div class="row justify-content-center align-items-center" style="height:100vh;">
+                <div class="col-7 p-4 rounded bg-dark shadow justify-content-center align-items-center shadow-lg"
+                     style="margin-top: 5vh; height: fit-content;">
+                    <div class="row d-flex flex-row-betwwen "
+                         style="border-bottom: 2px solid rgba(255, 255, 255, 0.312);">
                         <div class="col px-5">
                             <h3>CHECKOUT</h3>
                         </div>
                         <div class="col d-flex flex-row-reverse align-items-center mb-3">
-                            <button type="button" class="btn btn-transparent p-1 mx-1" style="height:fit-content"><img src="../assets/Images/checklist.png" alt="" width="30vw"></button>  
-                            <button type="button" class="btn btn-transparent p-1 mx-1" style="height:fit-content"><img src="../assets/Images/bookmark.png" alt="" width="30vw" ></button>
+                            <button type="button" class="btn btn-transparent p-1 mx-1" style="height:fit-content"><img
+                                    src="../assets/Images/checklist.png" alt="" width="30vw"></button>
+                            <button type="button" class="btn btn-transparent p-1 mx-1" style="height:fit-content"><img
+                                    src="../assets/Images/bookmark.png" alt="" width="30vw"></button>
                         </div>
                     </div>
                     <br>
                     <div class="form-floating mb-2 mx-5">
-                        <input type="email" readonly class="form-control-plaintext " id="floatingPlaintextInput" placeholder="#" value="234K1dS" style="color: whitesmoke; position: relative; left: 2vw;">
+                        <input type="email" readonly class="form-control-plaintext " id="floatingPlaintextInput"
+                               placeholder="#" value="234K1dS"
+                               style="color: whitesmoke; position: relative; left: 2vw;">
                         <label for="floatingPlaintextInput" class="p-3 ">Order ID</label>
                     </div>
                     <div class="form-floating mb-2 mx-5">
-                        <input type="email" readonly class="form-control-plaintext " id="floatingPlaintextInput" placeholder="#" value="00034" style="color: whitesmoke; position: relative; left: 2vw; color: greenyellow;">
+                        <input type="email" readonly class="form-control-plaintext " id="floatingPlaintextInput"
+                               placeholder="#" value="00034"
+                               style="color: whitesmoke; position: relative; left: 2vw; color: greenyellow;">
                         <label for="floatingPlaintextInput" class="p-3 ">Bill count</label>
                     </div>
                     <div class="form-floating mb-2 mx-5">
-                        <input type="email" readonly class="form-control-plaintext"  placeholder="#" value="" style="color: whitesmoke; position: relative; left: 2vw;" id="cusName">
+                        <input type="email" readonly class="form-control-plaintext" placeholder="#" value=""
+                               style="color: whitesmoke; position: relative; left: 2vw;" id="cusName">
                         <label for="floatingPlaintextInput">Buyer's name</label>
                     </div>
                     <div class="form-floating mb-2 mx-5">
-                        <input type="email" readonly class="form-control-plaintext"  placeholder="#" value="" style="color: whitesmoke; position: relative; left: 2vw;" id="contactInfo">
+                        <input type="email" readonly class="form-control-plaintext" placeholder="#" value=""
+                               style="color: whitesmoke; position: relative; left: 2vw;" id="contactInfo">
                         <label for="floatingPlaintextInput">Contact info</label>
                     </div>
 
                     <div class="row mx-5">
                         <div class="col-6">
                             <div class="form-floating ">
-                                <input type="email" readonly class="form-control-plaintext" id="Orderdate" placeholder="#" value="2003-04-23" style="color: whitesmoke; position: relative; left: 2vw;">
+                                <input type="email" readonly class="form-control-plaintext" id="Orderdate"
+                                       placeholder="#" value="2003-04-23"
+                                       style="color: whitesmoke; position: relative; left: 2vw;">
                                 <label for="floatingPlaintextInput">Order placecd date:</label>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="form-floating ">
-                                <input type="email" readonly class="form-control-plaintext " id="delDate" placeholder="#" value="" style="color: whitesmoke; position: relative; left: 2vw;">
-                                <label for="floatingPlaintextInput" >Order fulfill date:</label>
+                                <input type="email" readonly class="form-control-plaintext " id="delDate"
+                                       placeholder="#" value=""
+                                       style="color: whitesmoke; position: relative; left: 2vw;">
+                                <label for="floatingPlaintextInput">Order fulfill date:</label>
                             </div>
                         </div>
                     </div>
@@ -518,188 +593,208 @@
                     <div class="row mx-5">
                         <div class="col-6">
                             <div class="form-floating ">
-                                <input type="email" readonly class="form-control-plaintext" id="floatingPlaintextInput" placeholder="#" value="Rs.3,500.00" style="color: whitesmoke; position: relative; left: 2vw;">
+                                <input type="email" readonly class="form-control-plaintext" id="floatingPlaintextInput"
+                                       placeholder="#" value="Rs.3,500.00"
+                                       style="color: whitesmoke; position: relative; left: 2vw;">
                                 <label for="floatingPlaintextInput">Total value</label>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="form-floating ">
-                                <input type="email" readonly class="form-control-plaintext " id="floatingPlaintextInput" placeholder="#" value="Rs.456.00 (0.45%)" style="color: whitesmoke; position: relative; left: 2vw;">
-                                <label for="floatingPlaintextInput" >Discounts</label>
+                                <input type="email" readonly class="form-control-plaintext " id="floatingPlaintextInput"
+                                       placeholder="#" value="Rs.456.00 (0.45%)"
+                                       style="color: whitesmoke; position: relative; left: 2vw;">
+                                <label for="floatingPlaintextInput">Discounts</label>
                             </div>
                             <div class="input-group mb-3">
                                 <span class="input-group-text" id="basic-addon3">Payment</span>
                                 <select class="form-select" aria-label="Select Company" id="">
                                     <option>Pay at once</option>
-                                    <option>Pay when done</option>                    
+                                    <option>Pay when done</option>
                                 </select>
                             </div>
-                    </div>
-                    
+                        </div>
+
                     </div>
                     <div class="form-floating mt-2 mx-5 text-center justify-content-center align-items-center align-self-center">
                         <input type="email" class="form-control" id="floatingInputDisabled" placeholder="here" disabled>
-                        <label for="floatingInputDisabled" class="text-center text-success" >Net value : Rs.34,000.00 </label>
-                                        
+                        <label for="floatingInputDisabled" class="text-center text-success">Net value :
+                            Rs.34,000.00 </label>
+
                     </div>
                     <div class="row justify-content-center">
-                        <div class="d-flex align-items-center justify-content-center my-3 rounded p-3" style="width: fit-content; background-color: rgba(0, 0, 0, 0.434);">
-                            <button type="button" class="btn btn-transparent p-1 mx-1" style="height:fit-content"><img src="../assets/Images/back.png" alt="" width="30vw" id="goBack"></button>  
-                            <button type="button" class="btn btn-transparent p-1 mx-1" style="height:fit-content"><img src="../assets/Images/edit.png" alt="" width="30vw" ></button>
-                            <button type="button" class="btn btn-transparent p-1 mx-1" style="height:fit-content"><img src="../assets/Images/flag.png" alt="" width="30vw" ></button>
+                        <div class="d-flex align-items-center justify-content-center my-3 rounded p-3"
+                             style="width: fit-content; background-color: rgba(0, 0, 0, 0.434);">
+                            <button type="button" class="btn btn-transparent p-1 mx-1" style="height:fit-content"><img
+                                    src="../assets/Images/back.png" alt="" width="30vw" id="goBack"></button>
+                            <button type="button" class="btn btn-transparent p-1 mx-1" style="height:fit-content"><img
+                                    src="../assets/Images/edit.png" alt="" width="30vw"></button>
+                            <button type="button" class="btn btn-transparent p-1 mx-1" style="height:fit-content"><img
+                                    src="../assets/Images/flag.png" alt="" width="30vw"></button>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-4 justify-content-center align-self-center text-center mx-4">
                     <div class="d-grid gap-2 justify-content-center ">
-                        <button class="btn btn-transparent c-card p-0 my-2 shadow" type="button"><img src="../assets/Images/payments-online-cash.png" class="rounded"  alt="" srcset="" width="330vw"></button>
-                        <button class="btn btn-transparent c-card p-0 my-2 shadow" type="button"><img src="../assets/Images/payments-online.png" alt="" class="rounded" srcset="" width="330vw"></button>
-                        <button class="btn btn-transparent c-card p-0 my-2 shadow" type="button"><img src="../assets/Images/payments-online-cheque.png" class="rounded" alt="" srcset="" width="330vw"></button>
+                        <button class="btn btn-transparent c-card p-0 my-2 shadow" type="button"><img
+                                src="../assets/Images/payments-online-cash.png" class="rounded" alt="" srcset=""
+                                width="330vw"></button>
+                        <button class="btn btn-transparent c-card p-0 my-2 shadow" type="button"><img
+                                src="../assets/Images/payments-online.png" alt="" class="rounded" srcset=""
+                                width="330vw"></button>
+                        <button class="btn btn-transparent c-card p-0 my-2 shadow" type="button"><img
+                                src="../assets/Images/payments-online-cheque.png" class="rounded" alt="" srcset=""
+                                width="330vw"></button>
                     </div>
                 </div>
 
             </div>
 
-
-            <div id="section-profile" class="col">
-                <h3>hello im here</h3>
-                <div class="row justify-content-center align-items-center text-light" style="height:100vh;" >
-                    <h3>hello im here</h3>
-                </div>
-            </div>
 
         </div>
-        
-    </div>  
-</div>    
 
-
-
-    <!-- This modle add item to the table-->
-<div class="container">
-        <div class="container">
-            <div class="modal fade" id="addNewItem" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-theme="dark">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Add Item</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                        </div>
-                        <div class="row text-center  ps-4 pe-4">
-                            <div class="col">
-
-
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text" id="basic-addon1">Item</span>
-                                    <select class="form-select" aria-label="Select Company" id="itemId">
-                                        <option>Denim</option>
-                                        <option>short</option>
-                                    </select>
-                                </div>
-                                <div class="row text-center " >
-                                    <div class="input-group mb-3 c">
-                                        <span class="input-group-text" id="basic-addon3">Quantity</span>
-                                        <input type="number" class="form-control" aria-describedby="basic-addon3" id="quantity">
-                                    </div>
-                                </div>    
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text" id="basic-addon2">Urgency</span>
-                                    <select class="form-select" aria-label="Select Company" id="priorityId">
-                                        <option>Urgent</option>
-                                        <option>None</option>
-                                        
-                                    </select>
-                                </div>
-                               
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text" id="basic-addon3">Action</span>
-                                    <select class="form-select" aria-label="Select Company" id="actionId">
-                                        <option>Dry Cleaning</option>
-                                        <option>Washing</option>
-                                        <option>Pressing</option>
-                                        <option>Pressing & Dry Cleaning</option>
-                                        <option>Pressing & Washing</option>
-                                        <option>Washing & Dry Cleaning</option>
-                                        <option>Washing, Pressing & Dry Cleaning</option>
-                                    </select>
-                                </div>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text" id="basic-addon3">Defects</span>
-                                    
-                                    <div class="ms-4">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="Stains" id="check">
-                                            <label class="form-check-label" for="flexCheckDefault">
-                                              Stains
-                                            </label>
-                                          </div class="container">
-                                          <div class="form-check ps-4">
-                                            <input class="form-check-input" type="checkbox" value="Burnt Marks" id="check">
-                                            <label class="form-check-label" for="flexCheckChecked">
-                                              Burnt Marks
-                                            </label>
-                                          </div>
-                                          <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="Dyes Bleeded" id="check">
-                                            <label class="form-check-label" for="flexCheckDefault">
-                                              Dyes Bleeded
-                                            </label>
-                                          </div>
-                                          <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="Colours Faded" id="check">
-                                            <label class="form-check-label" for="flexCheckChecked">
-                                              Colours Faded
-                                            </label>
-                                          </div>
-                                          <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="Missing Buttons" id="check">
-                                            <label class="form-check-label" for="flexCheckDefault">
-                                              Missing Buttons
-                                            </label>
-                                          </div>
-                                          <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="Torn or Damaged" id="check">
-                                            <label class="form-check-label" for="flexCheckChecked">
-                                              Torn or Damaged
-                                            </label>
-                                          </div>
-                                          <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="None" id="check" >
-                                            <label class="form-check-label" for="flexCheckChecked">
-                                              None
-                                            </label>
-                                          </div>
-                                    </div>
-                                    <div class="row text-center  ps-4 pe-4 mt-3">
-                                        <div class="input-group mb-3">
-                                            <span class="input-group-text" id="basic-addon3">Delivery Date</span>
-                                            <input type="date" class="form-control" aria-describedby="basic-addon3" id="deliveryDate">
-                                        </div>
-                                    </div> 
-                                      
-                                    
-                                </div>
-
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary" id="btnAddItem">Add Item</button>
-                        </div>
-                    </div>
-                </div>
+        <div id="section-profile" class="col d-none">
+            <h3>hello im here</h3>
+            <div class="row justify-content-center align-items-center text-light" style="height:100vh;">
+                <h3>hello im here</h3>
             </div>
         </div>
     </div>
 </div>
 
 
+<!-- This modle add item to the table-->
 <div class="container">
     <div class="container">
-        <div class="modal fade" id="addNewClient" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-theme="dark">
+        <div class="modal fade" id="addNewItem" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+             data-bs-theme="dark">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Add Item</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                    </div>
+                    <div class="row text-center  ps-4 pe-4">
+                        <div class="col">
+
+
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="basic-addon1">Item</span>
+                                <select class="form-select" aria-label="Select Company" id="itemId">
+                                    <option>Denim</option>
+                                    <option>short</option>
+                                </select>
+                            </div>
+                            <div class="row text-center ">
+                                <div class="input-group mb-3 c">
+                                    <span class="input-group-text" id="basic-addon3">Quantity</span>
+                                    <input type="number" class="form-control" aria-describedby="basic-addon3"
+                                           id="quantity">
+                                </div>
+                            </div>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="basic-addon2">Urgency</span>
+                                <select class="form-select" aria-label="Select Company" id="priorityId">
+                                    <option>Urgent</option>
+                                    <option>None</option>
+
+                                </select>
+                            </div>
+
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="basic-addon3">Action</span>
+                                <select class="form-select" aria-label="Select Company" id="actionId">
+                                    <option>Dry Cleaning</option>
+                                    <option>Washing</option>
+                                    <option>Pressing</option>
+                                    <option>Pressing & Dry Cleaning</option>
+                                    <option>Pressing & Washing</option>
+                                    <option>Washing & Dry Cleaning</option>
+                                    <option>Washing, Pressing & Dry Cleaning</option>
+                                </select>
+                            </div>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="basic-addon3">Defects</span>
+
+                                <div class="ms-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="Stains" id="check">
+                                        <label class="form-check-label" for="flexCheckDefault">
+                                            Stains
+                                        </label>
+                                    </div class="container">
+                                    <div class="form-check ps-4">
+                                        <input class="form-check-input" type="checkbox" value="Burnt Marks" id="check">
+                                        <label class="form-check-label" for="flexCheckChecked">
+                                            Burnt Marks
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="Dyes Bleeded" id="check">
+                                        <label class="form-check-label" for="flexCheckDefault">
+                                            Dyes Bleeded
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="Colours Faded"
+                                               id="check">
+                                        <label class="form-check-label" for="flexCheckChecked">
+                                            Colours Faded
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="Missing Buttons"
+                                               id="check">
+                                        <label class="form-check-label" for="flexCheckDefault">
+                                            Missing Buttons
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="Torn or Damaged"
+                                               id="check">
+                                        <label class="form-check-label" for="flexCheckChecked">
+                                            Torn or Damaged
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="None" id="check">
+                                        <label class="form-check-label" for="flexCheckChecked">
+                                            None
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="row text-center  ps-4 pe-4 mt-3">
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text" id="basic-addon3">Delivery Date</span>
+                                        <input type="date" class="form-control" aria-describedby="basic-addon3"
+                                               id="deliveryDate">
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="btnAddItem">Add Item</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+
+<div class="container">
+    <div class="container">
+        <div class="modal fade" id="addNewClient" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+             data-bs-theme="dark">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -716,22 +811,22 @@
                                 <span class="input-group-text" id="basic-addon1">Client Name</span>
                                 <input type="text" class="form-control" aria-describedby="basic-addon3" id="cName">
                             </div>
-                            <div class="row text-center " >
+                            <div class="row text-center ">
                                 <div class="input-group mb-3 c">
                                     <span class="input-group-text" id="basic-addon3">Contact No.</span>
                                     <input type="number" class="form-control" aria-describedby="basic-addon3" id="cNo">
                                 </div>
-                            </div>    
+                            </div>
                             <div class="input-group mb-3">
                                 <span class="input-group-text" id="basic-addon2">Email</span>
                                 <input type="email" class="form-control" aria-describedby="basic-addon3" id="cEmail">
                             </div>
-                           
+
                             <div class="input-group mb-3">
                                 <span class="input-group-text" id="basic-addon3">Address</span>
-                               <textarea class="form-control"  id="cAddress"></textarea>
+                                <textarea class="form-control" id="cAddress"></textarea>
                             </div>
-                            
+
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -748,7 +843,8 @@
 
 <div class="container">
     <div class="container">
-        <div class="modal fade" id="addNewProduct" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-theme="dark">
+        <div class="modal fade" id="addNewProduct" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+             data-bs-theme="dark">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -765,7 +861,7 @@
                                 <span class="input-group-text" id="basic-addon1">Item</span>
                                 <input type="text" class="form-control" aria-describedby="basic-addon3" id="newProduct">
                             </div>
-                            <div class="row text-center " >
+                            <div class="row text-center ">
                                 <div class="input-group mb-3 c">
                                     <span class="input-group-text" id="basic-addon3">Action</span>
                                     <select class="form-select" aria-label="Select Company" id="newActionId">
@@ -778,10 +874,11 @@
                                         <option>Washing, Pressing & Dry Cleaning</option>
                                     </select>
                                 </div>
-                            </div>    
+                            </div>
                             <div class="input-group mb-3">
                                 <span class="input-group-text" id="basic-addon2">Unit Price</span>
-                                <input type="number" class="form-control" aria-describedby="basic-addon3" id="unitPrice" placeholder="LKR>">
+                                <input type="number" class="form-control" aria-describedby="basic-addon3" id="unitPrice"
+                                       placeholder="LKR>">
                             </div>
 
                         </div>
@@ -796,14 +893,14 @@
     </div>
 </div>
 </div>
-    
-    
 
 
-
-
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js" integrity="sha384-mQ93GR66B00ZXjt0YO5KlohRA5SY2XofN4zfuZxLkoj1gXtW8ANNCe9d5Y3eG5eD" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
+        integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"
+        integrity="sha384-mQ93GR66B00ZXjt0YO5KlohRA5SY2XofN4zfuZxLkoj1gXtW8ANNCe9d5Y3eG5eD"
+        crossorigin="anonymous"></script>
 
 </body>
 
