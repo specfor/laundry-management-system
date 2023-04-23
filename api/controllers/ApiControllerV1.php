@@ -4,7 +4,6 @@ namespace LogicLeap\StockManagement\controllers;
 
 use Exception;
 use LogicLeap\StockManagement\core\Application;
-use LogicLeap\StockManagement\core\JWT;
 use LogicLeap\StockManagement\core\Request;
 use LogicLeap\StockManagement\core\SecureToken;
 use LogicLeap\StockManagement\models\API;
