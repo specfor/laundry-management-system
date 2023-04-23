@@ -5,6 +5,7 @@ desktop-app/node_modules/tailwindcss/lib/util/cloneNodes.js
 desktop-app/node_modules/tailwindcss/defaultConfig.js
 *.ps1
 api/vendor/
+website/vendor/
 /api/maintenanceLock.lock
 /api/migrationLock.lock
 /api/.env
