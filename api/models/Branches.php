@@ -2,7 +2,6 @@
 
 namespace LogicLeap\StockManagement\models;
 
-use mysql_xdevapi\Statement;
 use PDO;
 
 class Branches extends DbModel
@@ -14,9 +13,9 @@ class Branches extends DbModel
         return $statement->execute([$name, $address]);
     }
 
-    public static function getBranches(): array
+    public static function getBranches(int $startIndex = 0, int $limit = 30): array
     {
-        $sql = "SELECT * FROM branches";
+        $sql = "SELECT * FROM branches LIMIT $startIndex, $limit";
         $statement = self::prepare($sql);
         $statement->execute();
         return $statement->fetchAll(PDO::FETCH_ASSOC);

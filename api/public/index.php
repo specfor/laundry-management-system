@@ -23,8 +23,16 @@ $config = [
 $app = new Application($config);
 // API routes
 $app->router->addPostRoute('/api/v1/login', [ApiControllerV1::class, 'login']);
-//$app->router->addPostRoute('/api/v1/register', [ApiControllerV1::class, 'register']);
-$app->router->addPostRoute('/api/v1/customers/add', [ApiControllerV1::class, 'addCustomer']);
+$app->router->addGetRoute('/api/v1/users', [ApiControllerV1::class, 'getUsers']);
+$app->router->addPostRoute('/api/v1/users/add', [ApiControllerV1::class, 'addUser']);
 $app->router->addGetRoute('/api/v1/customers', [ApiControllerV1::class, 'getCustomers']);
+$app->router->addPostRoute('/api/v1/customers/add', [ApiControllerV1::class, 'addCustomer']);
+$app->router->addPostRoute('/api/v1/customers/update', [ApiControllerV1::class, 'updateCustomer']);
+$app->router->addGetRoute('/api/v1/branches', [ApiControllerV1::class, 'getBranches']);
+$app->router->addPostRoute('/api/v1/branches/add', [ApiControllerV1::class, 'addBranch']);
+$app->router->addPostRoute('/api/v1/branches/update', [ApiControllerV1::class, 'updateBranch']);
+$app->router->addGetRoute('/api/v1/employees', [ApiControllerV1::class, 'getEmployees']);
+$app->router->addPostRoute('/api/v1/employees/add', [ApiControllerV1::class, 'addEmployee']);
+$app->router->addPostRoute('/api/v1/employees/update', [ApiControllerV1::class, 'updateEmployee']);
 
 $app->run();

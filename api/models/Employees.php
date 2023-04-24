@@ -2,6 +2,8 @@
 
 namespace LogicLeap\StockManagement\models;
 
+use PDO;
+
 class Employees extends DbModel
 {
     public static function addEmployee(string $name, string $address, string $email, string $phoneNumber,
@@ -43,5 +45,13 @@ class Employees extends DbModel
             $updateFieldsWithValues['is_left'] = true;
         }
         return self::updateTableData('employees', $updateFieldsWithValues, "employee_id=$employeeId");
+    }
+
+    public static function getEmployees(int $startingIndex = 0, int $limit = 30): array
+    {
+        $sql = "SELECT * FROM employees LIMIT $startingIndex, $limit";
+        $statement = self::prepare($sql);
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 }

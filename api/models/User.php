@@ -59,66 +59,82 @@ class User extends DbModel
     private const MIN_PASSWORD_LENGTH = 8;
     private const MIN_USERNAME_LENGTH = 6;
     private const MAX_USERNAME_LENGTH = 30;
-    /**
-     * Create a new user in the database.
-     * @param array $params An array of [key=> value] pairs.
-     * @return string Return 'user created.' if success, Error msg if failed
-     */
-    public function createNewUser(array $params): string
-    {
-        if (!isset($params['username']) || !isset($params['role']) || !isset($params['password'])) {
-            return 'All required fields were not filled.';
-        }
 
+    public static function createNewUser(string $username, string $password, string $role, string $email = null,
+                                         string $firstname = null, string $lastname = null, int $branchId = null): string
+    {
         // Performing checks on input variables.
 
         $statement = self::getDataFromTable(['id'], self::TABLE_NAME, 'username=:username',
-            [':username' => $params['username']]);
+            [':username' => $username]);
         if ($statement->fetch(PDO::FETCH_ASSOC)) {
             return 'Username already exists.';
         }
 
-        $statement = self::getDataFromTable(['id'], self::TABLE_NAME, 'email=:email',
-            [':email' => $params['email']]);
-        if ($statement->fetch(PDO::FETCH_ASSOC)) {
-            return 'Email already exists.';
+        if ($email) {
+            $statement = self::getDataFromTable(['id'], self::TABLE_NAME, 'email=:email',
+                [':email' => $email]);
+            if ($statement->fetch(PDO::FETCH_ASSOC)) {
+                return 'Email already exists.';
+            }
         }
 
-        if (strlen($params['password']) < self::MIN_PASSWORD_LENGTH) {
+        if (strlen($password) < self::MIN_PASSWORD_LENGTH) {
             return 'Password is too short.';
         }
 
-        if (strlen($params['password']) > self::MAX_PASSWORD_LENGTH) {
+        if (strlen($password) > self::MAX_PASSWORD_LENGTH) {
             return 'Password is too long.';
         }
 
-        if (strlen($params['username']) < self::MIN_USERNAME_LENGTH) {
+        if (strlen($username) < self::MIN_USERNAME_LENGTH) {
             return 'Username is too short.';
         }
 
-        if (strlen($params['username']) > self::MAX_USERNAME_LENGTH) {
+        if (strlen($username) > self::MAX_USERNAME_LENGTH) {
             return 'Username is too long.';
         }
 
         $usernameRegEx = '^[A-Za-z][A-Za-z0-9_]{5,29}$';
-        if (!preg_match($usernameRegEx, $params['username']))
+        if (!preg_match($usernameRegEx, $username))
             return 'Username should only contain english letters, numbers and underscore(_)';
 
-        //For now set user role to 1
-        $params['role'] = self::ROLE_CASHIER;
+        // Associative array of [table_column_name => value]
+        $params = [];
+
+        if (strtolower($role) == 'administrator')
+            $params['role'] = self::ROLE_ADMINISTRATOR;
+        elseif (strtolower($role) == 'manager')
+            $params['role'] = self::ROLE_MANAGER;
+        elseif (strtolower($role == 'cashier'))
+            $params['role'] = self::ROLE_CASHIER;
+        else
+            return 'Invalid user role provided.';
 
         $params['password'] = self::generatePasswordHash($params['password']);
 
-        // Filter user passed variables against actual database available columns.
-        foreach ($params as $key => $value) {
-            if (!in_array($key, self::TABLE_COLUMNS)) {
-                unset($params[$key]);
-            }
-        }
+        if ($email)
+            $params['email'] = $email;
+        if ($firstname)
+            $params['firstname'] = $firstname;
+        if ($lastname)
+            $params['lastname'] = $lastname;
+        if ($branchId)
+            $params['branch_id'] = $branchId;
+
         if (self::insertIntoTable(self::TABLE_NAME, $params)) {
-            return 'user created.';
+            return 'New user created successfully.';
         }
-        return 'Unknown error occurred.';
+        return 'Failed to create new user.';
+    }
+
+    public static function getUsers(int $startingIndex = 0, int $limit = 30): array
+    {
+        $superAdminRole = self::ROLE_SUPER_ADMINISTRATOR;
+        $sql = "SELECT * FROM users WHERE role!=$superAdminRole LIMIT $startingIndex, $limit";
+        $statement = self::prepare($sql);
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -171,7 +187,7 @@ class User extends DbModel
     public function getUserRoleText(): string
     {
         if ($this->role == User::ROLE_ADMINISTRATOR)
-            return 'admin';
+            return 'administrator';
         elseif ($this->role == User::ROLE_CASHIER)
             return 'cashier';
         elseif ($this->role == User::ROLE_MANAGER)
@@ -180,7 +196,7 @@ class User extends DbModel
             return 'none';
     }
 
-    public static function isAdmin(int $userId):bool
+    public static function isAdmin(int $userId): bool
     {
         $sql = "SELECT role FROM users WHERE id=$userId";
         $statement = self::prepare($sql);

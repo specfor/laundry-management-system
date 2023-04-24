@@ -4,12 +4,13 @@ namespace LogicLeap\StockManagement\controllers;
 
 use Exception;
 use LogicLeap\StockManagement\core\Application;
-use LogicLeap\StockManagement\core\JWT;
 use LogicLeap\StockManagement\core\Request;
 use LogicLeap\StockManagement\core\SecureToken;
 use LogicLeap\StockManagement\models\API;
 use LogicLeap\StockManagement\models\Authorization;
+use LogicLeap\StockManagement\models\Branches;
 use LogicLeap\StockManagement\models\Customers;
+use LogicLeap\StockManagement\models\Employees;
 use LogicLeap\StockManagement\models\User;
 
 class ApiControllerV1 extends API
@@ -17,28 +18,136 @@ class ApiControllerV1 extends API
     public function addCustomer(): void
     {
         self::checkLoggedIn();
-        $params = Application::$app->request->getBodyParams();
-        $email = $params['email'] ?? "";
-        $customerName = $params['customer-name'] ?? "";
-        $phoneNumber = $params['phone-number'] ?? "";
-        $address = $params['address'] ?? "";
 
-        $userId = self::getUserId();
-        $branchId = User::getUserBranchId($userId);
-        if (Customers::addNewCustomer($customerName, $email, $phoneNumber, $address, $branchId)) {
+        $customerName = self::getParameter('customer-name', isCompulsory: true);
+        $email = self::getParameter('email');
+        $phoneNumber = self::getParameter('phone-number');
+        $address = self::getParameter('address');
+        $branchId = self::getParameter('branch-id', dataType: 'int');
+
+        if (!$branchId)
+            $branchId = User::getUserBranchId(self::getUserId());
+
+        if (Customers::addNewCustomer($customerName, $email, $phoneNumber, $address, $branchId))
             self::sendSuccess(['message' => 'New customer was added successfully.']);
-        }
+        else
+            self::sendError('Failed to add new customer');
     }
 
     public function getCustomers(): void
     {
         self::checkLoggedIn();
-        $params = Application::$app->request->getBodyParams();
 
-        $startIndex = self::getConvertedTo('start', $params['start'] ?? '0', 'int');
-        $branchId = User::getUserBranchId(self::getUserId());
+        $startIndex = self::getParameter('start', 0, 'int');
+        $branchId = self::getParameter('branch-id', dataType: 'int');
+
+        if (!$branchId)
+            $branchId = User::getUserBranchId(self::getUserId());
+
         $data = Customers::getCustomers($branchId, $startIndex);
         self::sendSuccess(['customers' => $data]);
+    }
+
+    public function updateCustomer(): void
+    {
+        $customerId = self::getParameter('customer-id', isCompulsory: true);
+        $email = self::getParameter('email');
+        $customerName = self::getParameter('customer-name');
+        $phoneNumber = self::getParameter('phone-number');
+        $address = self::getParameter('address');
+        $banned = self::getParameter('banned', dataType: 'bool');
+        $branchId = self::getParameter('branch-id', dataType: 'int');
+
+        if (!$branchId)
+            $branchId = User::getUserBranchId(self::getUserId());
+
+        if (Customers::updateCustomer($customerId, $customerName, $email, $phoneNumber, $address, $branchId, $banned))
+            self::sendSuccess(['message' => 'Branch details were updated successfully.']);
+        else
+            self::sendError('Failed to update customer details.');
+    }
+
+    public function addBranch(): void
+    {
+        self::checkLoggedIn(true);
+
+        $branchName = self::getParameter('branch-name');
+        $address = self::getParameter('address');
+        $managerId = self::getParameter('manager-id', dataType: 'int');
+
+        if (Branches::addNewBranch($branchName, $address, $managerId))
+            self::sendSuccess(['message' => 'New branch was created successfully.']);
+        else
+            self::sendError('Failed to add new branch');
+    }
+
+    public function getBranches(): void
+    {
+        self::checkLoggedIn(true);
+
+        $startIndex = self::getParameter('start', 0, 'int');
+        $data = Branches::getBranches($startIndex);
+        self::sendSuccess(['branches' => $data]);
+    }
+
+    public function updateBranch(): void
+    {
+        self::checkLoggedIn(true);
+
+        $branchId = self::getParameter('branch-id', dataType: 'int', isCompulsory: true);
+        $branchName = self::getParameter('branch-name');
+        $address = self::getParameter('address');
+        $managerId = self::getParameter('manager-id', dataType: 'int');
+        if (Branches::updateBranch($branchId, $branchName, $address, $managerId))
+            self::sendSuccess(['message' => 'New branch was created successfully.']);
+        else
+            self::sendError('Failed to update branch details.');
+    }
+
+    public function addEmployee(): void
+    {
+        self::checkLoggedIn(true);
+
+        $name = self::getParameter('employee-name', isCompulsory: true);
+        $address = self::getParameter('address');
+        $email = self::getParameter('email');
+        $phoneNumber = self::getParameter('phone-number');
+        $branchId = self::getParameter('branch-id');
+        $joinDate = self::getParameter('join-date');
+        $leftDate = self::getParameter('left-date');
+
+        if (Employees::addEmployee($name, $address, $email, $phoneNumber, $branchId, $joinDate, $leftDate))
+            self::sendSuccess(['message' => 'New branch was created successfully.']);
+        else
+            self::sendError('Failed to add new employee.');
+    }
+
+    public function getEmployees(): void
+    {
+        self::checkLoggedIn(true);
+
+        $startIndex = self::getParameter('start', 0, 'int');
+        $data = Employees::getEmployees($startIndex);
+        self::sendSuccess(['employees' => $data]);
+    }
+
+    public function updateEmployee(): void
+    {
+        self::checkLoggedIn(true);
+
+        $employeeId = self::getParameter('employee-id', dataType: 'int', isCompulsory: true);
+        $name = self::getParameter('employee-name');
+        $address = self::getParameter('address');
+        $email = self::getParameter('email');
+        $phoneNumber = self::getParameter('phone-number');
+        $branchId = self::getParameter('branch-id');
+        $joinDate = self::getParameter('join-date');
+        $leftDate = self::getParameter('left-date');
+
+        if (Employees::updateEmployee($employeeId, $name, $address, $email, $phoneNumber, $branchId, $joinDate, $leftDate))
+            self::sendSuccess(['message' => 'New branch was created successfully.']);
+        else
+            self::sendError('Failed to add new employee.');
     }
 
     public function login(): void
@@ -68,20 +177,33 @@ class ApiControllerV1 extends API
         }
     }
 
-    public function register(): void
+    public function addUser(): void
     {
-        $params = Application::$app->request->getBodyParams();
-        $user = new User();
-        $status = $user->createNewUser($params);
-        if ($status === 'user created.') {
-            self::sendResponse(self::STATUS_CODE_SUCCESS, self::STATUS_MSG_SUCCESS,
-                ['message' => 'Registration successful.']);
-        } else {
-            self::sendResponse(self::STATUS_CODE_SUCCESS, self::STATUS_MSG_ERROR,
-                ['error' => $status]);
-        }
+        self::checkLoggedIn(true);
+
+        $username = self::getParameter('username', isCompulsory: true);
+        $email = self::getParameter('email');
+        $firstname = self::getParameter('firstname');
+        $lastname = self::getParameter('lastname');
+        $password = self::getParameter('password', isCompulsory: true);
+        $role = self::getParameter('role', isCompulsory: true);
+        $branchId = self::getParameter('branch-id');
+
+        $status = User::createNewUser($username, $password, $role, $email, $firstname, $lastname, $branchId);
+        if ($status === 'New user created successfully.')
+            self::sendSuccess(['message' => $status]);
+        else
+            self::sendError($status);
     }
 
+    public function getUsers():void
+    {
+        self::checkLoggedIn(true);
+
+        $startIndex = self::getParameter('start', 0, 'int');
+        $data = User::getUsers($startIndex);
+        self::sendSuccess(['users' => $data]);
+    }
     /**
      * Check whether requests are coming from authorized users. If not send "401" unauthorized error message.
      */
@@ -94,8 +216,8 @@ class ApiControllerV1 extends API
                 ['message' => 'You are not authorized to perform this action.']);
             exit();
         }
-        if ($requireAdmin){
-            if (!User::isAdmin(self::getUserId())){
+        if ($requireAdmin) {
+            if (!User::isAdmin(self::getUserId())) {
                 self::sendResponse(self::STATUS_CODE_UNAUTHORIZED, self::STATUS_MSG_UNAUTHORIZED,
                     ['message' => 'You are not authorized to perform this action.']);
                 exit();
@@ -109,12 +231,12 @@ class ApiControllerV1 extends API
         return Authorization::getUserId($matches[1]);
     }
 
-    private static function getAuthorizationHeader():string|null{
+    private static function getAuthorizationHeader(): string|null
+    {
         $authHeader = null;
         if (isset($_SERVER['Authorization'])) {
             $authHeader = trim($_SERVER["Authorization"]);
-        }
-        else if (isset($_SERVER['HTTP_AUTHORIZATION'])) { //Nginx or fast CGI
+        } else if (isset($_SERVER['HTTP_AUTHORIZATION'])) { //Nginx or fast CGI
             $authHeader = trim($_SERVER["HTTP_AUTHORIZATION"]);
         } elseif (function_exists('apache_request_headers')) {
             $requestHeaders = apache_request_headers();
@@ -126,6 +248,31 @@ class ApiControllerV1 extends API
             }
         }
         return $authHeader;
+    }
+
+    /**
+     * Retrieve parameters passed either by GET or POST methods.
+     * @param string $parameterIdentifier Parameter name
+     * @param mixed $defaultValue Default value to set if parameter is not passed.
+     * @param string $dataType Datatype if needed to get converted to a specific data type. Send an error message to
+     *                          the user if passed data cannot be converted to the specified type.
+     * @param bool $isCompulsory If set to True, send an error message if specified parameter is not passed.
+     * @return mixed Value of the parameter.
+     */
+    private static function getParameter(string $parameterIdentifier, mixed $defaultValue = null,
+                                         string $dataType = 'string', bool $isCompulsory = false): mixed
+    {
+        $params = Application::$app->request->getBodyParams();
+
+        if (!isset($params[$parameterIdentifier]))
+            if ($isCompulsory)
+                self::sendError("Required parameter '$parameterIdentifier' is missing.");
+            else
+                return $defaultValue;
+        if ($dataType == 'string')
+            return $params[$parameterIdentifier];
+        else
+            return self::getConvertedTo($parameterIdentifier, $params[$parameterIdentifier], $dataType);
     }
 
     /**
