@@ -196,6 +196,14 @@ class ApiControllerV1 extends API
             self::sendError($status);
     }
 
+    public function getUsers():void
+    {
+        self::checkLoggedIn(true);
+
+        $startIndex = self::getParameter('start', 0, 'int');
+        $data = User::getUsers($startIndex);
+        self::sendSuccess(['users' => $data]);
+    }
     /**
      * Check whether requests are coming from authorized users. If not send "401" unauthorized error message.
      */

@@ -128,6 +128,15 @@ class User extends DbModel
         return 'Failed to create new user.';
     }
 
+    public static function getUsers(int $startingIndex = 0, int $limit = 30): array
+    {
+        $superAdminRole = self::ROLE_SUPER_ADMINISTRATOR;
+        $sql = "SELECT * FROM users WHERE role!=$superAdminRole LIMIT $startingIndex, $limit";
+        $statement = self::prepare($sql);
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     /**
      * If passed user ID is present, set instance variable values.
      * @param int $userID User ID to look for
@@ -178,7 +187,7 @@ class User extends DbModel
     public function getUserRoleText(): string
     {
         if ($this->role == User::ROLE_ADMINISTRATOR)
-            return 'admin';
+            return 'administrator';
         elseif ($this->role == User::ROLE_CASHIER)
             return 'cashier';
         elseif ($this->role == User::ROLE_MANAGER)
