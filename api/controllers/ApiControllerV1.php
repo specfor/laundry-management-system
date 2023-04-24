@@ -17,14 +17,16 @@ class ApiControllerV1 extends API
     public function addCustomer(): void
     {
         self::checkLoggedIn();
-        $params = Application::$app->request->getBodyParams();
-        $email = $params['email'] ?? "";
-        $customerName = $params['customer-name'] ?? "";
-        $phoneNumber = $params['phone-number'] ?? "";
-        $address = $params['address'] ?? "";
 
-        $userId = self::getUserId();
-        $branchId = User::getUserBranchId($userId);
+        $customerName = self::getParameter('customer-name', isCompulsory: true);
+        $email = self::getParameter('email');
+        $phoneNumber = self::getParameter('phone-number');
+        $address = self::getParameter('address');
+        $branchId = self::getParameter('branch-id', dataType: 'int');
+
+        if (!$branchId)
+            $branchId = User::getUserBranchId(self::getUserId());
+
         if (Customers::addNewCustomer($customerName, $email, $phoneNumber, $address, $branchId))
             self::sendSuccess(['message' => 'New customer was added successfully.']);
         else
@@ -34,29 +36,30 @@ class ApiControllerV1 extends API
     public function getCustomers(): void
     {
         self::checkLoggedIn();
-        $params = Application::$app->request->getBodyParams();
 
-        $startIndex = self::getConvertedTo('start', $params['start'] ?? '0', 'int');
-        $branchId = User::getUserBranchId(self::getUserId());
+        $startIndex = self::getParameter('start', 0, 'int');
+        $branchId = self::getParameter('branch-id', dataType: 'int');
+
+        if (!$branchId)
+            $branchId = User::getUserBranchId(self::getUserId());
+
         $data = Customers::getCustomers($branchId, $startIndex);
         self::sendSuccess(['customers' => $data]);
     }
 
     public function updateCustomer(): void
     {
-        $customerId = $params['customer-id'] ?? null;
-        $email = $params['email'] ?? null;
-        $customerName = $params['customer-name'] ?? null;
-        $phoneNumber = $params['phone-number'] ?? null;
-        $address = $params['address'] ?? null;
-        $banned = $params['banned'] ?? null;
+        $customerId = self::getParameter('customer-id', isCompulsory: true);
+        $email = self::getParameter('email');
+        $customerName = self::getParameter('customer-name');
+        $phoneNumber = self::getParameter('phone-number');
+        $address = self::getParameter('address');
+        $banned = self::getParameter('banned', dataType: 'bool');
+        $branchId = self::getParameter('branch-id', dataType: 'int');
 
-        if (isset($params['branch-id'])) {
-            $branchId = self::getConvertedTo('branch-id', $params['branch-id'], 'int');
-        } else {
-            $userId = self::getUserId();
-            $branchId = User::getUserBranchId($userId);
-        }
+        if (!$branchId)
+            $branchId = User::getUserBranchId(self::getUserId());
+
         if (Customers::updateCustomer($customerId, $customerName, $email, $phoneNumber, $address, $branchId, $banned))
             self::sendSuccess(['message' => 'Branch details were updated successfully.']);
         else
@@ -66,11 +69,11 @@ class ApiControllerV1 extends API
     public function addBranch(): void
     {
         self::checkLoggedIn(true);
-        $params = Application::$app->request->getBodyParams();
 
-        $branchName = $params['branch-name'] ?? null;
-        $address = $params['address'] ?? null;
-        $managerId = $params['manager-id'] ?? null;
+        $branchName = self::getParameter('branch-name');
+        $address = self::getParameter('address');
+        $managerId = self::getParameter('manager-id', dataType: 'int');
+
         if (Branches::addNewBranch($branchName, $address, $managerId))
             self::sendSuccess(['message' => 'New branch was created successfully.']);
         else
@@ -80,9 +83,8 @@ class ApiControllerV1 extends API
     public function getBranches(): void
     {
         self::checkLoggedIn(true);
-        $params = Application::$app->request->getBodyParams();
 
-        $startIndex = self::getConvertedTo('start', $params['start'] ?? '0', 'int');
+        $startIndex = self::getParameter('start', 0, 'int');
         $data = Branches::getBranches($startIndex);
         self::sendSuccess(['branches' => $data]);
     }
@@ -90,12 +92,12 @@ class ApiControllerV1 extends API
     public function updateBranch(): void
     {
         self::checkLoggedIn(true);
-        $params = Application::$app->request->getBodyParams();
 
-        $branchName = $params['branch-name'] ?? null;
-        $address = $params['address'] ?? null;
-        $managerId = $params['manager-id'] ?? null;
-        if (Branches::updateBranch($branchName, $address, $managerId))
+        $branchId = self::getParameter('branch-id', dataType: 'int', isCompulsory: true);
+        $branchName = self::getParameter('branch-name');
+        $address = self::getParameter('address');
+        $managerId = self::getParameter('manager-id', dataType: 'int');
+        if (Branches::updateBranch($branchId, $branchName, $address, $managerId))
             self::sendSuccess(['message' => 'New branch was created successfully.']);
         else
             self::sendError('Failed to update branch details.');
@@ -186,6 +188,31 @@ class ApiControllerV1 extends API
             }
         }
         return $authHeader;
+    }
+
+    /**
+     * Retrieve parameters passed either by GET or POST methods.
+     * @param string $parameterIdentifier Parameter name
+     * @param mixed $defaultValue Default value to set if parameter is not passed.
+     * @param string $dataType Datatype if needed to get converted to a specific data type. Send an error message to
+     *                          the user if passed data cannot be converted to the specified type.
+     * @param bool $isCompulsory If set to True, send an error message if specified parameter is not passed.
+     * @return mixed Value of the parameter.
+     */
+    private static function getParameter(string $parameterIdentifier, mixed $defaultValue = null,
+                                         string $dataType = 'string', bool $isCompulsory = false): mixed
+    {
+        $params = Application::$app->request->getBodyParams();
+
+        if (!isset($params[$parameterIdentifier]))
+            if ($isCompulsory)
+                self::sendError("Required parameter '$parameterIdentifier' is missing.");
+            else
+                return $defaultValue;
+        if ($dataType == 'string')
+            return $params[$parameterIdentifier];
+        else
+            return self::getConvertedTo($parameterIdentifier, $params[$parameterIdentifier], $dataType);
     }
 
     /**
