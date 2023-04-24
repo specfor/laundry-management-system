@@ -8,6 +8,7 @@ use LogicLeap\StockManagement\core\Request;
 use LogicLeap\StockManagement\core\SecureToken;
 use LogicLeap\StockManagement\models\API;
 use LogicLeap\StockManagement\models\Authorization;
+use LogicLeap\StockManagement\models\Branches;
 use LogicLeap\StockManagement\models\Customers;
 use LogicLeap\StockManagement\models\User;
 
@@ -38,6 +39,38 @@ class ApiControllerV1 extends API
         $branchId = User::getUserBranchId(self::getUserId());
         $data = Customers::getCustomers($branchId, $startIndex);
         self::sendSuccess(['customers' => $data]);
+    }
+
+    public function addBranch(): void{
+        self::checkLoggedIn(true);
+        $params = Application::$app->request->getBodyParams();
+
+        $branchName = $params['branch-name'] ?? null;
+        $address = $params['address'] ?? null;
+        $managerId = $params['manager-id'] ?? null;
+        if (Branches::addNewBranch($branchName, $address, $managerId))
+            self::sendSuccess(['message' => 'New branch was created successfully.']);
+    }
+
+    public function getBranches():void
+    {
+        self::checkLoggedIn(true);
+        $params = Application::$app->request->getBodyParams();
+
+        $startIndex = self::getConvertedTo('start', $params['start'] ?? '0', 'int');
+        $data = Branches::getBranches($startIndex);
+        self::sendSuccess(['branches' => $data]);
+    }
+
+    public function updateBranch():void{
+        self::checkLoggedIn(true);
+        $params = Application::$app->request->getBodyParams();
+
+        $branchName = $params['branch-name'] ?? null;
+        $address = $params['address'] ?? null;
+        $managerId = $params['manager-id'] ?? null;
+        if (Branches::updateBranch($branchName, $address, $managerId))
+            self::sendSuccess(['message' => 'New branch was created successfully.']);
     }
 
     public function login(): void
