@@ -17,7 +17,7 @@ class ApiControllerV1 extends API
 {
     public function addCustomer(): void
     {
-        self::checkLoggedIn();
+        self::checkPermissions();
 
         $customerName = self::getParameter('customer-name', isCompulsory: true);
         $email = self::getParameter('email');
@@ -36,7 +36,7 @@ class ApiControllerV1 extends API
 
     public function getCustomers(): void
     {
-        self::checkLoggedIn();
+        self::checkPermissions();
 
         $startIndex = self::getParameter('start', 0, 'int');
         $branchId = self::getParameter('branch-id', dataType: 'int');
@@ -50,6 +50,8 @@ class ApiControllerV1 extends API
 
     public function updateCustomer(): void
     {
+        self::checkPermissions();
+
         $customerId = self::getParameter('customer-id', isCompulsory: true);
         $email = self::getParameter('email');
         $customerName = self::getParameter('customer-name');
@@ -69,7 +71,7 @@ class ApiControllerV1 extends API
 
     public function addBranch(): void
     {
-        self::checkLoggedIn(true);
+        self::checkPermissions(User::ROLE_ADMINISTRATOR);
 
         $branchName = self::getParameter('branch-name');
         $address = self::getParameter('address');
@@ -83,7 +85,7 @@ class ApiControllerV1 extends API
 
     public function getBranches(): void
     {
-        self::checkLoggedIn(true);
+        self::checkPermissions(User::ROLE_ADMINISTRATOR);
 
         $startIndex = self::getParameter('start', 0, 'int');
         $data = Branches::getBranches($startIndex);
@@ -92,7 +94,7 @@ class ApiControllerV1 extends API
 
     public function updateBranch(): void
     {
-        self::checkLoggedIn(true);
+        self::checkPermissions(User::ROLE_ADMINISTRATOR);
 
         $branchId = self::getParameter('branch-id', dataType: 'int', isCompulsory: true);
         $branchName = self::getParameter('branch-name');
@@ -106,7 +108,7 @@ class ApiControllerV1 extends API
 
     public function addEmployee(): void
     {
-        self::checkLoggedIn(true);
+        self::checkPermissions(User::ROLE_MANAGER);
 
         $name = self::getParameter('employee-name', isCompulsory: true);
         $address = self::getParameter('address');
@@ -124,7 +126,7 @@ class ApiControllerV1 extends API
 
     public function getEmployees(): void
     {
-        self::checkLoggedIn(true);
+        self::checkPermissions(User::ROLE_MANAGER);
 
         $startIndex = self::getParameter('start', 0, 'int');
         $data = Employees::getEmployees($startIndex);
@@ -133,7 +135,7 @@ class ApiControllerV1 extends API
 
     public function updateEmployee(): void
     {
-        self::checkLoggedIn(true);
+        self::checkPermissions(User::ROLE_MANAGER);
 
         $employeeId = self::getParameter('employee-id', dataType: 'int', isCompulsory: true);
         $name = self::getParameter('employee-name');
@@ -179,7 +181,7 @@ class ApiControllerV1 extends API
 
     public function addUser(): void
     {
-        self::checkLoggedIn(true);
+        self::checkPermissions(User::ROLE_CASHIER);
 
         $username = self::getParameter('username', isCompulsory: true);
         $email = self::getParameter('email');
@@ -196,9 +198,9 @@ class ApiControllerV1 extends API
             self::sendError($status);
     }
 
-    public function getUsers():void
+    public function getUsers(): void
     {
-        self::checkLoggedIn(true);
+        self::checkPermissions(User::ROLE_CASHIER);
 
         $startIndex = self::getParameter('start', 0, 'int');
         $data = User::getUsers($startIndex);
@@ -206,8 +208,9 @@ class ApiControllerV1 extends API
     }
     /**
      * Check whether requests are coming from authorized users. If not send "401" unauthorized error message.
+     * @param int $requiredMinimumUserRole Minimum user role required to perform the action.
      */
-    private static function checkLoggedIn(bool $requireAdmin = false): void
+    private static function checkPermissions(int $requiredMinimumUserRole = User::ROLE_CASHIER): void
     {
         preg_match('/Bearer\s(\S+)/', self::getAuthorizationHeader(), $matches);
 
@@ -216,13 +219,13 @@ class ApiControllerV1 extends API
                 ['message' => 'You are not authorized to perform this action.']);
             exit();
         }
-        if ($requireAdmin) {
-            if (!User::isAdmin(self::getUserId())) {
-                self::sendResponse(self::STATUS_CODE_UNAUTHORIZED, self::STATUS_MSG_UNAUTHORIZED,
-                    ['message' => 'You are not authorized to perform this action.']);
-                exit();
-            }
+
+        if (User::getUserRole(self::getUserId()) < $requiredMinimumUserRole) {
+            self::sendResponse(self::STATUS_CODE_UNAUTHORIZED, self::STATUS_MSG_UNAUTHORIZED,
+                ['message' => 'You are not authorized to perform this action.']);
+            exit();
         }
+
     }
 
     private static function getUserId(): int
