@@ -66,4 +66,12 @@ class Customers extends DbModel
 
         return self::updateTableData('customers', $updateFieldsWithValues, "customer_id=$customerId");
     }
+
+    public static function deleteCustomer(int $customerId): bool
+    {
+        $sql = "DELETE FROM customers WHERE customer_id=$customerId";
+        if (self::exec($sql))
+            return true;
+        return false;
+    }
 }

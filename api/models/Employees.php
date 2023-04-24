@@ -54,4 +54,12 @@ class Employees extends DbModel
         $statement->execute();
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public static function deleteEmployee(int $employeeId): bool
+    {
+        $sql = "DELETE FROM employees WHERE employee_id=$employeeId";
+        if (self::exec($sql))
+            return true;
+        return false;
+    }
 }

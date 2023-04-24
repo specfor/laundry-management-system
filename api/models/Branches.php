@@ -34,4 +34,12 @@ class Branches extends DbModel
 
         return self::updateTableData('branches', $updateFieldsWithValues, "branch_id=$branchId");
     }
+
+    public static function deleteBranch(int $branch_id): bool
+    {
+        $sql = "DELETE FROM branches WHERE branch_id=$branch_id";
+        if (self::exec($sql))
+            return true;
+        return false;
+    }
 }
