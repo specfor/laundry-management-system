@@ -69,6 +69,17 @@ class ApiControllerV1 extends API
             self::sendError('Failed to update customer details.');
     }
 
+    public function deleteCustomer(): void
+    {
+        self::checkPermissions();
+
+        $customerId = self::getParameter('customer-id', dataType: 'int', isCompulsory: true);
+        if (Customers::deleteCustomer($customerId))
+            self::sendSuccess(['message' => 'Successfully deleted the customer.']);
+        else
+            self::sendError('Failed to delete the customer');
+    }
+
     public function addBranch(): void
     {
         self::checkPermissions(User::ROLE_ADMINISTRATOR);
@@ -104,6 +115,17 @@ class ApiControllerV1 extends API
             self::sendSuccess(['message' => 'New branch was created successfully.']);
         else
             self::sendError('Failed to update branch details.');
+    }
+
+    public function deleteBranch(): void
+    {
+        self::checkPermissions(User::ROLE_ADMINISTRATOR);
+
+        $branchId = self::getParameter('branch-id', dataType: 'int', isCompulsory: true);
+        if (Branches::deleteBranch($branchId))
+            self::sendSuccess(['message' => 'Successfully deleted the branch.']);
+        else
+            self::sendError('Failed to delete the branch');
     }
 
     public function addEmployee(): void
@@ -150,6 +172,17 @@ class ApiControllerV1 extends API
             self::sendSuccess(['message' => 'New branch was created successfully.']);
         else
             self::sendError('Failed to add new employee.');
+    }
+
+    public function deleteEmployee(): void
+    {
+        self::checkPermissions(User::ROLE_MANAGER);
+
+        $employeeId = self::getParameter('employee-id', dataType: 'int', isCompulsory: true);
+        if (Employees::deleteEmployee($employeeId))
+            self::sendSuccess(['message' => 'Successfully deleted the employee.']);
+        else
+            self::sendError('Failed to delete the employee');
     }
 
     public function login(): void
