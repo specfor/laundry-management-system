@@ -214,7 +214,7 @@ class ApiControllerV1 extends API
 
     public function addUser(): void
     {
-        self::checkPermissions(User::ROLE_CASHIER);
+        self::checkPermissions(User::ROLE_ADMINISTRATOR);
 
         $username = self::getParameter('username', isCompulsory: true);
         $email = self::getParameter('email');
@@ -233,7 +233,7 @@ class ApiControllerV1 extends API
 
     public function getUsers(): void
     {
-        self::checkPermissions(User::ROLE_CASHIER);
+        self::checkPermissions(User::ROLE_ADMINISTRATOR);
 
         $startIndex = self::getParameter('start', 0, 'int');
         $data = User::getUsers($startIndex);
