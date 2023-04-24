@@ -239,6 +239,27 @@ class ApiControllerV1 extends API
         $data = User::getUsers($startIndex);
         self::sendSuccess(['users' => $data]);
     }
+
+    public function deleteUser(): void
+    {
+        self::checkPermissions(User::ROLE_ADMINISTRATOR);
+
+        $deleteUserId = self::getParameter('user-id', dataType: 'int', isCompulsory: true);
+
+        $deleteUserRole = User::getUserRole($deleteUserId);
+
+        if ($deleteUserRole == User::ROLE_ADMINISTRATOR) {
+            if ($deleteUserId == self::getUserId()) {
+                self::sendError('You cannot delete your administrator account.');
+            }
+        }
+
+        if (User::deleteUser($deleteUserId))
+            self::sendSuccess(['message' => 'Successfully deleted the user.']);
+        else
+            self::sendError('Failed to delete the user.');
+    }
+
     /**
      * Check whether requests are coming from authorized users. If not send "401" unauthorized error message.
      * @param int $requiredMinimumUserRole Minimum user role required to perform the action.

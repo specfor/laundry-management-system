@@ -180,6 +180,14 @@ class User extends DbModel
         return false;
     }
 
+    public static function getNumberOfUsers(int $userRole):int
+    {
+        $sql = "SELECT id FROM users WHERE role=$userRole";
+        $statement = self::prepare($sql);
+        $statement->execute();
+        return $statement->rowCount();
+    }
+
     /**
      * Get user type text.
      * @return string Return user type message. 'none' if no role found.
@@ -202,5 +210,13 @@ class User extends DbModel
         $statement = self::prepare($sql);
         $statement->execute();
         return $statement->fetch(PDO::FETCH_ASSOC)['role'];
+    }
+
+    public static function deleteUser(int $userId): bool
+    {
+        $sql = "DELETE FROM users WHERE id=$userId";
+        if (self::exec($sql))
+            return true;
+        return false;
     }
 }
