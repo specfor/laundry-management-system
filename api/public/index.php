@@ -30,5 +30,8 @@ $app->router->addPostRoute('/api/v1/customers/update', [ApiControllerV1::class, 
 $app->router->addGetRoute('/api/v1/branches', [ApiControllerV1::class, 'getBranches']);
 $app->router->addPostRoute('/api/v1/branches/add', [ApiControllerV1::class, 'addBranch']);
 $app->router->addPostRoute('/api/v1/branches/update', [ApiControllerV1::class, 'updateBranch']);
+$app->router->addGetRoute('/api/v1/employees', [ApiControllerV1::class, 'getEmployees']);
+$app->router->addPostRoute('/api/v1/employees/add', [ApiControllerV1::class, 'addEmployee']);
+$app->router->addPostRoute('/api/v1/employees/update', [ApiControllerV1::class, 'updateEmployee']);
 
 $app->run();

@@ -10,6 +10,7 @@ use LogicLeap\StockManagement\models\API;
 use LogicLeap\StockManagement\models\Authorization;
 use LogicLeap\StockManagement\models\Branches;
 use LogicLeap\StockManagement\models\Customers;
+use LogicLeap\StockManagement\models\Employees;
 use LogicLeap\StockManagement\models\User;
 
 class ApiControllerV1 extends API
@@ -101,6 +102,51 @@ class ApiControllerV1 extends API
             self::sendSuccess(['message' => 'New branch was created successfully.']);
         else
             self::sendError('Failed to update branch details.');
+    }
+
+    public function addEmployee(): void
+    {
+        self::checkLoggedIn(true);
+
+        $name = self::getParameter('employee-name', isCompulsory: true);
+        $address = self::getParameter('address');
+        $email = self::getParameter('email');
+        $phoneNumber = self::getParameter('phone-number');
+        $branchId = self::getParameter('branch-id');
+        $joinDate = self::getParameter('join-date');
+        $leftDate = self::getParameter('left-date');
+
+        if (Employees::addEmployee($name, $address, $email, $phoneNumber, $branchId, $joinDate, $leftDate))
+            self::sendSuccess(['message' => 'New branch was created successfully.']);
+        else
+            self::sendError('Failed to add new employee.');
+    }
+
+    public function getEmployees():void{
+        self::checkLoggedIn(true);
+
+        $startIndex = self::getParameter('start', 0, 'int');
+        $data = Employees::getEmployees($startIndex);
+        self::sendSuccess(['employees' => $data]);
+    }
+
+    public function updateEmployee():void
+    {
+        self::checkLoggedIn(true);
+
+        $employeeId = self::getParameter('employee-id', dataType: 'int',isCompulsory: true);
+        $name = self::getParameter('employee-name');
+        $address = self::getParameter('address');
+        $email = self::getParameter('email');
+        $phoneNumber = self::getParameter('phone-number');
+        $branchId = self::getParameter('branch-id');
+        $joinDate = self::getParameter('join-date');
+        $leftDate = self::getParameter('left-date');
+
+        if (Employees::updateEmployee($employeeId, $name, $address, $email, $phoneNumber, $branchId, $joinDate, $leftDate))
+            self::sendSuccess(['message' => 'New branch was created successfully.']);
+        else
+            self::sendError('Failed to add new employee.');
     }
 
     public function login(): void
