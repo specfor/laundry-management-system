@@ -25,9 +25,10 @@ class ApiControllerV1 extends API
 
         $userId = self::getUserId();
         $branchId = User::getUserBranchId($userId);
-        if (Customers::addNewCustomer($customerName, $email, $phoneNumber, $address, $branchId)) {
+        if (Customers::addNewCustomer($customerName, $email, $phoneNumber, $address, $branchId))
             self::sendSuccess(['message' => 'New customer was added successfully.']);
-        }
+        else
+            self::sendError('Failed to add new customer');
     }
 
     public function getCustomers(): void
@@ -58,6 +59,8 @@ class ApiControllerV1 extends API
         }
         if (Customers::updateCustomer($customerId, $customerName, $email, $phoneNumber, $address, $branchId, $banned))
             self::sendSuccess(['message' => 'Branch details were updated successfully.']);
+        else
+            self::sendError('Failed to update customer details.');
     }
 
     public function addBranch(): void
@@ -70,6 +73,8 @@ class ApiControllerV1 extends API
         $managerId = $params['manager-id'] ?? null;
         if (Branches::addNewBranch($branchName, $address, $managerId))
             self::sendSuccess(['message' => 'New branch was created successfully.']);
+        else
+            self::sendError('Failed to add new branch');
     }
 
     public function getBranches(): void
@@ -92,6 +97,8 @@ class ApiControllerV1 extends API
         $managerId = $params['manager-id'] ?? null;
         if (Branches::updateBranch($branchName, $address, $managerId))
             self::sendSuccess(['message' => 'New branch was created successfully.']);
+        else
+            self::sendError('Failed to update branch details.');
     }
 
     public function login(): void
