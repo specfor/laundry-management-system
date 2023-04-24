@@ -137,6 +137,38 @@ class User extends DbModel
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public static function updateUser(int    $userId, string $password = null, string $role = null,
+                                      string $email = null, string $firstname = null,
+                                      string $lastname = null, int $branchId = null): bool
+    {
+        $updateFields = [];
+
+        if ($password)
+            $updateFields['password'] = self::generatePasswordHash($password);
+        if ($role) {
+            if (strtolower($role) == 'administrator')
+                $updateFields['role'] = self::ROLE_ADMINISTRATOR;
+            elseif (strtolower($role) == 'manager')
+                $updateFields['role'] = self::ROLE_MANAGER;
+            elseif (strtolower($role == 'cashier'))
+                $updateFields['role'] = self::ROLE_CASHIER;
+            else
+                return false;
+        }
+        if ($email)
+            $updateFields['email'] = $email;
+        if ($firstname)
+            $updateFields['firstname'] = $firstname;
+        if ($lastname)
+            $updateFields['lastname'] = $lastname;
+        if ($branchId)
+            $updateFields['branch_id']= $branchId;
+
+        if (self::updateTableData('users', $updateFields,"id=$userId"))
+            return true;
+        return false;
+    }
+
     /**
      * If passed user ID is present, set instance variable values.
      * @param int $userID User ID to look for
@@ -180,7 +212,7 @@ class User extends DbModel
         return false;
     }
 
-    public static function getNumberOfUsers(int $userRole):int
+    public static function getNumberOfUsers(int $userRole): int
     {
         $sql = "SELECT id FROM users WHERE role=$userRole";
         $statement = self::prepare($sql);

@@ -248,6 +248,9 @@ class ApiControllerV1 extends API
 
         $deleteUserRole = User::getUserRole($deleteUserId);
 
+        if ($deleteUserRole == User::ROLE_SUPER_ADMINISTRATOR)
+            self::sendError('Failed to delete the user.');
+
         if ($deleteUserRole == User::ROLE_ADMINISTRATOR) {
             if ($deleteUserId == self::getUserId()) {
                 self::sendError('You cannot delete your administrator account.');
@@ -258,6 +261,24 @@ class ApiControllerV1 extends API
             self::sendSuccess(['message' => 'Successfully deleted the user.']);
         else
             self::sendError('Failed to delete the user.');
+    }
+
+    public function updateUser(): void
+    {
+        self::checkPermissions(User::ROLE_ADMINISTRATOR);
+
+        $userId = self::getParameter('user-id', dataType: 'int', isCompulsory: true);
+        $email = self::getParameter('email');
+        $firstname = self::getParameter('firstname');
+        $lastname = self::getParameter('lastname');
+        $password = self::getParameter('password', isCompulsory: true);
+        $role = self::getParameter('role', isCompulsory: true);
+        $branchId = self::getParameter('branch-id');
+
+        if (User::updateUser($userId,$password,$role,$email,$firstname,$lastname,$branchId))
+            self::sendSuccess(['message'=>'Successfully updated the user.']);
+        else
+            self::sendError('Failed to update the user.');
     }
 
     /**
