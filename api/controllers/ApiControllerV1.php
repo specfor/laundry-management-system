@@ -122,7 +122,8 @@ class ApiControllerV1 extends API
             self::sendError('Failed to add new employee.');
     }
 
-    public function getEmployees():void{
+    public function getEmployees(): void
+    {
         self::checkLoggedIn(true);
 
         $startIndex = self::getParameter('start', 0, 'int');
@@ -130,11 +131,11 @@ class ApiControllerV1 extends API
         self::sendSuccess(['employees' => $data]);
     }
 
-    public function updateEmployee():void
+    public function updateEmployee(): void
     {
         self::checkLoggedIn(true);
 
-        $employeeId = self::getParameter('employee-id', dataType: 'int',isCompulsory: true);
+        $employeeId = self::getParameter('employee-id', dataType: 'int', isCompulsory: true);
         $name = self::getParameter('employee-name');
         $address = self::getParameter('address');
         $email = self::getParameter('email');
@@ -176,18 +177,23 @@ class ApiControllerV1 extends API
         }
     }
 
-    public function register(): void
+    public function addUser(): void
     {
-        $params = Application::$app->request->getBodyParams();
-        $user = new User();
-        $status = $user->createNewUser($params);
-        if ($status === 'user created.') {
-            self::sendResponse(self::STATUS_CODE_SUCCESS, self::STATUS_MSG_SUCCESS,
-                ['message' => 'Registration successful.']);
-        } else {
-            self::sendResponse(self::STATUS_CODE_SUCCESS, self::STATUS_MSG_ERROR,
-                ['error' => $status]);
-        }
+        self::checkLoggedIn(true);
+
+        $username = self::getParameter('username', isCompulsory: true);
+        $email = self::getParameter('email');
+        $firstname = self::getParameter('firstname');
+        $lastname = self::getParameter('lastname');
+        $password = self::getParameter('password', isCompulsory: true);
+        $role = self::getParameter('role', isCompulsory: true);
+        $branchId = self::getParameter('branch-id');
+
+        $status = User::createNewUser($username, $password, $role, $email, $firstname, $lastname, $branchId);
+        if ($status === 'New user created successfully.')
+            self::sendSuccess(['message' => $status]);
+        else
+            self::sendError($status);
     }
 
     /**
