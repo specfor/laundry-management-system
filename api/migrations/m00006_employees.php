@@ -19,8 +19,8 @@ class m00006_employees extends MigrationScheme
                     email varchar(255),
                     phone_num varchar(30),
                     branch_id int,
-                    join_date datetime,
-                    left_date datetime,
+                    join_date date,
+                    left_date date,
                     is_left bool NOT NULL                  
                 )";
         try {
