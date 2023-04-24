@@ -41,7 +41,27 @@ class ApiControllerV1 extends API
         self::sendSuccess(['customers' => $data]);
     }
 
-    public function addBranch(): void{
+    public function updateCustomer(): void
+    {
+        $customerId = $params['customer-id'] ?? null;
+        $email = $params['email'] ?? null;
+        $customerName = $params['customer-name'] ?? null;
+        $phoneNumber = $params['phone-number'] ?? null;
+        $address = $params['address'] ?? null;
+        $banned = $params['banned'] ?? null;
+
+        if (isset($params['branch-id'])) {
+            $branchId = self::getConvertedTo('branch-id', $params['branch-id'], 'int');
+        } else {
+            $userId = self::getUserId();
+            $branchId = User::getUserBranchId($userId);
+        }
+        if (Customers::updateCustomer($customerId, $customerName, $email, $phoneNumber, $address, $branchId, $banned))
+            self::sendSuccess(['message' => 'Branch details were updated successfully.']);
+    }
+
+    public function addBranch(): void
+    {
         self::checkLoggedIn(true);
         $params = Application::$app->request->getBodyParams();
 
@@ -52,7 +72,7 @@ class ApiControllerV1 extends API
             self::sendSuccess(['message' => 'New branch was created successfully.']);
     }
 
-    public function getBranches():void
+    public function getBranches(): void
     {
         self::checkLoggedIn(true);
         $params = Application::$app->request->getBodyParams();
@@ -62,7 +82,8 @@ class ApiControllerV1 extends API
         self::sendSuccess(['branches' => $data]);
     }
 
-    public function updateBranch():void{
+    public function updateBranch(): void
+    {
         self::checkLoggedIn(true);
         $params = Application::$app->request->getBodyParams();
 
@@ -126,8 +147,8 @@ class ApiControllerV1 extends API
                 ['message' => 'You are not authorized to perform this action.']);
             exit();
         }
-        if ($requireAdmin){
-            if (!User::isAdmin(self::getUserId())){
+        if ($requireAdmin) {
+            if (!User::isAdmin(self::getUserId())) {
                 self::sendResponse(self::STATUS_CODE_UNAUTHORIZED, self::STATUS_MSG_UNAUTHORIZED,
                     ['message' => 'You are not authorized to perform this action.']);
                 exit();
@@ -141,12 +162,12 @@ class ApiControllerV1 extends API
         return Authorization::getUserId($matches[1]);
     }
 
-    private static function getAuthorizationHeader():string|null{
+    private static function getAuthorizationHeader(): string|null
+    {
         $authHeader = null;
         if (isset($_SERVER['Authorization'])) {
             $authHeader = trim($_SERVER["Authorization"]);
-        }
-        else if (isset($_SERVER['HTTP_AUTHORIZATION'])) { //Nginx or fast CGI
+        } else if (isset($_SERVER['HTTP_AUTHORIZATION'])) { //Nginx or fast CGI
             $authHeader = trim($_SERVER["HTTP_AUTHORIZATION"]);
         } elseif (function_exists('apache_request_headers')) {
             $requestHeaders = apache_request_headers();
