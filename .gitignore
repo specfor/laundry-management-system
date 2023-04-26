@@ -9,3 +9,4 @@ website/vendor/
 /api/maintenanceLock.lock
 /api/migrationLock.lock
 /api/.env
+/website/.env
