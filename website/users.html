@@ -23,13 +23,13 @@
             <div class="col-sm-4">
                 <div class="input-group mb-3">
                     <input id="" type="text" class="form-control" placeholder="Id" aria-label="" aria-describedby="">
-                    <button class="btn btn-dark fw-bold" type="button" id="">clear</button>
+                    <button class="btn btn-dark fw-bold" type="button" >clear</button>
                 </div>
             </div>
             <div class="col-sm-4">
                 <div class="input-group mb-3">
                     <input id="" type="text" class="form-control" placeholder="Username" aria-label="" aria-describedby="">
-                    <button class="btn btn-dark fw-bold" type="button" id="">clear</button>                   
+                    <button class="btn btn-dark fw-bold" type="button" >clear</button>                   
                 </div>
             </div>
             <div class="container">
@@ -42,6 +42,7 @@
                             <td>First Name</td>
                             <td>Last Name</td>
                             <td>User Role</td>
+                            <td>Branch Id</td>
                             <td>Action</td>                        
                         </tr>
                     </thead>
@@ -87,8 +88,15 @@
                 <div class="input-group mb-3">
                     <span class="input-group-text" >User Role</span>
                     <select class="form-select" id="selectionUserRoles1" >
+                      <option value="">Administrator</option>
+                      <option value="">Branch Head</option>
+                      <option value="">Data Entry Operator</option>
                     </select>
                 </div>
+                <div class="input-group mb-3">
+                  <span class="input-group-text" id="basic-addon3">Branch Id</span>
+                  <input type="text" class="form-control" aria-describedby="basic-addon3" id="branchId" placeholder="">
+              </div>
                 <p>Note - "Data Entry Operator" does not have permission to visit "Reports" and "Users" pages.</p>
               </div>
               <div class="modal-footer">

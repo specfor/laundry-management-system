@@ -10,14 +10,32 @@ async function sendUserData2DB() {
     let fName = document.getElementById("firstName").value
     let lName = document.getElementById("lastName").value
     let password = document.getElementById("password").value
-    //let userRole = document.getElementById("selectionUserRoles1")
+    let userRole = document.getElementById("selectionUserRoles1")
+    let branchId = document.getElementById("branchId").value
 
 
-    if (!username || !fName || !lName || !password ){
+    if (!username || !fName || !lName || !password || !userRole ){
         alert("Fill all required fields.")
         return
     }
+    
+    try{
+        let response = sendJsonRequest("http://www.laundry-api.localhost/api/v1/users/add",{ 
+                username:username,
+                password:password,
+                role:userRole,
+                email:email,
+                firstname:fName,
+                lastname:lName,
+                "branch-id":branchId               
+            })
+        
+            console.log(response)
 
+    }catch(err){
+
+    }
+    
     clearAllInputs()
 }
 
@@ -27,9 +45,10 @@ function clearAllInputs() {
     document.getElementById("firstName").value = ''
     document.getElementById("password").value = ''
     document.getElementById("lastName").value = ''
+    document.getElementById("branchId").value = ''
 }
 
-async function addUserToTable(userId, username, email, firstname, lastname, userRole) {
+async function addUserToTable(userId, username, email, firstname, lastname, userRole,branchId) {
     let userTable = document.getElementById("userTable")
 
     let newRow = userTable.insertRow(-1)
@@ -40,7 +59,8 @@ async function addUserToTable(userId, username, email, firstname, lastname, user
     newRow.insertCell(3).innerText = firstname
     newRow.insertCell(4).innerText = lastname
     newRow.insertCell(5).innerText = userRoles[userRole]
-    newRow.insertCell(6).innerHTML = `<div class="input-group mb-3">
+    newRow.insertCell(6).innerText = branchId
+    newRow.insertCell(7).innerHTML = `<div class="input-group mb-3">
   <button onclick="editUser()" class="edit btn btn-primary fw-bold" type="button" id="btn-edit-${userId}" data-bs-toggle="modal" data-bs-target="#editUserModal">Edit User</button>
   <button onclick="prepareChangePass()" class="edit btn btn-primary fw-bold" type="button" id="btn-edit-${userId}" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Change User Password</button>
   <button onclick="prepareDeleteUser()" class="delete btn btn-danger fw-bold" type="button" id="btn-delete-${userId}" data-bs-toggle="modal" data-bs-target="#confirmDelete">Delete</button>
@@ -66,4 +86,15 @@ async function changePass() {
     let newPassConfirm = document.getElementById("newUserPasswordConfirm").value
 
     
+}
+
+async function sendJsonRequest(url, jsonBody) {
+    return await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(jsonBody),
+        credentials: "same-origin"
+    })
 }
