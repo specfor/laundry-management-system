@@ -20,7 +20,7 @@ async function sendUserData2DB() {
     }
     
     try{
-        let response = sendJsonRequest("http://www.laundry-api.localhost/api/v1/users/add",{ 
+        let response = await sendJsonRequest("http://www.laundry-api.localhost/api/v1/users/add",{
                 username:username,
                 password:password,
                 role:userRole,
@@ -30,7 +30,7 @@ async function sendUserData2DB() {
                 "branch-id":branchId               
             })
         
-            console.log(response)
+            console.log(await response.json())
 
     }catch(err){
 
