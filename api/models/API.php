@@ -25,23 +25,25 @@ abstract class API
      */
     public static function sendResponse(int $statusCode, string $statusMessage, array $payload): void
     {
+        if (array_key_exists('HTTP_ORIGIN', $_SERVER)) {
+            header("Access-Control-Allow-Origin: " .$_SERVER['HTTP_ORIGIN']);
+        }else{
+            header('Access-Control-Allow-Origin: *');
+        }
+
+        header("Access-Control-Allow-Credentials: true");
+        header('Access-Control-Allow-Headers: content-type, authorization, origin');
+        header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST");
         header("Content-Type: application/json");
         header("Cache-Control: no-store, no-cache, must-revalidate");
         header("Cache-Control: post-check=0, pre-check=0", false);
         header("Pragma: no-cache");
-        header('Access-Control-Allow-Origin: *');
-        header('Access-Control-Allow-Headers: content-type, authorization');
-        header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST");
 
         $finalPayload = [
             'statusCode' => $statusCode,
             'statusMessage' => $statusMessage,
             'body' => $payload
         ];
-        $data = json_decode(file_get_contents('php://input'), true);
-        if (isset($data['dev'])){
-            $finalPayload['dev'] = $data;
-        }
         echo json_encode($finalPayload);
     }
 
