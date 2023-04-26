@@ -2,37 +2,45 @@
 
 namespace LogicLeap\StockManagement\controllers;
 
-use LogicLeap\StockManagement\core\Application;
+use LogicLeap\StockManagement\core\TailwindUiRenderer;
 
 class SiteController
 {
-    public function login():void
-    {
+    private const SITE_NAME = 'Laundry System';
 
+    public function login(): void
+    {
+        $variableData['site-title'] = 'Login - ' . self::SITE_NAME;
+        TailwindUiRenderer::loadPage('login', $variableData);
     }
 
-    public function dashboard():void
+    public function dashboard(): void
     {
-
+        $variableData['site-title'] = 'Dashboard - ' . self::SITE_NAME;
+        TailwindUiRenderer::loadPage('dashboard', $variableData);
     }
 
-    public function getBranches():void
+    public function getBranches(): void
     {
-        require_once Application::$ROOT_DIR."/views/branches.html";
+        $variableData['site-title'] = 'Branches - ' . self::SITE_NAME;
+        TailwindUiRenderer::loadPage('branches', $variableData);
     }
 
-    public function getEmployees():void
+    public function getEmployees(): void
     {
-        require_once Application::$ROOT_DIR."/views/employees.html";
+        $variableData['site-title'] = 'Employees - ' . self::SITE_NAME;
+        TailwindUiRenderer::loadPage('employees', $variableData);
     }
 
-    public function getPayments():void
+    public function getPayments(): void
     {
-        require_once Application::$ROOT_DIR."/views/payments.html";
+        $variableData['site-title'] = 'Payments - ' . self::SITE_NAME;
+        TailwindUiRenderer::loadPage('payments', $variableData);
     }
 
-    public function getUsers():void
+    public function getUsers(): void
     {
-        require_once Application::$ROOT_DIR."/views/users.html";
+        $variableData['site-title'] = 'Users - ' . self::SITE_NAME;
+        TailwindUiRenderer::loadPage('users', $variableData);
     }
 }
