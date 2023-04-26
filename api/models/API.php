@@ -30,7 +30,9 @@ abstract class API
         header("Cache-Control: post-check=0, pre-check=0", false);
         header("Pragma: no-cache");
         header('Access-Control-Allow-Origin: *');
-        header('Access-Control-Request-Headers: Content-Type, Authorization');
+        header('Access-Control-Allow-Headers: content-type, authorization');
+        header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST");
+
         $finalPayload = [
             'statusCode' => $statusCode,
             'statusMessage' => $statusMessage,
