@@ -31,12 +31,12 @@ async function sendUserData2DB() {
             })
         
             console.log(await response.json())
+            clearAllInputs()
 
     }catch(err){
 
     }
     
-    clearAllInputs()
 }
 
 function clearAllInputs() {
@@ -93,8 +93,10 @@ async function sendJsonRequest(url, jsonBody) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' +localStorage.getItem('authToken')
         },
         body: JSON.stringify(jsonBody),
         credentials: "same-origin"
     })
 }
+

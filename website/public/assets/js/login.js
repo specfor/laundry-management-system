@@ -14,10 +14,12 @@ async function sendLoginData2Server(){
         })
 
         let data = await response.json()
-        console.log(data);
+        console.log(data.statusMessage);
         if (data.statusMessage === 'success'){
             localStorage.setItem('authToken',data.body.token)
             document.cookie = "authToken="+data.body.token
+
+            window.location.replace("./dashboard/users")
         }
 
     }catch(err){
@@ -26,6 +28,8 @@ async function sendLoginData2Server(){
     
 
 }
+
+
 
 async function sendJsonRequest(url, jsonBody) {
     return await fetch(url, {
@@ -37,3 +41,6 @@ async function sendJsonRequest(url, jsonBody) {
         credentials: "same-origin"
     })
 }
+
+// admin_{342365(_)08
+//     rlsjp6)rg_34_)(23as
