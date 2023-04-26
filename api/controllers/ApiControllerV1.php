@@ -295,7 +295,7 @@ class ApiControllerV1 extends API
             exit();
         }
 
-        if (User::getUserRole(self::getUserId()) < $requiredMinimumUserRole) {
+        if (User::getUserRole(self::getUserId()) > $requiredMinimumUserRole) {
             self::sendResponse(self::STATUS_CODE_UNAUTHORIZED, self::STATUS_MSG_UNAUTHORIZED,
                 ['message' => 'You are not authorized to perform this action.']);
             exit();
