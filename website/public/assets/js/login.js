@@ -4,16 +4,21 @@ window.addEventListener("load",function(){
 })
 
 async function sendLoginData2Server(){
-    let username = document.getElementById("username")
-    let password = document.getElementById("password")
+    let username = document.getElementById("username").value
+    let password = document.getElementById("password").value
 
     try{
-        let response =await sendJsonRequest("http://www.laundry-api.localhost//api/v1/login",{
+        let response =await sendJsonRequest("http://www.laundry-api.localhost/api/v1/login",{
             username:username,
             password:password
         })
 
-        console.log(response)
+        let data = await response.json()
+        console.log(data);
+        if (data.statusMessage === 'success'){
+            localStorage.setItem('authToken',data.body.token)
+            document.cookie = "authToken="+data.body.token
+        }
 
     }catch(err){
 

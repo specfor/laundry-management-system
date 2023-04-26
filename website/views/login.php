@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
   <title>Login</title>
-  <script src="../public/assets/js/login.js"></script>
+  <script src="/assets/js/login.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
@@ -32,8 +32,8 @@
     <div class="loginDiv" >
         <h3 >Laundry Management</h3>
         <h4 >Log In</h4>
-        <input  type="text"  id="" placeholder="Username" id="username">
-        <input  type="password"  id="" placeholder="Password" id="password"><br>
+        <input  type="text" placeholder="Username" id="username">
+        <input  type="password" placeholder="Password" id="password"><br>
         <button id="login">Log In</button>
     </div>
 </body>
