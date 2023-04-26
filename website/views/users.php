@@ -88,9 +88,9 @@
                 <div class="input-group mb-3">
                     <span class="input-group-text" >User Role</span>
                     <select class="form-select" id="selectionUserRoles1" >
-                      <option value="">Administrator</option>
-                      <option value="">Branch Head</option>
-                      <option value="">Data Entry Operator</option>
+                      <option value="administrator">Administrator</option>
+                      <option value="manager">Manager</option>
+                      <option value="cashier">Cashier</option>
                     </select>
                 </div>
                 <div class="input-group mb-3">

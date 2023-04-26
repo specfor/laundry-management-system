@@ -10,7 +10,7 @@ async function sendUserData2DB() {
     let fName = document.getElementById("firstName").value
     let lName = document.getElementById("lastName").value
     let password = document.getElementById("password").value
-    let userRole = document.getElementById("selectionUserRoles1")
+    let userRole = document.getElementById("selectionUserRoles1").value
     let branchId = document.getElementById("branchId").value
 
 
