@@ -15,6 +15,16 @@ use LogicLeap\StockManagement\models\User;
 
 class ApiControllerV1 extends API
 {
+    public function __construct()
+    {
+        if (isset($_SERVER['HTTP_ORIGIN'])) {
+            header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
+            header('Vary: Origin');
+            header('Access-Control-Allow-Credentials: true');
+            header('Access-Control-Max-Age: 86400');    // cache for 1 day
+        }
+    }
+
     public function addCustomer(): void
     {
         self::checkPermissions();
@@ -391,5 +401,15 @@ class ApiControllerV1 extends API
     private static function sendSuccess(array $body): void
     {
         self::sendResponse(self::STATUS_CODE_SUCCESS, self::STATUS_MSG_SUCCESS, $body);
+    }
+
+    public function optionsRequest()
+    {
+        // Access-Control headers are received during OPTIONS requests
+        if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']))
+            header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+
+        if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']))
+            header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
     }
 }

@@ -39,6 +39,8 @@ class Router
     public function addPostRoute(string $path, array $callback): void
     {
         self::$routes['post'][$path] = $callback;
+        $callback[1] = "optionsRequest";
+        self::$routes['options'][$path] = $callback;
     }
 
     /**
