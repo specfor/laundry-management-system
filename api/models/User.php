@@ -115,6 +115,8 @@ class User extends DbModel
         $params['password'] = self::generatePasswordHash($password);
 
         if ($email)
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL))
+                return 'Invalid email address';
             $params['email'] = $email;
         if ($firstname)
             $params['firstname'] = $firstname;
@@ -157,6 +159,8 @@ class User extends DbModel
                 return false;
         }
         if ($email)
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL))
+                return false;
             $updateFields['email'] = $email;
         if ($firstname)
             $updateFields['firstname'] = $firstname;
