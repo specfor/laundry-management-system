@@ -10,3 +10,4 @@ website/vendor/
 /api/migrationLock.lock
 /api/.env
 /website/.env
+tailwind-css/tailwindcss-windows-x64.exe

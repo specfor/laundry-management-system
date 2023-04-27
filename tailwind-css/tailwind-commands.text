@@ -1,0 +1,14 @@
+You need to download tailwind standalone cli from the below link and copy it to this folder
+https://github.com/tailwindlabs/tailwindcss/releases/latest
+
+open terminal and set current working directory to this folder
+
+# You should only run this command if tailwind.config.js file is not present.
+# Read online documentation for more info.
+./tailwindcss-windows-x64.exe init
+
+# Start a watcher when you are developing html files.
+./tailwindcss-windows-x64.exe -i input.css -o ./../website/public/assets/css/styles.css --watch
+
+# Compile and minify your CSS for production (should only run when ready to deploy to production)
+./tailwindcss-windows-x64.exe -i input.css -o ./../website/public/assets/css/styles.css --minify
