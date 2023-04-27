@@ -36,11 +36,11 @@ class Authorization extends DbModel
         $sql = "SELECT id FROM user_status WHERE user_id=$userId";
         $statement = self::prepare($sql);
         $statement->execute();
+        $expTime = $now->add(DateInterval::createFromDateString(self::TOKEN_EXPIRE_INTERVAL. ' seconds'));
+        $expTime = $expTime->format('Y-m-d H:i:s');
         if ($statement->fetch(PDO::FETCH_ASSOC)) {
-            $sql = "UPDATE user_status SET auth_token='$authToken', last_active='$time', ip_addr='$idAddress' WHERE user_id=$userId";
+            $sql = "UPDATE user_status SET auth_token='$authToken', last_active='$time', ip_addr='$idAddress', exp_time='$expTime' WHERE user_id=$userId";
         } else {
-            $expTime = $now->add(DateInterval::createFromDateString(self::TOKEN_EXPIRE_INTERVAL. ' seconds'));
-            $expTime = $expTime->format('Y-m-d H:i:s');
             $sql = "INSERT INTO user_status (user_id, auth_token, last_active, ip_addr, exp_time) VALUES 
                                                         ($userId, '$authToken', '$time', '$idAddress', '$expTime')";
         }
