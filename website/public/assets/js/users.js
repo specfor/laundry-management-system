@@ -149,8 +149,10 @@ async function confirmDeletion(){
 async function getAllUsers(){
     let response = await getJsonResponse("http://www.laundry-api.localhost/api/v1/users")
     
+
     let resp = await response.json()
-    let users = resp["body"]["users"]
+    if(resp.statusMessage=="success"){
+        let users = resp["body"]["users"]
     console.log(users)
 
     users.forEach(function(user){
@@ -183,6 +185,8 @@ async function getAllUsers(){
       <button onclick="prepareDeleteUser()" class="delete btn btn-danger fw-bold" type="button" id="btn-delete-${user["id"]}" data-bs-toggle="modal" data-bs-target="#confirmDelete">Delete</button>
     </div>`
     })
+    }
+    
     
 }
 
