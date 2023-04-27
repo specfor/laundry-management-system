@@ -5,7 +5,11 @@ window.addEventListener("load",function(){
     document.getElementById('update').addEventListener('click', updateUserToDatabase)
     document.getElementById('changePass').addEventListener('click', changePass)
     document.getElementById("btnConfirmDeletion").addEventListener("click",confirmDeletion)
-
+    document.getElementById("searchId").addEventListener("keyup",getAllUsersFromSearch)
+    document.getElementById("searchIdClear").addEventListener("click",undoSearch)
+    document.getElementById("usernameId").addEventListener("keyup",getAllUsersFromSearch)
+    document.getElementById("usernameIdClear").addEventListener("click",undoSearch)
+    
     getAllUsers()
 })
 
@@ -168,7 +172,7 @@ async function confirmDeletion(){
     })
     let resJson = await response.json()
 
-    //console.log(resJson)
+
      if(resJson.statusMessage == "success"){
 
         let userTable = document.getElementById("userTable")
@@ -234,6 +238,71 @@ async function getAllUsers(){
     
 }
 
+function clearTable(){
+    let userTable = document.getElementById("userTable")
+    userTable.innerHTML = ""
+    console.log("working")
+}
+
+async function getAllUsersFromSearch(){
+    let searchId = document.getElementById("searchId").value
+    let usernameId = document.getElementById("usernameId").value
+    
+    let response = await getJsonResponse("http://www.laundry-api.localhost/api/v1/users")
+
+    let resp = await response.json()
+    if(resp.statusMessage=="success"){
+        let users = resp["body"]["users"]
+    
+        clearTable()
+
+        users.forEach(function(user){
+            let userID = String(user["id"])
+            let usernameID = String(user["username"])
+        
+            if( usernameID.includes(String(usernameId)) || userID.includes(String(searchId))){
+                
+                //console.log(usernameID.includes((usernameId)))
+                function getRole(role){
+                    if(role == 1){
+                        return "Administrator"
+                    }else if(role == 2){
+                        return "Manager"
+                    }else{
+                        return "Cashier"
+                    }
+                }
+                
+                let userTable = document.getElementById("userTable")
+                let newRow = userTable.insertRow(-1)
+
+                newRow.insertCell(0).innerText = user["id"]
+                newRow.insertCell(1).innerText = user["username"]
+                newRow.insertCell(2).innerText = user["email"]
+                newRow.insertCell(3).innerText = user["firstname"]
+                newRow.insertCell(4).innerText = user["lastname"]
+                newRow.insertCell(5).innerText = getRole(user["role"])
+                newRow.insertCell(6).innerText = user["branch_id"]
+                newRow.insertCell(7).innerHTML = `<div class="input-group mb-3">
+                <button onclick="editUser()" class="edit btn btn-primary fw-bold" type="button" id="btn-edit-${user["id"]}" data-bs-toggle="modal" data-bs-target="#editUserModal">Edit User</button>
+                <button onclick="prepareChangePass()" class="edit btn btn-primary fw-bold" type="button" id="btn-edit-${user["id"]}" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Change User Password</button>
+                <button onclick="prepareDeleteUser()" class="delete btn btn-danger fw-bold" type="button" id="btn-delete-${user["id"]}" data-bs-toggle="modal" data-bs-target="#confirmDelete">Delete</button>
+                </div>`
+            }
+        })
+        
+    }
+    
+}
+
+async function undoSearch(){
+    let userTable = document.getElementById("userTable")
+    userTable.innerHTML = ""
+    document.getElementById("searchId").value = ""
+    document.getElementById("usernameId").value = ""
+
+    await getAllUsers()
+}
 
 async function sendJsonRequest(url, jsonBody) {
     return await fetch(url, {

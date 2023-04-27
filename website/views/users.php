@@ -22,14 +22,14 @@
         <div class="row mt-4">
             <div class="col-sm-4">
                 <div class="input-group mb-3">
-                    <input id="" type="text" class="form-control" placeholder="Id" aria-label="" aria-describedby="">
-                    <button class="btn btn-dark fw-bold" type="button" >clear</button>
+                    <input id="searchId" type="text" class="form-control" placeholder="Id" aria-label="" aria-describedby="">
+                    <button class="btn btn-dark fw-bold" type="button" id="searchIdClear">clear</button>
                 </div>
             </div>
             <div class="col-sm-4">
                 <div class="input-group mb-3">
-                    <input id="" type="text" class="form-control" placeholder="Username" aria-label="" aria-describedby="">
-                    <button class="btn btn-dark fw-bold" type="button" >clear</button>                   
+                    <input id="usernameId" type="text" class="form-control" placeholder="Username" aria-label="" aria-describedby="">
+                    <button class="btn btn-dark fw-bold" type="button" id="usernameIdClear">clear</button>                   
                 </div>
             </div>
             <div class="container">
