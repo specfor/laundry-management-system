@@ -39,7 +39,7 @@ class ApiControllerV1 extends API
             $branchId = User::getUserBranchId(self::getUserId());
 
         if (Customers::addNewCustomer($customerName, $email, $phoneNumber, $address, $branchId))
-            self::sendSuccess(['message' => 'New customer was added successfully.']);
+            self::sendSuccess('New customer was added successfully.');
         else
             self::sendError('Failed to add new customer');
     }
@@ -74,7 +74,7 @@ class ApiControllerV1 extends API
             $branchId = User::getUserBranchId(self::getUserId());
 
         if (Customers::updateCustomer($customerId, $customerName, $email, $phoneNumber, $address, $branchId, $banned))
-            self::sendSuccess(['message' => 'Branch details were updated successfully.']);
+            self::sendSuccess('Branch details were updated successfully.');
         else
             self::sendError('Failed to update customer details.');
     }
@@ -85,7 +85,7 @@ class ApiControllerV1 extends API
 
         $customerId = self::getParameter('customer-id', dataType: 'int', isCompulsory: true);
         if (Customers::deleteCustomer($customerId))
-            self::sendSuccess(['message' => 'Successfully deleted the customer.']);
+            self::sendSuccess('Successfully deleted the customer.');
         else
             self::sendError('Failed to delete the customer');
     }
@@ -99,7 +99,7 @@ class ApiControllerV1 extends API
         $managerId = self::getParameter('manager-id', dataType: 'int');
 
         if (Branches::addNewBranch($branchName, $address, $managerId))
-            self::sendSuccess(['message' => 'New branch was created successfully.']);
+            self::sendSuccess('New branch was created successfully.');
         else
             self::sendError('Failed to add new branch');
     }
@@ -122,7 +122,7 @@ class ApiControllerV1 extends API
         $address = self::getParameter('address');
         $managerId = self::getParameter('manager-id', dataType: 'int');
         if (Branches::updateBranch($branchId, $branchName, $address, $managerId))
-            self::sendSuccess(['message' => 'New branch was created successfully.']);
+            self::sendSuccess('New branch was created successfully.');
         else
             self::sendError('Failed to update branch details.');
     }
@@ -133,7 +133,7 @@ class ApiControllerV1 extends API
 
         $branchId = self::getParameter('branch-id', dataType: 'int', isCompulsory: true);
         if (Branches::deleteBranch($branchId))
-            self::sendSuccess(['message' => 'Successfully deleted the branch.']);
+            self::sendSuccess('Successfully deleted the branch.');
         else
             self::sendError('Failed to delete the branch');
     }
@@ -151,7 +151,7 @@ class ApiControllerV1 extends API
         $leftDate = self::getParameter('left-date');
 
         if (Employees::addEmployee($name, $address, $email, $phoneNumber, $branchId, $joinDate, $leftDate))
-            self::sendSuccess(['message' => 'New branch was created successfully.']);
+            self::sendSuccess('New branch was created successfully.');
         else
             self::sendError('Failed to add new employee.');
     }
@@ -179,7 +179,7 @@ class ApiControllerV1 extends API
         $leftDate = self::getParameter('left-date');
 
         if (Employees::updateEmployee($employeeId, $name, $address, $email, $phoneNumber, $branchId, $joinDate, $leftDate))
-            self::sendSuccess(['message' => 'New branch was created successfully.']);
+            self::sendSuccess('New branch was created successfully.');
         else
             self::sendError('Failed to add new employee.');
     }
@@ -190,7 +190,7 @@ class ApiControllerV1 extends API
 
         $employeeId = self::getParameter('employee-id', dataType: 'int', isCompulsory: true);
         if (Employees::deleteEmployee($employeeId))
-            self::sendSuccess(['message' => 'Successfully deleted the employee.']);
+            self::sendSuccess('Successfully deleted the employee.');
         else
             self::sendError('Failed to delete the employee');
     }
@@ -228,7 +228,7 @@ class ApiControllerV1 extends API
 
         $status = User::createNewUser($username, $password, $role, $email, $firstname, $lastname, $branchId);
         if ($status === 'New user created successfully.')
-            self::sendSuccess(['message' => $status]);
+            self::sendSuccess($status);
         else
             self::sendError($status);
     }
@@ -260,7 +260,7 @@ class ApiControllerV1 extends API
         }
 
         if (User::deleteUser($deleteUserId))
-            self::sendSuccess(['message' => 'Successfully deleted the user.']);
+            self::sendSuccess('Successfully deleted the user.');
         else
             self::sendError('Failed to delete the user.');
     }
@@ -278,7 +278,7 @@ class ApiControllerV1 extends API
         $branchId = self::getParameter('branch-id');
 
         if (User::updateUser($userId, $password, $role, $email, $firstname, $lastname, $branchId))
-            self::sendSuccess(['message' => 'Successfully updated the user.']);
+            self::sendSuccess('Successfully updated the user.');
         else
             self::sendError('Failed to update the user.');
     }
@@ -386,13 +386,18 @@ class ApiControllerV1 extends API
     private static function sendError(string $message): void
     {
         self::sendResponse(self::STATUS_CODE_SUCCESS, self::STATUS_MSG_ERROR,
-            ['error' => $message]);
+            ['message' => $message]);
         exit();
     }
 
-    private static function sendSuccess(array $body): void
+    private static function sendSuccess(array|string $body): void
     {
-        self::sendResponse(self::STATUS_CODE_SUCCESS, self::STATUS_MSG_SUCCESS, $body);
+        if (is_array($body))
+            self::sendResponse(self::STATUS_CODE_SUCCESS, self::STATUS_MSG_SUCCESS, $body);
+        else
+            self::sendResponse(self::STATUS_CODE_SUCCESS, self::STATUS_MSG_SUCCESS,
+                ['message'=>$body]);
+        exit();
     }
 
     public function optionsRequest()
