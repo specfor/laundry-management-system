@@ -197,28 +197,20 @@ class ApiControllerV1 extends API
 
     public function login(): void
     {
-        if (Application::$app->request->isPost()) {
-            $params = Application::$app->request->getBodyParams();
-            if (!isset($params['username']) || !isset($params['password'])) {
-                self::sendError('Not all required fields were supplied.');
-            }
-            $user = new User();
-            $username = $params['username'] ?? "";
-            $password = $params['password'] ?? "";
-            if (!$username || !$password)
-                self::sendError("Not all required fields are provided.");
-            if ($user->validateUser($username, $password)) {
-                $token = SecureToken::generateToken();
-                Authorization::markSuccessfulLogin($user->userId, $token, Request::getRequestIp());
-                $returnPayload = [
-                    'message' => 'Login successful.',
-                    'token' => $token
-                ];
-                self::sendResponse(self::STATUS_CODE_SUCCESS, self::STATUS_MSG_SUCCESS,
-                    $returnPayload);
-            } else {
-                self::sendError('Incorrect Username or Password.');
-            }
+        $username = self::getParameter('username', isCompulsory: true);
+        $password = self::getParameter('password', isCompulsory: true);
+        $user = new User();
+
+        if ($user->validateUser($username, $password)) {
+            $token = SecureToken::generateToken();
+            Authorization::markSuccessfulLogin($user->userId, $token, Request::getRequestIp());
+            $returnPayload = [
+                'message' => 'Login successful.',
+                'token' => $token
+            ];
+            self::sendSuccess($returnPayload);
+        } else {
+            self::sendError('Incorrect Username or Password.');
         }
     }
 
@@ -232,7 +224,7 @@ class ApiControllerV1 extends API
         $lastname = self::getParameter('lastname');
         $password = self::getParameter('password', isCompulsory: true);
         $role = self::getParameter('role', isCompulsory: true);
-        $branchId = self::getParameter('branch-id');
+        $branchId = self::getParameter('branch-id', dataType: 'int');
 
         $status = User::createNewUser($username, $password, $role, $email, $firstname, $lastname, $branchId);
         if ($status === 'New user created successfully.')
@@ -285,8 +277,8 @@ class ApiControllerV1 extends API
         $role = self::getParameter('role');
         $branchId = self::getParameter('branch-id');
 
-        if (User::updateUser($userId,$password,$role,$email,$firstname,$lastname,$branchId))
-            self::sendSuccess(['message'=>'Successfully updated the user.']);
+        if (User::updateUser($userId, $password, $role, $email, $firstname, $lastname, $branchId))
+            self::sendSuccess(['message' => 'Successfully updated the user.']);
         else
             self::sendError('Failed to update the user.');
     }
@@ -301,13 +293,13 @@ class ApiControllerV1 extends API
 
         if (!$matches || !Authorization::isValidToken($matches[1])) {
             self::sendResponse(self::STATUS_CODE_UNAUTHORIZED, self::STATUS_MSG_UNAUTHORIZED,
-                ['message' => 'You are not authorized to perform this action.']);
+                ['message' => 'You are not authorized to perform this action1.']);
             exit();
         }
 
         if (User::getUserRole(self::getUserId()) > $requiredMinimumUserRole) {
             self::sendResponse(self::STATUS_CODE_UNAUTHORIZED, self::STATUS_MSG_UNAUTHORIZED,
-                ['message' => 'You are not authorized to perform this action.']);
+                ['message' => 'You are not authorized to perform this action2.']);
             exit();
         }
 
