@@ -31,6 +31,11 @@ async function sendUserData2DB() {
             })
         
             console.log(await response.json())
+
+            //let res = await getJsonResponse("http://www.laundry-api.localhost/api/v1/users")
+            //console.log(await res.json())
+            test() 
+           
             clearAllInputs()
 
     }catch(err){
@@ -48,7 +53,10 @@ function clearAllInputs() {
     document.getElementById("branchId").value = ''
 }
 
-async function addUserToTable(userId, username, email, firstname, lastname, userRole,branchId) {
+async function addUserToTable(username, email, firstname, lastname, userRole,branchId) {
+    
+    let response = await getJsonResponse("http://www.laundry-api.localhost/api/v1/users")
+    
     let userTable = document.getElementById("userTable")
 
     let newRow = userTable.insertRow(-1)
@@ -65,6 +73,12 @@ async function addUserToTable(userId, username, email, firstname, lastname, user
   <button onclick="prepareChangePass()" class="edit btn btn-primary fw-bold" type="button" id="btn-edit-${userId}" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Change User Password</button>
   <button onclick="prepareDeleteUser()" class="delete btn btn-danger fw-bold" type="button" id="btn-delete-${userId}" data-bs-toggle="modal" data-bs-target="#confirmDelete">Delete</button>
 </div>`
+}
+
+async function test(){
+    console.log("successfully called")
+    // let response = await getJsonResponse("http://www.laundry-api.localhost/api/v1/users")
+    // console.log(await response.json())
 }
 
 async function updateUserToDatabase() {
@@ -96,6 +110,15 @@ async function sendJsonRequest(url, jsonBody) {
             'Authorization': 'Bearer ' +localStorage.getItem('authToken')
         },
         body: JSON.stringify(jsonBody),
+        credentials: "same-origin"
+    })
+}
+
+async function getJsonResponse(url) {
+    return await fetch(url, {
+        headers: {
+            'Authorization': 'Bearer ' +localStorage.getItem('authToken')
+        },
         credentials: "same-origin"
     })
 }

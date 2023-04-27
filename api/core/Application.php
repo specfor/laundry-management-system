@@ -63,6 +63,7 @@ class Application
         try {
             $this->router->resolveRoute();
         } catch (Exception $e) {
+            //var_dump($e);
             API::sendResponse($e->getCode(), $e->getMessage(), ['error' => $e->getMessage()]);
         }
     }
