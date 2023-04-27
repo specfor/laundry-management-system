@@ -95,7 +95,7 @@ class User extends DbModel
             return 'Username is too long.';
         }
 
-        $usernameRegEx = '^[A-Za-z][A-Za-z0-9_]{5,29}$';
+        $usernameRegEx = '/^[A-Za-z][A-Za-z0-9_]{5,29}$/';
         if (!preg_match($usernameRegEx, $username))
             return 'Username should only contain english letters, numbers and underscore(_)';
 
@@ -111,7 +111,8 @@ class User extends DbModel
         else
             return 'Invalid user role provided.';
 
-        $params['password'] = self::generatePasswordHash($params['password']);
+        $params['username'] = $username;
+        $params['password'] = self::generatePasswordHash($password);
 
         if ($email)
             $params['email'] = $email;
