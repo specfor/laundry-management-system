@@ -117,10 +117,7 @@
                 <div class="modal-body">
                 </div>
               <div class="row text-center ps-4 pe-4" style="">
-                  <div class="input-group mb-3">
-                      <span class="input-group-text" id="basic-addon1">Username</span>
-                      <input type="text" class="form-control" aria-describedby="basic-addon1" id="newUsername" placeholder="*Username">
-                  </div>
+                  
                   <div class="input-group mb-3">
                       <span class="input-group-text" id="basic-addon2">Email</span>
                       <input type="email" class="form-control " aria-describedby="basic-addon2" id="newEmail" placeholder="Email">
@@ -134,9 +131,16 @@
                       <input type="text" class="form-control" aria-describedby="basic-addon4" id="newLastName" placeholder="*Last Name">
                   </div>
                   <div class="input-group mb-3">
+                      <span class="input-group-text" id="basic-addon4">Branch Id</span>
+                      <input type="text" class="form-control" aria-describedby="basic-addon4" id="newBranchId" placeholder="Branch Id">
+                  </div>
+                  <div class="input-group mb-3">
                       <span class="input-group-text" >User Role</span>
                       <select class="form-select" id="selectionUserRoles2" >
-                      </select>
+                      <option value="administrator">Administrator</option>
+                      <option value="manager">Manager</option>
+                      <option value="cashier">Cashier</option>  
+                    </select>
                   </div>
                 </div>
                 <div class="modal-footer">
@@ -184,7 +188,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <h5>This action is irreversible. Are you sure you want to delete this data?</h5>
+                <h5>This action is irreversible. Are you sure you want to delete this user?</h5>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -193,6 +197,8 @@
         </div>
     </div>
 </div> 
+
+
 
 </body>
 </html>
