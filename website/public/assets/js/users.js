@@ -4,6 +4,7 @@ window.addEventListener("load",function(){
     document.getElementById("addUser").addEventListener("click", sendUserData2DB)
     document.getElementById('update').addEventListener('click', updateUserToDatabase)
     document.getElementById('changePass').addEventListener('click', changePass)
+    document.getElementById("btnConfirmDeletion").addEventListener("click",confirmDeletion)
 
     getAllUsers()
 })
@@ -34,13 +35,14 @@ async function sendUserData2DB() {
                 "branch-id":branchId               
             })
         
-            console.log(await response.json())
+            let resp = await response.json()
 
-            //let res = await getJsonResponse("http://www.laundry-api.localhost/api/v1/users")
-            //console.log(await res.json())
-            await addUserToTable(username,email,fName,lName,userRole,branchId)
+            if(resp.statusMessage == "success"){
+                await addUserToTable(username,email,fName,lName,userRole,branchId)
            
-            clearAllInputs()
+                clearAllInputs()
+            }
+           
 
     }catch(err){
 
@@ -128,9 +130,30 @@ async function updateUserToDatabase() {
     
 }
 
-async function changePass() {
+async function changePass(){
+    
     let newPass = document.getElementById("newUserPassword").value
     let newPassConfirm = document.getElementById("newUserPasswordConfirm").value
+
+    if(newPass === newPassConfirm){
+        let response = await sendJsonRequest("http://www.laundry-api.localhost/api/v1/users/update",{
+            "user-id":user_Id,
+            "password":newPass
+        })
+
+        let resJson = await response.json()
+
+        if(resJson.statusMessage == "success"){
+             alert("password updated successfully")
+         }
+    }else{
+        alert("Passwords don't match.")
+    }
+}
+
+async function prepareChangePass() {
+    user_Id = event.target.id.split("-")[2]
+
 
     
 }
@@ -140,8 +163,28 @@ async function prepareDeleteUser(){
 }
 
 async function confirmDeletion(){
+    let response = await sendJsonRequest("http://www.laundry-api.localhost/api/v1/users/delete",{
+        "user-id":user_Id
+    })
+    let resJson = await response.json()
 
+    //console.log(resJson)
+     if(resJson.statusMessage == "success"){
 
+        let userTable = document.getElementById("userTable")
+
+        for (let i = 0, row; row = userTable.rows[i]; i++) {
+            if (row.cells[0].innerText == user_Id) {
+                userTable.deleteRow(i)
+            }
+        }
+        if (userTable.innerHTML == ''){
+            await getAllUsers()
+        }
+        alert(resJson.body.message)
+    }else{
+        alert(resJson.body.message)
+    }
 }
 
 
@@ -153,7 +196,6 @@ async function getAllUsers(){
     let resp = await response.json()
     if(resp.statusMessage=="success"){
         let users = resp["body"]["users"]
-    console.log(users)
 
     users.forEach(function(user){
         
@@ -185,7 +227,9 @@ async function getAllUsers(){
       <button onclick="prepareDeleteUser()" class="delete btn btn-danger fw-bold" type="button" id="btn-delete-${user["id"]}" data-bs-toggle="modal" data-bs-target="#confirmDelete">Delete</button>
     </div>`
     })
-    }
+    }else(
+        alert("Something went wrong.Try again.")
+    )
     
     
 }
