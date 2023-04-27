@@ -59,6 +59,10 @@ POST - /api/v1/customers/delete
 Parameters
 customer-id - compulsory
 
+GET - /api/v1/branches
+Parameters
+start - optional
+
 POST - /api/v1/branches/add
 Parameters
 branch-name - optional
@@ -132,4 +136,8 @@ email - optional
 firstname - optional
 lastname - optional
 branch-id - optional
+
+POST - /api/v1/users/delete
+Parameters
+user-id - compulsory
 
