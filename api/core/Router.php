@@ -28,6 +28,8 @@ class Router
     public function addGetRoute(string $path, array $callback): void
     {
         self::$routes['get'][$path] = $callback;
+        $callback[1] = "optionsRequest";
+        self::$routes['options'][$path] = $callback;
     }
 
     /**
