@@ -4,6 +4,8 @@ window.addEventListener("load",function(){
     document.getElementById("addUser").addEventListener("click", sendUserData2DB)
     document.getElementById('update').addEventListener('click', updateUserToDatabase)
     document.getElementById('changePass').addEventListener('click', changePass)
+
+    getAllUsers()
 })
 
 async function sendUserData2DB() {
@@ -107,8 +109,21 @@ async function updateUserToDatabase() {
             lastname : lastName,
             "branch-id" : branchId
         })
+       let updateRes = await response.json()
 
-        console.log(await response.json())
+       if(updateRes.statusMessage == "success"){
+        let userTable = document.getElementById("userTable")
+        for(let i = 0, row; row = userTable.rows[i]; i++){
+            if(row.cells[0].innerText == user_Id){
+                row.cells[2].innerText = email
+                row.cells[3].innerText = firstName
+                row.cells[4].innerText = lastName
+                row.cells[5].innerText = userRole
+                row.cells[6].innerText = branchId
+            }
+        }
+       }
+                
     }
     
 }
@@ -130,6 +145,46 @@ async function confirmDeletion(){
 }
 
 
+
+async function getAllUsers(){
+    let response = await getJsonResponse("http://www.laundry-api.localhost/api/v1/users")
+    
+    let resp = await response.json()
+    let users = resp["body"]["users"]
+    console.log(users)
+
+    users.forEach(function(user){
+        
+         function getRole(role){
+            if(role == 1){
+                return "Administrator"
+            }else if(role == 2){
+                return "Manager"
+            }else{
+                return "Cashier"
+            }
+        }
+
+
+        let userTable = document.getElementById("userTable")
+
+        let newRow = userTable.insertRow(-1)
+    
+        newRow.insertCell(0).innerText = user["id"]
+        newRow.insertCell(1).innerText = user["username"]
+        newRow.insertCell(2).innerText = user["email"]
+        newRow.insertCell(3).innerText = user["firstname"]
+        newRow.insertCell(4).innerText = user["lastname"]
+        newRow.insertCell(5).innerText = getRole(user["role"])
+        newRow.insertCell(6).innerText = user["branch_id"]
+        newRow.insertCell(7).innerHTML = `<div class="input-group mb-3">
+      <button onclick="editUser()" class="edit btn btn-primary fw-bold" type="button" id="btn-edit-${user["id"]}" data-bs-toggle="modal" data-bs-target="#editUserModal">Edit User</button>
+      <button onclick="prepareChangePass()" class="edit btn btn-primary fw-bold" type="button" id="btn-edit-${user["id"]}" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Change User Password</button>
+      <button onclick="prepareDeleteUser()" class="delete btn btn-danger fw-bold" type="button" id="btn-delete-${user["id"]}" data-bs-toggle="modal" data-bs-target="#confirmDelete">Delete</button>
+    </div>`
+    })
+    
+}
 
 
 async function sendJsonRequest(url, jsonBody) {
