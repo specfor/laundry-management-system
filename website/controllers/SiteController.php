@@ -2,6 +2,8 @@
 
 namespace LogicLeap\StockManagement\controllers;
 
+use LogicLeap\StockManagement\core\Application;
+use LogicLeap\StockManagement\core\MigrationManager;
 use LogicLeap\StockManagement\core\TailwindUiRenderer;
 use LogicLeap\StockManagement\models\Authorization;
 use LogicLeap\StockManagement\models\DbModel;
@@ -9,6 +11,21 @@ use LogicLeap\StockManagement\models\DbModel;
 class SiteController
 {
     private const SITE_NAME = 'Laundry System';
+
+    public function __construct()
+    {
+        $maintenanceModeFilePath = Application::$ROOT_DIR . "/maintenanceLock.lock";
+        $migrationModeFilePath = Application::$ROOT_DIR . "/migrationLock.lock";
+        if (is_file($migrationModeFilePath)) {
+            $migrationManager = new MigrationManager();
+            $migrationManager->startMigration();
+        }
+
+        // If in maintenance mode, maintenance page is displayed. Application exits.
+        if (is_file($maintenanceModeFilePath)) {
+            $this->errorHandler(503);
+        }
+    }
 
     public function login(): void
     {
@@ -55,14 +72,16 @@ class SiteController
         }
     }
 
-    public function errorHandler(int $errorCode, string $errorMessage): void
+    public function errorHandler(int $errorCode, string $errorMessage = null): void
     {
         if ($errorCode === 404)
             TailwindUiRenderer::loadPage('_404');
         elseif ($errorCode === 403)
-            echo $errorMessage;
+            TailwindUiRenderer::loadPage('_403');
+        elseif ($errorCode === 503)
+            TailwindUiRenderer::loadPage('_503');
         else
-            echo 'server error';
+            TailwindUiRenderer::loadPage('_500');
         exit();
     }
 }

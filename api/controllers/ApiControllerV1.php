@@ -307,13 +307,13 @@ class ApiControllerV1 extends API
         preg_match('/Bearer\s(\S+)/', self::getAuthorizationHeader(), $matches);
 
         if (!$matches || !Authorization::isValidToken($matches[1])) {
-            self::sendResponse(self::STATUS_CODE_UNAUTHORIZED, self::STATUS_MSG_UNAUTHORIZED,
+            self::sendResponse(self::STATUS_CODE_FORBIDDEN, self::STATUS_MSG_FORBIDDEN,
                 ['message' => 'You are not authorized to perform this action1.']);
             exit();
         }
 
         if (User::getUserRole(self::getUserId()) > $requiredMinimumUserRole) {
-            self::sendResponse(self::STATUS_CODE_UNAUTHORIZED, self::STATUS_MSG_UNAUTHORIZED,
+            self::sendResponse(self::STATUS_CODE_FORBIDDEN, self::STATUS_MSG_FORBIDDEN,
                 ['message' => 'You are not authorized to perform this action2.']);
             exit();
         }
