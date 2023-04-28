@@ -9,14 +9,8 @@ class Customers extends DbModel
 {
     private const TABLE_NAME = 'customers';
 
-    public string $email;
-    public string $firstname;
-    public string $lastname;
-    public string $phoneNumber;
-    public string $address;
-
-    public static function addNewCustomer(string $name, string $email,
-                                          string $phoneNumber, string $address, int $branchID): bool
+    public static function addNewCustomer(string $name, string $email = null, string $phoneNumber = null,
+                                          string $address = null, int $branchID = null): bool
     {
         $today = (new DateTime('now'))->format('Y-m-d');
         $sql = "INSERT INTO " . self::TABLE_NAME . " (email, name, phone_num, address, branch_id, joined_date, banned) VALUES 
@@ -64,7 +58,7 @@ class Customers extends DbModel
 
         $condition = implode(' AND ', $filters);
         $statement = self::getDataFromTable(['email', 'phone_num', 'name', 'address', 'branch_id', 'banned', 'joined_date'],
-            'customers', $condition, $placeholders, ['customer_id', 'desc'], [$startingIndex, $limit]);
+            self::TABLE_NAME, $condition, $placeholders, ['customer_id', 'desc'], [$startingIndex, $limit]);
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -92,12 +86,12 @@ class Customers extends DbModel
             $updateFieldsWithValues['banned'] = $banned;
         }
 
-        return self::updateTableData('customers', $updateFieldsWithValues, "customer_id=$customerId");
+        return self::updateTableData(self::TABLE_NAME, $updateFieldsWithValues, "customer_id=$customerId");
     }
 
     public static function deleteCustomer(int $customerId): bool
     {
-        $sql = "DELETE FROM customers WHERE customer_id=$customerId";
+        $sql = "DELETE FROM ".self::TABLE_NAME." WHERE customer_id=$customerId";
         if (self::exec($sql))
             return true;
         return false;

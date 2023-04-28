@@ -72,7 +72,7 @@ page-num - optional
 
 POST - /api/v1/branches/add
 Parameters
-branch-name - optional
+branch-name - compulsory
 address - optional
 manager-id - optional
 phone-number - optional

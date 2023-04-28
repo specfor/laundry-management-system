@@ -6,8 +6,9 @@ use PDO;
 
 class Employees extends DbModel
 {
-    public static function addEmployee(string $name, string $address, string $email, string $phoneNumber,
-                                       int    $branchId, string $joinDate, string $left_date = null): bool
+    public static function addEmployee(string $name, string $address = null, string $email = null,
+                                       string $phoneNumber = null, int    $branchId = null, string $joinDate = null,
+                                       string $left_date = null): bool
     {
         $isLeft = false;
         if ($left_date) {

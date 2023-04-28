@@ -6,7 +6,8 @@ use PDO;
 
 class Branches extends DbModel
 {
-    public static function addNewBranch(string $name, string $address, int $managerId, string $phoneNumber): bool
+    public static function addNewBranch(string $name, string $address = null, int $managerId = null,
+                                        string $phoneNumber = null): bool
     {
         $sql = "INSERT INTO branches (name, address, manager_id, blocked, phone_num) VALUES (?,?,$managerId, false, ?)";
         $statement = self::prepare($sql);
