@@ -15,7 +15,7 @@ async function sendDataToDB(){
     if(!branchName || !contactInfo){
         alert("All the fields must be filled!")
     }else{
-        //console.log(branchName,contactInfo)
+        console.log(branchName,contactInfo)
         try{
             let response = await sendJsonRequest("http://www.laundry-api.localhost/api/v1/branches/add",{
                 "branch-name":branchName,
