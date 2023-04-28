@@ -51,8 +51,7 @@ class SiteController
         $userRole = Authorization::getUserRole($_COOKIE['auth-token']);
 
         if ($userRole > $minimumPermittedUserRole) {
-            echo "You are not allowed";
-            exit();
+            $this->errorHandler(403, 'You are not allowed.');
         }
     }
 
@@ -61,7 +60,7 @@ class SiteController
         if ($errorCode === 404)
             TailwindUiRenderer::loadPage('_404');
         elseif ($errorCode === 403)
-            echo 'you are not allowed';
+            echo $errorMessage;
         else
             echo 'server error';
         exit();

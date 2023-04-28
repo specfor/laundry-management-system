@@ -6,7 +6,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/assets/css/styles.css">
-    <link rel="stylesheet" href="./../public/assets/css/styles.css">
     <title><?php echo $variableData['site-title']; ?></title>
 </head>
 
