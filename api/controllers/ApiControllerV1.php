@@ -176,7 +176,14 @@ class ApiControllerV1 extends API
         self::checkPermissions(User::ROLE_MANAGER);
 
         $pageNum = self::getParameter('page-num', 0, 'int');
-        $data = Employees::getEmployees($pageNum);
+        $name = self::getParameter('name');
+        $address = self::getParameter('address');
+        $email = self::getParameter('email');
+        $phoneNumber = self::getParameter('phone-number');
+        $branchId = self::getParameter('branch-id', dataType: 'int');
+        $isLeft = self::getParameter('is-left', dataType: 'int');
+
+        $data = Employees::getEmployees($pageNum, $name, $address, $email, $phoneNumber, $branchId, $isLeft);
         self::sendSuccess(['employees' => $data]);
     }
 

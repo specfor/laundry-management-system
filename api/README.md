@@ -86,6 +86,12 @@ branch-id - compulsory
 GET - /api/v1/employees
 Parameters
 page-num - optional
+name - optional
+address - optional
+email - optional
+phone-number - optional
+branch-id - optional
+is-left - optional
 
 POST - /api/v1/employees/add
 Parameters
