@@ -29,15 +29,42 @@ class Customers extends DbModel
         return $statement->execute();
     }
 
-    public static function getCustomers(int $branchId = 0, int $pageNumber = 0, int $limit = 30): array
+    public static function getCustomers(int    $branchId = 0, string $email = null, string $phoneNumber = null,
+                                        string $name = null, string $address = null, bool $banned = null,
+                                        string $joinDate = null, int $pageNumber = 0, int $limit = 30): array
     {
         $startingIndex = $pageNumber * $limit;
-        if ($branchId == 0)
-            $sql = "SELECT * FROM " . self::TABLE_NAME . " ORDER BY customer_id LIMIT $startingIndex, $limit";
-        else
-            $sql = "SELECT * FROM " . self::TABLE_NAME . " WHERE branch_id=$branchId ORDER BY customer_id LIMIT $startingIndex, $limit";
-        $statement = self::prepare($sql);
-        $statement->execute();
+        $filters = [];
+        $placeholders = [];
+        if ($email) {
+            $filters[] = "email=:email";
+            $placeholders['email'] = "%" . $email . "%";
+        }
+        if ($phoneNumber) {
+            $filters[] = "phone_num=:phone_num";
+            $placeholders['phone_num'] = "%" . $phoneNumber . "%";
+        }
+        if ($name) {
+            $filters[] = "name=:name";
+            $placeholders['name'] = "%" . $name . "%";
+        }
+        if ($address) {
+            $filters[] = "address=:address";
+            $placeholders['address'] = "%" . $address . "%";
+        }
+        if ($banned) {
+            $filters[] = "banned=$banned";
+        }
+        if ($joinDate) {
+            $filters[] = "join_date=:join_date";
+            $placeholders['join_date'] = "%" . $joinDate . "%";
+        }
+        if ($branchId != 0)
+            $filters[] = "branch_id=$branchId'";
+
+        $condition = implode(' AND ', $filters);
+        $statement = self::getDataFromTable(['email', 'phone_num', 'name', 'address', 'branch_id', 'banned', 'joined_date'],
+            'customers', $condition, $placeholders, ['customer_id', 'desc'], [$startingIndex, $limit]);
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 

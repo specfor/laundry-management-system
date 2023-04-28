@@ -37,6 +37,13 @@ branch-id - optional
 page-num - optional -> when there are more than 30 results, 
 results are broken into pages. page number to retrieve results
 branch-id - optional
+email - optional
+phone-number - optional
+name - optional
+address - optional
+banned - optional
+join-date - optional
+
 </p>
 <p>Returns customer data</p>
 

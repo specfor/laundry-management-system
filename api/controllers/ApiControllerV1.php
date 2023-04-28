@@ -65,11 +65,17 @@ class ApiControllerV1 extends API
 
         $pageNum = self::getParameter('page-num', 0, 'int');
         $branchId = self::getParameter('branch-id', dataType: 'int');
+        $email = self::getParameter('email');
+        $phoneNum = self::getParameter('phone-number');
+        $name = self::getParameter('name');
+        $address = self::getParameter('address');
+        $banned = self::getParameter('banned', dataType: 'bool');
+        $joinDate = self::getParameter('join-date');
 
         if (!$branchId)
             $branchId = User::getUserBranchId(self::getUserId());
 
-        $data = Customers::getCustomers($branchId, $pageNum);
+        $data = Customers::getCustomers($branchId, $email, $phoneNum, $name, $address, $banned, $joinDate, $pageNum);
         self::sendSuccess(['customers' => $data]);
     }
 
