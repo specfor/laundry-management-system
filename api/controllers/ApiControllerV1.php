@@ -115,7 +115,7 @@ class ApiControllerV1 extends API
     {
         self::checkPermissions(User::ROLE_ADMINISTRATOR);
 
-        $branchName = self::getParameter('branch-name');
+        $branchName = self::getParameter('branch-name', isCompulsory: true);
         $address = self::getParameter('address');
         $phoneNum = self::getParameter('phone-number');
         $managerId = self::getParameter('manager-id', dataType: 'int');
