@@ -9,10 +9,16 @@ class Branches extends DbModel
     public static function addNewBranch(string $name, string $address = null, int $managerId = null,
                                         string $phoneNumber = null): bool
     {
-        $sql = "INSERT INTO branches (name, address, manager_id, blocked, phone_num) 
-                VALUES (?,?,$managerId, false, ?)";
-        $statement = self::prepare($sql);
-        return $statement->execute([$name, $address, $phoneNumber]);
+        $params['name'] = $name;
+        if ($address)
+            $params['address'] = $address;
+        if ($managerId)
+            $params['manager_id'] = $managerId;
+        if ($phoneNumber)
+            $params['phone_num']=$phoneNumber;
+        $params['blocked'] =false;
+
+        return self::insertIntoTable('branches',$params);
     }
 
     public static function getBranches(int $pageNumber = 0, string $name = null, string $address = null,
