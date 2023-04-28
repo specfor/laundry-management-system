@@ -213,7 +213,6 @@ async function getAllUsers(){
             }
         }
 
-
         let userTable = document.getElementById("userTable")
 
         let newRow = userTable.insertRow(-1)
@@ -257,12 +256,16 @@ async function getAllUsersFromSearch(){
         clearTable()
 
         users.forEach(function(user){
-            let userID = String(user["id"])
-            let usernameID = String(user["username"])
-        
-            if( usernameID.includes(String(usernameId)) || userID.includes(String(searchId))){
+            userID = (user["id"]).toString()
+            usernameID = String(user["username"])
+
+            //console.log(`${userID} ${usernameID}`)
+
+            let x = usernameID.includes(String(usernameId))
+            let y = userID.includes(searchId)
+
+            if( x == true ){
                 
-                //console.log(usernameID.includes((usernameId)))
                 function getRole(role){
                     if(role == 1){
                         return "Administrator"
