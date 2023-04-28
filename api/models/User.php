@@ -131,12 +131,45 @@ class User extends DbModel
         return 'Failed to create new user.';
     }
 
-    public static function getUsers(int $pageNumber = 0, int $limit = 30): array
+    public static function getUsers(int $pageNumber = 0, string $username = null, string $name = null, string $email = null,
+                                    string $role = null, int $branchId = null, int $limit = 30): array
     {
         $superAdminRole = self::ROLE_SUPER_ADMINISTRATOR;
         $startingIndex = $pageNumber * $limit;
-        $sql = "SELECT * FROM users WHERE role!=$superAdminRole LIMIT $startingIndex, $limit";
+
+        $sql = "SELECT * FROM users WHERE role!=$superAdminRole";
+
+        $filters = [];
+        if ($username) {
+            $sql .= " AND username LIKE ':username'";
+            $filters['username'] = "%" . $username . "%";
+        }
+        if ($name) {
+            $sql .= " AND firstname LIKE ':name' OR lastname LIKE ':name'";
+            $filters['name'] = $name;
+        }
+        if ($email) {
+            $sql .= " AND email LIKE ':email'";
+            $filters['email'] = $email;
+        }
+        if ($role)
+            if (strtolower($role) == 'administrator')
+                $role = self::ROLE_ADMINISTRATOR;
+            elseif (strtolower($role) == 'manager')
+                $role = self::ROLE_MANAGER;
+            elseif (strtolower($role == 'cashier'))
+                $role = self::ROLE_CASHIER;
+            else
+                $role = 99;
+            $sql .= " AND role=$role";
+        if ($branchId)
+            $sql .= " AND branch_id=$branchId";
+
+        $sql .= " ORDER BY id LIMIT $startingIndex, $limit";
         $statement = self::prepare($sql);
+        foreach ($filters as $key => $value) {
+            $statement->bindValue($key, $value);
+        }
         $statement->execute();
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }

@@ -253,7 +253,13 @@ class ApiControllerV1 extends API
         self::checkPermissions(User::ROLE_ADMINISTRATOR);
 
         $pageNum = self::getParameter('page-num', 0, 'int');
-        $data = User::getUsers($pageNum);
+        $username = self::getParameter('username');
+        $name = self::getParameter('name');
+        $email = self::getParameter('email');
+        $role = self::getParameter('role');
+        $branchId = self::getParameter('branch-id', dataType: 'int');
+
+        $data = User::getUsers($pageNum, $username, $name, $email, $role, $branchId);
         self::sendSuccess(['users' => $data]);
     }
 
@@ -410,7 +416,7 @@ class ApiControllerV1 extends API
             self::sendResponse(self::STATUS_CODE_SUCCESS, self::STATUS_MSG_SUCCESS, $body);
         else
             self::sendResponse(self::STATUS_CODE_SUCCESS, self::STATUS_MSG_SUCCESS,
-                ['message'=>$body]);
+                ['message' => $body]);
         exit();
     }
 
@@ -424,16 +430,17 @@ class ApiControllerV1 extends API
             header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
     }
 
-    public function errorHandler(int $errorCode, string $errorMessage):void{
+    public function errorHandler(int $errorCode, string $errorMessage): void
+    {
         if ($errorCode === 404)
             self::sendResponse(self::STATUS_CODE_NOTFOUND, self::STATUS_MSG_NOTFOUND,
-                ['message'=>$errorMessage]);
+                ['message' => $errorMessage]);
         elseif ($errorCode === 403)
             self::sendResponse(self::STATUS_CODE_FORBIDDEN, self::STATUS_MSG_FORBIDDEN,
-                ['message'=>$errorMessage]);
+                ['message' => $errorMessage]);
         else
             self::sendResponse(self::STATUS_CODE_SERVER_ERROR, self::STATUS_MSG_SERVER_ERROR,
-                ['message'=>'A server error occurred.']);
+                ['message' => 'A server error occurred.']);
         exit();
     }
 }

@@ -115,6 +115,11 @@ employee-id - compulsory
 GET - /api/v1/users
 Parameters
 page-num - optional
+username - optional
+email - optional
+name - optional
+role - optional
+branch-id - optional
 
 POST - /api/v1/users/add
 Parameters
