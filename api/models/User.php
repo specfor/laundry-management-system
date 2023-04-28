@@ -131,28 +131,28 @@ class User extends DbModel
         return 'Failed to create new user.';
     }
 
-    public static function getUsers(int $pageNumber = 0, string $username = null, string $name = null, string $email = null,
+    public static function getUsers(int    $pageNumber = 0, string $username = null, string $name = null, string $email = null,
                                     string $role = null, int $branchId = null, int $limit = 30): array
     {
         $superAdminRole = self::ROLE_SUPER_ADMINISTRATOR;
         $startingIndex = $pageNumber * $limit;
 
-        $sql = "SELECT * FROM users WHERE role!=$superAdminRole";
+        $condition = "role!=$superAdminRole";
 
-        $filters = [];
+        $placeholders = [];
         if ($username) {
-            $sql .= " AND username LIKE ':username'";
-            $filters['username'] = "%" . $username . "%";
+            $condition .= " AND username LIKE ':username'";
+            $placeholders['username'] = "%" . $username . "%";
         }
         if ($name) {
-            $sql .= " AND firstname LIKE ':name' OR lastname LIKE ':name'";
-            $filters['name'] = $name;
+            $condition .= " AND firstname LIKE ':name' OR lastname LIKE ':name'";
+            $placeholders['name'] = $name;
         }
         if ($email) {
-            $sql .= " AND email LIKE ':email'";
-            $filters['email'] = $email;
+            $condition .= " AND email LIKE ':email'";
+            $placeholders['email'] = $email;
         }
-        if ($role)
+        if ($role) {
             if (strtolower($role) == 'administrator')
                 $role = self::ROLE_ADMINISTRATOR;
             elseif (strtolower($role) == 'manager')
@@ -161,17 +161,18 @@ class User extends DbModel
                 $role = self::ROLE_CASHIER;
             else
                 $role = 99;
-            $sql .= " AND role=$role";
-        if ($branchId)
-            $sql .= " AND branch_id=$branchId";
-
-        $sql .= " ORDER BY id LIMIT $startingIndex, $limit";
-        $statement = self::prepare($sql);
-        foreach ($filters as $key => $value) {
-            $statement->bindValue($key, $value);
+            $condition .= " AND role=$role";
         }
-        $statement->execute();
-        return $statement->fetchAll(PDO::FETCH_ASSOC);
+        if ($branchId)
+            $condition .= " AND branch_id=$branchId";
+
+        $statement = self::getDataFromTable(['id', 'username', 'firstname', 'lastname', 'role', 'branch_id'],
+            'users', $condition, $placeholders, ['id', 'asc'], [$startingIndex, $limit]);
+        $data = $statement->fetchAll(PDO::FETCH_ASSOC);
+        for ($i = 0; $i < count($data); $i++) {
+            $data[$i]['role'] = self::getUserRoleText($data[$i]['role']);
+        }
+        return $data;
     }
 
     public static function updateUser(int    $userId, string $password = null, string $role = null,
@@ -263,13 +264,13 @@ class User extends DbModel
      * Get user type text.
      * @return string Return user type message. 'none' if no role found.
      */
-    public function getUserRoleText(): string
+    public static function getUserRoleText(int $role): string
     {
-        if ($this->role == User::ROLE_ADMINISTRATOR)
+        if ($role === User::ROLE_ADMINISTRATOR)
             return 'administrator';
-        elseif ($this->role == User::ROLE_CASHIER)
+        elseif ($role === User::ROLE_CASHIER)
             return 'cashier';
-        elseif ($this->role == User::ROLE_MANAGER)
+        elseif ($role === User::ROLE_MANAGER)
             return 'manager';
         else
             return 'none';
