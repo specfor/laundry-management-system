@@ -47,8 +47,9 @@ class Employees extends DbModel
         return self::updateTableData('employees', $updateFieldsWithValues, "employee_id=$employeeId");
     }
 
-    public static function getEmployees(int $startingIndex = 0, int $limit = 30): array
+    public static function getEmployees(int $pageNumber = 0, int $limit = 30): array
     {
+        $startingIndex = $pageNumber * $limit;
         $sql = "SELECT * FROM employees LIMIT $startingIndex, $limit";
         $statement = self::prepare($sql);
         $statement->execute();

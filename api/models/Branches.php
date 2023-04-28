@@ -13,9 +13,10 @@ class Branches extends DbModel
         return $statement->execute([$name, $address]);
     }
 
-    public static function getBranches(int $startIndex = 0, int $limit = 30): array
+    public static function getBranches(int $pageNumber = 0, int $limit = 30): array
     {
-        $sql = "SELECT * FROM branches LIMIT $startIndex, $limit";
+        $startingIndex = $pageNumber * $limit;
+        $sql = "SELECT * FROM branches LIMIT $startingIndex, $limit";
         $statement = self::prepare($sql);
         $statement->execute();
         return $statement->fetchAll(PDO::FETCH_ASSOC);

@@ -117,7 +117,7 @@ class User extends DbModel
         if ($email)
             if (!filter_var($email, FILTER_VALIDATE_EMAIL))
                 return 'Invalid email address';
-            $params['email'] = $email;
+        $params['email'] = $email;
         if ($firstname)
             $params['firstname'] = $firstname;
         if ($lastname)
@@ -131,9 +131,10 @@ class User extends DbModel
         return 'Failed to create new user.';
     }
 
-    public static function getUsers(int $startingIndex = 0, int $limit = 30): array
+    public static function getUsers(int $pageNumber = 0, int $limit = 30): array
     {
         $superAdminRole = self::ROLE_SUPER_ADMINISTRATOR;
+        $startingIndex = $pageNumber * $limit;
         $sql = "SELECT * FROM users WHERE role!=$superAdminRole LIMIT $startingIndex, $limit";
         $statement = self::prepare($sql);
         $statement->execute();
@@ -161,15 +162,15 @@ class User extends DbModel
         if ($email)
             if (!filter_var($email, FILTER_VALIDATE_EMAIL))
                 return false;
-            $updateFields['email'] = $email;
+        $updateFields['email'] = $email;
         if ($firstname)
             $updateFields['firstname'] = $firstname;
         if ($lastname)
             $updateFields['lastname'] = $lastname;
         if ($branchId)
-            $updateFields['branch_id']= $branchId;
+            $updateFields['branch_id'] = $branchId;
 
-        if (self::updateTableData('users', $updateFields,"id=$userId"))
+        if (self::updateTableData('users', $updateFields, "id=$userId"))
             return true;
         return false;
     }

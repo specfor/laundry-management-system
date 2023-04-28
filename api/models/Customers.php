@@ -29,8 +29,9 @@ class Customers extends DbModel
         return $statement->execute();
     }
 
-    public static function getCustomers(int $branchId = 0, int $startingIndex = 0, int $limit = 30): array
+    public static function getCustomers(int $branchId = 0, int $pageNumber = 0, int $limit = 30): array
     {
+        $startingIndex = $pageNumber * $limit;
         if ($branchId == 0)
             $sql = "SELECT * FROM " . self::TABLE_NAME . " ORDER BY customer_id LIMIT $startingIndex, $limit";
         else

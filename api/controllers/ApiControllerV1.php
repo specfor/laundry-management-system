@@ -63,13 +63,13 @@ class ApiControllerV1 extends API
     {
         self::checkPermissions();
 
-        $startIndex = self::getParameter('start', 0, 'int');
+        $pageNum = self::getParameter('page-num', 0, 'int');
         $branchId = self::getParameter('branch-id', dataType: 'int');
 
         if (!$branchId)
             $branchId = User::getUserBranchId(self::getUserId());
 
-        $data = Customers::getCustomers($branchId, $startIndex);
+        $data = Customers::getCustomers($branchId, $pageNum);
         self::sendSuccess(['customers' => $data]);
     }
 
@@ -123,8 +123,8 @@ class ApiControllerV1 extends API
     {
         self::checkPermissions(User::ROLE_ADMINISTRATOR);
 
-        $startIndex = self::getParameter('start', 0, 'int');
-        $data = Branches::getBranches($startIndex);
+        $pageNum = self::getParameter('page-num', 0, 'int');
+        $data = Branches::getBranches($pageNum);
         self::sendSuccess(['branches' => $data]);
     }
 
@@ -175,8 +175,8 @@ class ApiControllerV1 extends API
     {
         self::checkPermissions(User::ROLE_MANAGER);
 
-        $startIndex = self::getParameter('start', 0, 'int');
-        $data = Employees::getEmployees($startIndex);
+        $pageNum = self::getParameter('page-num', 0, 'int');
+        $data = Employees::getEmployees($pageNum);
         self::sendSuccess(['employees' => $data]);
     }
 
@@ -252,8 +252,8 @@ class ApiControllerV1 extends API
     {
         self::checkPermissions(User::ROLE_ADMINISTRATOR);
 
-        $startIndex = self::getParameter('start', 0, 'int');
-        $data = User::getUsers($startIndex);
+        $pageNum = self::getParameter('page-num', 0, 'int');
+        $data = User::getUsers($pageNum);
         self::sendSuccess(['users' => $data]);
     }
 
