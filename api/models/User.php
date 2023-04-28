@@ -146,11 +146,11 @@ class User extends DbModel
         }
         if ($name) {
             $condition .= " AND firstname LIKE ':name' OR lastname LIKE ':name'";
-            $placeholders['name'] = $name;
+            $placeholders['name'] = "%".$name."%";
         }
         if ($email) {
             $condition .= " AND email LIKE ':email'";
-            $placeholders['email'] = $email;
+            $placeholders['email'] = "%".$email."%";
         }
         if ($role) {
             if (strtolower($role) == 'administrator')
