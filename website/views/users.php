@@ -22,7 +22,7 @@
         <div class="row mt-4">
             <div class="col-sm-4">
                 <div class="input-group mb-3">
-                    <input id="searchId" type="text" class="form-control" placeholder="Id" aria-label="" aria-describedby="">
+                    <input id="searchId" type="text" class="form-control" placeholder="Name" aria-label="" aria-describedby="">
                     <button class="btn btn-dark fw-bold" type="button" id="searchIdClear">clear</button>
                 </div>
             </div>

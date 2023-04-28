@@ -4,8 +4,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
-  <title>Products</title>
-  <script src="../public/assets/js/branches.js"></script>
+  <title>Branches</title>
+  <script src="/assets/js/branches.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
@@ -53,7 +53,7 @@
 </div>
 <div class="container">
 
-    <div class="modal fade" id="addNewUserModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="addBranch" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -65,11 +65,11 @@
         <div class="row text-center ps-4 pe-4" style="">
             <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon1">Branch Name</span>
-                <input type="text" class="form-control" aria-describedby="basic-addon1" id="branhName" placeholder="">
+                <input type="text" class="form-control" aria-describedby="basic-addon1" id="branchName" placeholder="">
             </div>
             <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon2">Contact Info.</span>
-                <input type="text" class="form-control " aria-describedby="basic-addon2" id="email" placeholder="Phone Number">
+                <input type="text" class="form-control " aria-describedby="basic-addon2" id="contactInfo" placeholder="Ex: Phone Number">
             </div>          
         </div>
           <div class="modal-footer">
@@ -79,6 +79,53 @@
         </div>
       </div>
     </div>
+
+    <div class="container">
+
+    <div class="modal fade" id="EditBranch" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Edit Branch</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+          </div>
+        <div class="row text-center ps-4 pe-4" style="">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">Branch Name</span>
+                <input type="text" class="form-control" aria-describedby="basic-addon1" id="editBranchName" placeholder="">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon2">Contact Info.</span>
+                <input type="text" class="form-control " aria-describedby="basic-addon2" id="editContactInfo" placeholder="Ex: Phone Number">
+            </div>          
+        </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" id="editBranch">Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" tabindex="-1" id="confirmDelete" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Confirm Deletion</h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h5>This action is irreversible. Are you sure you want to delete this branch?</h5>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button id="btnConfirmDeletion" type="button" data-bs-dismiss="modal" class="btn btn-primary save">Yes</button>
+            </div>
+        </div>
+    </div>
+</div> 
        
 </body>
 </html>

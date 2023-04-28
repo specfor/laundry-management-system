@@ -194,7 +194,7 @@ async function confirmDeletion(){
 
 
 async function getAllUsers(){
-    let response = await getJsonResponse("http://www.laundry-api.localhost/api/v1/users")
+    let response = await getJsonResponse("http://www.laundry-api.localhost/api/v1/users?")
     
 
     let resp = await response.json()
@@ -203,15 +203,6 @@ async function getAllUsers(){
 
     users.forEach(function(user){
         
-         function getRole(role){
-            if(role == 1){
-                return "Administrator"
-            }else if(role == 2){
-                return "Manager"
-            }else{
-                return "Cashier"
-            }
-        }
 
         let userTable = document.getElementById("userTable")
 
@@ -222,7 +213,7 @@ async function getAllUsers(){
         newRow.insertCell(2).innerText = user["email"]
         newRow.insertCell(3).innerText = user["firstname"]
         newRow.insertCell(4).innerText = user["lastname"]
-        newRow.insertCell(5).innerText = getRole(user["role"])
+        newRow.insertCell(5).innerText = user["role"]
         newRow.insertCell(6).innerText = user["branch_id"]
         newRow.insertCell(7).innerHTML = `<div class="input-group mb-3">
       <button onclick="editUser()" class="edit btn btn-primary fw-bold" type="button" id="btn-edit-${user["id"]}" data-bs-toggle="modal" data-bs-target="#editUserModal">Edit User</button>
@@ -244,59 +235,120 @@ function clearTable(){
 }
 
 async function getAllUsersFromSearch(){
-    let searchId = document.getElementById("searchId").value
+    let name = document.getElementById("searchId").value
     let usernameId = document.getElementById("usernameId").value
     
-    let response = await getJsonResponse("http://www.laundry-api.localhost/api/v1/users")
+    clearTable()
+    if(name=="" && usernameId==""){
+        await getAllUsers()
+    }else if(!name=="" && !usernameId==""){
+        let response = await getAllUsersReq("http://www.laundry-api.localhost/api/v1/users?",
+        {
+            name:name,
+            username:usernameId
+        })
 
-    let resp = await response.json()
-    if(resp.statusMessage=="success"){
-        let users = resp["body"]["users"]
+        let resp = await response.json()
+        
+        if(resp.statusMessage == "success"){
+            let users = resp["body"]["users"]
+
+    users.forEach(function(user){
+        
+
+        let userTable = document.getElementById("userTable")
+
+        let newRow = userTable.insertRow(-1)
     
-        clearTable()
+        newRow.insertCell(0).innerText = user["id"]
+        newRow.insertCell(1).innerText = user["username"]
+        newRow.insertCell(2).innerText = user["email"]
+        newRow.insertCell(3).innerText = user["firstname"]
+        newRow.insertCell(4).innerText = user["lastname"]
+        newRow.insertCell(5).innerText = user["role"]
+        newRow.insertCell(6).innerText = user["branch_id"]
+        newRow.insertCell(7).innerHTML = `<div class="input-group mb-3">
+      <button onclick="editUser()" class="edit btn btn-primary fw-bold" type="button" id="btn-edit-${user["id"]}" data-bs-toggle="modal" data-bs-target="#editUserModal">Edit User</button>
+      <button onclick="prepareChangePass()" class="edit btn btn-primary fw-bold" type="button" id="btn-edit-${user["id"]}" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Change User Password</button>
+      <button onclick="prepareDeleteUser()" class="delete btn btn-danger fw-bold" type="button" id="btn-delete-${user["id"]}" data-bs-toggle="modal" data-bs-target="#confirmDelete">Delete</button>
+    </div>`
+    })
 
-        users.forEach(function(user){
-            userID = (user["id"]).toString()
-            usernameID = String(user["username"])
-
-            //console.log(`${userID} ${usernameID}`)
-
-            let x = usernameID.includes(String(usernameId))
-            let y = userID.includes(searchId)
-
-            if( x == true ){
+        }
+      
+           
+            }else if(!usernameId==""){
                 
-                function getRole(role){
-                    if(role == 1){
-                        return "Administrator"
-                    }else if(role == 2){
-                        return "Manager"
-                    }else{
-                        return "Cashier"
-                    }
-                }
+                let response = await getAllUsersReq("http://www.laundry-api.localhost/api/v1/users?",
+        {
+            username:usernameId
+        })
+        let resp = await response.json()            
+
+        if(resp.statusMessage == "success"){
+            let users = resp["body"]["users"]
+
+            users.forEach(function(user){
                 
+        
                 let userTable = document.getElementById("userTable")
+        
                 let newRow = userTable.insertRow(-1)
-
+            
                 newRow.insertCell(0).innerText = user["id"]
                 newRow.insertCell(1).innerText = user["username"]
                 newRow.insertCell(2).innerText = user["email"]
                 newRow.insertCell(3).innerText = user["firstname"]
                 newRow.insertCell(4).innerText = user["lastname"]
-                newRow.insertCell(5).innerText = getRole(user["role"])
+                newRow.insertCell(5).innerText = user["role"]
                 newRow.insertCell(6).innerText = user["branch_id"]
                 newRow.insertCell(7).innerHTML = `<div class="input-group mb-3">
-                <button onclick="editUser()" class="edit btn btn-primary fw-bold" type="button" id="btn-edit-${user["id"]}" data-bs-toggle="modal" data-bs-target="#editUserModal">Edit User</button>
-                <button onclick="prepareChangePass()" class="edit btn btn-primary fw-bold" type="button" id="btn-edit-${user["id"]}" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Change User Password</button>
-                <button onclick="prepareDeleteUser()" class="delete btn btn-danger fw-bold" type="button" id="btn-delete-${user["id"]}" data-bs-toggle="modal" data-bs-target="#confirmDelete">Delete</button>
-                </div>`
-            }
+              <button onclick="editUser()" class="edit btn btn-primary fw-bold" type="button" id="btn-edit-${user["id"]}" data-bs-toggle="modal" data-bs-target="#editUserModal">Edit User</button>
+              <button onclick="prepareChangePass()" class="edit btn btn-primary fw-bold" type="button" id="btn-edit-${user["id"]}" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Change User Password</button>
+              <button onclick="prepareDeleteUser()" class="delete btn btn-danger fw-bold" type="button" id="btn-delete-${user["id"]}" data-bs-toggle="modal" data-bs-target="#confirmDelete">Delete</button>
+            </div>`
+            })
+                   
+        }
+        
+            }else{ 
+                let response = await getAllUsersReq("http://www.laundry-api.localhost/api/v1/users?",
+        {
+            name:name,
+
         })
+        let resp = await response.json()
+        
+        //console.lof(resp)
+        if(resp.statusMessage == "success"){
+            let users = resp["body"]["users"]
+
+            users.forEach(function(user){
+                
+        
+                let userTable = document.getElementById("userTable")
+        
+                let newRow = userTable.insertRow(-1)
+            
+                newRow.insertCell(0).innerText = user["id"]
+                newRow.insertCell(1).innerText = user["username"]
+                newRow.insertCell(2).innerText = user["email"]
+                newRow.insertCell(3).innerText = user["firstname"]
+                newRow.insertCell(4).innerText = user["lastname"]
+                newRow.insertCell(5).innerText = user["role"]
+                newRow.insertCell(6).innerText = user["branch_id"]
+                newRow.insertCell(7).innerHTML = `<div class="input-group mb-3">
+              <button onclick="editUser()" class="edit btn btn-primary fw-bold" type="button" id="btn-edit-${user["id"]}" data-bs-toggle="modal" data-bs-target="#editUserModal">Edit User</button>
+              <button onclick="prepareChangePass()" class="edit btn btn-primary fw-bold" type="button" id="btn-edit-${user["id"]}" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Change User Password</button>
+              <button onclick="prepareDeleteUser()" class="delete btn btn-danger fw-bold" type="button" id="btn-delete-${user["id"]}" data-bs-toggle="modal" data-bs-target="#confirmDelete">Delete</button>
+            </div>`
+            })
+                   
+        }
+            }
         
     }
     
-}
 
 async function undoSearch(){
     let userTable = document.getElementById("userTable")
@@ -328,3 +380,11 @@ async function getJsonResponse(url) {
     })
 }
 
+async function getAllUsersReq(url,params) {
+    return await fetch(url+ new URLSearchParams(params), {
+        headers: {
+            'Authorization': 'Bearer ' +localStorage.getItem('authToken')
+        },
+        credentials: "same-origin"
+    })
+}
