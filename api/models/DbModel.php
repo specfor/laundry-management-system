@@ -67,18 +67,28 @@ abstract class DbModel
      * Retrieve data from the given table
      * @param array $rows Array of row names of which should be returned.
      * @param string $tableName Table name from where to get data.
-     * @param string $conditionWithPlaceholders The condition to get data with placeholders(if needed) to values.
+     * @param string|null $conditionWithPlaceholders The condition to get data with placeholders(if needed) to values.
      *      Should be a valid sql condition.
      * @param array $placeholderValues Associative array of placeholder => value.
+     * @param array|null $orderBy Array of [order_column, ASC|DESC]
+     * @param int|array|null $limit Just number of rows to limit or array of [startingIndex, noOfRows]
      * @return mixed Return PDOStatement|PDOException|bool based on scenario.
      */
-    protected static function getDataFromTable(array $rows, string $tableName, string $conditionWithPlaceholders = '',
-                                               array $placeholderValues = [])
+    protected static function getDataFromTable(array     $rows, string $tableName, string $conditionWithPlaceholders = null,
+                                               array     $placeholderValues = [], array $orderBy = null,
+                                               int|array $limit = null)
     {
+        $sql = "SELECT " . implode(', ', $rows) . " FROM $tableName";
         if ($conditionWithPlaceholders)
-            $sql = "SELECT " . implode(', ', $rows) . " FROM $tableName WHERE $conditionWithPlaceholders";
-        else
-            $sql = "SELECT " . implode(', ', $rows) . " FROM $tableName";
+            $sql .= " WHERE $conditionWithPlaceholders";
+        if ($orderBy)
+            $sql .= " ORDER BY $orderBy[0] $orderBy[1]";
+        if ($limit)
+            if (is_array($limit))
+                $sql .= " LIMIT $limit[0], $limit[1]";
+            else
+                $sql .= " LIMIT $limit";
+
         $statement = self::prepare($sql);
         if ($conditionWithPlaceholders && !empty($placeholderValues)) {
             foreach ($placeholderValues as $placeholder => $value) {
