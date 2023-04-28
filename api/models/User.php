@@ -141,16 +141,16 @@ class User extends DbModel
 
         $placeholders = [];
         if ($username) {
-            $condition .= " AND username LIKE ':username'";
+            $condition .= " AND username LIKE :username";
             $placeholders['username'] = "%" . $username . "%";
         }
         if ($name) {
-            $condition .= " AND firstname LIKE ':name' OR lastname LIKE ':name'";
-            $placeholders['name'] = "%".$name."%";
+            $condition .= " AND firstname LIKE :name OR lastname LIKE :name";
+            $placeholders['name'] = "%" . $name . "%";
         }
         if ($email) {
-            $condition .= " AND email LIKE ':email'";
-            $placeholders['email'] = "%".$email."%";
+            $condition .= " AND email LIKE :email";
+            $placeholders['email'] = "%" . $email . "%";
         }
         if ($role) {
             if (strtolower($role) == 'administrator')
@@ -166,7 +166,7 @@ class User extends DbModel
         if ($branchId)
             $condition .= " AND branch_id=$branchId";
 
-        $statement = self::getDataFromTable(['id', 'username', 'firstname', 'lastname', 'role', 'branch_id'],
+        $statement = self::getDataFromTable(['id', 'username', 'firstname', 'lastname', 'role', 'branch_id', 'email'],
             'users', $condition, $placeholders, ['id', 'asc'], [$startingIndex, $limit]);
         $data = $statement->fetchAll(PDO::FETCH_ASSOC);
         for ($i = 0; $i < count($data); $i++) {
