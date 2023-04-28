@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/assets/css/styles.css">
-    <title>Page Not Found</title>
+    <title>Site Maintenance</title>
 </head>
 <body>
 <div class="xs:container">
     <div>
         <div class="grid grid-cols-1 xs:grid-cols-2 h-screen items-center">
             <div>
-                <img src="/assets/images/errors/404.jpg" alt="Page Not Found">
+                <img src="/assets/images/errors/403.png" alt="Forbidden">
             </div>
             <div class="xs:justify-center order-first xs:order-none">
-                <h1 class="font-bold text-6xl text-center">Page Not Found</h1>
-                <h4 class="text-center text-2xl mt-5">Try correcting the url.</h4>
+                <h1 class="font-bold text-6xl text-center">Forbidden</h1>
+                <h4 class="text-center text-2xl mt-5">You are not allowed to access this resource.</h4>
             </div>
         </div>
     </div>
