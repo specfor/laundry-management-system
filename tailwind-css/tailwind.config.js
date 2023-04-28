@@ -9,7 +9,15 @@ module.exports = {
         ]
     },
     theme: {
-        extend: {},
+        container: {
+            center: true,
+            padding: '2rem'
+        },
+        extend: {
+            screens:{
+                'xs': '475px'
+            }
+        },
     },
     plugins: [],
 }
