@@ -18,7 +18,7 @@ async function sendLoginData2Server(){
         if (data.statusMessage === 'success'){
             localStorage.setItem('authToken',data.body.token)
             document.cookie = "authToken="+data.body.token
-           window.location.replace("./dashboard/users")
+           window.location.replace("./dashboard/branches")
         }
 
     }catch(err){

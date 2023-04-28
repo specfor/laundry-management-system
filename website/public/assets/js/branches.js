@@ -1,9 +1,9 @@
 let branch_id;
 
 window.addEventListener("load",function(){
-    document.getElementById("addBranch").addEventListener("click",sendDataToDB)
-    document.getElementById("btnConfirmDeletion").addEventListener("click",deleteBranch)
-    document.getElementById("editBranch").addEventListener("click",updateBranchInfo)
+    document.getElementById("btnAddBranch").addEventListener("click",sendDataToDB)
+    //document.getElementById("btnConfirmDeletion").addEventListener("click",deleteBranch)
+    //document.getElementById("editBranch").addEventListener("click",updateBranchInfo)
 })
 
 
@@ -12,11 +12,21 @@ async function sendDataToDB(){
    let branchName = document.getElementById("branchName").value
    let contactInfo = document.getElementById("contactInfo").value
 
-    if(branchName=="" || contactInfo==""){
+    if(!branchName || !contactInfo){
         alert("All the fields must be filled!")
     }else{
+        console.log(branchName,contactInfo)
         try{
-            let response = await sendJsonRequest("")
+            let response = await sendJsonRequest("http://www.laundry-api.localhost/api/v1/branches/add",{
+                "branch-name":branchName,
+                "phone-number":contactInfo
+            })
+
+            let resJson = await response.json()
+            console.log(resJson)
+            if(resJson.statusMessage == "success"){
+                await updateBranchInfo(branchName,contactInfo)
+            }
         }catch(err){
 
         }
@@ -27,8 +37,8 @@ async function updateDataToTable(branchName,contactInfo){
     let response = await getJsonResponse("http://www.laundry-api.localhost/api/v1/branches")
     
     let resp = await response.json()
-    //let user = resp["body"]["users"].slice(-1)
-    //let id = user[0]["id"]
+    let branch = resp["body"]["branhes"].slice(-1)
+    let id = branch[0]["id"]
 
     let branchesTable = document.getElementById("branchesTable")
 
