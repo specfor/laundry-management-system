@@ -33,7 +33,7 @@ class Application
         $this->router = new Router($this->request);
         $this->db = new Database($config['db']['servername'], $config['db']['username'], $config['db']['password'],
             $config['db']['dbName']);
-        $this->exceptionHandler = $config['notFoundExceptionHandler'];
+        $this->exceptionHandler = $config['ExceptionHandler'];
     }
 
     /**

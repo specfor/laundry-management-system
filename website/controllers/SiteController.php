@@ -3,6 +3,8 @@
 namespace LogicLeap\StockManagement\controllers;
 
 use LogicLeap\StockManagement\core\TailwindUiRenderer;
+use LogicLeap\StockManagement\models\Authorization;
+use LogicLeap\StockManagement\models\DbModel;
 
 class SiteController
 {
@@ -42,5 +44,26 @@ class SiteController
     {
         $variableData['site-title'] = 'Users - ' . self::SITE_NAME;
         TailwindUiRenderer::loadPage('users', $variableData);
+    }
+
+    private function checkPermission(int $minimumPermittedUserRole)
+    {
+        $userRole = Authorization::getUserRole($_COOKIE['auth-token']);
+
+        if ($userRole > $minimumPermittedUserRole) {
+            echo "You are not allowed";
+            exit();
+        }
+    }
+
+    public function errorHandler(int $errorCode, string $errorMessage): void
+    {
+        if ($errorCode === 404)
+            TailwindUiRenderer::loadPage('_404');
+        elseif ($errorCode === 403)
+            echo 'you are not allowed';
+        else
+            echo 'server error';
+        exit();
     }
 }

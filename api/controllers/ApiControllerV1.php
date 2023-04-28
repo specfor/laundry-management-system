@@ -434,5 +434,6 @@ class ApiControllerV1 extends API
         else
             self::sendResponse(self::STATUS_CODE_SERVER_ERROR, self::STATUS_MSG_SERVER_ERROR,
                 ['message'=>'A server error occurred.']);
+        exit();
     }
 }

@@ -18,7 +18,7 @@ $config = [
         "password" => $_ENV['DB_PASSWORD'],
         "dbName" => $_ENV['DB_NAME']
     ],
-    'notFoundExceptionHandler' => [ApiControllerV1::class, 'errorHandler']
+    'ExceptionHandler' => [ApiControllerV1::class, 'errorHandler']
 ];
 
 $app = new Application($config);
