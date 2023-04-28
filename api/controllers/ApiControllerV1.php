@@ -444,7 +444,7 @@ class ApiControllerV1 extends API
             header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
     }
 
-    public function errorHandler(int $errorCode, string $errorMessage): void
+    public function errorHandler(int|string $errorCode, string $errorMessage): void
     {
         if ($errorCode === 404)
             self::sendResponse(self::STATUS_CODE_NOTFOUND, self::STATUS_MSG_NOTFOUND,

@@ -72,7 +72,7 @@ class SiteController
         }
     }
 
-    public function errorHandler(int $errorCode, string $errorMessage = null): void
+    public function errorHandler(int|string $errorCode, string $errorMessage = null): void
     {
         if ($errorCode === 404)
             TailwindUiRenderer::loadPage('_404');
