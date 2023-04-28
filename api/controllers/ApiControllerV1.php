@@ -4,6 +4,7 @@ namespace LogicLeap\StockManagement\controllers;
 
 use Exception;
 use LogicLeap\StockManagement\core\Application;
+use LogicLeap\StockManagement\core\MigrationManager;
 use LogicLeap\StockManagement\core\Request;
 use LogicLeap\StockManagement\core\SecureToken;
 use LogicLeap\StockManagement\models\API;
@@ -17,6 +18,20 @@ class ApiControllerV1 extends API
 {
     public function __construct()
     {
+        $maintenanceModeFilePath = Application::$ROOT_DIR . "/maintenanceLock.lock";
+        $migrationModeFilePath = Application::$ROOT_DIR . "/migrationLock.lock";
+        if (is_file($migrationModeFilePath)) {
+            $migrationManager = new MigrationManager();
+            $migrationManager->startMigration();
+        }
+
+        // If in maintenance mode, maintenance page is displayed. Application exits.
+        if (is_file($maintenanceModeFilePath)) {
+            self::sendResponse(API::STATUS_CODE_MAINTENANCE, API::STATUS_MSG_MAINTENANCE,
+                ['error' => 'Server is under maintenance']);
+            exit();
+        }
+
         if (isset($_SERVER['HTTP_ORIGIN'])) {
             header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
             header('Vary: Origin');
@@ -302,7 +317,6 @@ class ApiControllerV1 extends API
                 ['message' => 'You are not authorized to perform this action2.']);
             exit();
         }
-
     }
 
     private static function getUserId(): int
@@ -408,5 +422,17 @@ class ApiControllerV1 extends API
 
         if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']))
             header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
+    }
+
+    public function errorHandler(int $errorCode, string $errorMessage):void{
+        if ($errorCode === 404)
+            self::sendResponse(self::STATUS_CODE_NOTFOUND, self::STATUS_MSG_NOTFOUND,
+                ['message'=>$errorMessage]);
+        elseif ($errorCode === 403)
+            self::sendResponse(self::STATUS_CODE_FORBIDDEN, self::STATUS_MSG_FORBIDDEN,
+                ['message'=>$errorMessage]);
+        else
+            self::sendResponse(self::STATUS_CODE_SERVER_ERROR, self::STATUS_MSG_SERVER_ERROR,
+                ['message'=>'A server error occurred.']);
     }
 }

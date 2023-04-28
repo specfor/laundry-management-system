@@ -9,6 +9,7 @@ abstract class API
     public const STATUS_CODE_FORBIDDEN = 403;
     public const STATUS_CODE_MAINTENANCE = 503;
     public const STATUS_CODE_UNAUTHORIZED = 401;
+    public const STATUS_CODE_SERVER_ERROR = 500;
 
     public const STATUS_MSG_SUCCESS = 'success';
     public const STATUS_MSG_ERROR = 'error';
@@ -16,6 +17,7 @@ abstract class API
     public const STATUS_MSG_FORBIDDEN = 'forbidden';
     public const STATUS_MSG_MAINTENANCE = 'maintenance';
     public const STATUS_MSG_UNAUTHORIZED = 'unauthorized';
+    public const STATUS_MSG_SERVER_ERROR = 'server-error';
 
     /**
      * Send JSON formatted crafted response to the called API user.
@@ -43,7 +45,7 @@ abstract class API
         $finalPayload = [
             'statusCode' => self::STATUS_CODE_NOTFOUND,
             'statusMessage' => self::STATUS_MSG_NOTFOUND,
-            'body' => ['error' => 'API endpoint not found']
+            'body' => ['error' => 'Requested API endpoint was not found.']
         ];
         echo json_encode($finalPayload);
     }
