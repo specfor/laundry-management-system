@@ -33,7 +33,7 @@ class Authorization extends DbModel
         $now = new DateTime('now');
         $time = $now->format('Y-m-d H:i:s');
 
-        $sql = "SELECT id FROM user_status WHERE user_id=$userId";
+        $sql = "SELECT user_id FROM user_status WHERE user_id=$userId";
         $statement = self::prepare($sql);
         $statement->execute();
         $expTime = $now->add(DateInterval::createFromDateString(self::TOKEN_EXPIRE_INTERVAL. ' seconds'));

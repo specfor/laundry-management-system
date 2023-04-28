@@ -328,13 +328,13 @@ class ApiControllerV1 extends API
 
         if (!$matches || !Authorization::isValidToken($matches[1])) {
             self::sendResponse(self::STATUS_CODE_FORBIDDEN, self::STATUS_MSG_FORBIDDEN,
-                ['message' => 'You are not authorized to perform this action1.']);
+                ['message' => 'You are not authorized to perform this action.']);
             exit();
         }
 
         if (User::getUserRole(self::getUserId()) > $requiredMinimumUserRole) {
             self::sendResponse(self::STATUS_CODE_FORBIDDEN, self::STATUS_MSG_FORBIDDEN,
-                ['message' => 'You are not authorized to perform this action2.']);
+                ['message' => 'You are not authorized to perform this action.']);
             exit();
         }
     }
