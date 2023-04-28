@@ -34,8 +34,8 @@ branch-id - optional
 <h4>GET - /api/v1/customers </h4>
 <p>Parameters 
 <br>
-start - optional -> when there are more than 30 results 
-results are broken into pages. index to start retrieving results
+page-num - optional -> when there are more than 30 results, 
+results are broken into pages. page number to retrieve results
 branch-id - optional
 </p>
 <p>Returns customer data</p>
@@ -61,7 +61,7 @@ customer-id - compulsory
 
 GET - /api/v1/branches
 Parameters
-start - optional
+page-num - optional
 
 POST - /api/v1/branches/add
 Parameters
@@ -70,7 +70,7 @@ address - optional
 manager-id - optional
 
 GET - /api/v1/branches
-start - optional
+page-num - optional
 
 POST - /api/v1/branches/update
 Parameters
@@ -85,7 +85,7 @@ branch-id - compulsory
 
 GET - /api/v1/employees
 Parameters
-start - optional
+page-num - optional
 
 POST - /api/v1/employees/add
 Parameters
@@ -114,7 +114,7 @@ employee-id - compulsory
 
 GET - /api/v1/users
 Parameters
-start - optional
+page-num - optional
 
 POST - /api/v1/users/add
 Parameters
