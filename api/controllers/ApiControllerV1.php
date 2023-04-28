@@ -111,9 +111,10 @@ class ApiControllerV1 extends API
 
         $branchName = self::getParameter('branch-name');
         $address = self::getParameter('address');
+        $phoneNum = self::getParameter('phone-number');
         $managerId = self::getParameter('manager-id', dataType: 'int');
 
-        if (Branches::addNewBranch($branchName, $address, $managerId))
+        if (Branches::addNewBranch($branchName, $address, $managerId, $phoneNum))
             self::sendSuccess('New branch was created successfully.');
         else
             self::sendError('Failed to add new branch');
@@ -124,7 +125,12 @@ class ApiControllerV1 extends API
         self::checkPermissions(User::ROLE_ADMINISTRATOR);
 
         $pageNum = self::getParameter('page-num', 0, 'int');
-        $data = Branches::getBranches($pageNum);
+        $branchName = self::getParameter('branch-name');
+        $address = self::getParameter('address');
+        $phoneNum = self::getParameter('phone-number');
+        $managerId = self::getParameter('manager-id', dataType: 'int');
+
+        $data = Branches::getBranches($pageNum, $branchName, $address, $managerId, $phoneNum);
         self::sendSuccess(['branches' => $data]);
     }
 
@@ -135,8 +141,9 @@ class ApiControllerV1 extends API
         $branchId = self::getParameter('branch-id', dataType: 'int', isCompulsory: true);
         $branchName = self::getParameter('branch-name');
         $address = self::getParameter('address');
+        $phoneNum = self::getParameter('phone-number');
         $managerId = self::getParameter('manager-id', dataType: 'int');
-        if (Branches::updateBranch($branchId, $branchName, $address, $managerId))
+        if (Branches::updateBranch($branchId, $branchName, $address, $managerId, $phoneNum))
             self::sendSuccess('New branch was created successfully.');
         else
             self::sendError('Failed to update branch details.');

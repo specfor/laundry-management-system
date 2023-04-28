@@ -16,7 +16,8 @@ class m00005_branches extends MigrationScheme
                     branch_id int AUTO_INCREMENT NOT NULL PRIMARY KEY,
                     name varchar(255) NOT NULL ,
                     address varchar(255),
-                    manager_id int(5),
+                    manager_id int(5),                    
+                    phone_num varchar(20),
                     blocked bool NOT NULL                  
                 )";
         try {

@@ -13,8 +13,7 @@ class m00003_userStatus extends MigrationScheme
     public static function up(): bool
     {
         $sql = "CREATE TABLE IF NOT EXISTS user_status (
-                    id int AUTO_INCREMENT NOT NULL PRIMARY KEY,
-                    user_id int NOT NULL,
+                    user_id int NOT NULL PRIMARY KEY,
                     auth_token varchar(255) NOT NULL, 
                     last_active datetime NOT NULL,
                     ip_addr varchar(30) NOT NULL,

@@ -55,19 +55,19 @@ class Employees extends DbModel
         $filters = [];
         $placeholders = [];
         if ($name) {
-            $filters[] = "name LIKE ':name'";
+            $filters[] = "name LIKE :name";
             $placeholders['name'] = "%" . $name . "%";
         }
         if ($address) {
-            $filters[] = "address LIKE ':address'";
+            $filters[] = "address LIKE :address";
             $placeholders['address'] = "%" . $address . "%";
         }
         if ($email) {
-            $filters[] = "email LIKE ':email'";
+            $filters[] = "email LIKE :email";
             $placeholders['email'] = "%" . $email . "%";
         }
         if ($phone_num) {
-            $filters[] = "phone_num LIKE ':phone_num'";
+            $filters[] = "phone_num LIKE :phone_num";
             $placeholders['phone_num'] = "%" . $phone_num . "%";
         }
         if ($branchId)
@@ -77,7 +77,7 @@ class Employees extends DbModel
 
         $condition = null;
         if ($filters)
-            $condition = " WHERE " . implode(' AND ', $filters);
+            $condition = implode(' AND ', $filters);
         $statement = self::getDataFromTable(['name', 'address', 'email', 'phone_num', 'branch_id', 'left_date'],
             'employees', $condition, $placeholders, ['id', 'asc'], [$startingIndex, $limit]);
         $data = $statement->fetchAll(PDO::FETCH_ASSOC);

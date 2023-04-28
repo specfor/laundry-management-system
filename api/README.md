@@ -68,14 +68,20 @@ Parameters
 branch-name - optional
 address - optional
 manager-id - optional
+phone-number - optional
 
 GET - /api/v1/branches
 page-num - optional
+branch-name - optional
+address - optional
+manager-id - optional
+phone-number - optional
 
 POST - /api/v1/branches/update
 Parameters
 branch-id - compulsory
 branch-name - optional
+phone-number - optional
 address - optional
 manager-id - optional
 
