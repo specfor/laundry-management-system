@@ -31,26 +31,26 @@ class Customers extends DbModel
         $filters = [];
         $placeholders = [];
         if ($email) {
-            $filters[] = "email=:email";
+            $filters[] = "email LIKE :email";
             $placeholders['email'] = "%" . $email . "%";
         }
         if ($phoneNumber) {
-            $filters[] = "phone_num=:phone_num";
-            $placeholders['phone_num'] = "%" . $phoneNumber . "%";
+            $filters[] = "phone_num LIKE :phone_num";
+            $placeholders['phone_num'] = $phoneNumber . "%";
         }
         if ($name) {
-            $filters[] = "name=:name";
+            $filters[] = "name LIKE :name";
             $placeholders['name'] = "%" . $name . "%";
         }
         if ($address) {
-            $filters[] = "address=:address";
+            $filters[] = "address LIKE :address";
             $placeholders['address'] = "%" . $address . "%";
         }
         if ($banned) {
             $filters[] = "banned=$banned";
         }
         if ($joinDate) {
-            $filters[] = "join_date=:join_date";
+            $filters[] = "join_date LIKE :join_date";
             $placeholders['join_date'] = "%" . $joinDate . "%";
         }
         if ($branchId != 0)

@@ -28,19 +28,19 @@ class Branches extends DbModel
         $filters = [];
         $placeholders = [];
         if ($name) {
-            $filters[] = "name=:name";
-            $placeholders['name'] = $name;
+            $filters[] = "name LIKE :name";
+            $placeholders['name'] = "%".$name."%";
         }
         if ($address) {
-            $filters[] = "address=:address";
-            $placeholders['address'] = $address;
+            $filters[] = "address LIKE :address";
+            $placeholders['address'] = "%".$address."%";
         }
         if ($managerId) {
             $filters[] = "manager_id=$managerId";
         }
         if ($phoneNumber) {
-            $filters[] = "phone_num=:phone_num";
-            $placeholders['phone_num'] = $phoneNumber;
+            $filters[] = "phone_num LIKE :phone_num";
+            $placeholders['phone_num'] = $phoneNumber."%";
         }
         $condition = null;
         if ($filters)
