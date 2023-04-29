@@ -14,30 +14,33 @@ async function sendDataToDB(){
 
     if(!branchName || !contactInfo){
         alert("All the fields must be filled!")
-    }else{
-        console.log(branchName,contactInfo)
+        return
+    }
+        //console.log(branchName,contactInfo)
         try{
             let response = await sendJsonRequest("http://www.laundry-api.localhost/api/v1/branches/add",{
                 "branch-name":branchName,
-                "phone-number":contactInfo
+                "phone_number":contactInfo
             })
 
             let resJson = await response.json()
             console.log(resJson)
             if(resJson.statusMessage == "success"){
-                await updateBranchInfo(branchName,contactInfo)
+               await updateDataToTable(branchName,contactInfo)
             }
         }catch(err){
 
         }
-    }
+   
 }
 
 async function updateDataToTable(branchName,contactInfo){
+    console.log("working")
     let response = await getJsonResponse("http://www.laundry-api.localhost/api/v1/branches")
     
     let resp = await response.json()
-    let branch = resp["body"]["branhes"].slice(-1)
+    console.log(resp)
+    let branch = resp["body"]["branches"].slice(-1)
     let id = branch[0]["id"]
 
     let branchesTable = document.getElementById("branchesTable")
