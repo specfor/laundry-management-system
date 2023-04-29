@@ -69,17 +69,14 @@ customer-id - compulsory
 GET - /api/v1/branches
 Parameters
 page-num - optional
-
-POST - /api/v1/branches/add
-Parameters
-branch-name - compulsory
+branch-name - optional
 address - optional
 manager-id - optional
 phone-number - optional
 
-GET - /api/v1/branches
-page-num - optional
-branch-name - optional
+POST - /api/v1/branches/add
+Parameters
+branch-name - compulsory
 address - optional
 manager-id - optional
 phone-number - optional
