@@ -179,3 +179,27 @@ category-name - compulsory
 POST - /api/v1/category/delete
 Parameters
 category-id - compulsory
+
+GET - /api/v1/items
+Parameters
+page-num - optional
+item-name - optional
+item-price - optional
+blocked - optional
+
+POST - /api/v1/items/add
+Parameters
+item-name - compulsory
+item-price - optional
+blocked - optional
+
+POST - /api/v1/items/update
+Parameters
+item-id - compulsory
+item-name - optional
+item-price - optional
+blocked - optional
+
+POST - /api/v1/items/delete
+Parameters
+item-id - compulsory

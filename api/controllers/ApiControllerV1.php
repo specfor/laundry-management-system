@@ -12,6 +12,7 @@ use LogicLeap\StockManagement\models\Authorization;
 use LogicLeap\StockManagement\models\Branches;
 use LogicLeap\StockManagement\models\Customers;
 use LogicLeap\StockManagement\models\Employees;
+use LogicLeap\StockManagement\models\Items;
 use LogicLeap\StockManagement\models\PriceCategories;
 use LogicLeap\StockManagement\models\User;
 
@@ -373,6 +374,60 @@ class ApiControllerV1 extends API
             self::sendError('Failed to delete the category.');
     }
 
+    public function getItems(): void
+    {
+        self::checkPermissions();
+
+        $pageNum = self::getParameter('page-num', 0, 'int');
+        $itemName = self::getParameter('item-name');
+        $price = self::getParameter('item-price', dataType: 'float');
+        $blocked = self::getParameter('blocked', dataType: 'bool');
+
+        $data = Items::getItems($pageNum, $itemName, $price, $blocked);
+        self::sendSuccess(['items' => $data]);
+    }
+
+    public function addItem(): void
+    {
+        self::checkPermissions(User::ROLE_ADMINISTRATOR);
+
+        $itemName = self::getParameter('item-name', isCompulsory: true);
+        $prices = self::getParameter('item-price', defaultValue: [], dataType: 'array');
+        $blocked = self::getParameter('blocked', defaultValue: false, dataType: 'bool');
+
+        if (Items::addItem($itemName, $prices, $blocked))
+            self::sendSuccess('New item was added successfully.');
+        else
+            self::sendError('Failed to add new item.');
+    }
+
+    public function updateItem(): void
+    {
+        self::checkPermissions(User::ROLE_ADMINISTRATOR);
+
+        $itemId = self::getParameter('item-id', dataType: 'int', isCompulsory: true);
+        $itemName = self::getParameter('item-name');
+        $prices = self::getParameter('item-price', dataType: 'array');
+        $blocked = self::getParameter('blocked', dataType: 'bool');
+
+        if (Items::updateItem($itemId, $itemName, $prices, $blocked))
+            self::sendSuccess('Item was updated successfully.');
+        else
+            self::sendError('Failed to update the item.');
+    }
+
+    public function deleteItem(): void
+    {
+        self::checkPermissions(User::ROLE_ADMINISTRATOR);
+
+        $itemId = self::getParameter('item-id', dataType: 'int', isCompulsory: true);
+
+        if (Items::deleteItem($itemId))
+            self::sendSuccess('Item was deleted successfully.');
+        else
+            self::sendError('Failed to delete the item.');
+    }
+
     /**
      * Check whether requests are coming from authorized users. If not send "401" unauthorized error message.
      * @param int $requiredMinimumUserRole Minimum user role required to perform the action.
@@ -460,7 +515,9 @@ class ApiControllerV1 extends API
                 $value = floatval($value);
             elseif ($dataType == 'bool')
                 $value = boolval($value);
-
+            elseif ($dataType == 'array')
+                if (!is_array($value))
+                    throw new \TypeError('array required.');
             return $value;
         } catch (Exception) {
             self::sendError("$parameterName must be type '$dataType'");
