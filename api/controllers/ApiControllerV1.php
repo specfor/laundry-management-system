@@ -12,6 +12,7 @@ use LogicLeap\StockManagement\models\Authorization;
 use LogicLeap\StockManagement\models\Branches;
 use LogicLeap\StockManagement\models\Customers;
 use LogicLeap\StockManagement\models\Employees;
+use LogicLeap\StockManagement\models\PriceCategories;
 use LogicLeap\StockManagement\models\User;
 
 class ApiControllerV1 extends API
@@ -322,6 +323,54 @@ class ApiControllerV1 extends API
             self::sendSuccess('Successfully updated the user.');
         else
             self::sendError('Failed to update the user.');
+    }
+
+    public function getPriceCategories(): void
+    {
+        self::checkPermissions(User::ROLE_ADMINISTRATOR);
+
+        $pageNum = self::getParameter('page-num', 0, 'int');
+        $categoryName = self::getParameter('category-name');
+
+        $data = PriceCategories::getCategories($pageNum, $categoryName);
+        self::sendSuccess(['categories' => $data]);
+    }
+
+    public function addPriceCategory(): void
+    {
+        self::checkPermissions(User::ROLE_ADMINISTRATOR);
+
+        $categoryName = self::getParameter('category-name', isCompulsory: true);
+
+        if (PriceCategories::addCategory($categoryName))
+            self::sendSuccess('New category was created successfully.');
+        else
+            self::sendError('Failed to add new category.');
+    }
+
+    public function updatePriceCategory(): void
+    {
+        self::checkPermissions(User::ROLE_ADMINISTRATOR);
+
+        $categoryId = self::getParameter('category-id', dataType: 'int', isCompulsory: true);
+        $categoryName = self::getParameter('category-name', isCompulsory: true);
+
+        if (PriceCategories::updateCategory($categoryId, $categoryName))
+            self::sendSuccess('Category was updated successfully.');
+        else
+            self::sendError('Failed to update the category.');
+    }
+
+    public function deletePriceCategory(): void
+    {
+        self::checkPermissions(User::ROLE_ADMINISTRATOR);
+
+        $categoryId = self::getParameter('category-id', dataType: 'int', isCompulsory: true);
+
+        if (PriceCategories::deleteCategory($categoryId))
+            self::sendSuccess('Category was deleted successfully.');
+        else
+            self::sendError('Failed to delete the category.');
     }
 
     /**

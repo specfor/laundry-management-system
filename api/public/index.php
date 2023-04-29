@@ -40,5 +40,9 @@ $app->router->addGetRoute('/api/v1/employees', [ApiControllerV1::class, 'getEmpl
 $app->router->addPostRoute('/api/v1/employees/add', [ApiControllerV1::class, 'addEmployee']);
 $app->router->addPostRoute('/api/v1/employees/update', [ApiControllerV1::class, 'updateEmployee']);
 $app->router->addPostRoute('/api/v1/employees/delete', [ApiControllerV1::class, 'deleteEmployee']);
+$app->router->addGetRoute('/api/v1/category', [ApiControllerV1::class, 'getPriceCategories']);
+$app->router->addPostRoute('/api/v1/category/add', [ApiControllerV1::class, 'addPriceCategory']);
+$app->router->addPostRoute('/api/v1/category/update', [ApiControllerV1::class, 'updatePriceCategory']);
+$app->router->addPostRoute('/api/v1/category/delete', [ApiControllerV1::class, 'deletePriceCategory']);
 
 $app->run();

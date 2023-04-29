@@ -11,7 +11,7 @@ migrations one by one in the alphabetical order of the naming</p>
 
 <h3>API Endpoints</h3>
 
-<h4>POST -  /api/v1/login</h4>
+<h4>POST - /api/v1/login</h4>
 <p>Parameters - username , password</p>
 <p>Used to log in Users.</p>
 <p>Returned token should be set as a header named
@@ -19,7 +19,7 @@ migrations one by one in the alphabetical order of the naming</p>
 
 <br>
 
-<h4>POST -  /api/v1/customers/add</h4>
+<h4>POST - /api/v1/customers/add</h4>
 <p>Parameters<br>
 customer-name - compulsory,
 email - optional, 
@@ -162,3 +162,20 @@ POST - /api/v1/users/delete
 Parameters
 user-id - compulsory
 
+GET - /api/v1/category
+Parameters
+page-num - optional
+category-name - optional
+
+POST - /api/v1/category/add
+Parameters
+category-name - compulsory
+
+POST - /api/v1/category/update
+Parameters
+category-id - compulsory
+category-name - compulsory
+
+POST - /api/v1/category/delete
+Parameters
+category-id - compulsory
