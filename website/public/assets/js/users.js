@@ -158,8 +158,6 @@ async function changePass(){
 async function prepareChangePass() {
     user_Id = event.target.id.split("-")[2]
 
-
-    
 }
 
 async function prepareDeleteUser(){
@@ -231,7 +229,7 @@ async function getAllUsers(){
 function clearTable(){
     let userTable = document.getElementById("userTable")
     userTable.innerHTML = ""
-    console.log("working")
+
 }
 
 async function getAllUsersFromSearch(){

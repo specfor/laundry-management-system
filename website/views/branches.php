@@ -24,13 +24,13 @@
         <div class="row mt-4">
             <div class="col-sm-4">
                 <div class="input-group mb-3">
-                    <input id="" type="text" class="form-control" placeholder="Id" aria-label="" aria-describedby="">
+                    <input id="PhoneNum" type="number" class="form-control" placeholder="Phone Number" aria-label="" aria-describedby="">
                     <button class="btn btn-dark fw-bold" type="button" id="">clear</button>
                 </div>
             </div>
             <div class="col-sm-4">
                 <div class="input-group mb-3">
-                    <input id="" type="text" class="form-control" placeholder="Branch Name" aria-label="" aria-describedby="">
+                    <input id="branchNameSearch" type="text" class="form-control" placeholder="Branch Name" aria-label="" aria-describedby="">
                     <button class="btn btn-dark fw-bold" type="button" id="">clear</button>                   
                 </div>
             </div>
