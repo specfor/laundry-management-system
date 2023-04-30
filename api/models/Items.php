@@ -74,11 +74,16 @@ class Items extends DbModel
         $items = $statement->fetchAll(PDO::FETCH_ASSOC);
 
         for ($i = 0; $i < count($items); $i++) {
+            $items[$i]['blocked'] = boolval($items[$i]['blocked']);
             $priceCategoriesWithPrices = explode(',', $items[$i]['price']);
             $newPrices = [];
             foreach ($priceCategoriesWithPrices as $priceCategory){
+                if ($priceCategory == "")
+                    continue;
                 $priceCategory = explode(':', $priceCategory);
                 $priceCategoryName = self::getPriceCategoryName(intval($priceCategory[0]));
+                if ($priceCategoryName === "UNKNOWN")
+                    continue;
                 $newPrices[$priceCategoryName] = $priceCategory[1];
             }
             $items[$i]['price'] = $newPrices;

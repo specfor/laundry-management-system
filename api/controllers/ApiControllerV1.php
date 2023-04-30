@@ -517,7 +517,7 @@ class ApiControllerV1 extends API
                 $value = boolval($value);
             elseif ($dataType == 'array')
                 if (!is_array($value))
-                    throw new \TypeError('array required.');
+                    throw new Exception('array required.');
             return $value;
         } catch (Exception) {
             self::sendError("$parameterName must be type '$dataType'");
