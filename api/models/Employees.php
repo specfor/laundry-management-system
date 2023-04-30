@@ -80,7 +80,7 @@ class Employees extends DbModel
         if ($filters)
             $condition = implode(' AND ', $filters);
         $statement = self::getDataFromTable(['name', 'address', 'email', 'phone_num', 'branch_id', 'left_date'],
-            'employees', $condition, $placeholders, ['id', 'asc'], [$startingIndex, $limit]);
+            'employees', $condition, $placeholders, ['employee_id', 'asc'], [$startingIndex, $limit]);
         $data = $statement->fetchAll(PDO::FETCH_ASSOC);
         for ($i = 0; $i < count($data); $i++) {
             if ($data[$i]['left_date'] === null)
