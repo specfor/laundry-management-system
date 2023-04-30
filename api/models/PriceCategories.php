@@ -2,6 +2,8 @@
 
 namespace LogicLeap\StockManagement\models;
 
+use PDO;
+
 class PriceCategories extends DbModel
 {
     private const TABLE_NAME = "price_categories";
@@ -40,7 +42,8 @@ class PriceCategories extends DbModel
             $condition = "name LIKE :name";
             $placeholders['name'] = $categoryName;
         }
-        return self::getDataFromTable(['*'], self::TABLE_NAME, $condition, $placeholders,
+        $statement = self::getDataFromTable(['*'], self::TABLE_NAME, $condition, $placeholders,
             ['category_id', 'asc'], [$startingIndex, $limit]);
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 }
