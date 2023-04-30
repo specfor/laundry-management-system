@@ -63,6 +63,12 @@ class SiteController
         TailwindUiRenderer::loadPage('users', $variableData);
     }
 
+    public function getProducts(): void
+    {
+        $variableData['site-title'] = 'Products - ' . self::SITE_NAME;
+        TailwindUiRenderer::loadPage('products', $variableData);
+    }
+
     private function checkPermission(int $minimumPermittedUserRole)
     {
         $userRole = Authorization::getUserRole($_COOKIE['auth-token']);
