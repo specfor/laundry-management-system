@@ -7,23 +7,30 @@ use PDO;
 class Employees extends DbModel
 {
     public static function addEmployee(string $name, string $address = null, string $email = null,
-                                       string $phoneNumber = null, int    $branchId = null, string $joinDate = null,
+                                       string $phoneNumber = null, int $branchId = null, string $joinDate = null,
                                        string $left_date = null): bool
     {
-        $isLeft = false;
+        $params = [];
+        $params['is_left'] = false;
         if ($left_date) {
-            $isLeft = true;
+            $params['is_left'] = true;
         }
+        if ($name)
+            $params['name'] = $name;
+        if ($address)
+            $params['address'] = $address;
+        if ($email)
+            $params['email'] = $email;
+        if ($phoneNumber)
+            $params['phone_num'] = $phoneNumber;
+        if ($branchId)
+            $params['branch_id'] = $branchId;
+        if ($joinDate)
+            $params['join_date'] = $joinDate;
+        if ($left_date)
+            $params['left_date'] = $left_date;
 
-        $sql = "INSERT INTO employees (name, address, email, phone_num, branch_id, join_date, left_date, is_left) 
-                        VALUES (:name, :address, :email, :phone_num, $branchId, :join_date, :left_date, $isLeft)";
-        $statement = self::prepare($sql);
-        $statement->bindValue(':name', $name);
-        $statement->bindValue(':address', $address);
-        $statement->bindValue(':email', $email);
-        $statement->bindValue(':phone_num', $phoneNumber);
-        $statement->bindValue(':join_date', $joinDate);
-        return $statement->execute();
+        return self::insertIntoTable("employees",$params);
     }
 
     public static function updateEmployee(int    $employeeId, string $name = null, string $address = null, string $email = null,
@@ -50,7 +57,7 @@ class Employees extends DbModel
 
     public static function getEmployees(int    $pageNumber = 0, string $name = null, string $address = null,
                                         string $email = null, string $phone_num = null, int $branchId = null,
-                                        bool $isLeft = null, int $limit = 30): array
+                                        bool   $isLeft = null, int $limit = 30): array
     {
         $startingIndex = $pageNumber * $limit;
         $filters = [];
@@ -79,7 +86,7 @@ class Employees extends DbModel
         $condition = null;
         if ($filters)
             $condition = implode(' AND ', $filters);
-        $statement = self::getDataFromTable(['name', 'address', 'email', 'phone_num', 'branch_id', 'left_date'],
+        $statement = self::getDataFromTable(['employee_id','name', 'address', 'email', 'phone_num', 'branch_id', 'left_date'],
             'employees', $condition, $placeholders, ['employee_id', 'asc'], [$startingIndex, $limit]);
         $data = $statement->fetchAll(PDO::FETCH_ASSOC);
         for ($i = 0; $i < count($data); $i++) {

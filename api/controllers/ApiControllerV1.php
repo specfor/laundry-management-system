@@ -176,7 +176,7 @@ class ApiControllerV1 extends API
         $address = self::getParameter('address');
         $email = self::getParameter('email');
         $phoneNumber = self::getParameter('phone-number');
-        $branchId = self::getParameter('branch-id');
+        $branchId = self::getParameter('branch-id', dataType: 'int');
         $joinDate = self::getParameter('join-date');
         $leftDate = self::getParameter('left-date');
 
@@ -211,14 +211,14 @@ class ApiControllerV1 extends API
         $address = self::getParameter('address');
         $email = self::getParameter('email');
         $phoneNumber = self::getParameter('phone-number');
-        $branchId = self::getParameter('branch-id');
+        $branchId = self::getParameter('branch-id', dataType: 'int');
         $joinDate = self::getParameter('join-date');
         $leftDate = self::getParameter('left-date');
 
         if (Employees::updateEmployee($employeeId, $name, $address, $email, $phoneNumber, $branchId, $joinDate, $leftDate))
-            self::sendSuccess('New branch was created successfully.');
+            self::sendSuccess('Employee details were updated successfully.');
         else
-            self::sendError('Failed to add new employee.');
+            self::sendError('Failed to update employee data.');
     }
 
     public function deleteEmployee(): void
