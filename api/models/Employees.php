@@ -30,7 +30,7 @@ class Employees extends DbModel
         if ($left_date)
             $params['left_date'] = $left_date;
 
-        return self::insertIntoTable("employees",$params);
+        return self::insertIntoTable("employees", $params);
     }
 
     public static function updateEmployee(int    $employeeId, string $name = null, string $address = null, string $email = null,
@@ -86,8 +86,9 @@ class Employees extends DbModel
         $condition = null;
         if ($filters)
             $condition = implode(' AND ', $filters);
-        $statement = self::getDataFromTable(['employee_id','name', 'address', 'email', 'phone_num', 'branch_id', 'left_date'],
-            'employees', $condition, $placeholders, ['employee_id', 'asc'], [$startingIndex, $limit]);
+        $statement = self::getDataFromTable(['employee_id', 'name', 'address', 'email', 'phone_num', 'branch_id',
+            'left_date', 'join_date'], 'employees', $condition, $placeholders, ['employee_id', 'asc'],
+            [$startingIndex, $limit]);
         $data = $statement->fetchAll(PDO::FETCH_ASSOC);
         for ($i = 0; $i < count($data); $i++) {
             if ($data[$i]['left_date'] === null)
