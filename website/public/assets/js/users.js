@@ -192,7 +192,7 @@ async function confirmDeletion(){
 
 
 async function getAllUsers(){
-    let response = await getJsonResponse("http://www.laundry-api.localhost/api/v1/users?")
+    let response = await getJsonResponse("http://www.laundry-api.localhost/api/v1/users")
     
 
     let resp = await response.json()
