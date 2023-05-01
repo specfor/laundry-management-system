@@ -68,7 +68,6 @@ function prepareEdit(){
 }
 
 async function updateEmpToDatabase() {
-  console.log("working")
   let firstName = document.getElementById('efName').value
   let contactNo= document.getElementById('econtactNo').value
   let address = document.getElementById('eaddress').value

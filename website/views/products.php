@@ -17,7 +17,10 @@
 </head> 
 <body class="bg-secondary">
     <div class="container-fluid">
-        <h1 class="h1 text-white mt-4 ms-4">Products</h1>
+
+        <div class="row">
+            <div class="col-sm-8">
+            <h1 class="h1 text-white mt-4 ms-4">Products</h1>
         <button class="btn btn-dark ms-4" data-bs-toggle="modal"data-bs-target="#addNewProduct">+</button>
         <div class="row mt-3">
             <div class="col-sm-6">
@@ -33,6 +36,7 @@
                   </div>
             </div>
         </div>
+
         <table class="table table-dark table-striped mt-1">
             <thead>
               <tr>
@@ -43,9 +47,26 @@
                 <td>Change</td>
               </tr>
             </thead>
+            <tbody id="actionTable">
+            </tbody>
+          </table>
+            </div>
+            <div class="col-sm-4">
+            <h1 class="h1 text-white mt-4">Actions</h1>
+            <button class="btn btn-dark ms-4 " data-bs-toggle="modal"data-bs-target="#addNewAction">+</button>
+            <table class="table table-dark table-striped mt-3">
+            <thead>
+              <tr>
+                <td>Action</td>
+                <td>Edit</td>
+              </tr>
+            </thead>
             <tbody id="itemInputTable">
             </tbody>
           </table>
+            </div>
+        </div>
+        
     </div>
 
     <div class="container">
@@ -152,6 +173,31 @@
             </div>
         </div>
     </div>
-    </div>    
+    </div>   
+    
+    
+    <div class="container">
+        <div class="container">
+            <div class="modal fade" id="addNewAction" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+                 data-bs-theme="dark">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Add Action</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                        </div>
+                        <div class="row text-center  ps-4 pe-4">
+                            <div class="col">  
+    
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" id="basic-addon1">Action</span>
+                                    <input type="text" class="form-control" aria-describedby="basic-addon3" id="newAction" placeholder="Ex: Dry Cleaning">
+                                </div>                          
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" id="btnNewAddAction">Add Action</button>
+                        </div>
 </body>
 </html>
