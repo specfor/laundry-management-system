@@ -21,9 +21,8 @@ async function updateActionTable(action){
 
      row.insertCell[0].innerText = action
      row.insertCell[1].innerHTML = `<div class="input-group mb-3">
-     <button onclick="editUser()" class="edit btn btn-primary fw-bold" type="button" id="btn-edit-" data-bs-toggle="modal" data-bs-target="#editUserModal">Edit User</button>
-     <button onclick="prepareChangePass()" class="edit btn btn-primary fw-bold" type="button" id="btn-edit-" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Change User Password</button>
-     <button onclick="prepareDeleteUser()" class="delete btn btn-danger fw-bold" type="button" id="btn-delete-" data-bs-toggle="modal" data-bs-target="#confirmDelete">Delete</button>
+     <button  class="edit btn btn-primary fw-bold" type="button" id="btn-edit-" data-bs-toggle="modal" data-bs-target="#editNewAction">Edit</button>
+     <button  class="delete btn btn-danger fw-bold" type="button" id="btn-delete-" data-bs-toggle="modal" data-bs-target="#confirmDelete">Delete</button>
    </div>` 
 }
 
