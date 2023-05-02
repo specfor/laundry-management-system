@@ -13,39 +13,29 @@ class Items extends DbModel
     {
         $params['name'] = strtolower($itemName);
 
-        $statement = self::getDataFromTable(['name'], self::TABLE_NAME, 'name=:name', $params);
+        // $prices => [[categ_1, categ_2], 350.00]
+
+        $categories = [];
+        foreach ($prices[0] as $categoryName) {
+            $categoryId = self::getPriceCategoryId($categoryName);
+            if ($categoryId == null)
+                return false;
+            $categories[] = $categoryId;
+        }
+        $params['category_ids'] = implode(',', $categories);
+
+        $statement = self::getDataFromTable(['name'], self::TABLE_NAME,
+            'name=:name AND category_ids=:category_ids`', $params);
         if ($statement->fetch(PDO::FETCH_ASSOC))
             return false;
 
+
+        if (!is_float($prices[1]) && !is_int($prices[1]))
+            return false;
+        $params['price'] = $prices[1];
         $params['blocked'] = $blocked;
 
-        // $prices => [[[categ_1, categ_2], 350.00], [[categ_2], 275], ...]
-
-        $categories = [];
-        $updatePrices = [];
-        foreach ($prices as $singlePriceArray) {
-            if (!is_float($singlePriceArray[1]) && !is_int($singlePriceArray[1]))
-                return false;
-
-            $category = [];
-            foreach ($singlePriceArray[0] as $categoryName) {
-                $categoryId = self::getPriceCategoryId($categoryName);
-                if ($categoryId == null)
-                    return false;
-                $category[] = $categoryId;
-            }
-            $categories[] = implode(',', $category);
-            $updatePrices[] = $singlePriceArray[1];
-        }
-
-        $status = true;
-        for ($i = 0; $i < count($categories); $i++) {
-            $params['price'] = $updatePrices[$i];
-            $params['category_ids'] = $categories[$i];
-            if (!self::insertIntoTable(self::TABLE_NAME, $params))
-                $status = false;
-        }
-        return $status;
+        return self::insertIntoTable(self::TABLE_NAME, $params);
     }
 
     public static function updateItem(int  $itemId, string $itemName = null, array $prices = null,
@@ -53,13 +43,18 @@ class Items extends DbModel
     {
         $params = [];
         if ($itemName)
-            $params['name'] = $itemName;
+            $params['name'] = strtolower($itemName);
         if ($prices) {
-            foreach ($prices as $categoryName => $price) {
-                $category = self::getPriceCategoryId($categoryName);
-                if ($category == null)
-                    return false;
-                $params['price'] .= $category . ":" . $price . ",";
+            foreach ($prices as $priceCombination) {
+                $categories = [];
+                foreach ($priceCombination[0] as $priceCategoryName) {
+                    $category = self::getPriceCategoryId($priceCategoryName);
+
+                    if ($category == null)
+                        return false;
+                    $categories[] = $category;
+                }
+                $params['price'] .= implode('&', $categories) . ":" . $priceCombination[1] . ",";
             }
         }
         if ($blocked)

@@ -190,8 +190,8 @@ blocked - optional
 POST - /api/v1/items/add
 Parameters
 item-name - compulsory
-item-price - optional - [[[categ_1, categ_2], 350.00], [[categ_2], 275], ...]
-ex - "item-price": [[["washing"], 356], [["washing","dry cleaning"], 758]]
+item-price - optional - [[categ_1, categ_2], 350.00]
+ex - "item-price": [["washing","dry cleaning"], 758]
 blocked - optional
 
 POST - /api/v1/items/update
