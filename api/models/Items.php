@@ -12,16 +12,40 @@ class Items extends DbModel
     public static function addItem(string $itemName, array $prices, bool $blocked): bool
     {
         $params['name'] = strtolower($itemName);
-        $params['blocked'] = $blocked;
-        $params['price'] = '';
 
-        foreach ($prices as $categoryName => $price) {
-            $category = self::getPriceCategoryId($categoryName);
-            if ($category == null)
+        $statement = self::getDataFromTable(['name'], self::TABLE_NAME, 'name=:name', $params);
+        if ($statement->fetch(PDO::FETCH_ASSOC))
+            return false;
+
+        $params['blocked'] = $blocked;
+
+        // $prices => [[[categ_1, categ_2], 350.00], [[categ_2], 275], ...]
+
+        $categories = [];
+        $updatePrices = [];
+        foreach ($prices as $singlePriceArray) {
+            if (!is_float($singlePriceArray[1]) && !is_int($singlePriceArray[1]))
                 return false;
-            $params['price'] .= $category . ":" . $price . ",";
+
+            $category = [];
+            foreach ($singlePriceArray[0] as $categoryName) {
+                $categoryId = self::getPriceCategoryId($categoryName);
+                if ($categoryId == null)
+                    return false;
+                $category[] = $categoryId;
+            }
+            $categories[] = implode(',', $category);
+            $updatePrices[] = $singlePriceArray[1];
         }
-        return self::insertIntoTable(self::TABLE_NAME, $params);
+
+        $status = true;
+        for ($i = 0; $i < count($categories); $i++) {
+            $params['price'] = $updatePrices[$i];
+            $params['category_ids'] = $categories[$i];
+            if (!self::insertIntoTable(self::TABLE_NAME, $params))
+                $status = false;
+        }
+        return $status;
     }
 
     public static function updateItem(int  $itemId, string $itemName = null, array $prices = null,
@@ -60,7 +84,7 @@ class Items extends DbModel
         $placeholders = [];
         if ($itemName) {
             $filters[] = "name LIKE :name";
-            $placeholders['name'] = "%" . $itemName . "%";
+            $placeholders['name'] = "%" . strtolower($itemName) . "%";
         }
         if ($price) {
             $filters[] = "price LIKE :price";
@@ -70,23 +94,24 @@ class Items extends DbModel
             $filters[] = "blocked=$blocked";
 
         $condition = implode(' AND ', $filters);
-        $statement = self::getDataFromTable(['*'], self::TABLE_NAME, $condition, $placeholders, ['item_id', 'asc'], [$startingIndex, $limit]);
+        $statement = self::getDataFromTable(['*'], self::TABLE_NAME, $condition, $placeholders,
+            ['item_id', 'asc'], [$startingIndex, $limit]);
         $items = $statement->fetchAll(PDO::FETCH_ASSOC);
 
         for ($i = 0; $i < count($items); $i++) {
             $items[$i]['blocked'] = boolval($items[$i]['blocked']);
-            $priceCategoriesWithPrices = explode(',', $items[$i]['price']);
-            $newPrices = [];
-            foreach ($priceCategoriesWithPrices as $priceCategory){
-                if ($priceCategory == "")
-                    continue;
-                $priceCategory = explode(':', $priceCategory);
-                $priceCategoryName = self::getPriceCategoryName(intval($priceCategory[0]));
+            $priceCategoryIds = explode(',', $items[$i]['category_ids']);
+
+            $priceCategoryNames = [];
+            foreach ($priceCategoryIds as $priceCategoryId) {
+                $priceCategoryName = self::getPriceCategoryName(intval($priceCategoryId));
+
                 if ($priceCategoryName === "UNKNOWN")
                     continue;
-                $newPrices[$priceCategoryName] = $priceCategory[1];
+                $priceCategoryNames[] = $priceCategoryName;
             }
-            $items[$i]['price'] = $newPrices;
+            $items[$i]['categories'] = $priceCategoryNames;
+            unset($items[$i]['category_ids']);
         }
         return $items;
     }
@@ -104,7 +129,8 @@ class Items extends DbModel
         return null;
     }
 
-    private static function getPriceCategoryName(int $categoryId): string{
+    private static function getPriceCategoryName(int $categoryId): string
+    {
         if (!isset(self::$priceCategories)) {
             $statement = self::getDataFromTable(['*'], 'price_categories');
             self::$priceCategories = $statement->fetchAll(PDO::FETCH_ASSOC);

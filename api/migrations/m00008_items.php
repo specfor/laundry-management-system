@@ -14,7 +14,8 @@ class m00008_items extends MigrationScheme
         $sql = "CREATE TABLE IF NOT EXISTS items (
                     item_id int AUTO_INCREMENT NOT NULL PRIMARY KEY,
                     name varchar(255) NOT NULL,
-                    price varchar(700),
+                    price float,
+                    category_ids varchar(255),
                     blocked bool NOT NULL     
                 )";
         try {
