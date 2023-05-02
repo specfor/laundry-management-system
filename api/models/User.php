@@ -80,19 +80,19 @@ class User extends DbModel
         }
 
         if (strlen($password) < self::MIN_PASSWORD_LENGTH) {
-            return 'Password is too short.';
+            return 'Password should be at least '.self::MIN_PASSWORD_LENGTH.' characters long.';
         }
 
         if (strlen($password) > self::MAX_PASSWORD_LENGTH) {
-            return 'Password is too long.';
+            return 'Password should not be longer than '.self::MAX_PASSWORD_LENGTH.' characters.';
         }
 
         if (strlen($username) < self::MIN_USERNAME_LENGTH) {
-            return 'Username is too short.';
+            return 'Username should be at least '.self::MIN_USERNAME_LENGTH.' characters long.';
         }
 
         if (strlen($username) > self::MAX_USERNAME_LENGTH) {
-            return 'Username is too long.';
+            return 'Password should not be longer than '.self::MAX_USERNAME_LENGTH.' characters.';
         }
 
         $usernameRegEx = '/^[A-Za-z][A-Za-z0-9_]{5,29}$/';
@@ -116,7 +116,7 @@ class User extends DbModel
 
         if ($email)
             if (!filter_var($email, FILTER_VALIDATE_EMAIL))
-                return 'Invalid email address';
+                return 'Provided email address is invalid.';
         $params['email'] = $email;
         if ($firstname)
             $params['firstname'] = $firstname;
@@ -177,7 +177,7 @@ class User extends DbModel
 
     public static function updateUser(int    $userId, string $password = null, string $role = null,
                                       string $email = null, string $firstname = null,
-                                      string $lastname = null, int $branchId = null): bool
+                                      string $lastname = null, int $branchId = null): bool|string
     {
         $updateFields = [];
 
@@ -191,11 +191,11 @@ class User extends DbModel
             elseif (strtolower($role == 'cashier'))
                 $updateFields['role'] = self::ROLE_CASHIER;
             else
-                return false;
+                return "Unknown user role provided.";
         }
         if ($email)
             if (!filter_var($email, FILTER_VALIDATE_EMAIL))
-                return false;
+                return "Provided email is invalid.";
         $updateFields['email'] = $email;
         if ($firstname)
             $updateFields['firstname'] = $firstname;

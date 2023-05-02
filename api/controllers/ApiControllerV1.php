@@ -320,10 +320,13 @@ class ApiControllerV1 extends API
         $role = self::getParameter('role');
         $branchId = self::getParameter('branch-id');
 
-        if (User::updateUser($userId, $password, $role, $email, $firstname, $lastname, $branchId))
+        $status = User::updateUser($userId, $password, $role, $email, $firstname, $lastname, $branchId);
+        if ($status === true)
             self::sendSuccess('Successfully updated the user.');
-        else
+        elseif ($status === false)
             self::sendError('Failed to update the user.');
+        else
+            self::sendError($status);
     }
 
     public function getPriceCategories(): void
@@ -343,10 +346,13 @@ class ApiControllerV1 extends API
 
         $categoryName = self::getParameter('category-name', isCompulsory: true);
 
-        if (PriceCategories::addCategory($categoryName))
+        $status = PriceCategories::addCategory($categoryName);
+        if ($status === true)
             self::sendSuccess('New category was created successfully.');
-        else
+        elseif ($status === false)
             self::sendError('Failed to add new category.');
+        else
+            self::sendError($status);
     }
 
     public function updatePriceCategory(): void

@@ -8,20 +8,18 @@ class PriceCategories extends DbModel
 {
     private const TABLE_NAME = "price_categories";
 
-    public static function addCategory(string $categoryName): bool
+    public static function addCategory(string $categoryName): bool|string
     {
         $params['name'] = strtolower($categoryName);
         $statement = self::getDataFromTable(['name'], self::TABLE_NAME, 'name=:name', $params);
         if ($statement->fetch(PDO::FETCH_ASSOC))
-            return false;
+            return "There is '$categoryName' already added.";
 
         return self::insertIntoTable(self::TABLE_NAME, $params);
     }
 
-    public static function updateCategory(int $categoryId, string $categoryName = null): bool
+    public static function updateCategory(int $categoryId, string $categoryName): bool
     {
-        if (!$categoryName)
-            return false;
         $params['name'] = strtolower($categoryName);
         $condition = "category_id=$categoryId";
 
