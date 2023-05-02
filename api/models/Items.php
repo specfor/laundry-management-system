@@ -9,7 +9,7 @@ class Items extends DbModel
     private const TABLE_NAME = 'items';
     private static array $priceCategories;
 
-    public static function addItem(string $itemName, array $prices, bool $blocked): bool
+    public static function addItem(string $itemName, array $prices, bool $blocked): bool|string
     {
         $params['name'] = strtolower($itemName);
 
@@ -19,7 +19,7 @@ class Items extends DbModel
         foreach ($prices[0] as $categoryName) {
             $categoryId = self::getPriceCategoryId($categoryName);
             if ($categoryId == null)
-                return false;
+                return "No category with name '$categoryName'";
             $categories[] = $categoryId;
         }
         $params['category_ids'] = implode(',', $categories);
@@ -27,11 +27,11 @@ class Items extends DbModel
         $statement = self::getDataFromTable(['name'], self::TABLE_NAME,
             'name=:name AND category_ids=:category_ids', $params);
         if ($statement->fetch(PDO::FETCH_ASSOC))
-            return false;
+            return "There is already an item with provided name and categories.";
 
 
         if (!is_float($prices[1]) && !is_int($prices[1]))
-            return false;
+            return "Price has to be either decimal or integer.";
         $params['price'] = $prices[1];
         $params['blocked'] = $blocked;
 
@@ -39,7 +39,7 @@ class Items extends DbModel
     }
 
     public static function updateItem(int  $itemId, string $itemName = null, array $prices = null,
-                                      bool $blocked = null): bool
+                                      bool $blocked = null): bool|string
     {
         $statement = self::getDataFromTable(['name', 'category_ids'], self::TABLE_NAME,
             "item_id=$itemId");
@@ -56,7 +56,7 @@ class Items extends DbModel
                 $category = self::getPriceCategoryId($priceCategoryName);
 
                 if ($category == null)
-                    return false;
+                    return "No category with name '$priceCategoryName'";
                 $categories[] = $category;
             }
             $params['category_ids'] = implode(',', $categories);
@@ -74,7 +74,7 @@ class Items extends DbModel
         $data = (self::getDataFromTable(['name', 'category_ids'], self::TABLE_NAME,
             $condition, $conditionPayload))->fetch(PDO::FETCH_ASSOC);
         if ($data)
-            return false;
+            return "There is already an item with name '" . $data['name'] . "' and  same categories.";
 
         if ($blocked)
             $params['blocked'] = $blocked;
@@ -91,7 +91,7 @@ class Items extends DbModel
     }
 
     public static function getItems(int  $pageNumber = 0, string $itemName = null, float $price = null,
-                                    bool $blocked = null, $limit = 30)
+                                    bool $blocked = null, $limit = 30):array
     {
         $startingIndex = $pageNumber * $limit;
         $filters = [];

@@ -395,10 +395,13 @@ class ApiControllerV1 extends API
         $prices = self::getParameter('item-price', defaultValue: [], dataType: 'array');
         $blocked = self::getParameter('blocked', defaultValue: false, dataType: 'bool');
 
-        if (Items::addItem($itemName, $prices, $blocked))
+        $status = Items::addItem($itemName, $prices, $blocked);
+        if ($status === true)
             self::sendSuccess('New item was added successfully.');
-        else
+        elseif ($status === false)
             self::sendError('Failed to add new item.');
+        else
+            self::sendError($status);
     }
 
     public function updateItem(): void
@@ -410,10 +413,13 @@ class ApiControllerV1 extends API
         $prices = self::getParameter('item-price', dataType: 'array');
         $blocked = self::getParameter('blocked', dataType: 'bool');
 
-        if (Items::updateItem($itemId, $itemName, $prices, $blocked))
+        $status = Items::updateItem($itemId, $itemName, $prices, $blocked);
+        if ($status === true)
             self::sendSuccess('Item was updated successfully.');
-        else
+        elseif ($status === false)
             self::sendError('Failed to update the item.');
+        else
+            self::sendError($status);
     }
 
     public function deleteItem(): void
