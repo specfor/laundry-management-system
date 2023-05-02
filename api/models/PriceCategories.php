@@ -10,7 +10,10 @@ class PriceCategories extends DbModel
 
     public static function addCategory(string $categoryName): bool
     {
-        $params['name'] = $categoryName;
+        $params['name'] = strtolower($categoryName);
+        $statement = self::getDataFromTable(['name'], self::TABLE_NAME, 'name=:name', $params);
+        if ($statement->fetch(PDO::FETCH_ASSOC))
+            return false;
 
         return self::insertIntoTable(self::TABLE_NAME, $params);
     }
@@ -19,7 +22,7 @@ class PriceCategories extends DbModel
     {
         if (!$categoryName)
             return false;
-        $params['name'] = $categoryName;
+        $params['name'] = strtolower($categoryName);
         $condition = "category_id=$categoryId";
 
         return self::updateTableData(self::TABLE_NAME, $params, $condition);
@@ -40,7 +43,7 @@ class PriceCategories extends DbModel
         $placeholders = [];
         if ($categoryName) {
             $condition = "name LIKE :name";
-            $placeholders['name'] = $categoryName;
+            $placeholders['name'] = strtolower($categoryName);
         }
         $statement = self::getDataFromTable(['*'], self::TABLE_NAME, $condition, $placeholders,
             ['category_id', 'asc'], [$startingIndex, $limit]);

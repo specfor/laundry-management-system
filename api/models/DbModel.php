@@ -46,8 +46,8 @@ abstract class DbModel
 
         }
         $placeholders = array_map(fn($attr) => ":$attr", $attributes);
-        $sql = "INSERT INTO $tableName (" . implode(',', $attributes) . ") VALUES (" .
-            implode(',', $placeholders) . ")";
+        $sql = "INSERT INTO $tableName (" . implode(',', $attributes) . ") SELECT " .
+            implode(',', $placeholders);
         if ($condition) {
             $sql .= " WHERE $condition";
         }
