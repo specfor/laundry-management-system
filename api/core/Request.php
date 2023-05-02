@@ -34,6 +34,8 @@ class Request
         }
         if ($this->getMethod() === 'post') {
             $body = json_decode(file_get_contents('php://input'), true);
+            if (!is_array($body))
+                $body = [];
         }
         if ($body === null)
             $body = [];
