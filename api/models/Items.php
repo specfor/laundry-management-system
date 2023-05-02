@@ -25,7 +25,7 @@ class Items extends DbModel
         $params['category_ids'] = implode(',', $categories);
 
         $statement = self::getDataFromTable(['name'], self::TABLE_NAME,
-            'name=:name AND category_ids=:category_ids`', $params);
+            'name=:name AND category_ids=:category_ids', $params);
         if ($statement->fetch(PDO::FETCH_ASSOC))
             return false;
 
@@ -41,22 +41,41 @@ class Items extends DbModel
     public static function updateItem(int  $itemId, string $itemName = null, array $prices = null,
                                       bool $blocked = null): bool
     {
-        $params = [];
-        if ($itemName)
-            $params['name'] = strtolower($itemName);
-        if ($prices) {
-            foreach ($prices as $priceCombination) {
-                $categories = [];
-                foreach ($priceCombination[0] as $priceCategoryName) {
-                    $category = self::getPriceCategoryId($priceCategoryName);
+        $statement = self::getDataFromTable(['name', 'category_ids'], self::TABLE_NAME,
+            "item_id=$itemId");
+        $savedData = $statement->fetch(PDO::FETCH_ASSOC);
 
-                    if ($category == null)
-                        return false;
-                    $categories[] = $category;
-                }
-                $params['price'] .= implode('&', $categories) . ":" . $priceCombination[1] . ",";
-            }
+        $params = [];
+        if ($itemName) {
+            $params['name'] = strtolower($itemName);
+            $conditionPayload['name'] = strtolower($itemName);
         }
+        if ($prices) {
+            $categories = [];
+            foreach ($prices[0] as $priceCategoryName) {
+                $category = self::getPriceCategoryId($priceCategoryName);
+
+                if ($category == null)
+                    return false;
+                $categories[] = $category;
+            }
+            $params['category_ids'] = implode(',', $categories);
+            $conditionPayload['category_ids'] = $params['category_ids'];
+            $params['price'] = $prices[1];
+        }
+
+        if ($itemName && $prices)
+            $condition = "name=:name AND category_ids=:category_ids";
+        elseif ($itemName)
+            $condition = "name=:name";
+        elseif ($prices)
+            $condition = "category_ids=:category_ids";
+
+        $data = (self::getDataFromTable(['name', 'category_ids'], self::TABLE_NAME,
+            $condition, $conditionPayload))->fetch(PDO::FETCH_ASSOC);
+        if ($data)
+            return false;
+
         if ($blocked)
             $params['blocked'] = $blocked;
 
