@@ -16,6 +16,100 @@
     crossorigin="anonymous"></script>
 </head> 
 <body class="bg-secondary">
+
+
+    <div class="container">
+        <div class="container">
+            <div class="modal fade" id="EditaddNewProduct" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+                 data-bs-theme="dark">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Edit Item</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                        </div>
+                        <div class="row text-center  ps-4 pe-4">
+                            <div class="col">  
+    
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" id="basic-addon1">Item</span>
+                                    <input type="text" class="form-control" aria-describedby="basic-addon3" id="EditnewProduct">
+                                </div>
+                                <div class="row text-center ">
+                                    <div class="input-group mb-3 c">
+                                    <span class="input-group-text" id="basic-addon3">Action</span>
+                                        <div class="ms-4" id="editActionDiv">                                   
+                                </div>
+                                    </div>
+                                </div>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" id="basic-addon2">Unit Price</span>
+                                    <input type="number" class="form-control" aria-describedby="basic-addon3" id="EditunitPrice"
+                                           placeholder="LKR.">
+                                </div>
+    
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" id="EditItemSave">Save Changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+<div class="container">
+        <div class="container">
+            <div class="modal fade" id="addNewProduct" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+                 data-bs-theme="dark">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Add Item</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                        </div>
+                        <div class="row text-center  ps-4 pe-4">
+                            <div class="col">
+    
+    
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" id="basic-addon1">Item</span>
+                                    <input type="text" class="form-control" aria-describedby="basic-addon3" id="newProduct">
+                                </div>
+                                <div class="row text-center ">
+                                    <div class="input-group mb-3 c">
+                                        <span class="input-group-text" id="basic-addon3">Action</span>
+                                        <div class="ms-4" id="addActionDiv">                               
+                                    
+                                </div>
+                                    </div>
+                                </div>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" id="basic-addon2">Unit Price</span>
+                                    <input type="number" class="form-control" aria-describedby="basic-addon3" id="unitPrice"
+                                           placeholder="LKR.">
+                                </div>
+    
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" id="btnNewAddItem">Add Item</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
     <div class="container-fluid">
 
         <div class="row">
@@ -25,16 +119,11 @@
         <div class="row mt-3">
             <div class="col-sm-6">
                 <div class="input-group mb-3">
-                    <input id="" type="text" class="form-control" placeholder="Product Name" aria-label="" aria-describedby="">
-                    <button class="btn btn-dark fw-bold" type="button" id="">clear</button>
+                    <input id="nameProduct" type="text" class="form-control" placeholder="Product Name" aria-label="" aria-describedby="">
+                    <button class="btn btn-dark fw-bold" type="button" id="clear">clear</button>
                 </div>
             </div>
-            <div class="col-sm-6">
-                <div class="input-group mb-3">
-                    <input id="" type="number" class="form-control" placeholder="Id" aria-label="" aria-describedby="">
-                    <button class="btn btn-dark fw-bold" type="button" id="">clear</button>
-                  </div>
-            </div>
+
         </div>
 
         <table class="table table-dark table-striped mt-1">
@@ -87,111 +176,26 @@
     </div>
 </div>  
 
-    <div class="container">
-        <div class="container">
-            <div class="modal fade" id="addNewProduct" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
-                 data-bs-theme="dark">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Add Item</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                        </div>
-                        <div class="row text-center  ps-4 pe-4">
-                            <div class="col">
-    
-    
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text" id="basic-addon1">Item</span>
-                                    <input type="text" class="form-control" aria-describedby="basic-addon3" id="newProduct">
-                                </div>
-                                <div class="row text-center ">
-                                    <div class="input-group mb-3 c">
-                                        <span class="input-group-text" id="basic-addon3">Action</span>
-                                        <select class="form-select" aria-label="Select Company" id="newActionId">
-                                            <option>Dry Cleaning</option>
-                                            <option>Washing</option>
-                                            <option>Pressing</option>
-                                            <option>Pressing & Dry Cleaning</option>
-                                            <option>Pressing & Washing</option>
-                                            <option>Washing & Dry Cleaning</option>
-                                            <option>Washing, Pressing & Dry Cleaning</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text" id="basic-addon2">Unit Price</span>
-                                    <input type="number" class="form-control" aria-describedby="basic-addon3" id="unitPrice"
-                                           placeholder="LKR.">
-                                </div>
-    
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary" id="btnNewAddItem">Add Item</button>
-                        </div>
-                    </div>
-                </div>
+<div class="modal" tabindex="-1" id="confirmDeleteItem" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Confirm Deletion</h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h5>This action is irreversible. Are you sure you want to delete this item?</h5>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button id="btnConfirmDeletionItem" type="button" data-bs-dismiss="modal" class="btn btn-primary save">Yes</button>
             </div>
         </div>
     </div>
-    </div>
+</div> 
 
-    <div class="container">
-        <div class="container">
-            <div class="modal fade" id="EditaddNewProduct" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
-                 data-bs-theme="dark">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Add Item</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                        </div>
-                        <div class="row text-center  ps-4 pe-4">
-                            <div class="col">
-    
-    
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text" id="basic-addon1">Item</span>
-                                    <input type="text" class="form-control" aria-describedby="basic-addon3" id="EditnewProduct">
-                                </div>
-                                <div class="row text-center ">
-                                    <div class="input-group mb-3 c">
-                                        <span class="input-group-text" id="basic-addon3">Action</span>
-                                        <select class="form-select" aria-label="Select Company" id="EditnewActionId">
-                                            <option>Dry Cleaning</option>
-                                            <option>Washing</option>
-                                            <option>Pressing</option>
-                                            <option>Pressing & Dry Cleaning</option>
-                                            <option>Pressing & Washing</option>
-                                            <option>Washing & Dry Cleaning</option>
-                                            <option>Washing, Pressing & Dry Cleaning</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text" id="basic-addon2">Unit Price</span>
-                                    <input type="number" class="form-control" aria-describedby="basic-addon3" id="EditunitPrice"
-                                           placeholder="LKR.">
-                                </div>
-    
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary" id="btnNewAddItem">Save Changes</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    </div>   
+
+   
     
     
     <div class="container">
