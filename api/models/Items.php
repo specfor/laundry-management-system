@@ -52,6 +52,8 @@ class Items extends DbModel
         }
         if ($prices) {
             $categories = [];
+            if (is_string($prices[0]))
+                $prices[0] = array($prices[0]);
             foreach ($prices[0] as $priceCategoryName) {
                 $category = self::getPriceCategoryId($priceCategoryName);
 
