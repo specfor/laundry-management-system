@@ -29,9 +29,11 @@ class ApiControllerV1 extends API
 
         // If in maintenance mode, maintenance page is displayed. Application exits.
         if (is_file($maintenanceModeFilePath)) {
-            self::sendResponse(API::STATUS_CODE_MAINTENANCE, API::STATUS_MSG_MAINTENANCE,
-                ['error' => 'Server is under maintenance']);
-            exit();
+            if (!self::isSiteMigrator()) {
+                self::sendResponse(API::STATUS_CODE_MAINTENANCE, API::STATUS_MSG_MAINTENANCE,
+                    ['error' => 'Server is under maintenance']);
+                exit();
+            }
         }
 
         if (isset($_SERVER['HTTP_ORIGIN'])) {
@@ -484,6 +486,16 @@ class ApiControllerV1 extends API
             }
         }
         return $authHeader;
+    }
+
+    private static function isSiteMigrator(): bool
+    {
+        if (isset($_SERVER['X-Administrator-Token'])) {
+            $migrationManager = new MigrationManager();
+            if ($migrationManager->validateMigrationAuthToken($_SERVER['X-Administrator-Token']))
+                return true;
+        }
+        return false;
     }
 
     /**

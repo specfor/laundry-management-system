@@ -19,13 +19,21 @@ class m00001_initDb extends MigrationScheme
 
         $sql2 = "CREATE TABLE IF NOT EXISTS migrations (
                     id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                    migration_name varchar(256) NOT NULL,
+                    migration_name varchar(255) NOT NULL,
                     time datetime NOT NULL,
                     status bool NOT NULL)";
 
+        $sql3 = "CREATE TABLE IF NOT EXISTS migration_tokens (
+                    id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                    token varchar(255) NOT NULL ,
+                    time datetime NOT NULL ,
+                    exp_time datetime NOT NULL,
+                    blocked bool default false not null
+                )";
         try {
             self::$pdo->exec($sql1);
             self::$pdo->exec($sql2);
+            self::$pdo->exec($sql3);
             return true;
         }catch (Exception){
             return false;

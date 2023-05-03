@@ -2,6 +2,7 @@
 
 namespace LogicLeap\StockManagement\core;
 
+use DateInterval;
 use DateTime;
 use Exception;
 use PDO;
@@ -9,6 +10,7 @@ use PDO;
 class MigrationManager
 {
     private PDO $pdo;
+    private const TOKEN_EXPIRE_TIME = 28800; // In seconds.
 
     private static bool $removeMaintenanceModeOnCompletion;
     private static string $migrationFolderPath;
@@ -18,9 +20,9 @@ class MigrationManager
      */
     private static string $maintenanceModeFilePath;
 
-    private static array $migrations = [];
+    private array $migrations = [];
 
-    public function __construct(bool $removeMaintenanceModeOnCompletion = false)
+    public function __construct(bool $removeMaintenanceModeOnCompletion = false, bool $putToMaintenanceMode = true)
     {
         $this->pdo = Application::$app->db->pdo;
 
@@ -31,13 +33,11 @@ class MigrationManager
         self::$removeMaintenanceModeOnCompletion = $removeMaintenanceModeOnCompletion;
         self::$maintenanceModeFilePath = Application::$ROOT_DIR . "/maintenanceLock.lock";
         self::$migrationFolderPath = Application::$ROOT_DIR . "/migrations";
-        $f = fopen(self::$maintenanceModeFilePath, 'w');
-        fclose($f);
-        self::$migrations = scandir(self::$migrationFolderPath);
 
-        // Removing '.' and '..' from file array
-        unset(self::$migrations[0]);
-        unset(self::$migrations[1]);
+        if ($putToMaintenanceMode)
+            $this->addMaintenanceMode();
+
+        $this->migrations = $this->loadAvailableMigrations();
     }
 
     private function markCompletedMigration(string $migrationName, bool $success): void
@@ -50,9 +50,43 @@ class MigrationManager
         $statement->execute();
     }
 
+    public function getCompletedMigrations(int  $pageNumber = 0, string $migrationName = null, string $time = null,
+                                           bool $status = null, int $limit = 30): array
+    {
+        $startingIndex = $pageNumber * $limit;
+        $filters = [];
+        $placeholders = [];
+        if ($migrationName) {
+            $filters[] = "migration_name=:name";
+            $placeholders['name'] = $migrationName;
+        }
+        if ($time) {
+            $filters[] = "time=:time";
+            $placeholders['time'] = $migrationName;
+        }
+        if ($status)
+            $filters[] = "status=$status";
+
+        if ($filters)
+            $condition = implode(' AND ', $filters);
+        $sql = "SELECT * FROM migrations";
+        if (isset($condition))
+            $sql .= " WHERE $condition";
+        $sql .= " ORDER BY id desc LIMIT $startingIndex, $limit";
+
+        $statement = $this->pdo->prepare($sql);
+        if ($placeholders) {
+            foreach ($placeholders as $key => $value) {
+                $statement->bindValue($key, $value);
+            }
+        }
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function startMigration(): void
     {
-        foreach (self::$migrations as $migration) {
+        foreach ($this->migrations as $migration) {
             $migrationName = explode(".", $migration)[0];
             if ($this->isAppliedMigration($migrationName))
                 continue;
@@ -67,6 +101,78 @@ class MigrationManager
                 break;
             }
         }
+    }
+
+    public function getMigrationAuthToken(): string
+    {
+        $token = SecureToken::generateToken();
+
+        $now = new DateTime("now");
+        $time = $now->format("Y-m-d H:i:s");
+        $expTime = $now->add(DateInterval::createFromDateString(self::TOKEN_EXPIRE_TIME . ' seconds'));
+        $expTime = $expTime->format('Y-m-d H:i:s');
+
+        $sql = "INSERT INTO migration_tokens (token, time, exp_time) VALUES ($token, $time, $expTime)";
+        if ($this->pdo->exec($sql))
+            return $token;
+        else
+            return "Failed to save token.";
+    }
+
+    public function validateMigrationAuthToken(string $token): bool
+    {
+        $sql = "SELECT time FROM migration_tokens WHERE token=:token AND blocked=false";
+        $statement = $this->pdo->prepare($sql);
+        $statement->bindValue(":token", $token);
+        $statement->execute();
+        $data = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if (empty($data))
+            return false;
+
+        $now = new DateTime("now");
+        $time = $now->format("Y-m-d H:i:s");
+        if ($time < $data['exp_time'])
+            return true;
+        return false;
+    }
+
+    public function blockMigrationAuthToken(string $token): bool
+    {
+        $sql = "UPDATE migration_tokens SET blocked=true WHERE token=:token";
+        $statement = $this->pdo->prepare($sql);
+        $statement->bindValue(":token", $token);
+        if ($statement->execute())
+            return true;
+        return false;
+    }
+
+    public function removeMaintenanceMode(): void
+    {
+        unlink(self::$maintenanceModeFilePath);
+    }
+
+    public function addMaintenanceMode(): void
+    {
+        $f = fopen(self::$maintenanceModeFilePath, 'w');
+        fclose($f);
+    }
+
+    public function loadAvailableMigrations(): array
+    {
+
+        $migrations = scandir(self::$migrationFolderPath);
+
+        for ($i = 0; $i < count($migrations); $i++) {
+            if (is_dir(self::$migrationFolderPath . "/" . $migrations[$i])) {
+                unset($migrations[$i]);
+            }
+        }
+        // Removing '.' and '..' from file array
+//        unset($migrations[0]);
+//        unset($migrations[1]);
+
+        return $migrations;
     }
 
     private function isAppliedMigration(string $migrationName): bool
