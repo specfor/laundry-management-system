@@ -32,5 +32,6 @@ $app->router->addGetRoute('/dashboard/employees', [SiteController::class, 'getEm
 $app->router->addGetRoute('/dashboard/payments', [SiteController::class, 'getPayments']);
 $app->router->addGetRoute('/dashboard/users', [SiteController::class, 'getUsers']);
 $app->router->addGetRoute('/dashboard/products', [SiteController::class, 'getProducts']);
+$app->router->addGetRoute('/dashboard/customers', [SiteController::class, 'getCustomers']);
 
 $app->run();

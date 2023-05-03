@@ -93,6 +93,15 @@ class SiteController
         TailwindUiRenderer::loadPage('products', $variableData);
     }
 
+    public function getCustomers():void
+    {
+        $this->checkPermission(self::ROLE_ADMINISTRATOR);
+
+        $variableData['header'] = self::getHeaderMenuItems($this->userRole);
+        $variableData['site-title'] = 'Customers - ' . self::SITE_NAME;
+        TailwindUiRenderer::loadPage('customers', $variableData);
+    }
+
     private static function getHeaderMenuItems(int $userRole = self::ROLE_CASHIER): array
     {
         $header = [
