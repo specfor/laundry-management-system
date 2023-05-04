@@ -13,6 +13,7 @@ use LogicLeap\StockManagement\models\Branches;
 use LogicLeap\StockManagement\models\Customers;
 use LogicLeap\StockManagement\models\Employees;
 use LogicLeap\StockManagement\models\Items;
+use LogicLeap\StockManagement\models\Orders;
 use LogicLeap\StockManagement\models\PriceCategories;
 use LogicLeap\StockManagement\models\User;
 
@@ -440,6 +441,41 @@ class ApiControllerV1 extends API
             self::sendSuccess('Item was deleted successfully.');
         else
             self::sendError('Failed to delete the item.');
+    }
+
+    public function getOrders()
+    {
+
+    }
+
+    public function addOrder()
+    {
+        self::checkPermissions();
+
+        $items = self::getParameter('items', dataType: 'array', isCompulsory: true);
+        $totalPrice = self::getParameter('total-price', dataType: 'float');
+
+        $branchId = User::getUserBranchId(self::getUserId());
+        if ($branchId == 0)
+            $branchId = self::getParameter('branch-id', dataType: 'int');
+
+        $status = Orders::addNewOrder($items, $totalPrice, $branchId);
+        if ($status === true)
+            self::sendSuccess('New order added successfully.');
+        elseif ($status === false)
+            self::sendError("Failed to add new order.");
+        else
+            self::sendError($status);
+    }
+
+    public function updateOrder()
+    {
+
+    }
+
+    public function deleteOrder()
+    {
+
     }
 
     /**

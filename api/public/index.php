@@ -48,5 +48,9 @@ $app->router->addGetRoute('/api/v1/items', [ApiControllerV1::class, 'getItems'])
 $app->router->addPostRoute('/api/v1/items/add', [ApiControllerV1::class, 'addItem']);
 $app->router->addPostRoute('/api/v1/items/update', [ApiControllerV1::class, 'updateItem']);
 $app->router->addPostRoute('/api/v1/items/delete', [ApiControllerV1::class, 'deleteItem']);
+$app->router->addGetRoute('/api/v1/orders', [ApiControllerV1::class, 'getOrders']);
+$app->router->addPostRoute('/api/v1/orders/add', [ApiControllerV1::class, 'addOrder']);
+$app->router->addPostRoute('/api/v1/orders/update', [ApiControllerV1::class, 'updateOrder']);
+$app->router->addPostRoute('/api/v1/orders/delete', [ApiControllerV1::class, 'deleteOrder']);
 
 $app->run();

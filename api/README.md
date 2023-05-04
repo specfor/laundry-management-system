@@ -204,3 +204,9 @@ blocked - optional
 POST - /api/v1/items/delete
 Parameters
 item-id - compulsory
+
+POST - /api/v1/orders/add
+Parameters
+items - compulsory - array of [item-id: amount, item-id2: amount, ...]
+total-price - optional - only if need to override generated price
+branch-id - optional - only if user is not someone asigned to a branch, if user is assigned to a branch then send branch-id will not be used.
