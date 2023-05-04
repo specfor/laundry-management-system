@@ -87,7 +87,6 @@ async function updateEmpToDatabase() {
         "join-date":dateJoined
       })
      let updateRes = await response.json()
-      console.log(updateRes)
      if(updateRes.statusMessage == "success"){
       let tableEmployee = document.getElementById("empTable")
 
@@ -230,7 +229,7 @@ let resJson = await response.json()
         }
     }
     if (tableEmployee.innerHTML == ''){
-        
+        await getAllEmployees()
     }
     alert(resJson.body.message)
 }else{
