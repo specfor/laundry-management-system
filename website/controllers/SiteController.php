@@ -102,16 +102,25 @@ class SiteController
         TailwindUiRenderer::loadPage('customers', $variableData);
     }
 
+    public function newOrder():void
+    {
+        $this->checkPermission(self::ROLE_CASHIER);
+
+        $variableData['header'] = self::getHeaderMenuItems($this->userRole);
+        $variableData['site-title'] = 'New Order - ' . self::SITE_NAME;
+        TailwindUiRenderer::loadPage('addOrder', $variableData);
+    }
+
     private static function getHeaderMenuItems(int $userRole = self::ROLE_CASHIER): array
     {
         $header = [
             ['label' => 'Dashboard', 'path' => '/dashboard', 'onclick'=>'window.location.href="/dashboard"']
         ];
         if ($userRole < self::ROLE_ADMINISTRATOR) {
-            $header[] = ['label' => 'Employees', 'onclick'=>"window.location.href='/dashboard/employees'"];
-            $header[] = ['label' => 'Branches', 'onclick'=>"window.location.href='/dashboard/branches'"];
-            $header[] = ['label' => 'Products', 'onclick'=>"window.location.href='/dashboard/products'"];
-            $header[] = ['label' => 'Users', 'onclick'=>"window.location.href='/dashboard/users'"];
+            $header[] = ['label' => 'Employees', 'onclick'=>"window.location.href='/employees'"];
+            $header[] = ['label' => 'Branches', 'onclick'=>"window.location.href='/branches'"];
+            $header[] = ['label' => 'Products', 'onclick'=>"window.location.href='/products'"];
+            $header[] = ['label' => 'Users', 'onclick'=>"window.location.href='/users'"];
         }
         $header[] = ['label' => 'Log Out', 'path' => '#',
             'onclick'=>"document.cookie='auth-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC;';window.location.href='/'"];

@@ -27,11 +27,12 @@ $app = new Application($config);
 // web routes
 $app->router->addGetRoute('/', [SiteController::class, 'login']);
 $app->router->addGetRoute('/dashboard', [SiteController::class, 'dashboard']);
-$app->router->addGetRoute('/dashboard/branches', [SiteController::class, 'getBranches']);
-$app->router->addGetRoute('/dashboard/employees', [SiteController::class, 'getEmployees']);
-$app->router->addGetRoute('/dashboard/payments', [SiteController::class, 'getPayments']);
-$app->router->addGetRoute('/dashboard/users', [SiteController::class, 'getUsers']);
-$app->router->addGetRoute('/dashboard/products', [SiteController::class, 'getProducts']);
-$app->router->addGetRoute('/dashboard/customers', [SiteController::class, 'getCustomers']);
+$app->router->addGetRoute('/branches', [SiteController::class, 'getBranches']);
+$app->router->addGetRoute('/employees', [SiteController::class, 'getEmployees']);
+$app->router->addGetRoute('/payments', [SiteController::class, 'getPayments']);
+$app->router->addGetRoute('/users', [SiteController::class, 'getUsers']);
+$app->router->addGetRoute('/products', [SiteController::class, 'getProducts']);
+$app->router->addGetRoute('/customers', [SiteController::class, 'getCustomers']);
+$app->router->addGetRoute('/orders/new-order', [SiteController::class, 'newOrder']);
 
 $app->run();
