@@ -57,7 +57,7 @@ class Customers extends DbModel
             $filters[] = "branch_id=$branchId'";
 
         $condition = implode(' AND ', $filters);
-        $statement = self::getDataFromTable(['email', 'phone_num', 'name', 'address', 'branch_id', 'banned', 'joined_date'],
+        $statement = self::getDataFromTable(['customer_id','email', 'phone_num', 'name', 'address', 'branch_id', 'banned', 'joined_date'],
             self::TABLE_NAME, $condition, $placeholders, ['customer_id', 'desc'], [$startingIndex, $limit]);
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
