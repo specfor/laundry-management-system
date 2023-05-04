@@ -87,7 +87,7 @@ class ApiControllerV1 extends API
     {
         self::checkPermissions();
 
-        $customerId = self::getParameter('customer-id', isCompulsory: true);
+        $customerId = self::getParameter('customer-id', dataType: 'int', isCompulsory: true);
         $email = self::getParameter('email');
         $customerName = self::getParameter('customer-name');
         $phoneNumber = self::getParameter('phone-number');
@@ -99,7 +99,7 @@ class ApiControllerV1 extends API
             $branchId = User::getUserBranchId(self::getUserId());
 
         if (Customers::updateCustomer($customerId, $customerName, $email, $phoneNumber, $address, $branchId, $banned))
-            self::sendSuccess('Branch details were updated successfully.');
+            self::sendSuccess('Customer details were updated successfully.');
         else
             self::sendError('Failed to update customer details.');
     }
@@ -517,10 +517,8 @@ class ApiControllerV1 extends API
                 self::sendError("Required parameter '$parameterIdentifier' is missing.");
             else
                 return $defaultValue;
-        if ($dataType == 'string')
-            return $params[$parameterIdentifier];
-        else
-            return self::getConvertedTo($parameterIdentifier, $params[$parameterIdentifier], $dataType);
+
+        return self::getConvertedTo($parameterIdentifier, $params[$parameterIdentifier], $dataType);
     }
 
     /**
@@ -533,7 +531,10 @@ class ApiControllerV1 extends API
     private static function getConvertedTo(string $parameterName, mixed $value, string $dataType): mixed
     {
         try {
-            if ($dataType == 'int')
+            if ($dataType == 'string') {
+                if (!is_string($value))
+                    throw new Exception('string required.');
+            } elseif ($dataType == 'int')
                 $value = intval($value);
             elseif ($dataType == 'float')
                 $value = floatval($value);
