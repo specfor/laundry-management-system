@@ -93,7 +93,7 @@ class Items extends DbModel
     }
 
     public static function getItems(int  $pageNumber = 0, string $itemName = null, float $price = null,
-                                    bool $blocked = null, $limit = 30):array
+                                    bool $blocked = null, $limit = 30): array
     {
         $startingIndex = $pageNumber * $limit;
         $filters = [];
@@ -114,22 +114,29 @@ class Items extends DbModel
             ['item_id', 'asc'], [$startingIndex, $limit]);
         $items = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-        for ($i = 0; $i < count($items); $i++) {
+        $itemCount = count($items);
+        for ($i = 0; $i < $itemCount; $i++) {
             $items[$i]['blocked'] = boolval($items[$i]['blocked']);
             $priceCategoryIds = explode(',', $items[$i]['category_ids']);
 
             $priceCategoryNames = [];
+            $validItem = true;
             foreach ($priceCategoryIds as $priceCategoryId) {
                 $priceCategoryName = self::getPriceCategoryName(intval($priceCategoryId));
 
-                if ($priceCategoryName === "UNKNOWN")
-                    continue;
+                if ($priceCategoryName === "UNKNOWN") {
+                    $validItem = false;
+                    break;
+                }
                 $priceCategoryNames[] = $priceCategoryName;
             }
-            $items[$i]['categories'] = $priceCategoryNames;
-            unset($items[$i]['category_ids']);
+            if ($validItem) {
+                $items[$i]['categories'] = $priceCategoryNames;
+                unset($items[$i]['category_ids']);
+            } else
+                unset($items[$i]);
         }
-        return $items;
+        return array_values($items);
     }
 
     private static function getPriceCategoryId(string $categoryName): int|null
