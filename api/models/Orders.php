@@ -102,7 +102,9 @@ class Orders extends DbModel
 
 
         $itemIds = [];
+        $customerIDs = [];
         for ($i = 0; $i < count($data); $i++) {
+            $customerIDs[] = $data[$i]['customer_id'];
             $data[$i]['items'] = json_decode($data[$i]['items'], true);
             for ($i2 = 0; $i2 < count($data[$i]['items']); $i2++) {
                 $itemIds[] = $data[$i]['items'][$i2]['item_id'];
@@ -111,6 +113,7 @@ class Orders extends DbModel
         $itemIds = array_unique($itemIds);
 
         $itemData = self::getItemData($itemIds);
+        $customerData = self::getCustomerData($customerIDs);
 
         for ($i = 0; $i < count($data); $i++) {
             for ($i2 = 0; $i2 < count($data[$i]['items']); $i2++) {
@@ -125,6 +128,18 @@ class Orders extends DbModel
                 if (!isset($data[$i]['items'][$i2]['item_name'])) {
                     $data[$i]['items'][$i2]['item'] = "DELETED ITEM";
                     $data[$i]['items'][$i2]['item_id'] = null;
+                }
+
+                // Adding customer name
+                foreach ($customerData as $oneCustomer){
+                    if (isset($data[$i]['customer_name']))
+                        break;
+                    if ($oneCustomer['customer_id'] == $data[$i]['customer_id'])
+                        $data[$i]['customer_name'] = $oneCustomer['name'];
+                }
+                if (!isset($data[$i]['customer_name'])){
+                    $data[$i]['customer_name'] = "DELETED CUSTOMER";
+                    $data[$i]['customer_id'] = null;
                 }
 
                 // Adding order status message
@@ -266,4 +281,12 @@ class Orders extends DbModel
         return (self::getDataFromTable(['item_id', 'name', 'price'], 'items', $condition))->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    private static function getCustomerData(array $customerIds):array
+    {
+        $filters = [];
+        foreach ($customerIds as $customerId)
+            $filters[] = "customer_id=$customerId";
+        $condition = implode(" OR ", $filters);
+        return (self::getDataFromTable(['customer_id', 'name'], 'customers', $condition))->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
