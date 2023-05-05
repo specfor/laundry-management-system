@@ -37,6 +37,7 @@ branch-id - optional
 page-num - optional -> when there are more than 30 results, 
 results are broken into pages. page number to retrieve results
 branch-id - optional
+customer-id - optional
 email - optional
 phone-number - optional
 name - optional
@@ -221,12 +222,14 @@ Get all available order status messages
 POST - /api/v1/orders/add
 Parameters
 items - compulsory - array of [item-id: amount, item-id2: amount, ...]
+customer-id - optional
 total-price - optional - only if need to override generated price
 branch-id - optional - only if user is not someone asigned to a branch, if user is assigned to a branch then send branch-id will not be used.
 
 POST - /api/v1/orders/update
 Parameters
 order-id - compulsory
+customer-id - optional
 branch-id - optional
 items - optional -  array of [item-id: amount, item-id2: amount, ...]
 order-status - optional

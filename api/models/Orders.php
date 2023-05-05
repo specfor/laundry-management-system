@@ -17,9 +17,14 @@ class Orders extends DbModel
     public const STATUS_REJECTED = 7;
     public const STATUS_CANCELLED = 8;
 
-    public static function addNewOrder(array  $items, float $totalPrice = null, int $branchId = null,
+    public static function addNewOrder(array  $items, int $customerId, float $totalPrice = null, int $branchId = null,
                                        string $orderStatus = "order added"): bool|string
     {
+        if (empty(Customers::getCustomers($customerId)))
+            return "Invalid customer-id";
+        else
+            $params['customer_id'] = $customerId;
+
         if (self::getOrderStatusId($orderStatus) == -1)
             return "Invalid order status.";
         else
@@ -131,12 +136,18 @@ class Orders extends DbModel
     }
 
     public static function updateOrder(int    $orderId, array $items = null, int $branchId = null,
-                                       string $orderStatus = null): bool|string
+                                       string $orderStatus = null, int $customerId = null): bool|string
     {
         if (empty(self::getOrders(orderId: $orderId)))
             return "Invalid order id.";
 
         $params = [];
+
+        if (empty(Customers::getCustomers($customerId)))
+            return "Invalid customer-id";
+        else
+            $params['customer_id'] = $customerId;
+
         if ($items) {
             $itemIds = [];
             foreach ($items as $itemId => $amount) {

@@ -17,7 +17,8 @@ class m00009_orders extends MigrationScheme
                     total_price float NOT NULL,
                     added_date date NOT NULL, 
                     branch_id int NOT NULL,
-                    status int NOT NULL    
+                    customer_id int NOT NULL,
+                    status int NOT NULL   
                 )";
         try {
             self::$pdo->exec($sql);

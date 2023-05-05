@@ -81,7 +81,7 @@ class ApiControllerV1 extends API
         if (!$branchId)
             $branchId = User::getUserBranchId(self::getUserId());
 
-        $data = Customers::getCustomers($branchId, $email, $phoneNum, $name, $address, $banned, $joinDate, $pageNum);
+        $data = Customers::getCustomers($customerId, $branchId, $email, $phoneNum, $name, $address, $banned, $joinDate, $pageNum);
         self::sendSuccess(['customers' => $data]);
     }
 
@@ -466,12 +466,13 @@ class ApiControllerV1 extends API
 
         $items = self::getParameter('items', dataType: 'array', isCompulsory: true);
         $totalPrice = self::getParameter('total-price', dataType: 'float');
+        $customerId = self::getParameter('customer-id', dataType: 'int', isCompulsory: true);
 
         $branchId = User::getUserBranchId(self::getUserId());
         if ($branchId == 0)
             $branchId = self::getParameter('branch-id', dataType: 'int');
 
-        $status = Orders::addNewOrder($items, $totalPrice, $branchId);
+        $status = Orders::addNewOrder($items, $customerId, $totalPrice, $branchId);
         if ($status === true)
             self::sendSuccess('New order added successfully.');
         elseif ($status === false)
@@ -486,10 +487,11 @@ class ApiControllerV1 extends API
 
         $orderId = self::getParameter('order-id', dataType: 'int', isCompulsory: true);
         $branchId = self::getParameter('branch-id', dataType: 'int');
+        $customerId = self::getParameter('customer-id', dataType: 'int');
         $items = self::getParameter('items', dataType: 'array');
         $status = self::getParameter('order-status');
 
-        $status = Orders::updateOrder($orderId, $items, $branchId, $status);
+        $status = Orders::updateOrder($orderId, $items, $branchId, $status, $customerId);
         if ($status === true)
             self::sendSuccess("Order updated successfully.");
         elseif ($status === false)
