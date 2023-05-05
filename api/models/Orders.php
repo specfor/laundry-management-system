@@ -186,6 +186,12 @@ class Orders extends DbModel
         return self::updateTableData('orders', $params, $condition);
     }
 
+    public static function getStatusMessages(): array
+    {
+        return ["order added", "payment pending", "payment completed", "processing order", "finished processing order",
+            "order completed", "order on hold", "order rejected", "order cancelled"];
+    }
+
     public static function deleteOrder(int $orderId): bool
     {
         $sql = "DELETE FROM orders WHERE order_id=$orderId";
@@ -248,4 +254,5 @@ class Orders extends DbModel
         $condition = implode(" OR ", $filters);
         return (self::getDataFromTable(['item_id', 'name', 'price'], 'items', $condition))->fetchAll(PDO::FETCH_ASSOC);
     }
+
 }

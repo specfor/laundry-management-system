@@ -215,6 +215,9 @@ branch-id - optional
 added-date - optional
 order-status - optional
 
+GET - /api/v1/orders/status-messages
+Get all available order status messages
+
 POST - /api/v1/orders/add
 Parameters
 items - compulsory - array of [item-id: amount, item-id2: amount, ...]

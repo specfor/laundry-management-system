@@ -445,7 +445,7 @@ class ApiControllerV1 extends API
             self::sendError('Failed to delete the item.');
     }
 
-    public function getOrders()
+    public function getOrders(): void
     {
         self::checkPermissions();
 
@@ -459,7 +459,7 @@ class ApiControllerV1 extends API
         self::sendSuccess(['orders' => $orders]);
     }
 
-    public function addOrder()
+    public function addOrder(): void
     {
         self::checkPermissions();
 
@@ -479,7 +479,7 @@ class ApiControllerV1 extends API
             self::sendError($status);
     }
 
-    public function updateOrder()
+    public function updateOrder(): void
     {
         self::checkPermissions(User::ROLE_MANAGER);
 
@@ -497,7 +497,7 @@ class ApiControllerV1 extends API
             self::sendError($status);
     }
 
-    public function deleteOrder()
+    public function deleteOrder(): void
     {
         self::checkPermissions(User::ROLE_MANAGER);
 
@@ -507,6 +507,13 @@ class ApiControllerV1 extends API
             self::sendSuccess("Order deleted successfully.");
         else
             self::sendError('Failed to delete the order.');
+    }
+
+    public function getOrderStatusMessages(): void
+    {
+        self::checkPermissions();
+
+        self::sendSuccess(['status-messages' => Orders::getStatusMessages()]);
     }
 
     /**
