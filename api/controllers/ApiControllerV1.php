@@ -448,7 +448,7 @@ class ApiControllerV1 extends API
     {
         self::checkPermissions();
 
-        $pageNumber = self::getParameter('page-num', dataType: 'int');
+        $pageNumber = self::getParameter('page-num',defaultValue: 0, dataType: 'int');
         $orderId = self::getParameter('order-id', dataType: 'int');
         $branchId = self::getParameter('branch-id', dataType: 'int');
         $addedDate = self::getParameter('added-date');
@@ -485,7 +485,14 @@ class ApiControllerV1 extends API
 
     public function deleteOrder()
     {
+        self::checkPermissions(User::ROLE_MANAGER);
 
+        $orderId = self::getParameter('order-id', dataType: 'int', isCompulsory: true);
+
+        if (Orders::deleteOrder($orderId))
+            self::sendSuccess("Order deleted successfully.");
+        else
+            self::sendError('Failed to delete the order.');
     }
 
     /**

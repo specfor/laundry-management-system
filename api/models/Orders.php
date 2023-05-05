@@ -120,6 +120,14 @@ class Orders extends DbModel
         return $data;
     }
 
+    public static function deleteOrder(int $orderId):bool
+    {
+        $sql = "DELETE FROM orders WHERE order_id=$orderId";
+        if (self::exec($sql))
+            return true;
+        return false;
+    }
+
     private static function getOrderStatusMessage(int $statusId): string
     {
         if ($statusId == self::STATUS_ORDER_ADDED)
