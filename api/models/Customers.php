@@ -23,13 +23,15 @@ class Customers extends DbModel
         return $statement->execute();
     }
 
-    public static function getCustomers(int    $branchId = 0, string $email = null, string $phoneNumber = null,
-                                        string $name = null, string $address = null, bool $banned = null,
+    public static function getCustomers(int    $customerId = null, int $branchId = 0, string $email = null,
+                                        string $phoneNumber = null, string $name = null, string $address = null, bool $banned = null,
                                         string $joinDate = null, int $pageNumber = 0, int $limit = 30): array
     {
         $startingIndex = $pageNumber * $limit;
         $filters = [];
         $placeholders = [];
+        if ($customerId)
+            $filters[] = "customer_id=$customerId";
         if ($email) {
             $filters[] = "email LIKE :email";
             $placeholders['email'] = "%" . $email . "%";
@@ -57,7 +59,7 @@ class Customers extends DbModel
             $filters[] = "branch_id=$branchId'";
 
         $condition = implode(' AND ', $filters);
-        $statement = self::getDataFromTable(['customer_id','email', 'phone_num', 'name', 'address', 'branch_id', 'banned', 'joined_date'],
+        $statement = self::getDataFromTable(['customer_id', 'email', 'phone_num', 'name', 'address', 'branch_id', 'banned', 'joined_date'],
             self::TABLE_NAME, $condition, $placeholders, ['customer_id', 'desc'], [$startingIndex, $limit]);
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -91,7 +93,7 @@ class Customers extends DbModel
 
     public static function deleteCustomer(int $customerId): bool
     {
-        $sql = "DELETE FROM ".self::TABLE_NAME." WHERE customer_id=$customerId";
+        $sql = "DELETE FROM " . self::TABLE_NAME . " WHERE customer_id=$customerId";
         if (self::exec($sql))
             return true;
         return false;

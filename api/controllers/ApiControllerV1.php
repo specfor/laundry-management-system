@@ -69,6 +69,7 @@ class ApiControllerV1 extends API
         self::checkPermissions();
 
         $pageNum = self::getParameter('page-num', 0, 'int');
+        $customerId = self::getParameter('customer-id', dataType: 'int');
         $branchId = self::getParameter('branch-id', dataType: 'int');
         $email = self::getParameter('email');
         $phoneNum = self::getParameter('phone-number');
