@@ -446,7 +446,16 @@ class ApiControllerV1 extends API
 
     public function getOrders()
     {
+        self::checkPermissions();
 
+        $pageNumber = self::getParameter('page-num', dataType: 'int');
+        $orderId = self::getParameter('order-id', dataType: 'int');
+        $branchId = self::getParameter('branch-id', dataType: 'int');
+        $addedDate = self::getParameter('added-date');
+        $orderStatus = self::getParameter('order-status');
+
+        $orders = Orders::getOrders($pageNumber, $orderId, $addedDate, $branchId, $orderStatus);
+        self::sendSuccess(['orders' => $orders]);
     }
 
     public function addOrder()

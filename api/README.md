@@ -183,6 +183,7 @@ category-id - compulsory
 GET - /api/v1/items
 Parameters
 page-num - optional
+item-id - optional
 item-name - optional
 item-price - optional
 blocked - optional
@@ -204,6 +205,14 @@ blocked - optional
 POST - /api/v1/items/delete
 Parameters
 item-id - compulsory
+
+GET - /api/v1/orders
+Parameters
+page-num - optional
+order-id - optional
+branch-id - optional
+added-date - optional
+order-status - optional
 
 POST - /api/v1/orders/add
 Parameters

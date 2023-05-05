@@ -43,7 +43,7 @@ class Orders extends DbModel
             foreach ($itemData as $item) {
                 if ($itemId == $item['item_id']) {
                     $item['amount'] = $amount;
-                    $calculatedTotalPrice += intval($amount)*floatval($item['price']);
+                    $calculatedTotalPrice += intval($amount) * floatval($item['price']);
                     $newItemData[] = $item;
                 }
             }
@@ -60,5 +60,118 @@ class Orders extends DbModel
         $params['branch_id'] = $branchId;
 
         return self::insertIntoTable('orders', $params);
+    }
+
+    public static function getOrders(int $pageNumber = 0, int $orderId = null, string $addedDate = null,
+                                     int $branchId = null, string $orderStatus = null, int $limit = 30): array
+    {
+        $startingIndex = $pageNumber * $limit;
+        $filters = [];
+        $placeholders = [];
+        if ($orderId)
+            $filters[] = "order_id=$orderId";
+        if ($addedDate) {
+            $filters[] = "added_date=:date";
+            $placeholders['date'] = $addedDate;
+        }
+        if ($branchId)
+            $filters[] = "branch_id=$branchId";
+        if ($orderStatus) {
+            $orderStatus = self::getOrderStatusId($orderStatus);
+            $filters[] = "status=$orderStatus";
+        }
+        $condition = implode(" AND ", $filters);
+
+        $data = (self::getDataFromTable(["*"], 'orders', $condition, $placeholders, ['order_id', 'asc'],
+            [$startingIndex, $limit]))->fetchAll(PDO::FETCH_ASSOC);
+
+
+        $itemIds = [];
+        for ($i = 0; $i < count($data); $i++) {
+            $data[$i]['items'] = json_decode($data[$i]['items'], true);
+            for ($i2 = 0; $i2 < count($data[$i]['items']); $i2++) {
+                $itemIds[] = $data[$i]['items'][$i2]['item_id'];
+            }
+        }
+        $itemIds = array_unique($itemIds);
+
+        $itemData = self::getItemData($itemIds);
+
+        for ($i = 0; $i < count($data); $i++) {
+            for ($i2 = 0; $i2 < count($data[$i]['items']); $i2++) {
+                // Adding item name
+                foreach ($itemData as $oneItem) {
+                    if (isset($data[$i]['items'][$i2]['item_name']))
+                        break;
+                    if ($oneItem['item_id'] == $data[$i]['items'][$i2]['item_id']) {
+                        $data[$i]['items'][$i2]['item_name'] = $oneItem['name'];
+                    }
+                }
+                if (!isset($data[$i]['items'][$i2]['item_name'])) {
+                    $data[$i]['items'][$i2]['item'] = "DELETED ITEM";
+                    $data[$i]['items'][$i2]['item_id'] = null;
+                }
+
+                // Adding order status message
+                $data[$i]['status'] = self::getOrderStatusMessage(intval($data[$i]['status']));
+            }
+        }
+
+        return $data;
+    }
+
+    private static function getOrderStatusMessage(int $statusId): string
+    {
+        if ($statusId == self::STATUS_ORDER_ADDED)
+            return "order added";
+        elseif ($statusId == self::STATUS_PENDING_PAYMENT)
+            return "payment pending";
+        elseif ($statusId == self::STATUS_PAYMENT_COMPLETED)
+            return "payment completed";
+        elseif ($statusId == self::STATUS_PROCESSING)
+            return "processing order";
+        elseif ($statusId == self::STATUS_COMPLETED_PROCESSING)
+            return "finished processing order";
+        elseif ($statusId == self::STATUS_COMPLETED)
+            return "order completed";
+        elseif ($statusId == self::STATUS_ON_HOLD)
+            return "order on hold";
+        elseif ($statusId == self::STATUS_REJECTED)
+            return "order rejected";
+        elseif ($statusId == self::STATUS_CANCELLED)
+            return "order cancelled";
+        return "unknown order status";
+    }
+
+    private static function getOrderStatusId(string $statusMessage): int
+    {
+        if ($statusMessage == "order added")
+            return self::STATUS_ORDER_ADDED;
+        elseif ($statusMessage == "payment pending")
+            return self::STATUS_PENDING_PAYMENT;
+        elseif ($statusMessage == "payment completed")
+            return self::STATUS_PAYMENT_COMPLETED;
+        elseif ($statusMessage == "processing order")
+            return self::STATUS_PROCESSING;
+        elseif ($statusMessage == "finished processing order")
+            return self::STATUS_COMPLETED_PROCESSING;
+        elseif ($statusMessage == "order completed")
+            return self::STATUS_COMPLETED;
+        elseif ($statusMessage == "order on hold")
+            return self::STATUS_ON_HOLD;
+        elseif ($statusMessage == "order rejected")
+            return self::STATUS_REJECTED;
+        elseif ($statusMessage == "order cancelled")
+            return self::STATUS_CANCELLED;
+        return -1;
+    }
+
+    private static function getItemData(array $itemIds): array
+    {
+        $filters = [];
+        foreach ($itemIds as $itemId)
+            $filters[] = "item_id=$itemId";
+        $condition = implode(" OR ", $filters);
+        return (self::getDataFromTable(['item_id', 'name', 'price'], 'items', $condition))->fetchAll(PDO::FETCH_ASSOC);
     }
 }
