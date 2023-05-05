@@ -21,12 +21,14 @@ class Branches extends DbModel
         return self::insertIntoTable('branches', $params);
     }
 
-    public static function getBranches(int $pageNumber = 0, string $name = null, string $address = null,
+    public static function getBranches(int $pageNumber = 0, int $branchId =null ,string $name = null, string $address = null,
                                        int $managerId = null, string $phoneNumber = null, int $limit = 30): array
     {
         $startingIndex = $pageNumber * $limit;
         $filters = [];
         $placeholders = [];
+        if ($branchId)
+            $filters[] = "branch_id=$branchId";
         if ($name) {
             $filters[] = "name LIKE :name";
             $placeholders['name'] = "%".$name."%";

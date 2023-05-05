@@ -137,11 +137,12 @@ class ApiControllerV1 extends API
 
         $pageNum = self::getParameter('page-num', 0, 'int');
         $branchName = self::getParameter('branch-name');
+        $branchId = self::getParameter('branch-id', dataType: 'int');
         $address = self::getParameter('address');
         $phoneNum = self::getParameter('phone-number');
         $managerId = self::getParameter('manager-id', dataType: 'int');
 
-        $data = Branches::getBranches($pageNum, $branchName, $address, $managerId, $phoneNum);
+        $data = Branches::getBranches($pageNum, $branchId, $branchName, $address, $managerId, $phoneNum);
         self::sendSuccess(['branches' => $data]);
     }
 
@@ -448,7 +449,7 @@ class ApiControllerV1 extends API
     {
         self::checkPermissions();
 
-        $pageNumber = self::getParameter('page-num',defaultValue: 0, dataType: 'int');
+        $pageNumber = self::getParameter('page-num', defaultValue: 0, dataType: 'int');
         $orderId = self::getParameter('order-id', dataType: 'int');
         $branchId = self::getParameter('branch-id', dataType: 'int');
         $addedDate = self::getParameter('added-date');
@@ -480,7 +481,20 @@ class ApiControllerV1 extends API
 
     public function updateOrder()
     {
+        self::checkPermissions(User::ROLE_MANAGER);
 
+        $orderId = self::getParameter('order-id', dataType: 'int', isCompulsory: true);
+        $branchId = self::getParameter('branch-id', dataType: 'int');
+        $items = self::getParameter('items', dataType: 'array');
+        $status = self::getParameter('order-status');
+
+        $status = Orders::updateOrder($orderId, $items, $branchId, $status);
+        if ($status === true)
+            self::sendSuccess("Order updated successfully.");
+        elseif ($status === false)
+            self::sendError("Failed to update the order.");
+        else
+            self::sendError($status);
     }
 
     public function deleteOrder()

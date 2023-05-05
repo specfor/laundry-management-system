@@ -17,9 +17,20 @@ class Orders extends DbModel
     public const STATUS_REJECTED = 7;
     public const STATUS_CANCELLED = 8;
 
-    public static function addNewOrder(array $items, float $totalPrice = null, int $branchId = null,
-                                       int   $orderStatus = self::STATUS_ORDER_ADDED): bool|string
+    public static function addNewOrder(array  $items, float $totalPrice = null, int $branchId = null,
+                                       string $orderStatus = "order added"): bool|string
     {
+        if (self::getOrderStatusId($orderStatus) == -1)
+            return "Invalid order status.";
+        else
+            $params['status'] = self::getOrderStatusId($orderStatus);
+
+        if ($branchId) {
+            if (empty(Branches::getBranches(branchId: $branchId)))
+                return "Invalid branch Id.";
+            $params['branch_id'] = $branchId;
+        }
+
         $itemIds = [];
         foreach ($items as $itemId => $amount) {
             if (!is_int($itemId))
@@ -56,8 +67,7 @@ class Orders extends DbModel
             $params['total_price'] = $calculatedTotalPrice;
         $params['items'] = $newItemData;
         $params['added_date'] = (new DateTime('now'))->format("Y-m-d");
-        $params['status'] = $orderStatus;
-        $params['branch_id'] = $branchId;
+
 
         return self::insertIntoTable('orders', $params);
     }
@@ -120,7 +130,63 @@ class Orders extends DbModel
         return $data;
     }
 
-    public static function deleteOrder(int $orderId):bool
+    public static function updateOrder(int    $orderId, array $items = null, int $branchId = null,
+                                       string $orderStatus = null): bool|string
+    {
+        if (empty(self::getOrders(orderId: $orderId)))
+            return "Invalid order id.";
+
+        $params = [];
+        if ($items) {
+            $itemIds = [];
+            foreach ($items as $itemId => $amount) {
+                if (!is_int($itemId))
+                    return "All item ids must be integers.";
+                if (!is_int($amount))
+                    return "All amounts should be integers";
+                if ($amount < 1)
+                    return "All amounts must be greater than 0";
+                $itemIds[] = "item_id=$itemId";
+            }
+            $condition = "(" . implode(' OR ', $itemIds) . ")";
+            $condition .= " AND blocked=false";
+            $itemData = (self::getDataFromTable(['price', 'item_id'], 'items', $condition))->fetchAll(PDO::FETCH_ASSOC);
+
+            if (count($itemData) < count($items))
+                return "Invalid item ids were sent";
+
+            $calculatedTotalPrice = 0;
+            $newItemData = [];
+            foreach ($items as $itemId => $amount) {
+                foreach ($itemData as $item) {
+                    if ($itemId == $item['item_id']) {
+                        $item['amount'] = $amount;
+                        $calculatedTotalPrice += intval($amount) * floatval($item['price']);
+                        $newItemData[] = $item;
+                    }
+                }
+            }
+            $newItemData = json_encode($newItemData);
+
+            $params['total_price'] = $calculatedTotalPrice;
+            $params['items'] = $newItemData;
+        }
+        if ($branchId)
+            if (empty(Branches::getBranches(branchId: $branchId)))
+                return "Invalid branch Id.";
+        $params['branch_id'] = $branchId;
+        if ($orderStatus) {
+            if (self::getOrderStatusId($orderStatus) == -1)
+                return "Invalid order status.";
+            else
+                $params['status'] = self::getOrderStatusId($orderStatus);
+        }
+
+        $condition = "order_id=$orderId";
+        return self::updateTableData('orders', $params, $condition);
+    }
+
+    public static function deleteOrder(int $orderId): bool
     {
         $sql = "DELETE FROM orders WHERE order_id=$orderId";
         if (self::exec($sql))
