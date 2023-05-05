@@ -92,8 +92,8 @@ class Items extends DbModel
         return false;
     }
 
-    public static function getItems(int  $pageNumber = 0, string $itemName = null, float $price = null,
-                                    bool $blocked = null, $limit = 30): array
+    public static function getItems(int  $pageNumber = 0, int $itemId = null, string $itemName = null,
+                                    float $price = null, bool $blocked = null, $limit = 30): array
     {
         $startingIndex = $pageNumber * $limit;
         $filters = [];

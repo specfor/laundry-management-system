@@ -389,10 +389,11 @@ class ApiControllerV1 extends API
 
         $pageNum = self::getParameter('page-num', 0, 'int');
         $itemName = self::getParameter('item-name');
+        $itemId = self::getParameter('item-id', dataType: 'int');
         $price = self::getParameter('item-price', dataType: 'float');
         $blocked = self::getParameter('blocked', dataType: 'bool');
 
-        $data = Items::getItems($pageNum, $itemName, $price, $blocked);
+        $data = Items::getItems($pageNum, $itemId, $itemName, $price, $blocked);
         self::sendSuccess(['items' => $data]);
     }
 
