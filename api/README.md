@@ -237,3 +237,25 @@ order-status - optional
 POST - /api/v1/orders/delete
 Parameters
 order-id - compulsory
+
+GET - /api/v1/payments
+Parameters
+page-num - optional
+payment-id - optional
+order-id - optional
+paid-date - optional
+
+POST - /api/v1/orders/add
+Parameters
+order-id - compulsory
+paid-amount - compulsory
+paid-date - optional
+
+POST - /api/v1/orders/update
+Parameters
+payment-id - compulsory
+refunded - optional
+
+POST - /api/v1/orders/delete
+Parameters
+payment-id - compulsory

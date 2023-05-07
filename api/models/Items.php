@@ -92,7 +92,7 @@ class Items extends DbModel
         return false;
     }
 
-    public static function getItems(int  $pageNumber = 0, int $itemId = null, string $itemName = null,
+    public static function getItems(int   $pageNumber = 0, int $itemId = null, string $itemName = null,
                                     float $price = null, bool $blocked = null, $limit = 30): array
     {
         $startingIndex = $pageNumber * $limit;
@@ -142,7 +142,7 @@ class Items extends DbModel
     private static function getPriceCategoryId(string $categoryName): int|null
     {
         if (!isset(self::$priceCategories)) {
-            $statement = self::getDataFromTable(['*'], 'price_categories');
+            $statement = self::getDataFromTable(['*'], 'price_categories', orderBy: ['category_id', 'asc']);
             self::$priceCategories = $statement->fetchAll(PDO::FETCH_ASSOC);
         }
         foreach (self::$priceCategories as $category) {
@@ -155,7 +155,7 @@ class Items extends DbModel
     private static function getPriceCategoryName(int $categoryId): string
     {
         if (!isset(self::$priceCategories)) {
-            $statement = self::getDataFromTable(['*'], 'price_categories');
+            $statement = self::getDataFromTable(['*'], 'price_categories', orderBy: ['category_id', 'asc']);
             self::$priceCategories = $statement->fetchAll(PDO::FETCH_ASSOC);
         }
         foreach (self::$priceCategories as $category) {

@@ -53,5 +53,9 @@ $app->router->addGetRoute('/api/v1/orders/status-messages', [ApiControllerV1::cl
 $app->router->addPostRoute('/api/v1/orders/add', [ApiControllerV1::class, 'addOrder']);
 $app->router->addPostRoute('/api/v1/orders/update', [ApiControllerV1::class, 'updateOrder']);
 $app->router->addPostRoute('/api/v1/orders/delete', [ApiControllerV1::class, 'deleteOrder']);
+$app->router->addGetRoute('/api/v1/payments', [ApiControllerV1::class, 'getPayments']);
+$app->router->addPostRoute('/api/v1/payments/add', [ApiControllerV1::class, 'addPayment']);
+$app->router->addPostRoute('/api/v1/payments/update', [ApiControllerV1::class, 'updatePayment']);
+$app->router->addPostRoute('/api/v1/payments/delete', [ApiControllerV1::class, 'deletePayment']);
 
 $app->run();
