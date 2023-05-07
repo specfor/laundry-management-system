@@ -111,6 +111,15 @@ class SiteController
         TailwindUiRenderer::loadPage('addOrder', $variableData);
     }
 
+    public function finalizeOrder():void
+    {
+        $this->checkPermission(self::ROLE_CASHIER);
+
+        $variableData['header'] = self::getHeaderMenuItems($this->userRole);
+        $variableData['site-title'] = 'Finalize Order - ' . self::SITE_NAME;
+        TailwindUiRenderer::loadPage('finalPayment', $variableData);
+    }
+
     private static function getHeaderMenuItems(int $userRole = self::ROLE_CASHIER): array
     {
         $header = [

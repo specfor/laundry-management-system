@@ -34,5 +34,6 @@ $app->router->addGetRoute('/users', [SiteController::class, 'getUsers']);
 $app->router->addGetRoute('/products', [SiteController::class, 'getProducts']);
 $app->router->addGetRoute('/customers', [SiteController::class, 'getCustomers']);
 $app->router->addGetRoute('/orders/new-order', [SiteController::class, 'newOrder']);
+$app->router->addGetRoute('/orders/new-order/payment', [SiteController::class, 'finalizeOrder']);
 
 $app->run();
