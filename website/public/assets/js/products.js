@@ -75,8 +75,8 @@ async function getAllActionsToModal(){
         let actions = resJson["body"]["categories"]
         actions.forEach(function(action){
             let addActionDiv =  document.getElementById("addActionDiv")
-            let newAction = `<div class="form-check">
-            <input class="form-check-input check" type="checkbox" value="${action["name"]}" id="check-btn-${action["category_name"]}">
+            let newAction = `<div class="form-check" id="check-btn-${action["category_id"]}">
+            <input class="form-check-input check" type="checkbox" value="${action["name"]}" >
             <label class="form-check-label" for="flexCheckDefault">
                 ${action["name"]}
             </label>
@@ -85,16 +85,14 @@ async function getAllActionsToModal(){
             addActionDiv.innerHTML += newAction
 
             let editActionDiv =  document.getElementById("editActionDiv")
-            let editAction = `<div class="form-check">
-            <input class="form-check-input eCheck" type="checkbox" value="${action["name"]}" id="Echeck-btn-${action["category_name"]}">
+            let editAction = `<div class="form-check" id="Echeck-btn-${action["category_id"]}">
+            <input class="form-check-input eCheck" type="checkbox" value="${action["name"]}" >
             <label class="form-check-label" for="flexCheckDefault">
                 ${action["name"]}
             </label>
          </div>`
          
             editActionDiv.innerHTML += editAction
-
-
         
         })
     }
@@ -139,6 +137,7 @@ async function updateActionTable(action){
     let actions = resJson["body"]["categories"].slice(-1)
     
     let id = actions[0]["category_id"]
+    console.log(id)
 
     let actionTable = document.getElementById("actionTable")
 
@@ -147,13 +146,13 @@ async function updateActionTable(action){
      row.insertCell(0).innerHTML = id
      row.insertCell(1).innerText = action
      row.insertCell(2).innerHTML = `
-     <button  class="delete btn btn-danger fw-bold" type="button" id="btn-delete-${id}" data-bs-toggle="modal" data-bs-target="#confirmDeleteAction">Delete</button>
+     <button   class="delete btn btn-danger fw-bold" type="button" onclick="prepareDeletion()" id="btn-delete-${id}" data-bs-toggle="modal" data-bs-target="#confirmDeleteAction">Delete</button>
    </div>` 
 
 
    let addActionDiv =  document.getElementById("addActionDiv")
-   let newAction = `<div class="form-check">
-   <input class="form-check-input check" type="checkbox" value="${action}" id="check-btn-${id}">
+   let newAction = `<div class="form-check" id="check-btn-${id}">
+   <input class="form-check-input check" type="checkbox" value="${action}" >
    <label class="form-check-label" for="flexCheckDefault">
        ${action}
    </label>
@@ -162,8 +161,8 @@ async function updateActionTable(action){
    addActionDiv.innerHTML += newAction
 
    let editActionDiv =  document.getElementById("editActionDiv")
-   let editAction = `<div class="form-check">
-   <input class="form-check-input eCheck" type="checkbox" value="${action}" id="Echeck-btn-${id}">
+   let editAction = `<div class="form-check" id="Echeck-btn-${id}">
+   <input class="form-check-input eCheck" type="checkbox" value="${action}" >
    <label class="form-check-label" for="flexCheckDefault">
        ${action}
    </label>
@@ -197,7 +196,7 @@ async function getAllItemsformSearch(){
         if(resp.statusMessage == "success"){
             clearTable()
             let items = resp["body"]["items"]
-            console.log(items)
+    
             items.forEach(function(item){
                 let sampleArray = []
         
@@ -222,12 +221,13 @@ async function getAllItemsformSearch(){
 }
 
 
-async function deleteAction(){
+function deleteAction(){
     document.getElementById(`check-btn-${action_id}`).remove()
+    document.getElementById(`Echeck-btn-${action_id}`).remove()
 }
 
 async function confirmDeletionAction(){
-    console.log(action_id)
+    //console.log(action_id)
     let response = await sendJsonRequest("http://www.laundry-api.localhost/api/v1/category/delete",{
         "category-id":action_id
     })
@@ -242,8 +242,8 @@ async function confirmDeletionAction(){
         for (let i = 0, row; row = actionTable.rows[i]; i++) {
             if (row.cells[0].innerText == action_id) {
                 actionTable.deleteRow(i)
-                await deleteAction()
-                location.reload()
+                deleteAction()
+                
             }
 
                 
@@ -286,7 +286,7 @@ async function getAllActions(){
 
 function prepareDeletion(){
     action_id = event.target.id.split("-")[2]
-    console.log(action_id)
+    
 }
 
 async function sendNewProductToTheServer(){
