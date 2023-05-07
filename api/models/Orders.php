@@ -18,6 +18,7 @@ class Orders extends DbModel
     public const STATUS_CANCELLED = 8;
 
     public static function addNewOrder(array  $items, int $customerId, float $totalPrice = null, int $branchId = null,
+                                       string $defects = null, string $returnDate = null, string $comments = null,
                                        string $orderStatus = "order added"): bool|string
     {
         if (empty(Customers::getCustomers($customerId)))
@@ -71,8 +72,14 @@ class Orders extends DbModel
         else
             $params['total_price'] = $calculatedTotalPrice;
         $params['items'] = $newItemData;
-        $params['added_date'] = (new DateTime('now'))->format("Y-m-d");
+        $params['added_date'] = (new DateTime('now'))->format("Y-m-d H:m");
 
+        if ($defects)
+            $params['defects'] = $defects;
+        if ($returnDate)
+            $params['return_date'] = $returnDate;
+        if ($comments)
+            $params['comments'] = $comments;
 
         return self::insertIntoTable('orders', $params);
     }
@@ -131,13 +138,13 @@ class Orders extends DbModel
                 }
 
                 // Adding customer name
-                foreach ($customerData as $oneCustomer){
+                foreach ($customerData as $oneCustomer) {
                     if (isset($data[$i]['customer_name']))
                         break;
                     if ($oneCustomer['customer_id'] == $data[$i]['customer_id'])
                         $data[$i]['customer_name'] = $oneCustomer['name'];
                 }
-                if (!isset($data[$i]['customer_name'])){
+                if (!isset($data[$i]['customer_name'])) {
                     $data[$i]['customer_name'] = "DELETED CUSTOMER";
                     $data[$i]['customer_id'] = null;
                 }
@@ -151,7 +158,8 @@ class Orders extends DbModel
     }
 
     public static function updateOrder(int    $orderId, array $items = null, int $branchId = null,
-                                       string $orderStatus = null, int $customerId = null): bool|string
+                                       string $orderStatus = null, int $customerId = null, string $returnDate = null,
+                                       string $defects = null, string $comments = null): bool|string
     {
         if (empty(self::getOrders(orderId: $orderId)))
             return "Invalid order id.";
@@ -207,6 +215,12 @@ class Orders extends DbModel
             else
                 $params['status'] = self::getOrderStatusId($orderStatus);
         }
+        if ($defects)
+            $params['defects'] = $defects;
+        if ($returnDate)
+            $params['return_date'] = $returnDate;
+        if ($comments)
+            $params['comments'] = $comments;
 
         $condition = "order_id=$orderId";
         return self::updateTableData('orders', $params, $condition);
@@ -281,7 +295,7 @@ class Orders extends DbModel
         return (self::getDataFromTable(['item_id', 'name', 'price'], 'items', $condition))->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    private static function getCustomerData(array $customerIds):array
+    private static function getCustomerData(array $customerIds): array
     {
         $filters = [];
         foreach ($customerIds as $customerId)

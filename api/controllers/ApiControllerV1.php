@@ -468,12 +468,15 @@ class ApiControllerV1 extends API
         $items = self::getParameter('items', dataType: 'array', isCompulsory: true);
         $totalPrice = self::getParameter('total-price', dataType: 'float');
         $customerId = self::getParameter('customer-id', dataType: 'int', isCompulsory: true);
+        $returnDate = self::getParameter('return-date');
+        $comments = self::getParameter('customer-comments');
+        $defects = self::getParameter('defects');
 
         $branchId = User::getUserBranchId(self::getUserId());
         if ($branchId == 0)
             $branchId = self::getParameter('branch-id', dataType: 'int');
 
-        $status = Orders::addNewOrder($items, $customerId, $totalPrice, $branchId);
+        $status = Orders::addNewOrder($items, $customerId, $totalPrice, $branchId, $defects, $returnDate, $comments);
         if ($status === true)
             self::sendSuccess('New order added successfully.');
         elseif ($status === false)
@@ -491,8 +494,11 @@ class ApiControllerV1 extends API
         $customerId = self::getParameter('customer-id', dataType: 'int');
         $items = self::getParameter('items', dataType: 'array');
         $status = self::getParameter('order-status');
+        $returnDate = self::getParameter('return-date');
+        $comments = self::getParameter('customer-comments');
+        $defects = self::getParameter('defects');
 
-        $status = Orders::updateOrder($orderId, $items, $branchId, $status, $customerId);
+        $status = Orders::updateOrder($orderId, $items, $branchId, $status, $customerId, $returnDate, $defects, $comments);
         if ($status === true)
             self::sendSuccess("Order updated successfully.");
         elseif ($status === false)
@@ -556,7 +562,7 @@ class ApiControllerV1 extends API
         $paymentId = self::getParameter('payment-id', dataType: 'int', isCompulsory: true);
         $refunded = self::getParameter('refunded', dataType: 'bool', isCompulsory: true);
 
-        if (Payments::updatePayment($paymentId,$refunded))
+        if (Payments::updatePayment($paymentId, $refunded))
             self::sendSuccess("Updated the payment details.");
         else
             self::sendError("Failed to update the payment details.");

@@ -14,8 +14,11 @@ class m00009_orders extends MigrationScheme
         $sql = "CREATE TABLE IF NOT EXISTS orders (
                     order_id int AUTO_INCREMENT NOT NULL PRIMARY KEY,
                     items varchar(300) NOT NULL,
+                    defects varchar(255) default 'NONE' NOT NULL,
+                    comments varchar(255),
                     total_price float NOT NULL,
-                    added_date date NOT NULL, 
+                    added_date datetime NOT NULL, 
+                    return_date datetime,
                     branch_id int NOT NULL,
                     customer_id int NOT NULL,
                     status int NOT NULL   

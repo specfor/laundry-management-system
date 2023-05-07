@@ -225,6 +225,9 @@ items - compulsory - array of [item-id: amount, item-id2: amount, ...]
 customer-id - optional
 total-price - optional - only if need to override generated price
 branch-id - optional - only if user is not someone asigned to a branch, if user is assigned to a branch then send branch-id will not be used.
+customer-comments - optional
+defects - optional
+return-date - optional
 
 POST - /api/v1/orders/update
 Parameters
@@ -233,6 +236,9 @@ customer-id - optional
 branch-id - optional
 items - optional -  array of [item-id: amount, item-id2: amount, ...]
 order-status - optional
+customer-comments - optional
+defects - optional
+return-date - optional
 
 POST - /api/v1/orders/delete
 Parameters
