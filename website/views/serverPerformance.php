@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Server Performance</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+</head>
+<body>
+
+<div class="container mt-5">
+    <div class="text-center">
+        <h2>Realtime Statistics</h2>
+    </div>
+    <div class="row ">
+        <div class="col-6">
+            <h3 class="text-center mb-5">CPU Usage</h3>
+            <div>
+                <canvas class="w-100 h-auto" id="cpuChart"></canvas>
+            </div>
+        </div>
+        <div class="col-6">
+            <h3 class="text-center mb-5">RAM Usage</h3>
+            <div class="chartWrapper">
+                <div class="chartAreaWrapper">
+                    <canvas class="w-100 h-auto" id="ramChart"></canvas>
+                </div>
+            </div>
+            <div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let ramLabels = []
+    let ramSecondCounter = 1;
+    for (ramSecondCounter; ramSecondCounter < 61; ramSecondCounter++) {
+        ramLabels.push(ramSecondCounter)
+    }
+    let ramChart = null
+    let cpuChart = null
+
+    window.addEventListener("load", function () {
+        setInterval(getRealtimeStats, 1000)
+
+        ramCanvas = document.getElementById('ramChart');
+        cpuCanvas = document.getElementById('cpuChart');
+
+        ramChart = new Chart(ramCanvas, {
+            type: 'line',
+            data: {
+                labels: ramLabels,
+                datasets: [{
+                    label: 'RAM Usage',
+                    data: [],
+                    fill: true,
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'MB'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Seconds'
+                        }
+                    }
+                },
+                animation: {
+                    duration: 0
+                }
+            }
+        });
+
+        cpuChart = new Chart(cpuCanvas, {
+            type: 'line',
+            data: {
+                labels: ramLabels,
+                datasets: [{
+                    label: 'CPU Usage',
+                    data: [],
+                    fill: true,
+                    borderColor: 'rgb(255, 112, 2)',
+                    tension: 0.1,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Percentage'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Seconds'
+                        }
+                    }
+                },
+                animation: {
+                    duration: 0
+                }
+            }
+        });
+
+    })
+
+    async function getRealtimeStats() {
+        let response = await getJsonResponse('http://laundry-api.localhost/api/v1/realtime-metrics')
+        let data = await response.json()
+
+        if (data.statusMessage === 'success') {
+            // Ram Usage
+            if (ramChart.data.datasets[0].data.length === 50) {
+                ramChart.data.datasets[0].data.shift()
+                if (ramSecondCounter > 60)
+                    ramSecondCounter = 1
+                ramChart.data.labels.shift()
+                ramChart.data.labels.push(ramSecondCounter)
+                ramSecondCounter++
+            }
+            let ram = Math.round(data.body['ram-usage']['raw'] / (1024 * 1024));
+            ramChart.data.datasets[0].data.push(ram)
+            ramChart.update()
+
+            //Cpu Usage
+            if (cpuChart.data.datasets[0].data.length === 50) {
+                cpuChart.data.datasets[0].data.shift()
+                if (ramSecondCounter > 60)
+                    ramSecondCounter = 1
+                cpuChart.data.labels.shift()
+                cpuChart.data.labels.push(ramSecondCounter)
+                ramSecondCounter++
+            }
+            let min5Usage = data.body['cpu-load']['5min'] * 100;
+            cpuChart.data.datasets[0].data.push(min5Usage)
+            cpuChart.update()
+        }
+    }
+
+    async function getJsonResponse(url) {
+        return await fetch(url, {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+            },
+            credentials: "same-origin"
+        })
+    }
+</script>
+</body>
+</html>

@@ -58,4 +58,7 @@ $app->router->addPostRoute('/api/v1/payments/add', [ApiControllerV1::class, 'add
 $app->router->addPostRoute('/api/v1/payments/update', [ApiControllerV1::class, 'updatePayment']);
 $app->router->addPostRoute('/api/v1/payments/delete', [ApiControllerV1::class, 'deletePayment']);
 
+// Super admin routes
+$app->router->addGetRoute('/api/v1/realtime-metrics', [ApiControllerV1::class, 'getRealtimePerformanceMetrics']);
+
 $app->run();

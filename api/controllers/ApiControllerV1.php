@@ -7,6 +7,7 @@ use LogicLeap\StockManagement\core\Application;
 use LogicLeap\StockManagement\core\MigrationManager;
 use LogicLeap\StockManagement\core\Request;
 use LogicLeap\StockManagement\core\SecureToken;
+use LogicLeap\StockManagement\core\TrafficMetrics;
 use LogicLeap\StockManagement\models\API;
 use LogicLeap\StockManagement\models\Authorization;
 use LogicLeap\StockManagement\models\Branches;
@@ -580,6 +581,19 @@ class ApiControllerV1 extends API
             self::sendError("Failed to delete the payment.");
     }
 
+
+    // Server Status Functions
+
+    public function getRealtimePerformanceMetrics(): void
+    {
+        self::checkPermissions(User::ROLE_SUPER_ADMINISTRATOR);
+
+        $ram = TrafficMetrics::getMemoryUsage();
+        $cpu = TrafficMetrics::getCpuUsage();
+
+        self::sendSuccess(['ram-usage' => $ram, 'cpu-load' => $cpu]);
+    }
+
     /**
      * Check whether requests are coming from authorized users. If not send "401" unauthorized error message.
      * @param int $requiredMinimumUserRole Minimum user role required to perform the action.
@@ -595,8 +609,13 @@ class ApiControllerV1 extends API
         }
 
         if (User::getUserRole(self::getUserId()) > $requiredMinimumUserRole) {
-            self::sendResponse(self::STATUS_CODE_FORBIDDEN, self::STATUS_MSG_FORBIDDEN,
-                ['message' => 'You are not authorized to perform this action.']);
+            if ($requiredMinimumUserRole == User::ROLE_SUPER_ADMINISTRATOR) {
+                self::sendResponse(self::STATUS_CODE_NOTFOUND, self::STATUS_MSG_NOTFOUND,
+                    ['message' => 'Api end-point not Found.']);
+            } else {
+                self::sendResponse(self::STATUS_CODE_FORBIDDEN, self::STATUS_MSG_FORBIDDEN,
+                    ['message' => 'You are not authorized to perform this action.']);
+            }
             exit();
         }
     }

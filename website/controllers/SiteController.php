@@ -136,6 +136,15 @@ class SiteController
         return $header;
     }
 
+    // Server Status Functions
+
+    public function getRealtimePerformanceMetrics(): void
+    {
+        $this->checkPermission(self::ROLE_SUPER_ADMINISTRATOR);
+
+        TailwindUiRenderer::loadPage('serverPerformance');
+    }
+
     private function checkPermission(int $minimumPermittedUserRole): void
     {
         if (!isset($_COOKIE['auth-token']))
@@ -144,7 +153,11 @@ class SiteController
         $this->userRole = Authorization::getUserRole($_COOKIE['auth-token']);
 
         if ($this->userRole > $minimumPermittedUserRole) {
-            $this->errorHandler(403, 'You are not allowed.');
+            if ($minimumPermittedUserRole == self::ROLE_SUPER_ADMINISTRATOR) {
+                $this->errorHandler(404, 'Page Not Found.');
+            } else {
+                $this->errorHandler(403, 'You are not allowed.');
+            }
         }
     }
 

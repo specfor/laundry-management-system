@@ -10,7 +10,7 @@ use PDO;
 class MigrationManager
 {
     private PDO $pdo;
-    private const TOKEN_EXPIRE_TIME = 28800; // In seconds.
+    private const TOKEN_EXPIRE_TIME = 43200; // In seconds.
 
     private static bool $removeMaintenanceModeOnCompletion;
     private static string $migrationFolderPath;

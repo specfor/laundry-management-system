@@ -36,4 +36,7 @@ $app->router->addGetRoute('/customers', [SiteController::class, 'getCustomers'])
 $app->router->addGetRoute('/orders/new-order', [SiteController::class, 'newOrder']);
 $app->router->addGetRoute('/orders/new-order/payment', [SiteController::class, 'finalizeOrder']);
 
+// Super Admin Routes
+$app->router->addGetRoute('/server-performance', [SiteController::class, 'getRealtimePerformanceMetrics']);
+
 $app->run();
