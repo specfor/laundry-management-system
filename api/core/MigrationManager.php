@@ -9,7 +9,7 @@ use PDO;
 
 class MigrationManager
 {
-    private PDO $pdo;
+    private static PDO $pdo;
     private const TOKEN_EXPIRE_TIME = 43200; // In seconds.
 
     private static bool $removeMaintenanceModeOnCompletion;
@@ -20,24 +20,20 @@ class MigrationManager
      */
     private static string $maintenanceModeFilePath;
 
-    private array $migrations = [];
-
-    public function __construct(bool $removeMaintenanceModeOnCompletion = false, bool $putToMaintenanceMode = true)
+    public function __construct(bool $removeMaintenanceModeOnCompletion = false)
     {
-        $this->pdo = Application::$app->db->pdo;
-
-        // Removes migration lock file so other requests will not run this again.
-        $migrationModeFilePath = Application::$ROOT_DIR . "/migrationLock.lock";
-        unlink($migrationModeFilePath);
-
-        self::$removeMaintenanceModeOnCompletion = $removeMaintenanceModeOnCompletion;
+        self::$pdo = Application::$app->db->pdo;
         self::$maintenanceModeFilePath = Application::$ROOT_DIR . "/maintenanceLock.lock";
         self::$migrationFolderPath = Application::$ROOT_DIR . "/migrations";
 
-        if ($putToMaintenanceMode)
-            $this->addMaintenanceMode();
+        // Removes migration lock file so other requests will not run this again.
+        $migrationModeFilePath = Application::$ROOT_DIR . "/migrationLock.lock";
+        if (is_file($migrationModeFilePath)) {
+            unlink($migrationModeFilePath);
+            self::addMaintenanceMode();
+        }
 
-        $this->migrations = $this->loadAvailableMigrations();
+        self::$removeMaintenanceModeOnCompletion = $removeMaintenanceModeOnCompletion;
     }
 
     private function markCompletedMigration(string $migrationName, bool $success): void
@@ -45,7 +41,7 @@ class MigrationManager
         $time = new DateTime("now");
         $time = $time->format("Y-m-d H:i:s");
         $sql = "INSERT INTO migrations (migration_name, time, status) VALUES (?, '$time', '$success')";
-        $statement = $this->pdo->prepare($sql);
+        $statement = self::$pdo->prepare($sql);
         $statement->bindValue(1, $migrationName);
         $statement->execute();
     }
@@ -74,22 +70,37 @@ class MigrationManager
             $sql .= " WHERE $condition";
         $sql .= " ORDER BY id desc LIMIT $startingIndex, $limit";
 
-        $statement = $this->pdo->prepare($sql);
+        $statement = self::$pdo->prepare($sql);
         if ($placeholders) {
             foreach ($placeholders as $key => $value) {
                 $statement->bindValue($key, $value);
             }
         }
         $statement->execute();
-        return $statement->fetchAll(PDO::FETCH_ASSOC);
+        $data = $statement->fetchAll(PDO::FETCH_ASSOC);
+        for ($i = 0; $i < count($data); $i++) {
+            $data[$i]['status'] = boolval($data[$i]['status']);
+        }
+        return $data;
     }
 
-    public function startMigration(): void
+    public function startMigration(string $migrationNameToRun = null, bool $force = false): bool|string
     {
-        foreach ($this->migrations as $migration) {
+        $migrations = $this->getAvailableMigrations();
+
+        if ($migrationNameToRun) {
+            if (!array_search($migrationNameToRun . ".php", $migrations))
+                return "No migration named '$migrationNameToRun' was found.";
+        }
+        foreach ($migrations as $migration) {
             $migrationName = explode(".", $migration)[0];
-            if ($this->isAppliedMigration($migrationName))
-                continue;
+            if (!$force)
+                if ($this->isAppliedMigration($migrationName))
+                    if ($migrationNameToRun)
+                        return "Migration has already done.";
+                    else
+                        continue;
+
             require_once Application::$ROOT_DIR . "/migrations/" . $migration;
             $mig = new $migrationName;
             if ($mig->up()) {
@@ -98,9 +109,10 @@ class MigrationManager
                 if ($mig->isReversible())
                     $mig->down();
                 $this->markCompletedMigration($migrationName, false);
-                break;
+                return false;
             }
         }
+        return true;
     }
 
     public function getMigrationAuthToken(): string
@@ -112,8 +124,8 @@ class MigrationManager
         $expTime = $now->add(DateInterval::createFromDateString(self::TOKEN_EXPIRE_TIME . ' seconds'));
         $expTime = $expTime->format('Y-m-d H:i:s');
 
-        $sql = "INSERT INTO migration_tokens (token, time, exp_time) VALUES ($token, $time, $expTime)";
-        if ($this->pdo->exec($sql))
+        $sql = "INSERT INTO migration_tokens (token, time, exp_time) VALUES ('$token', '$time', '$expTime')";
+        if (self::$pdo->exec($sql))
             return $token;
         else
             return "Failed to save token.";
@@ -122,7 +134,7 @@ class MigrationManager
     public function validateMigrationAuthToken(string $token): bool
     {
         $sql = "SELECT time FROM migration_tokens WHERE token=:token AND blocked=false";
-        $statement = $this->pdo->prepare($sql);
+        $statement = self::$pdo->prepare($sql);
         $statement->bindValue(":token", $token);
         $statement->execute();
         $data = $statement->fetch(PDO::FETCH_ASSOC);
@@ -137,48 +149,59 @@ class MigrationManager
         return false;
     }
 
-    public function blockMigrationAuthToken(string $token): bool
+    public function blockMigrationAuthToken(string $token): bool|string
     {
+        $sql = "SELECT id FROM migration_tokens WHERE token=:token";
+        $statement = self::$pdo->prepare($sql);
+        $statement->bindValue(":token", $token);
+        $statement->execute();
+        if (empty($statement->fetch(PDO::FETCH_ASSOC)))
+            return "Invalid token.";
+
         $sql = "UPDATE migration_tokens SET blocked=true WHERE token=:token";
-        $statement = $this->pdo->prepare($sql);
+        $statement = self::$pdo->prepare($sql);
         $statement->bindValue(":token", $token);
         if ($statement->execute())
             return true;
         return false;
     }
 
-    public function removeMaintenanceMode(): void
+
+    public function addMaintenanceMode($enable = true): void
     {
-        unlink(self::$maintenanceModeFilePath);
+        if ($enable) {
+            $f = fopen(self::$maintenanceModeFilePath, 'w');
+            fclose($f);
+        } else {
+            if (self::isInMaintenanceMode())
+                unlink(self::$maintenanceModeFilePath);
+        }
     }
 
-    public function addMaintenanceMode(): void
+    public function isInMaintenanceMode(): bool
     {
-        $f = fopen(self::$maintenanceModeFilePath, 'w');
-        fclose($f);
+        return file_exists(self::$maintenanceModeFilePath);
     }
 
-    public function loadAvailableMigrations(): array
+    public function getAvailableMigrations(bool $namesWithoutDotPHP = false): array
     {
-
         $migrations = scandir(self::$migrationFolderPath);
 
         for ($i = 0; $i < count($migrations); $i++) {
             if (is_dir(self::$migrationFolderPath . "/" . $migrations[$i])) {
                 unset($migrations[$i]);
+                continue;
             }
+            if ($namesWithoutDotPHP)
+                $migrations[$i] = explode(".php", $migrations[$i])[0];
         }
-        // Removing '.' and '..' from file array
-//        unset($migrations[0]);
-//        unset($migrations[1]);
-
-        return $migrations;
+        return array_values($migrations);
     }
 
     private function isAppliedMigration(string $migrationName): bool
     {
         $sql = "SELECT id FROM migrations WHERE migration_name=? AND status=1";
-        $statement = $this->pdo->prepare($sql);
+        $statement = self::$pdo->prepare($sql);
         $statement->bindValue(1, $migrationName);
         try {
             $statement->execute();
