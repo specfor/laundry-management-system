@@ -44,8 +44,11 @@
 <script>
     let ramLabels = []
     let ramSecondCounter = 1;
-    for (ramSecondCounter; ramSecondCounter < 61; ramSecondCounter++) {
-        ramLabels.push(ramSecondCounter)
+    for (let i = 0; i < 5; i++) {
+        ramSecondCounter = 1
+        for (ramSecondCounter; ramSecondCounter < 61; ramSecondCounter++) {
+            ramLabels.push(ramSecondCounter)
+        }
     }
     let ramChart = null
     let cpuChart = null
@@ -132,7 +135,7 @@
 
         if (data.statusMessage === 'success') {
             // Ram Usage
-            if (ramChart.data.datasets[0].data.length === 50) {
+            if (ramChart.data.datasets[0].data.length === 270) {
                 ramChart.data.datasets[0].data.shift()
                 if (ramSecondCounter > 60)
                     ramSecondCounter = 1
@@ -145,7 +148,7 @@
             ramChart.update()
 
             //Cpu Usage
-            if (cpuChart.data.datasets[0].data.length === 50) {
+            if (cpuChart.data.datasets[0].data.length === 270) {
                 cpuChart.data.datasets[0].data.shift()
                 if (ramSecondCounter > 60)
                     ramSecondCounter = 1
