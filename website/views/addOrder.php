@@ -47,15 +47,6 @@
                                 </div>
                             </div>
                             <div class="input-group mb-3">
-                                <span class="input-group-text" id="basic-addon2">Urgency</span>
-                                <select class="form-select" aria-label="Select Company" id="priorityId">
-                                    <option>Urgent</option>
-                                    <option>None</option>
-
-                                </select>
-                            </div>
-
-                            <div class="input-group mb-3">
                                 <span class="input-group-text" id="basic-addon3">Action</span>
                                 <div class="ms-4" id="actionsAll">
 
@@ -144,7 +135,6 @@
             <thead>
                 <td>Item</td>
                 <td>Quantity</td>
-                <td>Priority</td>
                 <td>Action</td>
                 <td>Defects</td>
                 <td>Delivery Due Date</td>
