@@ -5,10 +5,15 @@ let eachOrderReq = []
 
 window.addEventListener("load",function(){
     document.getElementById("btnAddItem").addEventListener("click",makingSendReq)
+    document.getElementById("paymentProceed").addEventListener("click",paymentPage)
 
     loadAllItems()
     getAllActions()
 })
+
+function paymentPage(){
+    
+}
 
 async function loadAllItems(){
     let duplicateArray = []
@@ -159,3 +164,5 @@ async function sendJsonRequest(url, jsonBody) {
         credentials: "same-origin"
     })
   }
+
+  
