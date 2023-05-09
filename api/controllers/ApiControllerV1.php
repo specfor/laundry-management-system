@@ -674,6 +674,20 @@ class ApiControllerV1 extends API
             self::sendError($status);
     }
 
+    public function validateMigrationToken():void
+    {
+        self::checkPermissions(User::ROLE_SUPER_ADMINISTRATOR);
+
+        $token = self::getParameter('token', isCompulsory: true);
+
+        if((new MigrationManager())->validateMigrationAuthToken($token))
+            self::sendSuccess('Token is valid.');
+        else{
+            self::sendError('Token is expired.');
+        }
+    }
+
+
     /**
      * Check whether requests are coming from authorized users. If not send "401" unauthorized error message.
      * @param int $requiredMinimumUserRole Minimum user role required to perform the action.

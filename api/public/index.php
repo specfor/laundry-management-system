@@ -67,5 +67,6 @@ $app->router->addGetRoute('/api/v1/server-manager/migrations/applied', [ApiContr
 $app->router->addPostRoute('/api/v1/server-manager/migrations/run', [ApiControllerV1::class, 'attemptMigration']);
 $app->router->addGetRoute('/api/v1/server-manager/migration-token', [ApiControllerV1::class, 'getMigrationToken']);
 $app->router->addPostRoute('/api/v1/server-manager/migration-token/block', [ApiControllerV1::class, 'blockMigrationToken']);
+$app->router->addPostRoute('/api/v1/server-manager/migration-token/validate', [ApiControllerV1::class, 'validateMigrationToken']);
 
 $app->run();

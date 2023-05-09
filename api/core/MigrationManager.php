@@ -92,8 +92,14 @@ class MigrationManager
             if (!array_search($migrationNameToRun . ".php", $migrations))
                 return "No migration named '$migrationNameToRun' was found.";
         }
+        $ran = false;
         foreach ($migrations as $migration) {
+            if ($ran)
+                break;
             $migrationName = explode(".", $migration)[0];
+            if ($migrationNameToRun)
+                if ($migrationNameToRun != $migrationName)
+                    continue;
             if (!$force)
                 if ($this->isAppliedMigration($migrationName))
                     if ($migrationNameToRun)
@@ -111,6 +117,7 @@ class MigrationManager
                 $this->markCompletedMigration($migrationName, false);
                 return false;
             }
+            $ran = true;
         }
         return true;
     }
@@ -133,7 +140,7 @@ class MigrationManager
 
     public function validateMigrationAuthToken(string $token): bool
     {
-        $sql = "SELECT time FROM migration_tokens WHERE token=:token AND blocked=false";
+        $sql = "SELECT time, exp_time FROM migration_tokens WHERE token=:token AND blocked=false";
         $statement = self::$pdo->prepare($sql);
         $statement->bindValue(":token", $token);
         $statement->execute();
@@ -190,12 +197,15 @@ class MigrationManager
         for ($i = 0; $i < count($migrations); $i++) {
             if (is_dir(self::$migrationFolderPath . "/" . $migrations[$i])) {
                 unset($migrations[$i]);
-                continue;
             }
+        }
+        $migrations = array_values($migrations);
+
+        for ($i = 0; $i < count($migrations); $i++) {
             if ($namesWithoutDotPHP)
                 $migrations[$i] = explode(".php", $migrations[$i])[0];
         }
-        return array_values($migrations);
+        return $migrations;
     }
 
     private function isAppliedMigration(string $migrationName): bool
