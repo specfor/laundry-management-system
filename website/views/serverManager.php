@@ -147,9 +147,9 @@
             let i = 1
             for (const migration of data.body['available-migrations']) {
                 availableMigrationsTable.innerHTML +=
-                    '<tr><th scope="row">' + i + '</th><td>' + migration + '</td><td>' + '<button class="btn btn-primary fw-bold"' +
+                    '<tr><th scope="row">' + i + '</th><td>' + migration + '</td><td>' + '<button class="btn btn-primary btn-sm fw-bold"' +
                     'name="' + migration + '" onclick="callRunMigration(event)">' +
-                    'RUN</button>' + '<button class="btn btn-danger fw-bold ms-3" name="' + migration +
+                    'RUN</button>' + '<button class="btn btn-danger btn-sm fw-bold ms-3" name="' + migration +
                     '" onclick="callRunMigration(event, true)">FORCE RUN</button>'
                 i++
             }
