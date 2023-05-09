@@ -60,5 +60,13 @@ $app->router->addPostRoute('/api/v1/payments/delete', [ApiControllerV1::class, '
 
 // Super admin routes
 $app->router->addGetRoute('/api/v1/realtime-metrics', [ApiControllerV1::class, 'getRealtimePerformanceMetrics']);
+$app->router->addGetRoute('/api/v1/server-manager/maintenanceMode', [ApiControllerV1::class, 'getMaintenanceStatus']);
+$app->router->addPostRoute('/api/v1/server-manager/maintenanceMode', [ApiControllerV1::class, 'setMaintenanceStatus']);
+$app->router->addGetRoute('/api/v1/server-manager/migrations', [ApiControllerV1::class, 'getMigrations']);
+$app->router->addGetRoute('/api/v1/server-manager/migrations/applied', [ApiControllerV1::class, 'getAppliedMigrations']);
+$app->router->addPostRoute('/api/v1/server-manager/migrations/run', [ApiControllerV1::class, 'attemptMigration']);
+$app->router->addGetRoute('/api/v1/server-manager/migration-token', [ApiControllerV1::class, 'getMigrationToken']);
+$app->router->addPostRoute('/api/v1/server-manager/migration-token/block', [ApiControllerV1::class, 'blockMigrationToken']);
+$app->router->addPostRoute('/api/v1/server-manager/migration-token/validate', [ApiControllerV1::class, 'validateMigrationToken']);
 
 $app->run();

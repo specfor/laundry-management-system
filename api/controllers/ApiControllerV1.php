@@ -594,6 +594,100 @@ class ApiControllerV1 extends API
         self::sendSuccess(['ram-usage' => $ram, 'cpu-load' => $cpu]);
     }
 
+    public function getMaintenanceStatus(): void
+    {
+        self::checkPermissions(User::ROLE_SUPER_ADMINISTRATOR);
+
+        self::sendSuccess(['maintenance-mode' => (new MigrationManager())->isInMaintenanceMode()]);
+    }
+
+    public function setMaintenanceStatus(): void
+    {
+        self::checkPermissions(User::ROLE_SUPER_ADMINISTRATOR);
+
+        $enable = self::getParameter('enable', dataType: 'bool', isCompulsory: true);
+
+        (new MigrationManager())->addMaintenanceMode($enable);
+        if ($enable)
+            self::sendSuccess("Maintenance mode enabled.");
+        else
+            self::sendSuccess('Maintenance mode disabled.');
+    }
+
+    public function getMigrations(): void
+    {
+        self::checkPermissions(User::ROLE_SUPER_ADMINISTRATOR);
+
+        $migrations = (new MigrationManager())->getAvailableMigrations(true);
+        self::sendSuccess(['available-migrations' => $migrations]);
+    }
+
+    public function getAppliedMigrations(): void
+    {
+        self::checkPermissions(User::ROLE_SUPER_ADMINISTRATOR);
+
+        $pageNumber = self::getParameter('page-num', defaultValue: 0, dataType: 'int');
+        $migrationName = self::getParameter('migration-name');
+        $appliedTime = self::getParameter('applied-time');
+        $status = self::getParameter('status', dataType: 'bool');
+
+        self::sendSuccess(['applied-migrations' => (new MigrationManager())
+            ->getCompletedMigrations($pageNumber, $migrationName, $appliedTime, $status)]);
+    }
+
+    public function attemptMigration(): void
+    {
+        self::checkPermissions(User::ROLE_SUPER_ADMINISTRATOR);
+
+        $migrationName = self::getParameter('migration-name', isCompulsory: true);
+        $force = self::getParameter('force-run', defaultValue: false, dataType: 'bool');
+
+        $manager = new MigrationManager();
+        $status = $manager->startMigration($migrationName, $force);
+        if ($status === true)
+            self::sendSuccess("Successfully ran the migration.");
+        elseif ($status === false)
+            self::sendError("Failed to run the migration.");
+        else
+            self::sendError($status);
+    }
+
+    public function getMigrationToken(): void
+    {
+        self::checkPermissions(User::ROLE_SUPER_ADMINISTRATOR);
+
+        self::sendSuccess(['token' => (new MigrationManager())->getMigrationAuthToken()]);
+    }
+
+    public function blockMigrationToken(): void
+    {
+        self::checkPermissions(User::ROLE_SUPER_ADMINISTRATOR);
+
+        $token = self::getParameter('token', isCompulsory: true);
+
+        $status = (new MigrationManager())->blockMigrationAuthToken($token);
+        if ($status === true)
+            self::sendSuccess('Successfully blocked the token.');
+        elseif ($status === false)
+            self::sendError('Failed to block the token');
+        else
+            self::sendError($status);
+    }
+
+    public function validateMigrationToken():void
+    {
+        self::checkPermissions(User::ROLE_SUPER_ADMINISTRATOR);
+
+        $token = self::getParameter('token', isCompulsory: true);
+
+        if((new MigrationManager())->validateMigrationAuthToken($token))
+            self::sendSuccess('Token is valid.');
+        else{
+            self::sendError('Token is expired.');
+        }
+    }
+
+
     /**
      * Check whether requests are coming from authorized users. If not send "401" unauthorized error message.
      * @param int $requiredMinimumUserRole Minimum user role required to perform the action.
@@ -647,9 +741,8 @@ class ApiControllerV1 extends API
 
     private static function isSiteMigrator(): bool
     {
-        if (isset($_SERVER['X-Administrator-Token'])) {
-            $migrationManager = new MigrationManager();
-            if ($migrationManager->validateMigrationAuthToken($_SERVER['X-Administrator-Token']))
+        if (isset($_SERVER['HTTP_X_ADMINISTRATOR_TOKEN'])) {
+            if ((new MigrationManager())->validateMigrationAuthToken($_SERVER['HTTP_X_ADMINISTRATOR_TOKEN']))
                 return true;
         }
         return false;

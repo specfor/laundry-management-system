@@ -15,8 +15,7 @@
             integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
             crossorigin="anonymous"></script>
 </head>
-<body>
-
+<body class="bg-dark h-100 text-white">
 <div class="container mt-5">
     <div class="text-center">
         <h2>Realtime Statistics</h2>
