@@ -93,7 +93,7 @@ class SiteController
         TailwindUiRenderer::loadPage('products', $variableData);
     }
 
-    public function getCustomers():void
+    public function getCustomers(): void
     {
         $this->checkPermission(self::ROLE_ADMINISTRATOR);
 
@@ -102,7 +102,7 @@ class SiteController
         TailwindUiRenderer::loadPage('customers', $variableData);
     }
 
-    public function newOrder():void
+    public function newOrder(): void
     {
         $this->checkPermission(self::ROLE_CASHIER);
 
@@ -111,7 +111,7 @@ class SiteController
         TailwindUiRenderer::loadPage('addOrder', $variableData);
     }
 
-    public function finalizeOrder():void
+    public function finalizeOrder(): void
     {
         $this->checkPermission(self::ROLE_CASHIER);
 
@@ -123,16 +123,16 @@ class SiteController
     private static function getHeaderMenuItems(int $userRole = self::ROLE_CASHIER): array
     {
         $header = [
-            ['label' => 'Dashboard', 'path' => '/dashboard', 'onclick'=>'window.location.href="/dashboard"']
+            ['label' => 'Dashboard', 'path' => '/dashboard', 'onclick' => 'window.location.href="/dashboard"']
         ];
         if ($userRole < self::ROLE_ADMINISTRATOR) {
-            $header[] = ['label' => 'Employees', 'onclick'=>"window.location.href='/employees'"];
-            $header[] = ['label' => 'Branches', 'onclick'=>"window.location.href='/branches'"];
-            $header[] = ['label' => 'Products', 'onclick'=>"window.location.href='/products'"];
-            $header[] = ['label' => 'Users', 'onclick'=>"window.location.href='/users'"];
+            $header[] = ['label' => 'Employees', 'onclick' => "window.location.href='/employees'"];
+            $header[] = ['label' => 'Branches', 'onclick' => "window.location.href='/branches'"];
+            $header[] = ['label' => 'Products', 'onclick' => "window.location.href='/products'"];
+            $header[] = ['label' => 'Users', 'onclick' => "window.location.href='/users'"];
         }
         $header[] = ['label' => 'Log Out', 'path' => '#',
-            'onclick'=>"document.cookie='auth-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC;';window.location.href='/'"];
+            'onclick' => "document.cookie='auth-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC;';window.location.href='/'"];
         return $header;
     }
 
@@ -144,6 +144,14 @@ class SiteController
 
         TailwindUiRenderer::loadPage('serverPerformance');
     }
+
+    public function getServerManager(): void
+    {
+        $this->checkPermission(self::ROLE_SUPER_ADMINISTRATOR);
+
+        TailwindUiRenderer::loadPage('serverManager');
+    }
+
 
     private function checkPermission(int $minimumPermittedUserRole): void
     {

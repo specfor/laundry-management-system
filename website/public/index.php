@@ -38,5 +38,6 @@ $app->router->addGetRoute('/orders/new-order/payment', [SiteController::class, '
 
 // Super Admin Routes
 $app->router->addGetRoute('/server-performance', [SiteController::class, 'getRealtimePerformanceMetrics']);
+$app->router->addGetRoute('/server-manager', [SiteController::class, 'getServerManager']);
 
 $app->run();
