@@ -727,8 +727,8 @@ class ApiControllerV1 extends API
 
     private static function isSiteMigrator(): bool
     {
-        if (isset($_SERVER['X-Administrator-Token'])) {
-            if ((new MigrationManager())->validateMigrationAuthToken($_SERVER['X-Administrator-Token']))
+        if (isset($_SERVER['HTTP_X_ADMINISTRATOR_TOKEN'])) {
+            if ((new MigrationManager())->validateMigrationAuthToken($_SERVER['HTTP_X_ADMINISTRATOR_TOKEN']))
                 return true;
         }
         return false;
