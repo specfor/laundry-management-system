@@ -127,7 +127,7 @@
 </div>
 
 
-    <div class="container-fluid position-relative">
+    <div class="container-fluid position-relative d-none">
         <h1 class="h1 text-white ms-4 mt-4">Add New Order</h1>
         <button class="btn btn-dark mt-2 ms-5" data-bs-toggle="modal"
               data-bs-target="#addNewItem">+</button>
@@ -143,8 +143,14 @@
 
             </tbody>
         </table>
-        <button class="btn btn-danger mt-4 position-absolute end-0 me-4">Proceed to Payment</button>
+        <button class="btn btn-danger mt-4 position-absolute end-0 me-4" id="paymentProceed">Proceed to Payment</button>
 
 
+    </div>
+
+    <div class="container-fluid">
+        <div class="container mt-5 mb-5 ms-5 mx-5 bg-light" style="border-radius:1.2rem;">
+            <h1 class="h1">This is a header</h1>
+        </div>
     </div>
 </body>
