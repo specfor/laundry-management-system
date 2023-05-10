@@ -74,9 +74,11 @@
             options: {
                 scales: {
                     y: {
+                        max: 100,
+                        min: 0,
                         title: {
                             display: true,
-                            text: 'MB'
+                            text: 'Percentage'
                         }
                     },
                     x: {
@@ -108,6 +110,8 @@
             options: {
                 scales: {
                     y: {
+                        max: 100,
+                        min: 0,
                         title: {
                             display: true,
                             text: 'Percentage'
@@ -142,7 +146,7 @@
                 ramChart.data.labels.push(ramSecondCounter)
                 ramSecondCounter++
             }
-            let ram = Math.round(data.body['ram-usage']['raw'] / (1024 * 1024));
+            let ram = data.body['ram-usage']['percentage'];
             ramChart.data.datasets[0].data.push(ram)
             ramChart.update()
 
@@ -155,8 +159,8 @@
                 cpuChart.data.labels.push(ramSecondCounter)
                 ramSecondCounter++
             }
-            let min5Usage = data.body['cpu-load']['5min'] * 100;
-            cpuChart.data.datasets[0].data.push(min5Usage)
+            let min1Usage = data.body['cpu-load']['1min'];
+            cpuChart.data.datasets[0].data.push(min1Usage)
             cpuChart.update()
         }
     }

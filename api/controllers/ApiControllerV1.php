@@ -7,7 +7,7 @@ use LogicLeap\StockManagement\core\Application;
 use LogicLeap\StockManagement\core\MigrationManager;
 use LogicLeap\StockManagement\core\Request;
 use LogicLeap\StockManagement\core\SecureToken;
-use LogicLeap\StockManagement\core\TrafficMetrics;
+use LogicLeap\StockManagement\core\ServerMetrics;
 use LogicLeap\StockManagement\models\API;
 use LogicLeap\StockManagement\models\Authorization;
 use LogicLeap\StockManagement\models\Branches;
@@ -17,7 +17,6 @@ use LogicLeap\StockManagement\models\Items;
 use LogicLeap\StockManagement\models\Orders;
 use LogicLeap\StockManagement\models\Payments;
 use LogicLeap\StockManagement\models\PriceCategories;
-use LogicLeap\StockManagement\models\test;
 use LogicLeap\StockManagement\models\User;
 
 class ApiControllerV1 extends API
@@ -587,8 +586,8 @@ class ApiControllerV1 extends API
     {
         self::checkPermissions(User::ROLE_SUPER_ADMINISTRATOR);
 
-        $ram = TrafficMetrics::getMemoryUsage();
-        $cpu = TrafficMetrics::getCpuUsage();
+        $ram = ServerMetrics::getMemoryUsage();
+        $cpu = ServerMetrics::getCpuUsage();
 
         self::sendSuccess(['ram-usage' => $ram, 'cpu-load' => $cpu]);
     }
