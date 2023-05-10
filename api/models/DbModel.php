@@ -13,8 +13,10 @@ abstract class DbModel
      * @param string $sql SQL statement to prepare
      * @return false|PDOStatement PDOStatement if success, PDOException or false if any error occurred.
      */
-    protected static function prepare(string $sql)
+    protected static function prepare(string $sql, bool $beginTransaction = false)
     {
+        if ($beginTransaction)
+            Application::$app->db->pdo->beginTransaction();
         return Application::$app->db->pdo->prepare($sql);
     }
 
@@ -32,10 +34,10 @@ abstract class DbModel
      *      to use prepared statements.
      * @param array $placeholderValues If passed a condition with placeholders, associative array of [placeholder => value]
      *      need to be passed.
-     * @return bool True if success in inserting to table.False if any error.
+     * @return bool|int Last_insert_id if success in inserting to table.False if any error.
      */
     protected static function insertIntoTable(string $tableName, array $params,
-                                              string $condition = '', array $placeholderValues = []): bool
+                                              string $condition = '', array $placeholderValues = []): bool|int
     {
         // Check whether all the keys passed here are real column names as user passed request data is passed to this.
         $attributes = [];
@@ -51,7 +53,7 @@ abstract class DbModel
         if ($condition) {
             $sql .= " WHERE $condition";
         }
-        $statement = self::prepare($sql);
+        $statement = self::prepare($sql, true);
         if (!empty($placeholderValues)) {
             foreach ($placeholderValues as $placeholder => $value) {
                 $statement->bindValue($placeholder, $value);
@@ -60,7 +62,14 @@ abstract class DbModel
         for ($i = 0; $i < count($placeholders); $i++) {
             $statement->bindValue($placeholders[$i], $values[$i]);
         }
-        return $statement->execute();
+        if ($statement->execute() === false) {
+            Application::$app->db->pdo->rollBack();
+            return false;
+        } else {
+            $lastInsertId = Application::$app->db->pdo->lastInsertId();
+            Application::$app->db->pdo->commit();
+            return $lastInsertId;
+        }
     }
 
     /**
@@ -120,7 +129,7 @@ abstract class DbModel
             $sql .= " WHERE $condition";
         }
 
-        $statement = self::prepare($sql);
+        $statement = self::prepare($sql, true);
         foreach ($data as $key => $value) {
             $statement->bindValue(":$key", $value);
         }
@@ -129,6 +138,12 @@ abstract class DbModel
                 $statement->bindValue($placeholder, $value);
             }
         }
-        return $statement->execute();
+        if ($statement->execute() === false) {
+            Application::$app->db->pdo->rollBack();
+            return false;
+        } else {
+            Application::$app->db->pdo->commit();
+            return true;
+        }
     }
 }

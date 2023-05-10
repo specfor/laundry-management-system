@@ -7,7 +7,7 @@ use PDO;
 class Branches extends DbModel
 {
     public static function addNewBranch(string $name, string $address = null, int $managerId = null,
-                                        string $phoneNumber = null): bool
+                                        string $phoneNumber = null): bool|array
     {
         $params['name'] = $name;
         if ($address)
@@ -18,7 +18,11 @@ class Branches extends DbModel
             $params['phone_num'] = $phoneNumber;
         $params['blocked'] = false;
 
-        return self::insertIntoTable('branches', $params);
+        $id = self::insertIntoTable('branches', $params);
+        if ($id === false)
+            return false;
+        else
+            return ['branch_id' => $id];
     }
 
     public static function getBranches(int $pageNumber = 0, int $branchId =null ,string $name = null, string $address = null,

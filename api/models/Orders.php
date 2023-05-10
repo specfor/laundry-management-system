@@ -19,7 +19,7 @@ class Orders extends DbModel
 
     public static function addNewOrder(array  $items, int $customerId, float $totalPrice = null, int $branchId = null,
                                        string $defects = null, string $returnDate = null, string $comments = null,
-                                       string $orderStatus = "order added"): bool|string
+                                       string $orderStatus = "order added"): bool|string|array
     {
         if (empty(Customers::getCustomers($customerId)))
             return "Invalid customer-id";
@@ -81,7 +81,11 @@ class Orders extends DbModel
         if ($comments)
             $params['comments'] = $comments;
 
-        return self::insertIntoTable('orders', $params);
+        $id = self::insertIntoTable('orders', $params);
+        if ($id === false)
+            return false;
+        else
+            return ['order_id' => $id];
     }
 
     public static function getOrders(int $pageNumber = 0, int $orderId = null, string $addedDate = null,

@@ -10,17 +10,23 @@ class Customers extends DbModel
     private const TABLE_NAME = 'customers';
 
     public static function addNewCustomer(string $name, string $email = null, string $phoneNumber = null,
-                                          string $address = null, int $branchID = null): bool
+                                          string $address = null, int $branchID = null): bool|array
     {
         $today = (new DateTime('now'))->format('Y-m-d');
-        $sql = "INSERT INTO " . self::TABLE_NAME . " (email, name, phone_num, address, branch_id, joined_date, banned) VALUES 
-                (?, ?, ?, ?, $branchID, '$today', false)";
-        $statement = self::prepare($sql);
-        $statement->bindValue(1, $email);
-        $statement->bindValue(2, $name);
-        $statement->bindValue(3, $phoneNumber);
-        $statement->bindValue(4, $address);
-        return $statement->execute();
+        $params = [];
+        $params['name'] = $name;
+        $params['email'] = $email;
+        $params['phone_num'] = $phoneNumber;
+        $params['address'] = $address;
+        $params['branch_id'] = $branchID;
+        $params['joined_date'] = $today;
+        $params['banned'] = false;
+
+        $id = self::insertIntoTable(self::TABLE_NAME, $params);
+        if ($id === false)
+            return false;
+        else
+            return ['customer_id' => $id];
     }
 
     public static function getCustomers(int    $customerId = null, int $branchId = 0, string $email = null,

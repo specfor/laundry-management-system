@@ -61,7 +61,7 @@ class User extends DbModel
     private const MAX_USERNAME_LENGTH = 30;
 
     public static function createNewUser(string $username, string $password, string $role, string $email = null,
-                                         string $firstname = null, string $lastname = null, int $branchId = null): string
+                                         string $firstname = null, string $lastname = null, int $branchId = null): array|string
     {
         // Performing checks on input variables.
 
@@ -80,19 +80,19 @@ class User extends DbModel
         }
 
         if (strlen($password) < self::MIN_PASSWORD_LENGTH) {
-            return 'Password should be at least '.self::MIN_PASSWORD_LENGTH.' characters long.';
+            return 'Password should be at least ' . self::MIN_PASSWORD_LENGTH . ' characters long.';
         }
 
         if (strlen($password) > self::MAX_PASSWORD_LENGTH) {
-            return 'Password should not be longer than '.self::MAX_PASSWORD_LENGTH.' characters.';
+            return 'Password should not be longer than ' . self::MAX_PASSWORD_LENGTH . ' characters.';
         }
 
         if (strlen($username) < self::MIN_USERNAME_LENGTH) {
-            return 'Username should be at least '.self::MIN_USERNAME_LENGTH.' characters long.';
+            return 'Username should be at least ' . self::MIN_USERNAME_LENGTH . ' characters long.';
         }
 
         if (strlen($username) > self::MAX_USERNAME_LENGTH) {
-            return 'Password should not be longer than '.self::MAX_USERNAME_LENGTH.' characters.';
+            return 'Password should not be longer than ' . self::MAX_USERNAME_LENGTH . ' characters.';
         }
 
         $usernameRegEx = '/^[A-Za-z][A-Za-z0-9_]{5,29}$/';
@@ -125,10 +125,11 @@ class User extends DbModel
         if ($branchId)
             $params['branch_id'] = $branchId;
 
-        if (self::insertIntoTable(self::TABLE_NAME, $params)) {
-            return 'New user created successfully.';
+        $id = self::insertIntoTable(self::TABLE_NAME, $params);
+        if ($id === false) {
+            return 'Failed to create new user.';
         }
-        return 'Failed to create new user.';
+        return ['message' => 'New user created successfully.', 'user-id' => $id];
     }
 
     public static function getUsers(int    $pageNumber = 0, string $username = null, string $name = null, string $email = null,

@@ -7,7 +7,7 @@ use PDO;
 
 class Payments extends DbModel
 {
-    public static function addPayment(int $orderId, float $paidAmount, string $paidDate = null): bool|string
+    public static function addPayment(int $orderId, float $paidAmount, string $paidDate = null): bool|string|array
     {
         $paymentsToOrderData = (self::getDataFromTable(['payment_id', 'paid_amount'], 'payments',
             "order_id=$orderId AND refunded=false"))->fetchAll(PDO::FETCH_ASSOC);
@@ -40,7 +40,11 @@ class Payments extends DbModel
             $params['paid_date'] = (new DateTime('now'))->format("Y-m-d");
         }
 
-        return self::insertIntoTable('payments', $params);
+        $id = self::insertIntoTable('payments', $params);
+        if ($id === false)
+            return false;
+        else
+            return ['payment_id' => $id];
     }
 
     public static function getPayments(int    $pageNumber = 0, int $paymentId = null, int $orderId = null,

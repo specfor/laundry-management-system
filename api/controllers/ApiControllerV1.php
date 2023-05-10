@@ -17,6 +17,7 @@ use LogicLeap\StockManagement\models\Items;
 use LogicLeap\StockManagement\models\Orders;
 use LogicLeap\StockManagement\models\Payments;
 use LogicLeap\StockManagement\models\PriceCategories;
+use LogicLeap\StockManagement\models\test;
 use LogicLeap\StockManagement\models\User;
 
 class ApiControllerV1 extends API
@@ -60,8 +61,9 @@ class ApiControllerV1 extends API
         if (!$branchId)
             $branchId = User::getUserBranchId(self::getUserId());
 
-        if (Customers::addNewCustomer($customerName, $email, $phoneNumber, $address, $branchId))
-            self::sendSuccess('New customer was added successfully.');
+        $status = Customers::addNewCustomer($customerName, $email, $phoneNumber, $address, $branchId);
+        if (is_array($status))
+            self::sendSuccess(['message' => 'New customer was added successfully.', 'customer-id' => $status['customer_id']]);
         else
             self::sendError('Failed to add new customer');
     }
@@ -128,8 +130,9 @@ class ApiControllerV1 extends API
         $phoneNum = self::getParameter('phone-number');
         $managerId = self::getParameter('manager-id', dataType: 'int');
 
-        if (Branches::addNewBranch($branchName, $address, $managerId, $phoneNum))
-            self::sendSuccess('New branch was created successfully.');
+        $id = Branches::addNewBranch($branchName, $address, $managerId, $phoneNum);
+        if (is_array($id))
+            self::sendSuccess(['message' => 'New branch was created successfully.', 'branch-id' => $id['branch_id']]);
         else
             self::sendError('Failed to add new branch');
     }
@@ -187,8 +190,9 @@ class ApiControllerV1 extends API
         $joinDate = self::getParameter('join-date');
         $leftDate = self::getParameter('left-date');
 
-        if (Employees::addEmployee($name, $address, $email, $phoneNumber, $branchId, $joinDate, $leftDate))
-            self::sendSuccess('New branch was created successfully.');
+        $status = Employees::addEmployee($name, $address, $email, $phoneNumber, $branchId, $joinDate, $leftDate);
+        if (is_array($status))
+            self::sendSuccess(['message' => 'New employee was added successfully.', 'employee_id' => $status['employee_id']]);
         else
             self::sendError('Failed to add new employee.');
     }
@@ -271,7 +275,7 @@ class ApiControllerV1 extends API
         $branchId = self::getParameter('branch-id', dataType: 'int');
 
         $status = User::createNewUser($username, $password, $role, $email, $firstname, $lastname, $branchId);
-        if ($status === 'New user created successfully.')
+        if (is_array($status))
             self::sendSuccess($status);
         else
             self::sendError($status);
@@ -354,8 +358,8 @@ class ApiControllerV1 extends API
         $categoryName = self::getParameter('category-name', isCompulsory: true);
 
         $status = PriceCategories::addCategory($categoryName);
-        if ($status === true)
-            self::sendSuccess('New category was created successfully.');
+        if (is_array($status))
+            self::sendSuccess(['message' => 'New category was created successfully.', 'category-id' => $status['category_id']]);
         elseif ($status === false)
             self::sendError('Failed to add new category.');
         else
@@ -406,12 +410,12 @@ class ApiControllerV1 extends API
         self::checkPermissions(User::ROLE_ADMINISTRATOR);
 
         $itemName = self::getParameter('item-name', isCompulsory: true);
-        $prices = self::getParameter('item-price', defaultValue: [], dataType: 'array');
+        $prices = self::getParameter('item-price', defaultValue: [], dataType: 'array', isCompulsory: true);
         $blocked = self::getParameter('blocked', defaultValue: false, dataType: 'bool');
 
         $status = Items::addItem($itemName, $prices, $blocked);
-        if ($status === true)
-            self::sendSuccess('New item was added successfully.');
+        if (is_array($status))
+            self::sendSuccess(['message' => 'New item was added successfully.', 'item-id' => $status['item_id']]);
         elseif ($status === false)
             self::sendError('Failed to add new item.');
         else
@@ -478,8 +482,8 @@ class ApiControllerV1 extends API
             $branchId = self::getParameter('branch-id', dataType: 'int');
 
         $status = Orders::addNewOrder($items, $customerId, $totalPrice, $branchId, $defects, $returnDate, $comments);
-        if ($status === true)
-            self::sendSuccess('New order added successfully.');
+        if (is_array($status))
+            self::sendSuccess(['message' => 'New order added successfully.', 'order-id' => $status['order_id']]);
         elseif ($status === false)
             self::sendError("Failed to add new order.");
         else
@@ -548,8 +552,8 @@ class ApiControllerV1 extends API
         $paidDate = self::getParameter('paid-date');
 
         $status = Payments::addPayment($orderId, $paidAmount, $paidDate);
-        if ($status === true)
-            self::sendSuccess('Payment added successfully.');
+        if (is_array($status))
+            self::sendSuccess(['message' => 'Payment added successfully.', 'payment-id' => $status['payment_id']]);
         elseif ($status === false)
             self::sendError('Failed to add payment.');
         else
@@ -674,15 +678,15 @@ class ApiControllerV1 extends API
             self::sendError($status);
     }
 
-    public function validateMigrationToken():void
+    public function validateMigrationToken(): void
     {
         self::checkPermissions(User::ROLE_SUPER_ADMINISTRATOR);
 
         $token = self::getParameter('token', isCompulsory: true);
 
-        if((new MigrationManager())->validateMigrationAuthToken($token))
+        if ((new MigrationManager())->validateMigrationAuthToken($token))
             self::sendSuccess('Token is valid.');
-        else{
+        else {
             self::sendError('Token is expired.');
         }
     }

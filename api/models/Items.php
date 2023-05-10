@@ -9,13 +9,15 @@ class Items extends DbModel
     private const TABLE_NAME = 'items';
     private static array $priceCategories;
 
-    public static function addItem(string $itemName, array $prices, bool $blocked): bool|string
+    public static function addItem(string $itemName, array $prices, bool $blocked): bool|string|array
     {
         $params['name'] = strtolower($itemName);
 
         // $prices => [[categ_1, categ_2], 350.00]
 
         $categories = [];
+        if (!is_array($prices[0]))
+            return "Price categories must be an array.";
         foreach ($prices[0] as $categoryName) {
             $categoryId = self::getPriceCategoryId($categoryName);
             if ($categoryId == null)
@@ -35,7 +37,11 @@ class Items extends DbModel
         $params['price'] = $prices[1];
         $params['blocked'] = $blocked;
 
-        return self::insertIntoTable(self::TABLE_NAME, $params);
+        $id = self::insertIntoTable(self::TABLE_NAME, $params);
+        if ($id === false)
+            return false;
+        else
+            return ['item_id' => $id];
     }
 
     public static function updateItem(int  $itemId, string $itemName = null, array $prices = null,

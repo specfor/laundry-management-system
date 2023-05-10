@@ -8,7 +8,7 @@ class Employees extends DbModel
 {
     public static function addEmployee(string $name, string $address = null, string $email = null,
                                        string $phoneNumber = null, int $branchId = null, string $joinDate = null,
-                                       string $left_date = null): bool
+                                       string $left_date = null): bool|array
     {
         $params = [];
         $params['is_left'] = false;
@@ -30,7 +30,11 @@ class Employees extends DbModel
         if ($left_date)
             $params['left_date'] = $left_date;
 
-        return self::insertIntoTable("employees", $params);
+        $id = self::insertIntoTable("employees", $params);
+        if ($id === false)
+            return false;
+        else
+            return ['employee_id' => $id];
     }
 
     public static function updateEmployee(int    $employeeId, string $name = null, string $address = null, string $email = null,
