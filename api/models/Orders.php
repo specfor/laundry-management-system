@@ -18,8 +18,7 @@ class Orders extends DbModel
     public const STATUS_CANCELLED = 8;
 
     public static function addNewOrder(array  $items, int $customerId, float $totalPrice = null, int $branchId = null,
-                                       string $defects = null, string $returnDate = null, string $comments = null,
-                                       string $orderStatus = "order added"): bool|string|array
+                                       string $comments = null, string $orderStatus = "order added"): bool|string|array
     {
         if (empty(Customers::getCustomers($customerId)))
             return "Invalid customer-id";
@@ -38,29 +37,37 @@ class Orders extends DbModel
         }
 
         $itemIds = [];
-        foreach ($items as $itemId => $amount) {
+        foreach ($items as $itemId => $itemData) {
             if (!is_int($itemId))
                 return "All item ids must be integers.";
-            if (!is_int($amount))
+            if (!isset($itemData['amount'], $itemData['return-date'], $itemData['defects']))
+                return "Every item should contain 'amount', 'return-date', 'defects'";
+            if (!is_int($itemData['amount']))
                 return "All amounts should be integers";
-            if ($amount < 1)
+            if ($itemData['amount'] < 1)
                 return "All amounts must be greater than 0";
+            if (!is_array($itemData['defects']))
+                return "Defects should be an array.";
+            if (!is_string($itemData['return-date']))
+                return "'return-date' should be a string.";
             $itemIds[] = "item_id=$itemId";
         }
         $condition = "(" . implode(' OR ', $itemIds) . ")";
         $condition .= " AND blocked=false";
-        $itemData = (self::getDataFromTable(['price', 'item_id'], 'items', $condition))->fetchAll(PDO::FETCH_ASSOC);
+        $itemDataStored = (self::getDataFromTable(['price', 'item_id'], 'items', $condition))->fetchAll(PDO::FETCH_ASSOC);
 
-        if (count($itemData) < count($items))
+        if (count($itemDataStored) < count($items))
             return "Invalid item ids were sent";
 
         $calculatedTotalPrice = 0;
         $newItemData = [];
-        foreach ($items as $itemId => $amount) {
-            foreach ($itemData as $item) {
+        foreach ($items as $itemId => $itemData) {
+            foreach ($itemDataStored as $item) {
                 if ($itemId == $item['item_id']) {
-                    $item['amount'] = $amount;
-                    $calculatedTotalPrice += intval($amount) * floatval($item['price']);
+                    $item['amount'] = $itemData['amount'];
+                    $item['return-date']=$itemData['return-date'];
+                    $item['defects']=$itemData['defects'];
+                    $calculatedTotalPrice += intval($itemData['amount']) * floatval($item['price']);
                     $newItemData[] = $item;
                 }
             }
@@ -74,10 +81,6 @@ class Orders extends DbModel
         $params['items'] = $newItemData;
         $params['added_date'] = (new DateTime('now'))->format("Y-m-d H:m");
 
-        if ($defects)
-            $params['defects'] = $defects;
-        if ($returnDate)
-            $params['return_date'] = $returnDate;
         if ($comments)
             $params['comments'] = $comments;
 

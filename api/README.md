@@ -221,13 +221,11 @@ Get all available order status messages
 
 POST - /api/v1/orders/add
 Parameters
-items - compulsory - array of [item-id: amount, item-id2: amount, ...]
+items - compulsory - array of {item-id: {'amount':amount,'return-date': return-date, 'defects': [defect1, defect2,...]}, item-id2: { ...}}
 customer-id - optional
 total-price - optional - only if need to override generated price
 branch-id - optional - only if user is not someone asigned to a branch, if user is assigned to a branch then send branch-id will not be used.
 customer-comments - optional
-defects - optional
-return-date - optional
 
 POST - /api/v1/orders/update
 Parameters
@@ -251,17 +249,17 @@ payment-id - optional
 order-id - optional
 paid-date - optional
 
-POST - /api/v1/orders/add
+POST - /api/v1/payments/add
 Parameters
 order-id - compulsory
 paid-amount - compulsory
 paid-date - optional
 
-POST - /api/v1/orders/update
+POST - /api/v1/payments/update
 Parameters
 payment-id - compulsory
 refunded - optional
 
-POST - /api/v1/orders/delete
+POST - /api/v1/payments/delete
 Parameters
 payment-id - compulsory

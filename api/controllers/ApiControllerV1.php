@@ -473,15 +473,13 @@ class ApiControllerV1 extends API
         $items = self::getParameter('items', dataType: 'array', isCompulsory: true);
         $totalPrice = self::getParameter('total-price', dataType: 'float');
         $customerId = self::getParameter('customer-id', dataType: 'int', isCompulsory: true);
-        $returnDate = self::getParameter('return-date');
         $comments = self::getParameter('customer-comments');
-        $defects = self::getParameter('defects');
 
         $branchId = User::getUserBranchId(self::getUserId());
         if ($branchId == 0)
             $branchId = self::getParameter('branch-id', dataType: 'int');
 
-        $status = Orders::addNewOrder($items, $customerId, $totalPrice, $branchId, $defects, $returnDate, $comments);
+        $status = Orders::addNewOrder($items, $customerId, $totalPrice, $branchId, $comments);
         if (is_array($status))
             self::sendSuccess(['message' => 'New order added successfully.', 'order-id' => $status['order_id']]);
         elseif ($status === false)
