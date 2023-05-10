@@ -495,13 +495,10 @@ class ApiControllerV1 extends API
         $orderId = self::getParameter('order-id', dataType: 'int', isCompulsory: true);
         $branchId = self::getParameter('branch-id', dataType: 'int');
         $customerId = self::getParameter('customer-id', dataType: 'int');
-        $items = self::getParameter('items', dataType: 'array');
         $status = self::getParameter('order-status');
-        $returnDate = self::getParameter('return-date');
-        $comments = self::getParameter('customer-comments');
-        $defects = self::getParameter('defects');
+        $returnDate = self::getParameter('return-date', dataType: 'array');
 
-        $status = Orders::updateOrder($orderId, $items, $branchId, $status, $customerId, $returnDate, $defects, $comments);
+        $status = Orders::updateOrder($orderId, $branchId, $status, $customerId, $returnDate);
         if ($status === true)
             self::sendSuccess("Order updated successfully.");
         elseif ($status === false)

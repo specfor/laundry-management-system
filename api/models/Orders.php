@@ -65,8 +65,8 @@ class Orders extends DbModel
             foreach ($itemDataStored as $item) {
                 if ($itemId == $item['item_id']) {
                     $item['amount'] = $itemData['amount'];
-                    $item['return-date']=$itemData['return-date'];
-                    $item['defects']=$itemData['defects'];
+                    $item['return-date'] = $itemData['return-date'];
+                    $item['defects'] = $itemData['defects'];
                     $calculatedTotalPrice += intval($itemData['amount']) * floatval($item['price']);
                     $newItemData[] = $item;
                 }
@@ -164,11 +164,11 @@ class Orders extends DbModel
         return $data;
     }
 
-    public static function updateOrder(int    $orderId, array $items = null, int $branchId = null,
-                                       string $orderStatus = null, int $customerId = null, string $returnDate = null,
-                                       string $defects = null, string $comments = null): bool|string
+    public static function updateOrder(int $orderId, int $branchId = null, string $orderStatus = null,
+                                       int $customerId = null, array $returnDate = null): bool|string
     {
-        if (empty(self::getOrders(orderId: $orderId)))
+        $orderData = self::getOrders(orderId: $orderId)[0];
+        if (empty($orderData))
             return "Invalid order id.";
 
         $params = [];
@@ -178,56 +178,44 @@ class Orders extends DbModel
         else
             $params['customer_id'] = $customerId;
 
-        if ($items) {
+        if ($returnDate) {
             $itemIds = [];
-            foreach ($items as $itemId => $amount) {
+            foreach ($returnDate as $itemId => $itemReturnDate) {
                 if (!is_int($itemId))
                     return "All item ids must be integers.";
-                if (!is_int($amount))
-                    return "All amounts should be integers";
-                if ($amount < 1)
-                    return "All amounts must be greater than 0";
+
                 $itemIds[] = "item_id=$itemId";
             }
             $condition = "(" . implode(' OR ', $itemIds) . ")";
             $condition .= " AND blocked=false";
             $itemData = (self::getDataFromTable(['price', 'item_id'], 'items', $condition))->fetchAll(PDO::FETCH_ASSOC);
 
-            if (count($itemData) < count($items))
-                return "Invalid item ids were sent";
+            if (count($itemData) < count($returnDate))
+                return "Invalid item ids were sent.";
 
-            $calculatedTotalPrice = 0;
-            $newItemData = [];
-            foreach ($items as $itemId => $amount) {
-                foreach ($itemData as $item) {
-                    if ($itemId == $item['item_id']) {
-                        $item['amount'] = $amount;
-                        $calculatedTotalPrice += intval($amount) * floatval($item['price']);
-                        $newItemData[] = $item;
+            foreach ($returnDate as $itemId => $itemReturnDate) {
+                if (!is_int($itemId) || !is_string($itemReturnDate))
+                    return "Passed 'return-date' is invalid.";
+                for ($i = 0; $i < count($orderData['items']); $i++) {
+                    if ($itemId == $orderData['items'][$i]['item_id']) {
+                        $orderData['items'][$i]['return-date'] = $itemReturnDate;
                     }
                 }
             }
-            $newItemData = json_encode($newItemData);
 
-            $params['total_price'] = $calculatedTotalPrice;
-            $params['items'] = $newItemData;
+            $params['items'] = json_encode( $orderData['items']);
         }
-        if ($branchId)
+        if ($branchId) {
             if (empty(Branches::getBranches(branchId: $branchId)))
                 return "Invalid branch Id.";
-        $params['branch_id'] = $branchId;
+            $params['branch_id'] = $branchId;
+        }
         if ($orderStatus) {
             if (self::getOrderStatusId($orderStatus) == -1)
                 return "Invalid order status.";
             else
                 $params['status'] = self::getOrderStatusId($orderStatus);
         }
-        if ($defects)
-            $params['defects'] = $defects;
-        if ($returnDate)
-            $params['return_date'] = $returnDate;
-        if ($comments)
-            $params['comments'] = $comments;
 
         $condition = "order_id=$orderId";
         return self::updateTableData('orders', $params, $condition);

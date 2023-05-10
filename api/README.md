@@ -232,11 +232,8 @@ Parameters
 order-id - compulsory
 customer-id - optional
 branch-id - optional
-items - optional -  array of [item-id: amount, item-id2: amount, ...]
 order-status - optional
-customer-comments - optional
-defects - optional
-return-date - optional
+return-date - optional - {item_id: return_date, item_id2: return_date, ....}
 
 POST - /api/v1/orders/delete
 Parameters
