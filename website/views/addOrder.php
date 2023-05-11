@@ -11,6 +11,9 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
     crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@10.2.7/dist/autoComplete.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@10.2.7/dist/css/autoComplete.01.min.css">
+
 
 
 </head>
@@ -127,7 +130,7 @@
 </div>
 
 
-    <div class="container-fluid position-relative d-none">
+    <div class="container-fluid position-relative " id="addOrderDiv">
         <h1 class="h1 text-white ms-4 mt-4">Add New Order</h1>
         <button class="btn btn-dark mt-2 ms-5" data-bs-toggle="modal"
               data-bs-target="#addNewItem">+</button>
@@ -138,6 +141,7 @@
                 <td>Action</td>
                 <td>Defects</td>
                 <td>Delivery Due Date</td>
+                <td>Edit</td>
             </thead>
             <tbody id="addOrderTable">
 
@@ -149,8 +153,69 @@
     </div>
 
     <div class="container-fluid">
-        <div class="container mt-5 mb-5 ms-5 mx-5 bg-light" style="border-radius:1.2rem;">
-            <h1 class="h1">This is a header</h1>
+        <div class="container-fluid row">
+        <div class="col-6">
+        <div class="container mt-5 mb-5 ms-5 mx-5 bg-light d-none" style="border-radius:1.2rem;" id="checkoutDiv">
+            <h1 class="h1 text-center">Checkout</h1>
+            <label for="cusname" >Customer's Name</label>
+            <input type="text" class="form-control mt-2" id="autoComplete" aria-describedby="emailHelp">
+
+            <br>
+            <label for="price" class="">Price</label>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Colours Faded" id="autoCal">
+                <label class="form-check-label" for="flexCheckChecked">Auto Calculate</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Colours Faded" id="customP">
+                <label class="form-check-label" for="flexCheckChecked">Custom Price</label>
+            </div>
+            <input type="text" class="form-control mt-2" id="customPrice" placeHolder="Enter a Custom Price.">
+            <button class="btn btn-primary mt-2 mb-3" id="confirmCheckout">Confirm</button>
         </div>
+        </div>
+
+        <div class="col-6">
+            <div class="container mt-5 mb-5 ms-5 mx-5 bg-light d-none" style="border-radius:1.2rem;" id="methodDiv">
+            <h1 class="h1 text-center">Pay</h1>
+            <label for="payMethod" class="">Payment Method</label>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Colours Faded" id="cashPay">
+                <label class="form-check-label" for="flexCheckChecked">Cash</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Colours Faded" id="chequePay">
+                <label class="form-check-label" for="flexCheckChecked">Cheque</label>
+            </div>
+            <div class="container bg-info" style="margin:auto;border-radius:1.2rem;">
+                <h3 class="h3 text-center">Total:</h3>
+                <h3 class="h3 text-center" id="totalPrice">Rs:5000</h3>    
+        </div>
+        <button class="btn btn-danger mt-2 mb-3">Add Payment</button>
+        </div>
+        </div>
+        
+        
     </div>
+
+    <script>
+        const autoCompleteJS = new autoComplete({
+    placeHolder: "Search for Customers...",
+    data: {
+        src: getAllCustomers()
+    },
+    resultItem: {
+        highlight: true,
+    },
+    events: {
+                input: {
+                    selection: (event) => {
+                        const selection = event.detail.selection.value;
+                        autoCompleteJS.input.value = selection;
+                    }
+                }
+            }
+
+});
+    </script>
 </body>

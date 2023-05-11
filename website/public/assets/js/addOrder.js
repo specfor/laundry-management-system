@@ -3,6 +3,7 @@
 let allOrder = []
 let eachOrderReq = []
 
+
 window.addEventListener("load",function(){
     document.getElementById("btnAddItem").addEventListener("click",makingSendReq)
     document.getElementById("paymentProceed").addEventListener("click",paymentPage)
@@ -12,7 +13,13 @@ window.addEventListener("load",function(){
 })
 
 function paymentPage(){
-    
+    if(allOrder.length==0){
+        alert("Add at least 1 order to continue.")
+        return
+    }
+    document.getElementById("addOrderDiv").classList.add("d-none")
+    document.getElementById("checkoutDiv").classList.remove("d-none")
+
 }
 
 async function loadAllItems(){
@@ -39,6 +46,25 @@ async function loadAllItems(){
         itemSelect.innerHTML += newItem
       })  
     }
+}
+
+function clearInputs(){
+    document.getElementById("quantity").value = ""
+    document.getElementById("deliveryDate").value = ""
+    let actions = document.querySelectorAll(".check")
+    let defects = document.querySelectorAll("#check")
+
+    actions.forEach(function(action){
+        if(action.checked == true){
+            action.checked = false
+        }
+    })
+
+    defects.forEach(function(defect){
+        if(defect.checked == true){
+            defect.checked = false
+        }
+    })
 }
 
 async function makingSendReq(){
@@ -71,7 +97,6 @@ async function makingSendReq(){
     })
 
    
-    //console.log(defectsArray,actionArray)
     let response = await getAllCusReq("http://www.laundry-api.localhost/api/v1/items?",{
         "item-name":itemName
     })
@@ -81,25 +106,156 @@ async function makingSendReq(){
         let items = resJson["body"]["items"]
 
             items.forEach(function(item){
+            
             let categoryArray = item.categories
             if(arrayEquals(categoryArray,actionArray)){
-                let eachOrder = {
-                    "id":item["item_id"],
-                    "name":item["name"],
-                    "amount":quantity,
-                    "defects":defectsArray,
-                    "delivery-Date":deliveryDate
-                }
+                let eachOrder = {}
+                eachOrder.id = item["item_id"]
+                eachOrder.name = item["name"]
+                eachOrder.quantity = quantity
+                eachOrder.actions = actionArray
+                eachOrder.defects = defectsArray
+                eachOrder.deliveryDate = deliveryDate
+               
               allOrder.push(eachOrder)                  
             }
             
-        })
-
-  
+        })      
+                clearInputs()
+                console.log(allOrder)
+                //updateDataIntoTable(allOrder)
     }
     
 }
 
+//updating data into the table
+function updateDataIntoTable(y){
+    if(y.length==0){
+        return
+    }
+    console.log(y)
+    let rowData= y.slice(-1)
+    // console.log(rowData)
+    
+    let arrayOne = []
+    let arrayTwo = []
+    
+    // let defects = x["defects"]
+
+    // for(defect of defects){
+    //     arrayOne.push(`${defect}<br>`)
+    // }
+
+    // let actions = x["actions"]
+    // for(action of actions){
+    //     arrayTwo.push(`${action}<br>`)
+    // }
+
+    
+    let orderTable = document.getElementById("addOrderTable")
+
+    let row = orderTable.insertRow(-1)
+
+    row.insertCell(0).innerText = rowData["name"]
+    row.insertCell(1).innerText = rowData["quantity"]
+    row.insertCell(2).innerText = arrayTwo.join("")
+    row.insertCell(3).innerText = arrayOne.join("")
+    row.insertCell(4).innerText = rowData["delivery-Date"]
+    row.insertCell(5).innerHTML = `<button class="btn btn-danger">Delete</button>`
+}
+
+//This function get all customers
+async function getAllCustomers(){
+
+    let customerArray = []
+
+    let response = await getJsonResponse("http://www.laundry-api.localhost/api/v1/customers")
+
+    let resJson = await response.json()
+
+    if(resJson.statusMessage == "success"){
+        let customers = resJson["body"]["customers"]
+
+        for(customer of customers){
+            customerArray.push(customer["name"])
+        }
+
+        return customerArray
+    }
+}
+
+//Check checkout inputs
+async function checkCheckout(){
+    let customerName = document.getElementById("autoComplete").value
+    let autoCalculate = document.getElementById("autoCal")
+    let customPrice = document.getElementById("customP")
+    let cusPriceInput =  document.getElementById("customPrice").value
+
+    
+
+    if(autoCalculate.checked == true && customPrice.checked == true){
+        alert("Please select one price option only.")
+        return
+    }
+    if(autoCalculate.checked == false && customPrice.checked == false){
+        alert("Please select a price option.")
+        return
+    }
+
+    if(autoCalculate.checked == true && !cusPriceInput==""){
+        alert("Select Auto Calculate opton to enter a custom price")
+        return
+    }
+
+    if(customPrice.checked == true && cusPriceInput==""){
+        alert("Please enter a custom price to continue")
+    }
+
+    if(customerName==""){
+        alert("Enter the customer name.")
+        return
+    }else{
+        let cus = await getCustomer(customerName)
+    
+        if(cus[0] == true){
+
+        }else{
+            let addCus =await addCustomer(customerName)
+            if(addCus[0] == true){
+
+            }
+        }
+    }
+}
+
+//Add customer
+async function addCustomer(customerName){
+    let response = await sendJsonRequest("http://www.laundry-api.localhost/api/v1/customers/add")
+
+    let resJson = await response.json()
+
+    if(resJson.statusMessage == "success"){
+        let x = await getAllCustomers(customerName)
+        return x
+    }
+}
+
+//Get customer id 
+async function getCustomer(customerName){
+    let response = await getJsonResponse("http://www.laundry-api.localhost/api/v1/customers")
+
+    let resJson = await response.json()
+
+    if(resJson.statusMessage == "success"){
+        let customers = resJson["body"]["customers"]
+
+        for(customer of customers){
+            if(customer["name"] == customerName){
+                return [true,customer["customer_id"]]
+            }
+        }
+    }
+}
 
 async function sendOrderRequest(array){
     array.forEach(function(order){
