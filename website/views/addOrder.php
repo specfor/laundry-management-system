@@ -136,6 +136,7 @@
               data-bs-target="#addNewItem">+</button>
         <table class="table table-dark table-striped mt-2">
             <thead>
+                <td>Id</td>
                 <td>Item</td>
                 <td>Quantity</td>
                 <td>Action</td>

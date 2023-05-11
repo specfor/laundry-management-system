@@ -2,7 +2,7 @@
 
 let allOrder = []
 let eachOrderReq = []
-
+let del_id = 1
 
 window.addEventListener("load",function(){
     document.getElementById("btnAddItem").addEventListener("click",makingSendReq)
@@ -110,58 +110,84 @@ async function makingSendReq(){
             let categoryArray = item.categories
             if(arrayEquals(categoryArray,actionArray)){
                 let eachOrder = {}
+                eachOrder.rowId = del_id
                 eachOrder.id = item["item_id"]
                 eachOrder.name = item["name"]
                 eachOrder.quantity = quantity
                 eachOrder.actions = actionArray
                 eachOrder.defects = defectsArray
                 eachOrder.deliveryDate = deliveryDate
-               
-              allOrder.push(eachOrder)                  
+              
+                allOrder.push(eachOrder)
+                clearInputs()
+                updateDataIntoTable(allOrder)
+                            
             }
             
-        })      
-                clearInputs()
-                console.log(allOrder)
-                //updateDataIntoTable(allOrder)
+        })                     
     }
     
 }
+
 
 //updating data into the table
 function updateDataIntoTable(y){
     if(y.length==0){
         return
     }
-    console.log(y)
-    let rowData= y.slice(-1)
-    // console.log(rowData)
+    let rowD= y.slice(-1)
+    let rowData = rowD[0]
     
     let arrayOne = []
     let arrayTwo = []
     
-    // let defects = x["defects"]
+    let defects = rowData["defects"]
 
-    // for(defect of defects){
-    //     arrayOne.push(`${defect}<br>`)
-    // }
+    for(defect of defects){
+        arrayOne.push(`${defect}<br>`)
+    }
 
-    // let actions = x["actions"]
-    // for(action of actions){
-    //     arrayTwo.push(`${action}<br>`)
-    // }
+    let actions = rowData["actions"]
+    for(action of actions){
+        arrayTwo.push(`${action}<br>`)
+    }
 
     
     let orderTable = document.getElementById("addOrderTable")
 
     let row = orderTable.insertRow(-1)
 
-    row.insertCell(0).innerText = rowData["name"]
-    row.insertCell(1).innerText = rowData["quantity"]
-    row.insertCell(2).innerText = arrayTwo.join("")
-    row.insertCell(3).innerText = arrayOne.join("")
-    row.insertCell(4).innerText = rowData["delivery-Date"]
-    row.insertCell(5).innerHTML = `<button class="btn btn-danger">Delete</button>`
+    row.insertCell(0).innerText = del_id
+    row.insertCell(1).innerText = rowData["name"]
+    row.insertCell(2).innerText = rowData["quantity"]
+    row.insertCell(3).innerHTML = arrayTwo.join("")
+    row.insertCell(4).innerHTML = arrayOne.join("")
+    row.insertCell(5).innerText = rowData["deliveryDate"]
+    row.insertCell(6).innerHTML = `<button class="btn btn-danger" onclick="prepareDeletion()" id="btn-del-${del_id}">Delete</button>`
+
+    del_id++
+}
+
+function prepareDeletion(){
+    SampleId = event.target.id.split("-")[2]
+
+    let orderTable = document.getElementById("addOrderTable")
+    for(let i = 0, row; row = orderTable.rows[i]; i++){
+        if(row.cells[0].innerText==SampleId){
+            orderTable.deleteRow(i)
+            deleteFromArray(SampleId)
+        }
+    }
+    
+}
+
+function deleteFromArray(id){
+    for(item of allOrder){
+        if(item.rowId==id){
+            allOrder.splice(allOrder.indexOf(item),allOrder.indexOf(item))
+            console.log(allOrder)
+        }
+    }
 }
 
 //This function get all customers
