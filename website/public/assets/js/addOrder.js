@@ -4,9 +4,12 @@ let allOrder = []
 let eachOrderReq = []
 let del_id = 1
 
+
 window.addEventListener("load",function(){
     document.getElementById("btnAddItem").addEventListener("click",makingSendReq)
     document.getElementById("paymentProceed").addEventListener("click",paymentPage)
+    document.getElementById("confirmCheckout").addEventListener("click",checkCheckout)
+    document.getElementById("addPayment").addEventListener("click",addFinalPayment)
 
     loadAllItems()
     getAllActions()
@@ -184,8 +187,7 @@ function prepareDeletion(){
 function deleteFromArray(id){
     for(item of allOrder){
         if(item.rowId==id){
-            allOrder.splice(allOrder.indexOf(item),allOrder.indexOf(item))
-            console.log(allOrder)
+            allOrder.splice(allOrder.indexOf(item),1)
         }
     }
 }
@@ -229,39 +231,146 @@ async function checkCheckout(){
     }
 
     if(autoCalculate.checked == true && !cusPriceInput==""){
-        alert("Select Auto Calculate opton to enter a custom price")
+        alert("Select custom price option to enter a custom price")
         return
     }
 
     if(customPrice.checked == true && cusPriceInput==""){
         alert("Please enter a custom price to continue")
+        return
     }
 
     if(customerName==""){
         alert("Enter the customer name.")
         return
-    }else{
+    }else if(autoCalculate.checked == true){
         let cus = await getCustomer(customerName)
     
         if(cus[0] == true){
+            await addOrderTotheDBautoP(cus[1])
+            return
+        }else{
+            let addCus =await addCustomer(customerName)
+            
+            if(addCus[0] == true){
+                await addOrderTotheDBautoP(cus[1])
+                return
+            }
+        }
+    }else if(customPrice.checked == true){
+        let cus = await getCustomer(customerName)
+    
+        if(cus[0] == true){
+            await addOrderTotheDBcustomP(cus[1],cusPriceInput)
+            return
 
         }else{
             let addCus =await addCustomer(customerName)
             if(addCus[0] == true){
-
+                await addOrderTotheDBcustomP(cus[1],cusPriceInput)
+                return
             }
         }
     }
 }
 
-//Add customer
-async function addCustomer(customerName){
-    let response = await sendJsonRequest("http://www.laundry-api.localhost/api/v1/customers/add")
+//Add order to the db
+async function addOrderTotheDBautoP(customerId){
+
+    let eachData = {}
+
+    for(eachOrder of allOrder){
+
+        eachData[eachOrder.id] = {
+            "amount":Number(eachOrder["quantity"]),
+            "return-date":eachOrder["deliveryDate"],
+            "defects":eachOrder["defects"]
+        }
+
+    }
+
+    let response = await sendJsonRequest("http://www.laundry-api.localhost/api/v1/orders/add",{
+        "items":eachData,
+        "customer-id":customerId,        
+    })
 
     let resJson = await response.json()
 
     if(resJson.statusMessage == "success"){
-        let x = await getAllCustomers(customerName)
+        alert("Order added successfully.")
+    
+        let response = await getJsonResponse("http://www.laundry-api.localhost/api/v1/orders")
+
+        let resJson = await response.json()
+
+        if(resJson.statusMessage == "success"){
+            document.getElementById("methodDiv").classList.remove("d-none")
+
+            let lastOrderArray = resJson["body"]["orders"].splice(-1)
+            let lastOrder = lastOrderArray[0]
+
+            document.getElementById("totalPrice").innerText = `Rs:${lastOrder["total_price"]}`
+
+        }
+    }
+
+
+}
+
+async function addOrderTotheDBcustomP(customerId,price){
+
+    let eachData = {}
+
+    for(eachOrder of allOrder){
+
+        eachData[eachOrder.id] = {
+            "amount":Number(eachOrder["quantity"]),
+            "return-date":eachOrder["deliveryDate"],
+            "defects":eachOrder["defects"]
+        }
+
+    }
+
+
+    let response = await sendJsonRequest("http://www.laundry-api.localhost/api/v1/orders/add",{
+        "items":eachData,
+        "customer-id":customerId,
+        "total-price":price
+    })
+
+    let resJson = await response.json()
+
+    if(resJson.statusMessage == "success"){
+        alert("Order added successfully.")
+        let response = await getJsonResponse("http://www.laundry-api.localhost/api/v1/orders")
+
+        let resJson = await response.json()
+
+        if(resJson.statusMessage == "success"){
+            document.getElementById("methodDiv").classList.remove("d-none")
+
+            let lastOrderArray = resJson["body"]["orders"].splice(-1)
+            let lastOrder = lastOrderArray[0]
+
+            document.getElementById("totalPrice").innerText = `Rs:${lastOrder["total_price"]}`
+
+        }
+        
+    }
+
+
+}
+
+//Add customer
+async function addCustomer(customerName){
+    let response = await sendJsonRequest("http://www.laundry-api.localhost/api/v1/customers/add",{
+        "customer-name":customerName
+    })
+
+    let resJson = await response.json()
+
+    if(resJson.statusMessage == "success"){
+        let x = await getCustomer(customerName)
         return x
     }
 }
@@ -278,15 +387,11 @@ async function getCustomer(customerName){
         for(customer of customers){
             if(customer["name"] == customerName){
                 return [true,customer["customer_id"]]
+            }else{
+                return [false]
             }
         }
     }
-}
-
-async function sendOrderRequest(array){
-    array.forEach(function(order){
-        
-    })
 }
 
 function arrayEquals(a, b) {
@@ -314,6 +419,31 @@ async function getAllActions(){
 
             actionSelect.innerHTML += newAction
         })
+    }
+}
+
+//Add final payment
+async function addFinalPayment(){
+    let response = await getJsonResponse("http://www.laundry-api.localhost/api/v1/orders")
+
+    let resJson = await response.json()
+
+    if(resJson.statusMessage == "success"){
+        let lastOrderArray = resJson["body"]["orders"].splice(-1)
+        let lastOrder = lastOrderArray[0]
+
+        let responseNew = await sendJsonRequest("http://www.laundry-api.localhost/api/v1/payments/add",{
+                "order-id":lastOrder["order_id"],
+                "paid-amount":lastOrder["total_price"],
+                "paid-date":new Date().toISOString().slice(0, 10)
+        })
+
+        let resJsonNew = await responseNew.json()
+
+        if(resJsonNew.statusMessage == "success"){
+            alert("Payment added successfully/")
+            location.reload()
+        }
     }
 }
 

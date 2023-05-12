@@ -190,9 +190,9 @@
             </div>
             <div class="container bg-info" style="margin:auto;border-radius:1.2rem;">
                 <h3 class="h3 text-center">Total:</h3>
-                <h3 class="h3 text-center" id="totalPrice">Rs:5000</h3>    
+                <h3 class="h3 text-center" id="totalPrice"></h3>    
         </div>
-        <button class="btn btn-danger mt-2 mb-3">Add Payment</button>
+        <button class="btn btn-danger mt-2 mb-3" id="addPayment">Add Payment</button>
         </div>
         </div>
         
