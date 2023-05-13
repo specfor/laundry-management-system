@@ -3,11 +3,11 @@
 namespace LogicLeap\StockManagement\controllers;
 
 use Exception;
-use LogicLeap\StockManagement\core\Application;
-use LogicLeap\StockManagement\core\MigrationManager;
-use LogicLeap\StockManagement\core\Request;
-use LogicLeap\StockManagement\core\SecureToken;
-use LogicLeap\StockManagement\core\ServerMetrics;
+use LogicLeap\PhpServerCore\Application;
+use LogicLeap\PhpServerCore\MigrationManager;
+use LogicLeap\PhpServerCore\Request;
+use LogicLeap\PhpServerCore\SecureToken;
+use LogicLeap\PhpServerCore\ServerMetrics;
 use LogicLeap\StockManagement\models\API;
 use LogicLeap\StockManagement\models\Authorization;
 use LogicLeap\StockManagement\models\Branches;

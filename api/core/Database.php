@@ -1,6 +1,6 @@
 <?php
 
-namespace LogicLeap\StockManagement\core;
+namespace LogicLeap\PhpServerCore;
 
 use PDO;
 use PDOException;

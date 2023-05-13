@@ -1,8 +1,8 @@
 <?php
 
-namespace LogicLeap\StockManagement\core;
+namespace LogicLeap\PhpServerCore;
 
-use LogicLeap\StockManagement\core\exceptions\NotFoundException;
+use LogicLeap\PhpServerCore\exceptions\NotFoundException;
 use LogicLeap\StockManagement\models\API;
 
 class Router

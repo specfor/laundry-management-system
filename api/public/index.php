@@ -2,7 +2,7 @@
 
 use Dotenv\Dotenv;
 use LogicLeap\StockManagement\controllers\ApiControllerV1;
-use LogicLeap\StockManagement\core\Application;
+use LogicLeap\PhpServerCore\Application;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
