@@ -1,6 +1,6 @@
 <?php
 
-use LogicLeap\StockManagement\core\MigrationScheme;
+use LogicLeap\PhpServerCore\MigrationScheme;
 
 class m00004_customers extends MigrationScheme
 {

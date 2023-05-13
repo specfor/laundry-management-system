@@ -1,4 +1,4 @@
-<?php use LogicLeap\StockManagement\core\TailwindUiRenderer; ?>
+<?php use LogicLeap\PhpServerCore\TailwindUiRenderer; ?>
 
 <!DOCTYPE html>
 <html lang="en">

@@ -2,7 +2,7 @@
 
 namespace LogicLeap\StockManagement\models;
 
-use LogicLeap\StockManagement\core\Application;
+use LogicLeap\PhpServerCore\Application;
 use PDO;
 
 class Authorization

@@ -2,9 +2,9 @@
 
 namespace LogicLeap\StockManagement\controllers;
 
-use LogicLeap\StockManagement\core\Application;
-use LogicLeap\StockManagement\core\MigrationManager;
-use LogicLeap\StockManagement\core\TailwindUiRenderer;
+use LogicLeap\PhpServerCore\Application;
+use LogicLeap\PhpServerCore\MigrationManager;
+use LogicLeap\PhpServerCore\TailwindUiRenderer;
 use LogicLeap\StockManagement\models\Authorization;
 
 class SiteController

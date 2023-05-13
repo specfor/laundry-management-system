@@ -1,6 +1,6 @@
 <?php
 
-namespace LogicLeap\StockManagement\core\exceptions;
+namespace LogicLeap\PhpServerCore\exceptions;
 
 class  NotFoundException extends \Exception
 {

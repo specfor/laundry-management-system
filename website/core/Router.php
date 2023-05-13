@@ -1,8 +1,8 @@
 <?php
 
-namespace LogicLeap\StockManagement\core;
+namespace LogicLeap\PhpServerCore;
 
-use LogicLeap\StockManagement\core\exceptions\NotFoundException;
+use LogicLeap\PhpServerCore\exceptions\NotFoundException;
 use LogicLeap\StockManagement\models\API;
 
 class Router
@@ -28,6 +28,8 @@ class Router
     public function addGetRoute(string $path, array $callback): void
     {
         self::$routes['get'][$path] = $callback;
+        $callback[1] = "optionsRequest";
+        self::$routes['options'][$path] = $callback;
     }
 
     /**
@@ -39,6 +41,8 @@ class Router
     public function addPostRoute(string $path, array $callback): void
     {
         self::$routes['post'][$path] = $callback;
+        $callback[1] = "optionsRequest";
+        self::$routes['options'][$path] = $callback;
     }
 
     /**

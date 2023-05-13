@@ -1,6 +1,6 @@
 <?php
 
-use LogicLeap\StockManagement\core\MigrationScheme;
+use LogicLeap\PhpServerCore\MigrationScheme;
 use LogicLeap\StockManagement\models\User;
 
 class m00001_initDb extends MigrationScheme
