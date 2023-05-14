@@ -102,6 +102,15 @@ class SiteController
         TailwindUiRenderer::loadPage('customers', $variableData);
     }
 
+    public function getOrders():void
+    {
+        $this->checkPermission(self::ROLE_CASHIER);
+
+        $variableData['header'] = self::getHeaderMenuItems($this->userRole);
+        $variableData['site-title'] = 'Orders - ' . self::SITE_NAME;
+        TailwindUiRenderer::loadPage('orders', $variableData);
+    }
+
     public function newOrder(): void
     {
         $this->checkPermission(self::ROLE_CASHIER);
@@ -119,6 +128,17 @@ class SiteController
         $variableData['site-title'] = 'Finalize Order - ' . self::SITE_NAME;
         TailwindUiRenderer::loadPage('finalPayment', $variableData);
     }
+
+    public function updateOrder():void
+    {
+        $this->checkPermission(self::ROLE_CASHIER);
+
+        $variableData['header'] = self::getHeaderMenuItems($this->userRole);
+        $variableData['site-title'] = 'Update Order - ' . self::SITE_NAME;
+        TailwindUiRenderer::loadPage('updateOrder', $variableData);
+    }
+
+
 
     private static function getHeaderMenuItems(int $userRole = self::ROLE_CASHIER): array
     {

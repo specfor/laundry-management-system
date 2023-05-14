@@ -33,7 +33,9 @@ $app->router->addGetRoute('/payments', [SiteController::class, 'getPayments']);
 $app->router->addGetRoute('/users', [SiteController::class, 'getUsers']);
 $app->router->addGetRoute('/products', [SiteController::class, 'getProducts']);
 $app->router->addGetRoute('/customers', [SiteController::class, 'getCustomers']);
+$app->router->addGetRoute('/orders', [SiteController::class, 'getOrders']);
 $app->router->addGetRoute('/orders/new-order', [SiteController::class, 'newOrder']);
+$app->router->addGetRoute('/orders/update-order', [SiteController::class, 'updateOrder']);
 $app->router->addGetRoute('/orders/new-order/payment', [SiteController::class, 'finalizeOrder']);
 
 // Super Admin Routes
