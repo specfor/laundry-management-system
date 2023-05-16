@@ -496,8 +496,9 @@ class ApiControllerV1 extends API
         $customerId = self::getParameter('customer-id', dataType: 'int');
         $status = self::getParameter('order-status');
         $items = self::getParameter('items', dataType: 'array');
+        $totalPrice = self::getParameter('total-price', dataType: 'float');
 
-        $status = Orders::updateOrder($orderId, $branchId, $status, $customerId, $items);
+        $status = Orders::updateOrder($orderId, $branchId, $status, $customerId, $items, $totalPrice);
         if ($status === true)
             self::sendSuccess("Order updated successfully.");
         elseif ($status === false)

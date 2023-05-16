@@ -235,6 +235,7 @@ branch-id - optional
 order-status - optional
 items - optional - should contain all items as order items are overwritten.
                     array of {item-id: {'amount':amount,'return-date': return-date, 'defects': [defect1, defect2,...]}, item-id2: { ...}}
+total-price - optional
 
 POST - /api/v1/orders/delete
 Parameters

@@ -165,7 +165,7 @@ class Orders extends DbModel
     }
 
     public static function updateOrder(int $orderId, int $branchId = null, string $orderStatus = null,
-                                       int $customerId = null, array $items = null): bool|string
+                                       int $customerId = null, array $items = null, float $totalPrice = null): bool|string
     {
         $orderData = self::getOrders(orderId: $orderId)[0];
         if (empty($orderData))
@@ -208,9 +208,14 @@ class Orders extends DbModel
                 }
             }
 
-            $params['items'] = json_encode( $newItemData);
-            $params['total_price'] = $calculatedTotalPrice;
+            $params['items'] = json_encode($newItemData);
+            if ($totalPrice)
+                $params['total_price'] = $totalPrice;
+            else
+                $params['total_price'] = $calculatedTotalPrice;
         }
+        if ($totalPrice)
+            $params['total_price'] = $totalPrice;
         if ($branchId) {
             if (empty(Branches::getBranches(branchId: $branchId)))
                 return "Invalid branch Id.";
