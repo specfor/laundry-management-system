@@ -104,6 +104,8 @@ class Items extends DbModel
         $startingIndex = $pageNumber * $limit;
         $filters = [];
         $placeholders = [];
+        if ($itemId)
+            $filters[] = "item_id=$itemId";
         if ($itemName) {
             $filters[] = "name LIKE :name";
             $placeholders['name'] = "%" . strtolower($itemName) . "%";
