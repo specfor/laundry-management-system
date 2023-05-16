@@ -233,7 +233,8 @@ order-id - compulsory
 customer-id - optional
 branch-id - optional
 order-status - optional
-return-date - optional - {item_id: return_date, item_id2: return_date, ....}
+items - optional - should contain all items as order items are overwritten.
+                    array of {item-id: {'amount':amount,'return-date': return-date, 'defects': [defect1, defect2,...]}, item-id2: { ...}}
 
 POST - /api/v1/orders/delete
 Parameters

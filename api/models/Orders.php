@@ -165,7 +165,7 @@ class Orders extends DbModel
     }
 
     public static function updateOrder(int $orderId, int $branchId = null, string $orderStatus = null,
-                                       int $customerId = null, array $returnDate = null): bool|string
+                                       int $customerId = null, array $items = null): bool|string
     {
         $orderData = self::getOrders(orderId: $orderId)[0];
         if (empty($orderData))
@@ -178,32 +178,38 @@ class Orders extends DbModel
         else
             $params['customer_id'] = $customerId;
 
-        if ($returnDate) {
+        if ($items) {
             $itemIds = [];
-            foreach ($returnDate as $itemId => $itemReturnDate) {
+            foreach ($items as $itemId => $itemDataGiven) {
                 if (!is_int($itemId))
                     return "All item ids must be integers.";
-
+                if (!is_array($itemDataGiven))
+                    return "Invalid item content.";
                 $itemIds[] = "item_id=$itemId";
             }
             $condition = "(" . implode(' OR ', $itemIds) . ")";
             $condition .= " AND blocked=false";
             $itemData = (self::getDataFromTable(['price', 'item_id'], 'items', $condition))->fetchAll(PDO::FETCH_ASSOC);
 
-            if (count($itemData) < count($returnDate))
+            if (count($itemData) < count($items))
                 return "Invalid item ids were sent.";
 
-            foreach ($returnDate as $itemId => $itemReturnDate) {
-                if (!is_int($itemId) || !is_string($itemReturnDate))
-                    return "Passed 'return-date' is invalid.";
-                for ($i = 0; $i < count($orderData['items']); $i++) {
-                    if ($itemId == $orderData['items'][$i]['item_id']) {
-                        $orderData['items'][$i]['return-date'] = $itemReturnDate;
+            $calculatedTotalPrice = 0;
+            $newItemData = [];
+            foreach ($items as $itemId => $itemDataGiven) {
+                foreach ($itemData as $item) {
+                    if ($itemId == $item['item_id']) {
+                        $item['amount'] = $itemDataGiven['amount'];
+                        $item['return-date'] = $itemDataGiven['return-date'];
+                        $item['defects'] = $itemDataGiven['defects'];
+                        $calculatedTotalPrice += intval($itemDataGiven['amount']) * floatval($item['price']);
+                        $newItemData[] = $item;
                     }
                 }
             }
 
-            $params['items'] = json_encode( $orderData['items']);
+            $params['items'] = json_encode( $newItemData);
+            $params['total_price'] = $calculatedTotalPrice;
         }
         if ($branchId) {
             if (empty(Branches::getBranches(branchId: $branchId)))
