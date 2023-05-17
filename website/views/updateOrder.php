@@ -2,7 +2,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
   <title>Update Order</title>
-  <script src="/assets/js/addOrder.js"></script>
+  <script src="/assets/js/updateOrder.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
@@ -126,7 +126,7 @@
 </div>
 
 <div class="container-fluid position-relative " id="addOrderDiv">
-        <h1 class="h1 text-white ms-4 mt-4">Add New Order</h1>
+        <h1 class="h1 text-white ms-4 mt-4">Update Order</h1>
         <button class="btn btn-dark mt-2 ms-5" data-bs-toggle="modal"
               data-bs-target="#updateItem">+</button>
         <table class="table table-dark table-striped mt-2">
@@ -139,13 +139,45 @@
                 <td>Delivery Due Date</td>
                 <td>Edit</td>
             </thead>
-            <tbody id="addOrderTable">
+            <tbody id="updateOrderTable">
 
             </tbody>
         </table>
         <button class="btn btn-danger mt-4 position-absolute end-0 me-4" id="paymentProceed">Proceed to Payment</button>
 
 
+    </div>
+
+    <div class="container-fluid">
+        <div class="container-fluid row">
+        <div class="col-6">
+        <div class="container mt-5 mb-5 ms-5 mx-5 bg-light d-none" style="border-radius:1.2rem;" id="checkoutDiv">
+            <h1 class="h1 text-center">Checkout</h1>
+            <label for="price" class="">Price</label>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Colours Faded" id="autoCal">
+                <label class="form-check-label" for="flexCheckChecked">Auto Calculate</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Colours Faded" id="customP">
+                <label class="form-check-label" for="flexCheckChecked">Custom Price</label>
+            </div>
+            <input type="text" class="form-control mt-2" id="customPrice" placeHolder="Enter a Custom Price.">
+            <button class="btn btn-danger mt-2 mb-3" id="confirmCheckout">Pay</button>
+        </div>
+        </div>
+
+        <div class="col-6">
+            <div class="container mt-5 mb-5 ms-5 mx-5 bg-light d-none" style="border-radius:1.2rem;" id="methodDiv">
+            <h1 class="h1 text-center">Pay</h1>
+            <div class="container bg-info" style="margin:auto;border-radius:1.2rem;">
+                <h3 class="h3 text-center" id="totalPrice"></h3>    
+        </div>
+        <button class="btn btn-danger mt-2 mb-3" id="addPayment">Done</button>
+        </div>
+        </div>
+        
+        
     </div>
 
 

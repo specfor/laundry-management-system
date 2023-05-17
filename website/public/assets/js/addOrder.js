@@ -220,7 +220,6 @@ async function checkCheckout(){
     let cusPriceInput =  document.getElementById("customPrice").value
 
     
-
     if(autoCalculate.checked == true && customPrice.checked == true){
         alert("Please select one price option only.")
         return
@@ -243,34 +242,37 @@ async function checkCheckout(){
     if(customerName==""){
         alert("Enter the customer name.")
         return
-    }else if(autoCalculate.checked == true){
-        let cus = await getCustomer(customerName)
+    }
     
+    if(autoCalculate.checked == true){
+        let cus = await getCustomer(customerName)
+
         if(cus[0] == true){
             await addOrderTotheDBautoP(cus[1])
             return
-        }else{
-            let addCus =await addCustomer(customerName)
-            
-            if(addCus[0] == true){
-                await addOrderTotheDBautoP(cus[1])
-                return
-            }
         }
-    }else if(customPrice.checked == true){
+        let addCus =await addCustomer(customerName)
+
+        if(addCus[0] == true){
+            await addOrderTotheDBautoP(addCus[1])
+            return
+        }
+        
+    }
+    if(customPrice.checked == true){
         let cus = await getCustomer(customerName)
     
         if(cus[0] == true){
             await addOrderTotheDBcustomP(cus[1],cusPriceInput)
             return
 
-        }else{
-            let addCus =await addCustomer(customerName)
-            if(addCus[0] == true){
-                await addOrderTotheDBcustomP(cus[1],cusPriceInput)
-                return
-            }
         }
+        let addCus =await addCustomer(customerName)
+        if(addCus[0] == true){
+            await addOrderTotheDBcustomP(addCus[1],cusPriceInput)
+            return
+        }
+        
     }
 }
 
@@ -377,6 +379,8 @@ async function addCustomer(customerName){
 
 //Get customer id 
 async function getCustomer(customerName){
+    
+
     let response = await getJsonResponse("http://www.laundry-api.localhost/api/v1/customers")
 
     let resJson = await response.json()
@@ -385,12 +389,12 @@ async function getCustomer(customerName){
         let customers = resJson["body"]["customers"]
 
         for(customer of customers){
+
             if(customer["name"] == customerName){
                 return [true,customer["customer_id"]]
-            }else{
-                return [false]
             }
         }
+        return [false]
     }
 }
 

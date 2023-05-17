@@ -1,12 +1,19 @@
+
+let deleteId ;
+
 window.addEventListener("load",function(){
+    document.getElementById("btnConfirmDeletion").addEventListener("click",confirmDeletion)
     getAllOrders()
 })
+
+
+
 
 async function getAllOrders(){
     let response = await getJsonResponse("http://www.laundry-api.localhost/api/v1/orders")
     let resJson = await response.json()
 
-    console.log(resJson)
+
 
     let orders = resJson["body"]["orders"]
 
@@ -37,10 +44,61 @@ async function getAllOrders(){
 
         row.insertCell(7).innerText =   `Rs: ${order["total_price"]}`
 
-        row.insertCell(8).innerHTML = `<button class="btn btn-primary" onclick="prepareEdit()" id="btn-edit-${order["order_id"]}">Edit</button>
-        <button class="btn btn-danger" onclick="prepareDeletion()" id='btn-delete-${order["order_id"]}'>Delete</button>`
+        row.insertCell(8).innerHTML = `<button class="btn btn-primary" onclick="prepareEdit()" id="btn-edit-${order["order_id"]}">Update</button>
+        <button class="btn btn-danger" onclick="prepareDeletion()" id='btn-delete-${order["order_id"]}' data-bs-toggle="modal"
+        data-bs-target="#confirmDelete">Delete</button>`
 
     }
+}
+
+function prepareDeletion(){
+    deleteId = event.target.id.split("-")[2]
+    
+}
+
+async function confirmDeletion(){
+    let response = await sendJsonRequest("http://www.laundry-api.localhost/api/v1/orders/delete",{
+        "order-id":deleteId
+    })
+
+    let resJson = await response.json()
+
+    if(resJson.statusMessage == "success"){
+        let customerTable = document.getElementById("allOrdersTable")
+
+    for (let i = 0, row; row = customerTable.rows[i]; i++) {
+        if (row.cells[0].innerText == deleteId) {
+            customerTable.deleteRow(i)
+        }
+    }
+    if (customerTable.innerHTML == ''){
+        await getAllOrders()
+    }
+    alert(resJson.body.message)
+}else{
+    alert(resJson.body.message)
+    }
+}
+
+async function deleteFormDataBase(){
+
+    let response = await sendJsonRequest("http://www.laundry-api.localhost/api/v1/orders/delete",{
+        "order-id":deleteId
+    })
+
+    let resJson = await response.json()
+
+    if(resJson.statusMessage == "success"){
+        await getAllOrders()
+    }
+}
+
+function prepareEdit(){
+    order_id = event.target.id.split("-")[2]
+
+    localStorage.setItem("order_id",order_id)
+    
+    location.replace("../orders/update-order")
 }
 
 function readingArrayForDelivery(itemArray){
@@ -64,7 +122,7 @@ function readingArraysForAmount(itemArray){
 }
 
 async function readingArraysForActions(itemArray){
-    
+
     let array1 = []
     for(item of itemArray){
         let itemActions = await getItemsWithActions(Number(item["item_id"]))
@@ -75,11 +133,11 @@ async function readingArraysForActions(itemArray){
 }
 
 async function readingArrays(itemArray){
-    
+
     let array1 = []
     for(item of itemArray){
-       let itemName = await getItemsWithActions(Number(item["item_id"]))
 
+       let itemName = await getItemsWithActions(item["item_id"])
        array1.push(`<h5 class="h5">${itemName[0]}</h5>`)  
     }
 

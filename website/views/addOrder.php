@@ -179,15 +179,6 @@
         <div class="col-6">
             <div class="container mt-5 mb-5 ms-5 mx-5 bg-light d-none" style="border-radius:1.2rem;" id="methodDiv">
             <h1 class="h1 text-center">Pay</h1>
-            <label for="payMethod" class="">Payment Method</label>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="Colours Faded" id="cashPay">
-                <label class="form-check-label" for="flexCheckChecked">Cash</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="Colours Faded" id="chequePay">
-                <label class="form-check-label" for="flexCheckChecked">Cheque</label>
-            </div>
             <div class="container bg-info" style="margin:auto;border-radius:1.2rem;">
                 <h3 class="h3 text-center">Total:</h3>
                 <h3 class="h3 text-center" id="totalPrice"></h3>    
