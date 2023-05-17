@@ -37,6 +37,10 @@
 
     <div class="container-fluid">
     <h1 class="h1 mt-3 ms-2 text-white" >Orders</h1>
+    <a href="./orders/new-order">
+    <button class="btn btn-dark">+</button>
+    </a>
+    
     <table class="table table-dark table-striped mt-2">
       <thead>
         <td>Order Id</td>
