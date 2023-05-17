@@ -5,6 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
   <title>Payments</title>
+  <script src="/assets/js/payments.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
@@ -24,14 +25,8 @@
     <div class="row mt-3">
       <div class="col-md-6">
         <div class="input-group mb-3">
-          <input id="" type="text" class="form-control" placeholder="Client Name" aria-label="" aria-describedby="">
-          <button class="btn btn-dark fw-bold" type="button" id="">clear</button>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="input-group mb-3">
-          <input id="priceFilter" type="number" class="form-control" placeholder="Id" aria-label="" aria-describedby="">
-          <button class="btn btn-dark fw-bold" type="button" id="">clear</button>
+          <input id="orderIdInput" type="number" class="form-control" placeholder="Order Id" aria-label="" aria-describedby="">
+          <button class="btn btn-dark fw-bold" type="button" id="clear">clear</button>
         </div>
       </div>
 
@@ -39,13 +34,10 @@
     <table class="table table-dark table-striped mt-1">
       <thead>
         <tr>
-          <td>ID</td>
-          <td>Client Name</td>
+          <td>Payment Id</td>
+          <td>Order Id</td>
           <td>Amount</td>
-          <td>Payment Method</td>
           <td>Payment Date</td>
-          <td>Payment Time</td>
-          <td>Branch</td>
         </tr>
       </thead>
       <tbody id="paymentsTable">
