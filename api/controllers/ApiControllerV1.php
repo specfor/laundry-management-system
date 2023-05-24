@@ -242,6 +242,14 @@ class ApiControllerV1 extends API
             self::sendError('Failed to delete the employee');
     }
 
+    public function whoAmI(): void
+    {
+        self::checkPermissions();
+
+        $userId = self::getUserId();
+        self::sendSuccess(['user-id' => $userId]);
+    }
+
     public function login(): void
     {
         $username = self::getParameter('username', isCompulsory: true);

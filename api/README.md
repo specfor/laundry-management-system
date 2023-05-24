@@ -11,6 +11,9 @@ migrations one by one in the alphabetical order of the naming</p>
 
 <h3>API Endpoints</h3>
 
+<h4>GET - /api/v1/whoami</h4>
+Returns the details of the current user
+
 <h4>POST - /api/v1/login</h4>
 <p>Parameters - username , password</p>
 <p>Used to log in Users.</p>

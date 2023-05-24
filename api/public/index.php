@@ -24,6 +24,7 @@ $config = [
 $app = new Application($config);
 // API routes
 $app->router->addPostRoute('/api/v1/login', [ApiControllerV1::class, 'login']);
+$app->router->addGetRoute('/api/v1/whoami', [ApiControllerV1::class, 'whoAmI']);
 $app->router->addGetRoute('/api/v1/users', [ApiControllerV1::class, 'getUsers']);
 $app->router->addPostRoute('/api/v1/users/add', [ApiControllerV1::class, 'addUser']);
 $app->router->addPostRoute('/api/v1/users/update', [ApiControllerV1::class, 'updateUser']);
