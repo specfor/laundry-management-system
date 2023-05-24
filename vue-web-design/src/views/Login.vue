@@ -1,35 +1,38 @@
 <script setup>
-  import {ref} from "vue";
-  import {sendJsonPostRequest} from '../js-modules/base-functions.js'
-  import {defineProps} from "vue";
-  import {useRouter} from "vue-router";
+import {ref} from "vue";
+import {sendJsonPostRequest} from '../js-modules/base-functions.js'
+import {defineProps} from "vue";
+import {useRouter} from "vue-router";
 
-  const router = useRouter()
+const router = useRouter()
 
-  let username = ref('')
-  let password = ref('')
-  let {loggedIn} = defineProps(['loggedIn'])
+let username = ref('')
+let password = ref('')
+let {loggedIn} = defineProps(['loggedIn'])
 
-  async function loginUser(event) {
-    let response = await sendJsonPostRequest("http://www.laundry-api.localhost/api/v1/login", {
-      username: username.value,
-      password: password.value
-    })
-    if (response.status === 200) {
-      let data = await response.json()
-      if (data.statusMessage === 'success') {
-        localStorage.setItem('auth-token', data.body.token)
-        event.$emit('update:logged-in', true)
-        router.push('/dashboard')
-      } else if (data.statusMessage === 'error') {
-        console.log(data.body.message)
-        // popUpError('Login Error', data.body.message)
-      } else {
-        console.log('Unknown error occurred.')
-        // popUpError('Login Error', 'Unknown error occurred.')
-      }
+if (loggedIn === true)
+  router.push('/dashboard')
+
+async function loginUser(event) {
+  let response = await sendJsonPostRequest("http://www.laundry-api.localhost/api/v1/login", {
+    username: username.value,
+    password: password.value
+  })
+  if (response.status === 200) {
+    let data = await response.json()
+    if (data.statusMessage === 'success') {
+      localStorage.setItem('auth-token', data.body.token)
+      event.$emit('update:logged-in', true)
+      router.push('/dashboard')
+    } else if (data.statusMessage === 'error') {
+      console.log(data.body.message)
+      // popUpError('Login Error', data.body.message)
+    } else {
+      console.log('Unknown error occurred.')
+      // popUpError('Login Error', 'Unknown error occurred.')
     }
   }
+}
 </script>
 
 <template>
