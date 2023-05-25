@@ -336,7 +336,7 @@ class ApiControllerV1 extends API
         $lastname = self::getParameter('lastname');
         $password = self::getParameter('password');
         $role = self::getParameter('role');
-        $branchId = self::getParameter('branch-id');
+        $branchId = self::getParameter('branch-id', dataType: 'int');
 
         $status = User::updateUser($userId, $password, $role, $email, $firstname, $lastname, $branchId);
         if ($status === true)
