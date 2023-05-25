@@ -33,7 +33,7 @@ init()
 </script>
 
 <template>
-  <RouterView :loggedIn="loggedIn" @update:logged-in="loggedIn = $event"/>
+  <RouterView :loggedIn="loggedIn" @update:logged-in="loggedIn = $event" :headers="headers"/>
 </template>
 
 <style scoped>

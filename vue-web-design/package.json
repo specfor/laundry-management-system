@@ -9,6 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@headlessui/vue": "^1.7.13",
+    "tw-elements": "^1.0.0-beta2",
     "vue": "^3.2.47",
     "vue-router": "^4.2.1"
   },

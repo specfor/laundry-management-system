@@ -2,6 +2,8 @@ import {createRouter, createWebHistory} from 'vue-router'
 import Login from '../views/Login.vue'
 import Home from '../views/Home.vue'
 import Dashboard from '../views/Dashboard.vue'
+import _404Page from '../views/_404.vue'
+import Users from '../views/Users.vue'
 
 const routes = [
     {
@@ -15,6 +17,11 @@ const routes = [
         component: Dashboard
     },
     {
+        path: '/users',
+        name: 'Users',
+        component: Users
+    },
+    {
         path: '/home',
         name: 'About',
         component: Home
@@ -22,6 +29,11 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         // component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    },
+    {
+        path: '/:catchall(.*)*',
+        name: 'Page not Found',
+        component: _404Page
     }
 ]
 const router = createRouter({
