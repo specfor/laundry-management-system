@@ -26,7 +26,7 @@
 </template>
 
 <script setup>
-import {defineProps, ref} from "vue";
+import {defineProps} from "vue";
 
 let {tableColumns, tableRows, actions} = defineProps(['tableColumns', 'tableRows', 'actions'])
 </script>
