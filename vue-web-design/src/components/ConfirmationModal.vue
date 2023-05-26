@@ -1,6 +1,6 @@
 <template>
-  <TransitionRoot as="template" :show="isOpen">
-    <Dialog as="div" class="relative z-10" @close="$emit('modal-closed')">
+  <TransitionRoot as="template" :show="open">
+    <Dialog as="div" class="relative z-10" @close="open = false">
       <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100"
                        leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"/>
@@ -19,7 +19,7 @@
                 <div class="sm:flex sm:items-start">
                   <div
                       class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                    <!--                      <ExclamationTriangleIcon class="h-6 w-6 text-red-600" aria-hidden="true" />-->
+                    <ExclamationTriangleIcon class="h-6 w-6 text-red-600" aria-hidden="true"/>
                   </div>
                   <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                     <DialogTitle as="h3" class="text-base font-semibold leading-6 text-gray-900">{{ title }}
@@ -33,11 +33,11 @@
               <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                 <button type="button"
                         class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                        @click="$emit('confirm'); $emit('modal-closed')">Confirm
+                        @click="confirm = true; open = false">Confirm
                 </button>
                 <button type="button"
                         class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                        @click="$emit('modal-closed')" ref="cancelButtonRef">Cancel
+                        @click="open = false" ref="cancelButtonRef">Cancel
                 </button>
               </div>
             </DialogPanel>
@@ -49,11 +49,30 @@
 </template>
 
 <script setup>
+import {ExclamationTriangleIcon} from '@heroicons/vue/24/solid';
 import {Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot} from '@headlessui/vue'
-import {defineProps} from "vue";
+import {ref} from "vue";
 
-let {isOpen, message, title} = defineProps(['isOpen', 'message', 'title'])
 
+let confirm = false
+let open = ref(false)
+let title = ref(false)
+let message = ref(false)
+
+window.popupConfirmation = (title_, message_) => {
+  title.value = title_
+  message.value = message_
+  confirm = false
+  open.value = true
+  return new Promise((resolve, reject) => {
+    let id = setInterval(() => {
+      if (open.value === false) {
+        clearInterval(id)
+        resolve(confirm)
+      }
+    }, 200)
+  })
+}
 </script>
 
 <style scoped>
