@@ -8,14 +8,17 @@
     </tr>
     </thead>
     <tbody>
+    <tr v-if="tableRows.length === 0">
+      <td>No Data To Display.</td>
+    </tr>
     <tr v-for="row in tableRows" :key="row[0]">
       <td v-for="data in row" class="border border-slate-500 bg-slate-700 px-3">
         <span v-if="data === null">None</span>
-<!--        <span v-else-if="typeof data === 'object'"><span v-for="(val, key) in data" v-html="val"></span></span>-->
         <span v-else>{{ data }}</span>
       </td>
       <td v-if="actions">
-        <button v-for="action in actions" @click="$emit(action['onClickEvent'], row[0])">{{action['btnText']}}</button>
+        <button v-for="action in actions" @click="$emit(action['onClickEvent'], row[0])">{{ action['btnText'] }}
+        </button>
       </td>
     </tr>
     </tbody>
@@ -23,10 +26,9 @@
 </template>
 
 <script setup>
-import {defineProps} from "vue";
+import {defineProps, ref} from "vue";
 
 let {tableColumns, tableRows, actions} = defineProps(['tableColumns', 'tableRows', 'actions'])
-
 </script>
 
 <style scoped>
