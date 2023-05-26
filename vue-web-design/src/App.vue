@@ -4,6 +4,7 @@ import {ref} from "vue";
 import {useRouter} from "vue-router";
 import {sendGetRequest} from "./js-modules/base-functions.js";
 import {apiBaseUrl} from "./js-modules/website-constants.js";
+import Notifications from "./components/Notifications.vue";
 
 // Initializing app and checking whether user is loggedIn
 let loggedIn = ref(false)
@@ -34,6 +35,7 @@ init()
 
 <template>
   <RouterView :loggedIn="loggedIn" @update:logged-in="loggedIn = $event" :headers="headers"/>
+  <Notifications/>
 </template>
 
 <style scoped>
