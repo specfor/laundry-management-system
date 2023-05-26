@@ -34,9 +34,11 @@ async function getUsers() {
         tableRows.value.push([user["id"], user["username"], user["email"], user["firstname"], user["lastname"],
           user["role"], user["branch_id"]])
       }
-    } else (
-        alert("Something went wrong.Try again.")
-    )
+    } else {
+      window.errorNotification('Fetch User Data', 'Something went wrong.Try again.')
+    }
+  } else {
+    window.errorNotification('Fetch User Data', 'Something went wrong. Can not fetch user data.')
   }
 }
 
@@ -60,28 +62,32 @@ async function addNewUser() {
     "lastname": newLastname.value,
     "branch-id": newBranchId.value
   }, headers)
-  let data = await response.json()
+  if (response.status === 200) {
+    let data = await response.json()
 
-  if (data.statusMessage === "success") {
-    isNewShow.value = false
-    newUsername.value = null
-    newPassword.value = null
-    newEmail.value = null
-    newFirstname.value = null
-    newLastname.value = null
-    newRole.value = 'cashier'
-    newBranchId.value = null
+    if (data.statusMessage === "success") {
+      tableRows.value.push([data.body['user-id'], newUsername.value, newEmail.value, newFirstname.value,
+        newLastname.value, newRole.value, newBranchId.value])
 
-    tableRows.value.push([data.body['user-id'], newUsername.value, newEmail.value, newFirstname.value,
-      newLastname.value, newRole.value, newBranchId.value])
-    alert('user added')
+      isNewShow.value = false
+      newUsername.value = null
+      newPassword.value = null
+      newEmail.value = null
+      newFirstname.value = null
+      newLastname.value = null
+      newRole.value = 'cashier'
+      newBranchId.value = null
+
+      window.successNotification('User Creation', data.body.message)
+    } else {
+      window.errorNotification('User Creation', data.body.message)
+    }
   } else {
-    alert(data.body.message)
+    window.errorNotification('User Creation', 'Connection error occurred.')
   }
 }
 
 let editUserId = null
-let editUsername = ref(null)
 let editEmail = ref(null)
 let editFirstname = ref(null)
 let editLastname = ref(null)
@@ -92,7 +98,6 @@ function prepareEditUser(id) {
   for (const tableRow of tableRows.value) {
     if (tableRow[0] === id) {
       editUserId = id
-      editUsername.value = tableRow[1]
       editEmail.value = tableRow[2]
       editFirstname.value = tableRow[3]
       editLastname.value = tableRow[4]
@@ -101,6 +106,39 @@ function prepareEditUser(id) {
     }
   }
   isUpdateShow.value = true
+}
+
+async function updateUser() {
+  let response = await sendJsonPostRequest(apiBaseUrl + "/users/update", {
+    "user-id": editUserId,
+    "role": editRole.value,
+    "email": editEmail.value,
+    "firstname": editFirstname.value,
+    "lastname": editLastname.value,
+    "branch-id": editBranchId.value
+  }, headers)
+  if (response.status === 200) {
+    let data = await response.json()
+
+    if (data.statusMessage === "success") {
+      for (let i = 0; i < tableRows.value.length; i++) {
+        if (tableRows.value[i][0] === editUserId){
+          tableRows.value[i][2] = editEmail.value
+          tableRows.value[i][3] = editFirstname.value
+          tableRows.value[i][4] = editLastname.value
+          tableRows.value[i][5] = editRole.value
+          tableRows.value[i][6] = editBranchId.value
+          break
+        }
+      }
+      isUpdateShow.value = false
+      window.successNotification('User Update', data.body.message)
+    } else {
+      window.errorNotification('User Update', data.body.message)
+    }
+  } else {
+    window.errorNotification('User Update', 'Connection error occurred.')
+  }
 }
 
 let deleteUserId = null
@@ -117,12 +155,12 @@ async function deleteUser() {
   let data = await response.json()
 
   if (data.statusMessage === "success") {
-    alert('user removed.')
+    window.successNotification('User Removal', data.body.message)
     tableRows.value = tableRows.value.filter(function (tableRow) {
       return tableRow[0] !== deleteUserId
     })
   } else {
-    alert('failed to remove user.')
+    window.errorNotification('User Removal', data.body.message)
   }
 }
 
@@ -145,15 +183,18 @@ async function updatePasswordFunc() {
 
     let resJson = await response.json()
 
-    if (resJson.statusMessage === 'success')
-      alert('password updated.')
-    else
-      alert(resJson.body.message)
+    if (resJson.statusMessage === 'success') {
+      window.successNotification('User Update', resJson.body.message)
+      isChangePasswordShow.value = false
+    } else
+      window.errorNotification('User Update', resJson.body.message)
   } else {
-    alert("Passwords don't match.")
+    window.errorNotification('User Update', "Passwords don't match.")
   }
 
+
 }
+
 </script>
 
 <template>
@@ -250,9 +291,6 @@ async function updatePasswordFunc() {
                   class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                 <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                   <div>
-                    Username <input type="text" v-model="editUsername">
-                  </div>
-                  <div>
                     Email <input type="email" v-model="editEmail">
                   </div>
                   <div>
@@ -276,7 +314,7 @@ async function updatePasswordFunc() {
                 <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                   <button type="button"
                           class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                          @click="isUpdateShow = false; updateUser()">Update
+                          @click="updateUser()">Update
                   </button>
                   <button type="button"
                           class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
@@ -318,7 +356,7 @@ async function updatePasswordFunc() {
                 <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                   <button type="button"
                           class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                          @click="isChangePasswordShow = false; updatePasswordFunc()">Update Password
+                          @click="updatePasswordFunc()">Update Password
                   </button>
                   <button type="button"
                           class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"

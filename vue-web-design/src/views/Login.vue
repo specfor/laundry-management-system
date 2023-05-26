@@ -25,11 +25,9 @@ async function loginUser(event) {
       event.$emit('update:logged-in', true)
       router.push('/dashboard')
     } else if (data.statusMessage === 'error') {
-      console.log(data.body.message)
-      // popUpError('Login Error', data.body.message)
+      window.errorNotification('Login Error', data.body.message)
     } else {
-      console.log('Unknown error occurred.')
-      // popUpError('Login Error', 'Unknown error occurred.')
+      window.errorNotification('Login Error', 'Unknown error occured.')
     }
   }
 }
