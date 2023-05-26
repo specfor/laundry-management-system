@@ -155,7 +155,6 @@ branch-id - optional
 POST - /api/v1/users/update
 Parameters
 user-id - compulsory
-username - optional
 password - optional
 role - optional
 email - optional
