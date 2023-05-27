@@ -6,6 +6,7 @@ import {sendGetRequest} from "./js-modules/base-functions.js";
 import {apiBaseUrl} from "./js-modules/website-constants.js";
 import Notifications from "./components/Notifications.vue";
 import ConfirmationModal from "./components/ConfirmationModal.vue";
+import AddNewModal from "./components/AddNewModal.vue";
 
 // Initializing app and checking whether user is loggedIn
 let loggedIn = ref(false)
@@ -38,6 +39,7 @@ window.httpHeaders = headers
   <RouterView :loggedIn="loggedIn" @update:logged-in="loggedIn = $event" />
   <Notifications/>
   <ConfirmationModal />
+  <AddNewModal />
 </template>
 
 <style scoped>
