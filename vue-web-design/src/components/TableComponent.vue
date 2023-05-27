@@ -13,7 +13,7 @@
     </tr>
     <tr v-for="row in tableRows" :key="row[0]">
       <td v-for="data in row" class="border border-slate-500 bg-slate-700 px-3">
-        <span v-if="data === null">None</span>
+        <span v-if="data === null || data === ''">None</span>
         <span v-else>{{ data }}</span>
       </td>
       <td v-if="actions">
