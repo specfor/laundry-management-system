@@ -4,6 +4,7 @@ import Products from '../views/Products.vue'
 import Dashboard from '../views/Dashboard.vue'
 import _404Page from '../views/_404.vue'
 import Users from '../views/Users.vue'
+import Branches from '../views/Branches.vue'
 
 const routes = [
     {
@@ -20,6 +21,11 @@ const routes = [
         path: '/users',
         name: 'Users',
         component: Users
+    },
+    {
+        path: '/branches',
+        name: 'Branches',
+        component: Branches
     },
     {
         path: '/products',
