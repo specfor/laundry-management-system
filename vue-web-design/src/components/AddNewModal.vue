@@ -16,34 +16,49 @@
             <DialogPanel
                 class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
               <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                <div class="text-center text-2xl">{{ title }}</div>
+                <div class="text-center text-2xl font-bold mb-5 ">{{ title }}</div>
                 <div v-for="field in fields">
-                  <div v-if="field['type'] === 'select'">
-                    {{ field['text'] }}
-                    <select :name="field['name']" :value="fieldValues[field['name']]"
-                            @input="event => fieldValues[field['name']] = event.target.value">
-                      <option v-for="option in field['options']" :value="option['value']">{{ option['text'] }}</option>
-                    </select>
-                  </div>
-                  <div v-else-if="field['type'] === 'checkbox'">
-                    <div>
+                  <div v-if="field['type'] === 'select'" class="grid grid-cols-3 mb-1">
+                    <div class="font-semibold text-slate-700 py-0.5">
                       {{ field['text'] }}
                     </div>
-                    <div v-for="option in field['options']">
-                      <input type="checkbox" :id="option['name']" :checked="option['checked']"
-                             @input="event => fieldValues[field['name']][option['name']] = event.target.checked">
-                      <label :for="option['name']">{{ option['text'] }}</label>
+                    <select
+                        class="col-span-2 border-2 border-slate-400 rounded-md hover:border-slate-700 px-3 py-0.5 hover:bg-slate-200"
+                        :name="field['name']" :value="fieldValues[field['name']]"
+                        @input="event => fieldValues[field['name']] = event.target.value">
+                      <option class=""
+                              v-for="option in field['options']" :value="option['value']">{{ option['text'] }}
+                      </option>
+                    </select>
+                  </div>
+                  <div v-else-if="field['type'] === 'checkbox'" class="grid grid-cols-3 my-2">
+                    <div class="font-semibold text-slate-700 py-0.5">
+                      {{ field['text'] }}
+                    </div>
+                    <div class="col-span-2 grid grid-cols-2">
+                      <div v-for="option in field['options']" class="flex mt-1">
+                        <input class="w-5 h-5 mt-0.5"
+                               type="checkbox" :checked="option['checked']"
+                               @input="event => fieldValues[field['name']][option['name']] = event.target.checked">
+                        <p class="ml-2 font-semibold "
+                               >{{ option['text'] }}</p>
+                      </div>
                     </div>
                   </div>
-                  <div v-else>
-                    {{ field['text'] }} <input :type="field['type']" :value="fieldValues[field['name']]"
-                                               @input="event => fieldValues[field['name']] = event.target.value">
+                  <div v-else class="grid grid-cols-3 mb-1">
+                    <div class="font-semibold text-slate-700 py-0.5">
+                      {{ field['text'] }}
+                    </div>
+                    <input
+                        class="col-span-2 border-2 border-slate-400 rounded-md px-3 hover:border-slate-700 py-0.5 hover:bg-slate-200"
+                        :type="field['type']" :value="fieldValues[field['name']]"
+                        @input="event => fieldValues[field['name']] = event.target.value">
                   </div>
                 </div>
               </div>
               <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                 <button type="button"
-                        class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+                        class="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto"
                         @click="show = false; success = true">{{ successBtnText }}
                 </button>
                 <button type="button"
