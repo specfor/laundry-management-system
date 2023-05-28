@@ -67,7 +67,11 @@ class Customers extends DbModel
         $condition = implode(' AND ', $filters);
         $statement = self::getDataFromTable(['customer_id', 'email', 'phone_num', 'name', 'address', 'branch_id', 'banned', 'joined_date'],
             self::TABLE_NAME, $condition, $placeholders, ['customer_id', 'desc'], [$startingIndex, $limit]);
-        return $statement->fetchAll(PDO::FETCH_ASSOC);
+        $data = $statement->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($data as &$customer) {
+            $customer['banned'] = boolval($customer['banned']);
+        }
+        return $data;
     }
 
     public static function updateCustomer(int    $customerId, string $name = null, string $email = null,
