@@ -2,7 +2,7 @@
   <h4>Add New Branch</h4>
   <button class="bg-slate-400" @click="addNewBranch">+</button>
 
-  <h3 class="text-2xl font-semibold mb-5">Products</h3>
+  <h3 class="text-2xl font-semibold mb-5">Branches</h3>
   <TableComponent :tableColumns="branchesTableCol" :tableRows="branchesTableRows" :actions="branchesTableActions"
                   @remove-branch="deleteBranch($event)" @edit-branch="editBranch($event)"/>
 
@@ -28,6 +28,7 @@ async function getBranches() {
     let data = await response.json()
 
     if (data.statusMessage === "success") {
+      branchesTableRows.value = []
       let branches = data["body"]["branches"];
       for (const branch of branches) {
         branchesTableRows.value.push([branch['branch_id'], branch['name'], branch['phone_num']])
@@ -60,7 +61,7 @@ async function addNewBranch() {
     let data = await response.json()
 
     if (data.statusMessage === "success") {
-      branchesTableRows.value.push([data.body['branch-id'], branch['data']['name'], branch['data']['phone']])
+      getBranches()
       window.successNotification('Add New Branch', data.body.message)
     } else {
       window.errorNotification('Add New Branch', data.body.message)
@@ -120,9 +121,7 @@ async function deleteBranch(id) {
     if (response.status === 200) {
       let data = await response.json()
       if (data.statusMessage === "success") {
-        branchesTableRows.value = branchesTableRows.value.filter(function (tableRow) {
-          return tableRow[0] !== id
-        })
+        getBranches()
         window.successNotification('Delete Branch', data.body.message)
       } else {
         window.errorNotification('Delete Branch', data.body.message)

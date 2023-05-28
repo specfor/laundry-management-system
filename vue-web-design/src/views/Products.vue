@@ -25,6 +25,7 @@ async function getActions() {
     let data = await response.json()
 
     if (data.statusMessage === "success") {
+      actionTableRows.value = []
       let categories = data["body"]["categories"];
       for (const category of categories) {
         actionTableRows.value.push([category['category_id'], category['name']])
@@ -55,7 +56,7 @@ async function addNewAction() {
     let data = await response.json()
 
     if (data.statusMessage === "success") {
-      actionTableRows.value.push([data.body['category-id'], action['data']['action']])
+      getActions()
       window.successNotification('Add New Action', data.body.message)
     } else {
       window.errorNotification('Add New Action', data.body.message)
@@ -111,9 +112,7 @@ async function deleteAction(id) {
 
       if (data.statusMessage === "success") {
         window.successNotification('Action Removal', data.body.message)
-        actionTableRows.value = actionTableRows.value.filter(function (tableRow) {
-          return tableRow[0] !== id
-        })
+        getActions()
         window.successNotification('Action Removal', data.body.message)
       } else {
         window.errorNotification('Action Removal', data.body.message)
@@ -130,6 +129,7 @@ async function getProducts() {
   if (response.status === 200) {
     let data = await response.json()
     if (data.statusMessage === "success") {
+      productTableRows.value = []
       let products = data["body"]["items"]
 
       for (const product of products) {
@@ -175,7 +175,7 @@ async function addNewProduct() {
     let data = await response.json()
 
     if (data.statusMessage === "success") {
-      productTableRows.value.push([data.body['item-id'], product['data']['name'], options.join(', '), product['data']['price']])
+      getProducts()
       window.successNotification('Add New Product', data.body.message)
     } else {
       window.errorNotification('Add New Product', data.body.message)
@@ -249,9 +249,7 @@ async function deleteProduct(id) {
     if (response.status === 200) {
       let data = await response.json()
       if (data.statusMessage === "success") {
-        productTableRows.value = productTableRows.value.filter(function (tableRow) {
-          return tableRow[0] !== id
-        })
+        getProducts()
         window.successNotification('Delete Product', data.body.message)
       } else {
         window.errorNotification('Delete Product', data.body.message)

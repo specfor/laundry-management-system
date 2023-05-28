@@ -15,6 +15,7 @@ async function getUsers() {
   if (response.status === 200) {
     let data = await response.json()
     if (data.statusMessage === "success") {
+      tableRows.value = []
       let users = data["body"]["users"]
 
       for (const user of users) {
@@ -62,8 +63,7 @@ async function addNewUser() {
     let data = await response.json()
 
     if (data.statusMessage === "success") {
-      tableRows.value.push([data.body['user-id'], user.data['username'], user.data['email'], user.data['firstname'],
-        user.data['lastname'], user.data['role'], user.data['branch-id']])
+      getUsers()
       window.successNotification('User Creation', data.body.message)
     } else {
       window.errorNotification('User Creation', data.body.message)
@@ -135,9 +135,7 @@ async function deleteUser(id) {
 
       if (data.statusMessage === "success") {
         window.successNotification('User Removal', data.body.message)
-        tableRows.value = tableRows.value.filter(function (tableRow) {
-          return tableRow[0] !== id
-        })
+        getUsers()
       } else {
         window.errorNotification('User Removal', data.body.message)
       }
