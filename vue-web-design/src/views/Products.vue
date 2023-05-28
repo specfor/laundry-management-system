@@ -111,7 +111,6 @@ async function deleteAction(id) {
       let data = await response.json()
 
       if (data.statusMessage === "success") {
-        window.successNotification('Action Removal', data.body.message)
         getActions()
         window.successNotification('Action Removal', data.body.message)
       } else {
@@ -185,7 +184,7 @@ async function addNewProduct() {
   }
 }
 
-async function editBranch(id) {
+async function editProduct(id) {
   let productData = productTableRows.value.filter((row) => {
     return row[0] === id
   })[0]
@@ -268,7 +267,7 @@ async function deleteProduct(id) {
 
   <h3 class="text-2xl font-semibold mb-5">Products</h3>
   <TableComponent :tableColumns="productTableCol" :tableRows="productTableRows" :actions="productTableActions"
-                  @remove-product="deleteProduct($event)" @edit-product="editBranch($event)"/>
+                  @remove-product="deleteProduct($event)" @edit-product="editProduct($event)"/>
 
   <h4>Add New Action</h4>
   <button class="bg-slate-400" @click="addNewAction">+</button>

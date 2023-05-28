@@ -46,7 +46,7 @@ async function addNewUser() {
     },
     {name: 'branch-id', text: 'Branch Id', type: 'number'}
   ])
-  console.log(user)
+
   if (!user['accepted'])
     return
 
