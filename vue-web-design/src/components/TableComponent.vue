@@ -1,23 +1,24 @@
 <template>
   <table class="table-auto border-collapse border w-full">
     <thead>
-    <tr>
-      <th class="border-2 border-slate-500 bg-slate-600 text-left px-3"
+    <tr class="border-0 border-y-2 border-t-0 border-slate-500 bg-neutral-300">
+      <th class="text-left px-3 pt-4 pb-2 font-bold"
           v-for="(columnName, i) in tableColumns" :key="i">{{ columnName }}
       </th>
     </tr>
     </thead>
-    <tbody>
+    <tbody class="font-semibold">
     <tr v-if="tableRows.length === 0">
-      <td>No Data To Display.</td>
+      <td colspan="100%" class="text-center pt-2 text-slate-700">No Data To Display.</td>
     </tr>
-    <tr v-for="row in tableRows" :key="row[0]">
-      <td v-for="data in row" class="border border-slate-500 bg-slate-700 px-3">
+    <tr v-for="row in tableRows" :key="row[0]"  class="border-y border-slate-400 bg-neutral-100 hover:bg-neutral-200">
+      <td v-for="data in row" class="px-3 py-1 text-slate-800">
         <span v-if="data === null || data === ''">None</span>
         <span v-else>{{ data }}</span>
       </td>
-      <td v-if="actions">
-        <button v-for="action in actions" @click="$emit(action['onClickEvent'], row[0])">{{ action['btnText'] }}
+      <td v-if="actions" class="px-3 py-1">
+        <button class="py-0.5 my-0.5 mx-1 bg-blue-900/60 hover:bg-blue-900/80 rounded-md px-3 text-slate-100 "
+                v-for="action in actions" @click="$emit(action['onClickEvent'], row[0])">{{ action['btnText'] }}
         </button>
       </td>
     </tr>
