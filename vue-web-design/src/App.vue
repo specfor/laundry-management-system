@@ -28,7 +28,8 @@ async function init() {
       }
     }
   }
-  useRouter().push('/')
+  let router = useRouter()
+  router.push('/')
 }
 
 init()
@@ -36,7 +37,9 @@ window.httpHeaders = headers
 </script>
 
 <template>
-  <RouterView :loggedIn="loggedIn" @update:logged-in="loggedIn = $event" />
+  <div class="container">
+    <RouterView :loggedIn="loggedIn" @update:logged-in="loggedIn = $event" />
+  </div>
   <Notifications/>
   <ConfirmationModal />
   <AddNewModal />
