@@ -1,4 +1,5 @@
 <template>
+  <div class="w-full overflow-x-auto">
   <table class="table-auto border-collapse border w-full">
     <thead>
     <tr class="border-0 border-y-2 border-t-0 border-slate-500 bg-neutral-300">
@@ -23,7 +24,7 @@
       </td>
     </tr>
     </tbody>
-  </table>
+  </table></div>
 </template>
 
 <script setup>
