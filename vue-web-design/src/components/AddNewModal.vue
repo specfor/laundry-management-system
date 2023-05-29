@@ -61,7 +61,7 @@
                     <input
                         class="col-span-2 border-2 border-slate-400 rounded-md px-3 hover:border-slate-700
                          py-0.5 hover:bg-slate-100 focus:bg-slate-200"
-                        :type="field['type']" :value="fieldValues[field['name']]"
+                        :type="field['type']" :value="fieldValues[field['name']]" :min="field['min']" :max="field['max']"
                         @input="event => fieldValues[field['name']] = event.target.value">
                   </div>
                 </div>
