@@ -41,16 +41,26 @@
                                type="checkbox" :checked="option['checked']"
                                @input="event => fieldValues[field['name']][option['name']] = event.target.checked">
                         <p class="ml-2 font-semibold "
-                               >{{ option['text'] }}</p>
+                        >{{ option['text'] }}</p>
                       </div>
                     </div>
+                  </div>
+                  <div v-else-if="field['type'] === 'textarea'" class="grid grid-cols-3 mb-1">
+                    <div class="font-semibold text-slate-700 py-0.5">
+                      {{ field['text'] }}
+                    </div>
+                    <textarea :name="field['name']" cols="30" rows="3" :value="fieldValues[field['name']]"
+                              @input="event => fieldValues[field['name']] = event.target.value"
+                              class="col-span-2 border-2 border-slate-400 rounded-md px-3 hover:border-slate-700
+                               py-0.5 hover:bg-slate-100 focus:bg-slate-200"></textarea>
                   </div>
                   <div v-else class="grid grid-cols-3 mb-1">
                     <div class="font-semibold text-slate-700 py-0.5">
                       {{ field['text'] }}
                     </div>
                     <input
-                        class="col-span-2 border-2 border-slate-400 rounded-md px-3 hover:border-slate-700 py-0.5 hover:bg-slate-200"
+                        class="col-span-2 border-2 border-slate-400 rounded-md px-3 hover:border-slate-700
+                         py-0.5 hover:bg-slate-100 focus:bg-slate-200"
                         :type="field['type']" :value="fieldValues[field['name']]"
                         @input="event => fieldValues[field['name']] = event.target.value">
                   </div>
