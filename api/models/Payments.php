@@ -30,7 +30,7 @@ class Payments extends DbModel
             if ($totalPaidAmount == 0)
                 return "Total price of the order is only " . $orderData['total_price'] . ".";
             else
-                return "Total price left to pay is " . ($orderData['total_price'] - $totalPaidAmount) . ".";
+                return "Total amount left to pay is " . ($orderData['total_price'] - $totalPaidAmount) . ".";
 
         $params['order_id'] = $orderId;
         $params['paid_amount'] = $paidAmount;

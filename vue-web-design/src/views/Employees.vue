@@ -106,9 +106,9 @@ async function editEmployee(id) {
         return row
       }
     })
-    window.successNotification('Update Branch', response.message)
+    window.successNotification('Update Employee', response.message)
   } else {
-    window.errorNotification('Update Branch', response.message)
+    window.errorNotification('Update Employee', response.message)
   }
 }
 
