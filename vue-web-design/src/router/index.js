@@ -6,6 +6,7 @@ import _404Page from '../views/_404.vue'
 import Users from '../views/Users.vue'
 import Branches from '../views/Branches.vue'
 import Customers from '../views/Customers.vue'
+import Employees from '../views/Employees.vue'
 
 const routes = [
     {
@@ -32,6 +33,11 @@ const routes = [
         path: '/customers',
         name: 'Customers',
         component: Customers
+    },
+    {
+        path: '/employees',
+        name: 'Employees',
+        component: Employees
     },
     {
         path: '/products',
