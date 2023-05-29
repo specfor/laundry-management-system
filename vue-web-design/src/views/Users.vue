@@ -10,23 +10,18 @@ let actions = [{onClickEvent: 'editUser', btnText: 'Edit'}, {onClickEvent: 'dele
   {onClickEvent: 'updateUserPass', btnText: 'Update Password'}]
 
 async function getUsers() {
-  let response = await sendGetRequest(apiBaseUrl + "/users", '', window.httpHeaders)
+  let response = await sendGetRequest(apiBaseUrl + "/users")
 
-  if (response.status === 200) {
-    let data = await response.json()
-    if (data.statusMessage === "success") {
-      tableRows.value = []
-      let users = data["body"]["users"]
+  if (response.status === 'success') {
+    tableRows.value = []
+    let users = response.data["users"]
 
-      for (const user of users) {
-        tableRows.value.push([user["id"], user["username"], user["email"], user["firstname"], user["lastname"],
-          user["role"], user["branch_id"]])
-      }
-    } else {
-      window.errorNotification('Fetch User Data', data.body.message)
+    for (const user of users) {
+      tableRows.value.push([user["id"], user["username"], user["email"], user["firstname"], user["lastname"],
+        user["role"], user["branch_id"]])
     }
   } else {
-    window.errorNotification('Fetch User Data', 'Something went wrong. Can not fetch user data.')
+    window.errorNotification('Fetch User Data', response.message)
   }
 }
 
@@ -58,18 +53,13 @@ async function addNewUser() {
     "firstname": user.data['firstname'],
     "lastname": user.data['lastname'],
     "branch-id": user.data['branch-id']
-  }, window.httpHeaders)
-  if (response.status === 200) {
-    let data = await response.json()
+  })
 
-    if (data.statusMessage === "success") {
-      getUsers()
-      window.successNotification('User Creation', data.body.message)
-    } else {
-      window.errorNotification('User Creation', data.body.message)
-    }
+  if (response.status === "success") {
+    getUsers()
+    window.successNotification('User Creation', response.message)
   } else {
-    window.errorNotification('User Creation', 'Connection error occurred.')
+    window.errorNotification('User Creation', response.message)
   }
 }
 
@@ -99,27 +89,21 @@ async function updateUser(id) {
     "firstname": user['data']['firstname'],
     "lastname": user['data']['lastname'],
     "branch-id": user['data']['branch-id']
-  }, window.httpHeaders)
-  if (response.status === 200) {
-    let data = await response.json()
-
-    if (data.statusMessage === "success") {
-      tableRows.value.filter((row) => {
-        if (row[0] === id) {
-          row[2] = user['data']['email']
-          row[3] = user['data']['firstname']
-          row[4] = user['data']['lastname']
-          row[5] = user['data']['role']
-          row[6] = user['data']['branch-id']
-          return row
-        }
-      })
-      window.successNotification('User Update', data.body.message)
-    } else {
-      window.errorNotification('User Update', data.body.message)
-    }
+  })
+  if (response.status === "success") {
+    tableRows.value.filter((row) => {
+      if (row[0] === id) {
+        row[2] = user['data']['email']
+        row[3] = user['data']['firstname']
+        row[4] = user['data']['lastname']
+        row[5] = user['data']['role']
+        row[6] = user['data']['branch-id']
+        return row
+      }
+    })
+    window.successNotification('User Update', response.message)
   } else {
-    window.errorNotification('User Update', 'Connection error occurred.')
+    window.errorNotification('User Update', response.message)
   }
 }
 
@@ -129,18 +113,12 @@ async function deleteUser(id) {
   if (confirm) {
     let response = await sendJsonPostRequest(apiBaseUrl + "/users/delete", {
       "user-id": id
-    }, window.httpHeaders)
-    if (response.status === 200) {
-      let data = await response.json()
-
-      if (data.statusMessage === "success") {
-        window.successNotification('User Removal', data.body.message)
-        getUsers()
-      } else {
-        window.errorNotification('User Removal', data.body.message)
-      }
+    })
+    if (response.status === 'success') {
+      window.successNotification('User Removal', response.message)
+      getUsers()
     } else {
-      window.errorNotification('User Removal', 'Failed to connect to the servers.')
+      window.errorNotification('User Removal', response.message)
     }
   }
 }
@@ -160,16 +138,12 @@ async function updatePasswordFunc(id) {
   let response = await sendJsonPostRequest(apiBaseUrl + "/users/update", {
     "user-id": id,
     "password": user['password']
-  }, window.httpHeaders)
+  })
 
-  if (response.status === 200) {
-    let resJson = await response.json()
-
-    if (resJson.statusMessage === 'success') {
-      window.successNotification('User Update', resJson.body.message)
-    } else
-      window.errorNotification('User Password Change', resJson.body.message)
-  }
+  if (response.status === 'success') {
+    window.successNotification('User Update', response.message)
+  } else
+    window.errorNotification('User Password Change', response.message)
 }
 
 </script>

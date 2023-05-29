@@ -23,23 +23,17 @@ let customersTableActions = [{onClickEvent: 'editCustomer', btnText: 'Edit'}, {
 }]
 
 async function getCustomers() {
-  let response = await sendGetRequest(apiBaseUrl + "/customers", '', window.httpHeaders)
+  let response = await sendGetRequest(apiBaseUrl + "/customers")
 
-  if (response.status === 200) {
-    let data = await response.json()
-
-    if (data.statusMessage === "success") {
-      customersTableRows.value = []
-      let customers = data["body"]["customers"];
-      for (const customer of customers) {
-        customersTableRows.value.push([customer['customer_id'], customer['name'], customer['phone_num'],
-          customer['email'], customer['address'], customer['joined_date'], customer['banned']])
-      }
-    } else {
-      window.errorNotification('Fetch Customer Data', data.body.message)
+  if (response.status === "success") {
+    customersTableRows.value = []
+    let customers = response.data["customers"];
+    for (const customer of customers) {
+      customersTableRows.value.push([customer['customer_id'], customer['name'], customer['phone_num'],
+        customer['email'], customer['address'], customer['joined_date'], customer['banned']])
     }
   } else {
-    window.errorNotification('Fetch Customer Data', 'Something went wrong. Can not fetch data.')
+    window.errorNotification('Fetch Customer Data', response.message)
   }
 }
 

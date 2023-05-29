@@ -1,6 +1,7 @@
 <script setup>
 import {ref} from "vue";
 import {sendJsonPostRequest} from '../js-modules/base-functions.js'
+import {apiBaseUrl} from '../js-modules/website-constants.js'
 import {defineProps} from "vue";
 import {useRouter} from "vue-router";
 
@@ -14,21 +15,16 @@ if (loggedIn === true)
   router.push('/dashboard')
 
 async function loginUser(event) {
-  let response = await sendJsonPostRequest("http://www.laundry-api.localhost/api/v1/login", {
+  let response = await sendJsonPostRequest(apiBaseUrl + "/login", {
     username: username.value,
     password: password.value
   })
-  if (response.status === 200) {
-    let data = await response.json()
-    if (data.statusMessage === 'success') {
-      localStorage.setItem('auth-token', data.body.token)
-      event.$emit('update:logged-in', true)
-      router.push('/dashboard')
-    } else if (data.statusMessage === 'error') {
-      window.errorNotification('Login Error', data.body.message)
-    } else {
-      window.errorNotification('Login Error', 'Unknown error occured.')
-    }
+  if (response.status === 'success') {
+    localStorage.setItem('auth-token', response.data.token)
+    event.$emit('update:logged-in', true)
+    router.push('/dashboard')
+  } else {
+    window.errorNotification('Login Error', response.data.message)
   }
 }
 </script>

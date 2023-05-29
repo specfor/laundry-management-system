@@ -19,22 +19,16 @@ let actionTableActions = [{onClickEvent: 'editAction', btnText: 'Edit'}, {
 }]
 
 async function getActions() {
-  let response = await sendGetRequest(apiBaseUrl + "/category", '', window.httpHeaders)
+  let response = await sendGetRequest(apiBaseUrl + "/category")
 
-  if (response.status === 200) {
-    let data = await response.json()
-
-    if (data.statusMessage === "success") {
-      actionTableRows.value = []
-      let categories = data["body"]["categories"];
-      for (const category of categories) {
-        actionTableRows.value.push([category['category_id'], category['name']])
-      }
-    } else {
-      window.errorNotification('Fetch Actions Data', data.body.message)
+  if (response.status === "success") {
+    actionTableRows.value = []
+    let categories = response.data["categories"];
+    for (const category of categories) {
+      actionTableRows.value.push([category['category_id'], category['name']])
     }
   } else {
-    window.errorNotification('Fetch Actions Data', 'Something went wrong. Can not fetch actions data.')
+    window.errorNotification('Fetch Actions Data', response.message)
   }
 }
 
@@ -49,20 +43,14 @@ async function addNewAction() {
     return
 
   let response = await sendJsonPostRequest(apiBaseUrl + "/category/add", {
-    "category-name": action['data']['action'],
-  }, window.httpHeaders)
+    "category-name": action['data']['action']
+  })
 
-  if (response.status === 200) {
-    let data = await response.json()
-
-    if (data.statusMessage === "success") {
-      getActions()
-      window.successNotification('Add New Action', data.body.message)
-    } else {
-      window.errorNotification('Add New Action', data.body.message)
-    }
+  if (response.status === 'success') {
+    getActions()
+    window.successNotification('Add New Action', response.message)
   } else {
-    window.errorNotification('Add New Action', 'Something went wrong. Can not fetch product data.')
+    window.errorNotification('Add New Action', response.message)
   }
 }
 
@@ -81,22 +69,16 @@ async function editAction(id) {
   let response = await sendJsonPostRequest(apiBaseUrl + "/category/update", {
     "category-id": id,
     "category-name": action['data']['action']
-  }, window.httpHeaders)
+  })
 
-  if (response.status === 200) {
-    let data = await response.json()
-
-    if (data.statusMessage === "success") {
-      actionTableRows.value.filter((row) => {
-        if (row[0] === id)
-          return row[1] = action['data']['action']
-      })
-      window.successNotification('Update Action', data.body.message)
-    } else {
-      window.errorNotification('Update Action', data.body.message)
-    }
+  if (response.status === 'success') {
+    actionTableRows.value.filter((row) => {
+      if (row[0] === id)
+        return row[1] = action['data']['action']
+    })
+    window.successNotification('Update Action', response.message)
   } else {
-    window.errorNotification('Update Action', 'Something went wrong. Can not fetch product data.')
+    window.errorNotification('Update Action', response.message)
   }
 }
 
@@ -106,40 +88,30 @@ async function deleteAction(id) {
   if (confirm) {
     let response = await sendJsonPostRequest(apiBaseUrl + "/category/delete", {
       "category-id": id
-    }, window.httpHeaders)
-    if (response.status === 200) {
-      let data = await response.json()
+    })
 
-      if (data.statusMessage === "success") {
-        getActions()
-        window.successNotification('Action Removal', data.body.message)
-      } else {
-        window.errorNotification('Action Removal', data.body.message)
-      }
+    if (response.status === 'success') {
+      getActions()
+      window.successNotification('Action Removal', response.message)
     } else {
-      window.errorNotification('Action Removal', 'Failed to connect to the servers.')
+      window.errorNotification('Action Removal', response.message)
     }
   }
 }
 
 async function getProducts() {
-  let response = await sendGetRequest(apiBaseUrl + "/items", '', window.httpHeaders)
+  let response = await sendGetRequest(apiBaseUrl + "/items")
 
-  if (response.status === 200) {
-    let data = await response.json()
-    if (data.statusMessage === "success") {
-      productTableRows.value = []
-      let products = data["body"]["items"]
+  if (response.status === "success") {
+    productTableRows.value = []
+    let products = response.data["items"]
 
-      for (const product of products) {
-        let actions = product['categories'].join(', ')
-        productTableRows.value.push([product["item_id"], product["name"], actions, product["price"]])
-      }
-    } else {
-      window.errorNotification('Fetch Product Data', data.body.message)
+    for (const product of products) {
+      let actions = product['categories'].join(', ')
+      productTableRows.value.push([product["item_id"], product["name"], actions, product["price"]])
     }
   } else {
-    window.errorNotification('Fetch Product Data', 'Something went wrong. Can not fetch product data.')
+    window.errorNotification('Fetch Product Data', response.message)
   }
 }
 
@@ -168,19 +140,13 @@ async function addNewProduct() {
   let response = await sendJsonPostRequest(apiBaseUrl + "/items/add", {
     "item-name": product['data']['name'],
     "item-price": [options, parseFloat(product['data']['price'])]
-  }, window.httpHeaders)
+  })
 
-  if (response.status === 200) {
-    let data = await response.json()
-
-    if (data.statusMessage === "success") {
-      getProducts()
-      window.successNotification('Add New Product', data.body.message)
-    } else {
-      window.errorNotification('Add New Product', data.body.message)
-    }
+  if (response.status === 'success') {
+    getProducts()
+    window.successNotification('Add New Product', response.message)
   } else {
-    window.errorNotification('Add New Product', 'Something went wrong. Can not fetch product data.')
+    window.errorNotification('Add New Product', response.message)
   }
 }
 
@@ -214,26 +180,20 @@ async function editProduct(id) {
     'item-id': id,
     "item-name": product['data']['name'],
     "item-price": [options, parseFloat(product['data']['price'])]
-  }, window.httpHeaders)
+  })
 
-  if (response.status === 200) {
-    let data = await response.json()
-
-    if (data.statusMessage === "success") {
-      productTableRows.value.filter((row) => {
-        if (row[0] === id) {
-          row[1] = product['data']['name']
-          row[2] = options.join(', ')
-          row[3] = product['data']['price']
-          return row
-        }
-      })
-      window.successNotification('Update Product', data.body.message)
-    } else {
-      window.errorNotification('Update Product', data.body.message)
-    }
+  if (response.status === 'success') {
+    productTableRows.value.filter((row) => {
+      if (row[0] === id) {
+        row[1] = product['data']['name']
+        row[2] = options.join(', ')
+        row[3] = product['data']['price']
+        return row
+      }
+    })
+    window.successNotification('Update Product', response.message)
   } else {
-    window.errorNotification('Update Product', 'Something went wrong. Can not fetch product data.')
+    window.errorNotification('Update Product', response.message)
   }
 }
 
@@ -243,18 +203,13 @@ async function deleteProduct(id) {
   if (confirm === true) {
     let response = await sendJsonPostRequest(apiBaseUrl + "/items/delete", {
       'item-id': id
-    }, window.httpHeaders)
+    })
 
-    if (response.status === 200) {
-      let data = await response.json()
-      if (data.statusMessage === "success") {
-        getProducts()
-        window.successNotification('Delete Product', data.body.message)
-      } else {
-        window.errorNotification('Delete Product', data.body.message)
-      }
+    if (response.status === 'success') {
+      getProducts()
+      window.successNotification('Delete Product', response.message)
     } else {
-      window.errorNotification('Delete Product', 'Something went wrong. Can not fetch product data.')
+      window.errorNotification('Delete Product', response.message)
     }
   }
 }

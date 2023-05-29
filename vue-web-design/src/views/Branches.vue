@@ -22,22 +22,16 @@ let branchesTableActions = [{onClickEvent: 'editBranch', btnText: 'Edit'}, {
 }]
 
 async function getBranches() {
-  let response = await sendGetRequest(apiBaseUrl + "/branches", '', window.httpHeaders)
+  let response = await sendGetRequest(apiBaseUrl + "/branches")
 
-  if (response.status === 200) {
-    let data = await response.json()
-
-    if (data.statusMessage === "success") {
-      branchesTableRows.value = []
-      let branches = data["body"]["branches"];
-      for (const branch of branches) {
-        branchesTableRows.value.push([branch['branch_id'], branch['name'], branch['phone_num']])
-      }
-    } else {
-      window.errorNotification('Fetch Actions Data', data.body.message)
+  if (response.status === "success") {
+    branchesTableRows.value = []
+    let branches = response.data["branches"];
+    for (const branch of branches) {
+      branchesTableRows.value.push([branch['branch_id'], branch['name'], branch['phone_num']])
     }
   } else {
-    window.errorNotification('Fetch Actions Data', 'Something went wrong. Can not fetch data.')
+    window.errorNotification('Fetch Actions Data', response.message)
   }
 }
 
@@ -55,19 +49,13 @@ async function addNewBranch() {
   let response = await sendJsonPostRequest(apiBaseUrl + "/branches/add", {
     "branch-name": branch['data']['name'],
     "phone-number": branch['data']['phone']
-  }, window.httpHeaders)
+  })
 
-  if (response.status === 200) {
-    let data = await response.json()
-
-    if (data.statusMessage === "success") {
-      getBranches()
-      window.successNotification('Add New Branch', data.body.message)
-    } else {
-      window.errorNotification('Add New Branch', data.body.message)
-    }
+  if (response.status === 'success') {
+    getBranches()
+    window.successNotification('Add New Branch', response.message)
   } else {
-    window.errorNotification('Add New Branch', 'Something went wrong. Can not fetch data.')
+    window.errorNotification('Add New Branch', response.message)
   }
 }
 
@@ -88,25 +76,19 @@ async function editBranch(id) {
     'branch-id': id,
     "branch-name": branch['data']['name'],
     "phone-number": branch['data']['phone']
-  }, window.httpHeaders)
+  })
 
-  if (response.status === 200) {
-    let data = await response.json()
-
-    if (data.statusMessage === "success") {
-      branchesTableRows.value.filter((row) => {
-        if (row[0] === id) {
-          row[1] = branch['data']['name']
-          row[2] = branch['data']['phone']
-          return row
-        }
-      })
-      window.successNotification('Update Branch', data.body.message)
-    } else {
-      window.errorNotification('Update Branch', data.body.message)
-    }
+  if (response.status === 'success') {
+    branchesTableRows.value.filter((row) => {
+      if (row[0] === id) {
+        row[1] = branch['data']['name']
+        row[2] = branch['data']['phone']
+        return row
+      }
+    })
+    window.successNotification('Update Branch', response.message)
   } else {
-    window.errorNotification('Update Branch', 'Something went wrong. Can not fetch data.')
+    window.errorNotification('Update Branch', response.message)
   }
 }
 
@@ -116,18 +98,13 @@ async function deleteBranch(id) {
   if (confirm === true) {
     let response = await sendJsonPostRequest(apiBaseUrl + "/branches/delete", {
       'branch-id': id
-    }, window.httpHeaders)
+    })
 
-    if (response.status === 200) {
-      let data = await response.json()
-      if (data.statusMessage === "success") {
-        getBranches()
-        window.successNotification('Delete Branch', data.body.message)
-      } else {
-        window.errorNotification('Delete Branch', data.body.message)
-      }
+    if (response.status === 'success') {
+      getBranches()
+      window.successNotification('Delete Branch', response.message)
     } else {
-      window.errorNotification('Delete Branch', 'Something went wrong. Can not fetch data.')
+      window.errorNotification('Delete Branch', response.message)
     }
   }
 }
