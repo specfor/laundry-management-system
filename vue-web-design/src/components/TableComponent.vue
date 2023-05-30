@@ -6,6 +6,8 @@
       <th class="text-left px-3 pt-4 pb-2 font-bold"
           v-for="(columnName, i) in tableColumns" :key="i">{{ columnName }}
       </th>
+      <th class="text-left px-3 pt-4 pb-2 font-bold sticky right-0 bg-neutral-400 text-center">{{ modificationsColum }}
+      </th>
     </tr>
     </thead>
     <tbody class="font-semibold">
@@ -17,7 +19,7 @@
         <span v-if="data === null || data === ''">None</span>
         <span v-else>{{ data }}</span>
       </td>
-      <td v-if="actions" class="px-3 py-1">
+      <td v-if="actions" class="px-3 py-1 sticky right-0 bg-neutral-300">
         <button class="py-0.5 my-0.5 mx-1 bg-blue-900/60 hover:bg-blue-900/80 rounded-md px-3 text-slate-100 "
                 v-for="action in actions" @click="$emit(action['onClickEvent'], row[0])">{{ action['btnText'] }}
         </button>
@@ -31,6 +33,8 @@
 import {defineProps} from "vue";
 
 let {tableColumns, tableRows, actions} = defineProps(['tableColumns', 'tableRows', 'actions'])
+
+let modificationsColum = tableColumns.pop()
 </script>
 
 <style scoped>
