@@ -1,6 +1,6 @@
 <script setup>
 import {RouterView} from 'vue-router'
-import {ref} from "vue";
+import {ref, watch} from "vue";
 import {useRouter} from "vue-router";
 import {sendGetRequest} from "./js-modules/base-functions.js";
 import {apiBaseUrl} from "./js-modules/website-constants.js";
@@ -8,13 +8,19 @@ import Notifications from "./components/Notifications.vue";
 import ConfirmationModal from "./components/ConfirmationModal.vue";
 import AddNewModal from "./components/AddNewModal.vue";
 import DataShowModal from "./components/DataShowModal.vue";
+import Header from "./components/Header.vue";
 import LoadingScreen from './components/LoadingScreen.vue'
 
 let isLoading = ref(true)
+let showHeader = ref(false)
 
 // Initializing app and checking whether user is loggedIn
 if (!window.loggedIn)
   window.loggedIn = ref(false)
+
+watch(window.loggedIn, ()=>{
+  showHeader.value = window.loggedIn.value
+})
 
 let router = useRouter()
 
@@ -39,9 +45,10 @@ init()
 </script>
 
 <template>
-<!--  <div class="w-screen h-screen fixed top-0 left-0">-->
-<!--    <LoadingScreen :loading="isLoading"/>-->
-<!--  </div>-->
+  <!--  <div class="w-screen h-screen fixed top-0 left-0">-->
+  <!--    <LoadingScreen :loading="isLoading"/>-->
+  <!--  </div>-->
+  <Header v-show="showHeader"/>
   <div class="container">
     <RouterView/>
   </div>
