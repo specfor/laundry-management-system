@@ -2,16 +2,14 @@
 import {ref} from "vue";
 import {sendJsonPostRequest} from '../js-modules/base-functions.js'
 import {apiBaseUrl} from '../js-modules/website-constants.js'
-import {defineProps} from "vue";
 import {useRouter} from "vue-router";
 
 const router = useRouter()
 
 let username = ref('')
 let password = ref('')
-let {loggedIn} = defineProps(['loggedIn'])
 
-if (loggedIn === true)
+if (window.loggedIn.value === true)
   router.push('/dashboard')
 
 async function loginUser(event) {
