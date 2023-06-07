@@ -8,6 +8,7 @@ import Branches from '../views/Branches.vue'
 import Customers from '../views/Customers.vue'
 import Employees from '../views/Employees.vue'
 import Payments from '../views/Payments.vue'
+import Orders from '../views/Orders.vue'
 
 const routes = [
     {
@@ -44,6 +45,11 @@ const routes = [
         path: '/payments',
         name: 'Payments',
         component: Payments
+    },
+    {
+        path: '/orders',
+        name: 'Orders',
+        component: Orders
     },
     {
         path: '/products',
