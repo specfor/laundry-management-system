@@ -37,38 +37,44 @@ class Orders extends DbModel
         }
 
         $itemIds = [];
-        foreach ($items as $itemId => $itemData) {
-            if (!is_int($itemId))
-                return "All item ids must be integers.";
-            if (!isset($itemData['amount'], $itemData['return-date'], $itemData['defects']))
-                return "Every item should contain 'amount', 'return-date', 'defects'";
-            if (!is_int($itemData['amount']))
-                return "All amounts should be integers";
-            if ($itemData['amount'] < 1)
-                return "All amounts must be greater than 0";
-            if (!is_array($itemData['defects']))
-                return "Defects should be an array.";
-            if (!is_string($itemData['return-date']))
-                return "'return-date' should be a string.";
-            $itemIds[] = "item_id=$itemId";
+        foreach ($items as $singleItem){
+            foreach ($singleItem as $itemId => $itemData) {
+                if (!is_int($itemId))
+                    return "All item ids must be integers.";
+                if (!isset($itemData['amount'], $itemData['return-date'], $itemData['defects']))
+                    return "Every item should contain 'amount', 'return-date', 'defects'";
+                if (!is_int($itemData['amount']))
+                    return "All amounts should be integers";
+                if ($itemData['amount'] < 1)
+                    return "All amounts must be greater than 0";
+                if (!is_array($itemData['defects']))
+                    return "Defects should be an array.";
+                if (!is_string($itemData['return-date']))
+                    return "'return-date' should be a string.";
+                    $itemIds[] = "item_id=$itemId";
+            }
         }
+        $itemIds = array_unique($itemIds);
         $condition = "(" . implode(' OR ', $itemIds) . ")";
         $condition .= " AND blocked=false";
         $itemDataStored = (self::getDataFromTable(['price', 'item_id'], 'items', $condition))->fetchAll(PDO::FETCH_ASSOC);
 
-        if (count($itemDataStored) < count($items))
+        if (count($itemDataStored) < count($itemIds))
             return "Invalid item ids were sent";
 
         $calculatedTotalPrice = 0;
         $newItemData = [];
-        foreach ($items as $itemId => $itemData) {
-            foreach ($itemDataStored as $item) {
-                if ($itemId == $item['item_id']) {
-                    $item['amount'] = $itemData['amount'];
-                    $item['return-date'] = $itemData['return-date'];
-                    $item['defects'] = $itemData['defects'];
-                    $calculatedTotalPrice += intval($itemData['amount']) * floatval($item['price']);
-                    $newItemData[] = $item;
+
+        foreach ($items as $singleItem) {
+            foreach ($singleItem as $itemId => $itemData) {
+                foreach ($itemDataStored as $item) {
+                    if ($itemId == $item['item_id']) {
+                        $item['amount'] = $itemData['amount'];
+                        $item['return-date'] = $itemData['return-date'];
+                        $item['defects'] = $itemData['defects'];
+                        $calculatedTotalPrice += intval($itemData['amount']) * floatval($item['price']);
+                        $newItemData[] = $item;
+                    }
                 }
             }
         }
@@ -180,30 +186,35 @@ class Orders extends DbModel
 
         if ($items) {
             $itemIds = [];
-            foreach ($items as $itemId => $itemDataGiven) {
-                if (!is_int($itemId))
-                    return "All item ids must be integers.";
-                if (!is_array($itemDataGiven))
-                    return "Invalid item content.";
-                $itemIds[] = "item_id=$itemId";
+            foreach ($items as $singleItem){
+                foreach ($singleItem as $itemId => $itemDataGiven) {
+                    if (!is_int($itemId))
+                        return "All item ids must be integers.";
+                    if (!is_array($itemDataGiven))
+                        return "Invalid item content.";
+                    $itemIds[] = "item_id=$itemId";
+                }
             }
+            $itemIds = array_unique($itemIds);
             $condition = "(" . implode(' OR ', $itemIds) . ")";
             $condition .= " AND blocked=false";
             $itemData = (self::getDataFromTable(['price', 'item_id'], 'items', $condition))->fetchAll(PDO::FETCH_ASSOC);
 
-            if (count($itemData) < count($items))
+            if (count($itemData) < count($itemIds))
                 return "Invalid item ids were sent.";
 
             $calculatedTotalPrice = 0;
             $newItemData = [];
-            foreach ($items as $itemId => $itemDataGiven) {
-                foreach ($itemData as $item) {
-                    if ($itemId == $item['item_id']) {
-                        $item['amount'] = $itemDataGiven['amount'];
-                        $item['return-date'] = $itemDataGiven['return-date'];
-                        $item['defects'] = $itemDataGiven['defects'];
-                        $calculatedTotalPrice += intval($itemDataGiven['amount']) * floatval($item['price']);
-                        $newItemData[] = $item;
+            foreach ($items as $singleItem){
+                foreach ($singleItem as $itemId => $itemDataGiven) {
+                    foreach ($itemData as $item) {
+                        if ($itemId == $item['item_id']) {
+                            $item['amount'] = $itemDataGiven['amount'];
+                            $item['return-date'] = $itemDataGiven['return-date'];
+                            $item['defects'] = $itemDataGiven['defects'];
+                            $calculatedTotalPrice += intval($itemDataGiven['amount']) * floatval($item['price']);
+                            $newItemData[] = $item;
+                        }
                     }
                 }
             }
