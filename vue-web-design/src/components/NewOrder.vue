@@ -29,7 +29,7 @@
                             name="product" :value="fieldValues['product']"
                             @input="event => fieldValues['product'] = event.target.value">
                           <option class=""
-                                  v-for="option in products" :value="option['value']">{{ option['text'] }}
+                                  v-for="product in productNames" :value="product">{{ product }}
                           </option>
                         </select>
                       </div>
@@ -101,8 +101,8 @@
                         <table class="table-auto border-collapse border w-full">
                           <thead class="bg-slate-300">
                           <tr>
-                            <th class="w-[70px]">Id</th>
-                            <th class="w-[180px]">Name</th>
+                            <th class="w-[150px]">Name</th>
+                            <th class="w-[170px]">Actions</th>
                             <th class="w-[80px]">Quantity</th>
                             <th>Defects</th>
                             <th class="w-[100px]">Return Date</th>
@@ -114,13 +114,13 @@
                             <td class="text-center" colspan="100%">No products are added.</td>
                           </tr>
                           <tr v-for="(row, i) in orderProducts['products']" :key="i">
-                            <td>{{ row.id }}</td>
                             <td>{{ row.product_name }}</td>
+                            <td>{{ row.actions }}</td>
                             <td class="flex justify-center">{{ row.quantity }}</td>
-                            <td>{{ row.defects }}</td>
+                            <td>{{ row.defects ?? 'None' }}</td>
                             <td>{{ row.return_date }}</td>
                             <td class="flex">
-<!--                              <PencilSquareIcon class="fill-blue-700 w-6 h-5 cursor-pointer"/>-->
+                              <PencilSquareIcon class="fill-blue-700 w-6 h-5 cursor-pointer" @click="editProduct(i)"/>
                               <TrashIcon class="fill-red-700 w-6 h-5 cursor-pointer" @click="removeProduct(i)"/>
                             </td>
                           </tr>
@@ -159,21 +159,45 @@ let success = ref(false)
 let fieldValues = ref({})
 let actions = ref([])
 let products = ref([])
+let productNames = ref([])
 let orderProducts = ref({products: [], comment: null})
 
 function addProduct() {
+  let temp_actions = null
   orderProducts.value.products.push({
-    id: fieldValues.value['product'], product_name: products.value.filter((row) => {
-      return row['value'] === parseInt(fieldValues.value['product'])
-    })[0]['text'],
-    quantity: parseInt(fieldValues.value['quantity']), actions: fieldValues.value['actions'],
+    id: products.value.filter((row) => {
+      if (row['text'] === fieldValues.value['product']) {
+        let actions_ = []
+        for (const actionId of Object.keys(fieldValues.value['actions'])) {
+          actions.value.find((act) => {
+            if (fieldValues.value['actions'][actionId] === true)
+              if (act['name'] == actionId)
+                actions_.push(act['text'])
+          })
+        }
+        if (actions_.toString() === Object.values(row['actions']).toString())
+        {
+          temp_actions = actions_.join(', ')
+          return row
+        }
+      }
+    })[0]['value'],
+    product_name: fieldValues.value['product'],
+    quantity: parseInt(fieldValues.value['quantity']), actions: temp_actions,
     return_date: fieldValues.value['return_date'], defects: fieldValues.value['defects']
   })
-  fieldValues.value = {actions: {}, customer: fieldValues.value['customer']}
+  fieldValues.value = {
+    actions: {}, customer: fieldValues.value['customer'],
+    return_date: fieldValues.value['return_date']
+  }
 }
 
 function removeProduct(index) {
   orderProducts.value.products.splice(index, 1)
+}
+
+function editProduct(index){
+
 }
 
 window.newOrderModal = (products_, actions_, values = {}) => {
@@ -182,6 +206,11 @@ window.newOrderModal = (products_, actions_, values = {}) => {
   fieldValues.value = values
   success.value = false
   products.value = products_
+  for (const product of products_) {
+    if (!productNames.value.includes(product['text'])) {
+      productNames.value.push(product['text'])
+    }
+  }
   actions.value = actions_
   orderProducts.value = {products: [], comment: null}
   show.value = true

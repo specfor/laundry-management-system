@@ -34,7 +34,6 @@ async function getOrders() {
         order['status'], order['branch_id'], order['added_date'], order['comments']])
       productArray[order['order_id']] = order['items']
     }
-    console.log(productArray)
   } else {
     window.errorNotification('Fetch Payment Data', response.message)
   }
@@ -88,7 +87,7 @@ async function addNewOrder() {
   if (response.status === "success") {
     let data = response.data["items"];
     for (const product of data) {
-      products.push({text: product['name'], value: product['item_id']})
+      products.push({text: product['name'], value: product['item_id'], actions: product['categories']})
     }
   } else {
     window.errorNotification('Fetch Product Data', response.message)
@@ -109,17 +108,28 @@ async function addNewOrder() {
   if (!customer['accepted'])
     return
 
-  let order = window.newOrderModal(products, actions, {
+  let order = await window.newOrderModal(products, actions, {
     'customer': customerResponse.data['customers'].filter((row) => {
       return row['customer_id'] === parseInt(customer.data['customer'])
     })[0]['name']
   });
 
-  console.log(order)
   if (!order['accepted'])
     return
 
+  let items = []
+  order.data.products.forEach((product) => {
+    let dict = {}
+    dict[product['id']] = {
+      'amount': product['quantity'],
+      'return-date': product['return_date'],
+      'defects': [product['defects']] ?? []
+    }
+    items.push(dict)
+  })
+
   response = await sendJsonPostRequest(apiBaseUrl + "/orders/add", {
+    "items": items,
     "customer-id": customer.data['customer'],
     "customer-comments": order.data['comment']
   })
