@@ -1,18 +1,21 @@
 <template>
-  <h4>Add New Orders</h4>
-  <button class="bg-slate-400" @click="addNewOrder">+</button>
+  <div class="flex justify-between mt-5 mb-3">
+    <h3 class="text-2xl font-semibold">Orders</h3>
+    <button class="bg-slate-600 text-slate-100 rounded-md py-2 px-3 font-semibold" @click="addNewOrder">+ New Order</button>
+  </div>
 
-  <h3 class="text-2xl font-semibold mb-5">Orders</h3>
   <TableComponent :tableColumns="ordersTableCol" :tableRows="ordersTableRows" :actions="ordersTableActions"
                   @remove-order="deleteOrder($event)" @edit-orders="editOrder($event)"
                   @more-info="moreOrderInfo($event)"/>
   <NewOrderModal/>
+  <OrderDetailsModal/>
 </template>
 
 <script setup>
 import {TrashIcon, PencilSquareIcon} from '@heroicons/vue/24/solid'
 import TableComponent from '../components/TableComponent.vue'
 import NewOrderModal from '../components/NewOrder.vue'
+import OrderDetailsModal from '../components/OrderDetails.vue'
 import {ref} from 'vue'
 import {sendGetRequest, sendJsonPostRequest} from "../js-modules/base-functions.js";
 import {apiBaseUrl} from "../js-modules/website-constants.js";
@@ -26,13 +29,16 @@ let ordersTableActions = [
   {onClickEvent: 'removeOrder', btnText: 'Remove', type: 'icon', icon: TrashIcon, iconColor: 'fill-red-700'}
 ]
 let productArray = {}
+let orders = []
+let actions = []
+let products = []
 
 async function getOrders() {
   let response = await sendGetRequest(apiBaseUrl + "/orders")
 
   if (response.status === 'success') {
     ordersTableRows.value = []
-    let orders = response.data["orders"];
+    orders = response.data["orders"];
     for (const order of orders) {
       ordersTableRows.value.push([order['order_id'], order['total_price'], order['customer_name'], 'See "More Info"',
         order['status'], order['branch_id'], order['added_date'], order['comments']])
@@ -41,25 +47,44 @@ async function getOrders() {
   } else {
     window.errorNotification('Fetch Payment Data', response.message)
   }
+
+  response = await sendGetRequest(apiBaseUrl + "/category")
+
+  if (response.status === "success") {
+      let data = response.data["categories"];
+      for (const action of data) {
+          actions.push({text: action['name'], name: action['category_id']})
+      }
+  } else {
+      window.errorNotification('Fetch Actions Data', response.message)
+  }
+
+  response = await sendGetRequest(apiBaseUrl + "/items")
+
+  if (response.status === "success") {
+      let data = response.data["items"];
+      for (const product of data) {
+          products.push({text: product['name'], value: product['item_id'], actions: product['categories']})
+      }
+  } else {
+      window.errorNotification('Fetch Product Data', response.message)
+  }
 }
 
 getOrders()
 
 async function moreOrderInfo(id) {
-  let orderData = ordersTableRows.value.filter((row) => {
-    return row[0] === id
+  let orderData = orders.filter((row) => {
+    if (row['order_id'] === id){
+        for (let item of row['items']) {
+            item['actions'] = products.find((product)=>{
+                return product['value'] === item['item_id']
+            })['actions'].join(', ')
+        }
+        return row
+    }
   })[0]
-
-  let order = await window.dataShowModal('Order Info', '', [
-    {name: 'id', text: 'Order Id', type: 'number', value: orderData[0]},
-    {name: 'value', text: 'Value (LKR)', type: 'number', value: orderData[1]},
-    {name: 'customer_name', text: 'Customer Name', type: 'text', value: orderData[2]},
-    {type: 'message', text: 'Product prices are as how they were at placing the order.'},
-    {name: 'prod', text: 'Products', type: 'number', value: orderData[0]},
-    {name: 'status', text: 'Order Status', type: 'text', value: orderData[4]},
-    {name: 'branch_id', text: 'Branch Id', type: 'text', value: orderData[5].toString()},
-    {name: 'added', text: 'Added On', type: 'text', value: orderData[6]},
-  ], true)
+  window.orderDetailsModal(orderData)
 }
 
 async function addNewOrder() {
@@ -85,30 +110,6 @@ async function addNewOrder() {
     {name: 'address', text: 'Address', type: 'textarea'}
   ])
 
-  let response = await sendGetRequest(apiBaseUrl + "/items")
-  let products = []
-
-  if (response.status === "success") {
-    let data = response.data["items"];
-    for (const product of data) {
-      products.push({text: product['name'], value: product['item_id'], actions: product['categories']})
-    }
-  } else {
-    window.errorNotification('Fetch Product Data', response.message)
-  }
-
-  response = await sendGetRequest(apiBaseUrl + "/category")
-  let actions = []
-
-  if (response.status === "success") {
-    let data = response.data["categories"];
-    for (const action of data) {
-      actions.push({text: action['name'], name: action['category_id']})
-    }
-  } else {
-    window.errorNotification('Fetch Actions Data', response.message)
-  }
-
   if (!customer['accepted'])
     return
 
@@ -132,7 +133,7 @@ async function addNewOrder() {
     items.push(dict)
   })
 
-  response = await sendJsonPostRequest(apiBaseUrl + "/orders/add", {
+  let response = await sendJsonPostRequest(apiBaseUrl + "/orders/add", {
     "items": items,
     "customer-id": customer.data['customer'],
     "customer-comments": order.data['comment']
