@@ -10,6 +10,7 @@
 </template>
 
 <script setup>
+import {TrashIcon, PencilSquareIcon} from '@heroicons/vue/24/solid'
 import TableComponent from '../components/TableComponent.vue'
 import NewOrderModal from '../components/NewOrder.vue'
 import {ref} from 'vue'
@@ -19,8 +20,11 @@ import {apiBaseUrl} from "../js-modules/website-constants.js";
 let ordersTableCol = ['Id', 'Value (LKR)', 'Customer', 'Products', 'Status', 'Branch', 'Added On', 'Comments',
   'Modifications']
 let ordersTableRows = ref([])
-let ordersTableActions = [{onClickEvent: 'editOrder', btnText: 'Edit'},
-  {onClickEvent: 'removeOrder', btnText: 'Remove'}, {onClickEvent: 'moreInfo', btnText: 'More Info'}]
+let ordersTableActions = [
+  {onClickEvent: 'moreInfo', btnText: 'More Info'},
+  {onClickEvent: 'editOrder', btnText: 'Edit', type: 'icon', icon: PencilSquareIcon, iconColor: 'fill-blue-700'},
+  {onClickEvent: 'removeOrder', btnText: 'Remove', type: 'icon', icon: TrashIcon, iconColor: 'fill-red-700'}
+]
 let productArray = {}
 
 async function getOrders() {
