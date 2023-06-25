@@ -14,14 +14,15 @@ import TableComponent from '../components/TableComponent.vue'
 import {ref} from 'vue'
 import {sendGetRequest, sendJsonPostRequest} from "../js-modules/base-functions.js";
 import {apiBaseUrl} from "../js-modules/website-constants.js";
+import {PencilSquareIcon, TrashIcon} from "@heroicons/vue/24/solid/index.js";
 
 let customersTableCol = ['Id', 'Customer Name', 'Phone Number', 'Email', 'Address', 'Joined Date',
   'Banned', 'Modifications']
 let customersTableRows = ref([])
-let customersTableActions = [{onClickEvent: 'editCustomer', btnText: 'Edit'}, {
-  onClickEvent: 'removeCustomer',
-  btnText: 'Remove'
-}]
+let customersTableActions = [
+    {onClickEvent: 'editCustomer', btnText: 'Edit', type: 'icon', icon: PencilSquareIcon, iconColor: 'fill-blue-700'},
+    {onClickEvent: 'removeCustomer', btnText: 'Remove', type: 'icon', icon: TrashIcon, iconColor: 'fill-red-700'}
+]
 
 async function getCustomers() {
   let response = await sendGetRequest(apiBaseUrl + "/customers")

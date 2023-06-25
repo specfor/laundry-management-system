@@ -14,13 +14,13 @@ import TableComponent from '../components/TableComponent.vue'
 import {ref} from 'vue'
 import {sendGetRequest, sendJsonPostRequest} from "../js-modules/base-functions.js";
 import {apiBaseUrl} from "../js-modules/website-constants.js";
+import {PencilSquareIcon, TrashIcon} from "@heroicons/vue/24/solid/index.js";
 
 let branchesTableCol = ['Id', 'Branch Name', 'Contact Info', 'Modifications']
 let branchesTableRows = ref([])
-let branchesTableActions = [{onClickEvent: 'editBranch', btnText: 'Edit'}, {
-  onClickEvent: 'removeBranch',
-  btnText: 'Remove'
-}]
+let branchesTableActions = [
+    {onClickEvent: 'editBranch', btnText: 'Edit', type: 'icon', icon: PencilSquareIcon, iconColor: 'fill-blue-700'},
+    {onClickEvent: 'removeBranch', btnText: 'Remove', type: 'icon', icon: TrashIcon, iconColor: 'fill-red-700'}]
 
 async function getBranches() {
   let response = await sendGetRequest(apiBaseUrl + "/branches")

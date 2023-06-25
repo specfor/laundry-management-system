@@ -3,20 +3,20 @@ import TableComponent from '../components/TableComponent.vue'
 import {ref} from 'vue'
 import {sendGetRequest, sendJsonPostRequest} from "../js-modules/base-functions.js";
 import {apiBaseUrl} from "../js-modules/website-constants.js";
+import {PencilSquareIcon, TrashIcon} from "@heroicons/vue/24/solid/index.js";
 
 let productTableCol = ['Id', 'Product Name', 'Actions', 'Unit Price', 'Modifications']
 let productTableRows = ref([])
-let productTableActions = [{onClickEvent: 'editProduct', btnText: 'Edit'}, {
-  onClickEvent: 'removeProduct',
-  btnText: 'Remove'
-}]
+let productTableActions = [
+    {onClickEvent: 'editProduct', btnText: 'Edit', type: 'icon', icon: PencilSquareIcon, iconColor: 'fill-blue-700'},
+    {onClickEvent: 'removeProduct', btnText: 'Remove', type: 'icon', icon: TrashIcon, iconColor: 'fill-red-700'}]
 
 let actionTableCol = ['Id', 'Action', 'Modifications']
 let actionTableRows = ref([])
-let actionTableActions = [{onClickEvent: 'editAction', btnText: 'Edit'}, {
-  onClickEvent: 'removeAction',
-  btnText: 'Remove'
-}]
+let actionTableActions = [
+    {onClickEvent: 'editAction', btnText: 'Edit', type: 'icon', icon: PencilSquareIcon, iconColor: 'fill-blue-700'},
+    {onClickEvent: 'removeAction', btnText: 'Remove', type: 'icon', icon: TrashIcon, iconColor: 'fill-red-700'}
+]
 
 async function getActions() {
   let response = await sendGetRequest(apiBaseUrl + "/category")

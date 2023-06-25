@@ -3,11 +3,15 @@ import TableComponent from "../components/TableComponent.vue";
 import {ref} from "vue";
 import {sendGetRequest, sendJsonPostRequest} from "../js-modules/base-functions.js";
 import {apiBaseUrl} from "../js-modules/website-constants.js";
+import {PencilSquareIcon, TrashIcon} from "@heroicons/vue/24/solid/index.js";
 
 let tableCol = ['Id', 'Username', 'Email', 'Firstname', 'Lastname', 'Role', 'Branch Id', 'Modifications']
 let tableRows = ref([])
-let actions = [{onClickEvent: 'editUser', btnText: 'Edit'}, {onClickEvent: 'deleteUser', btnText: 'Remove'},
-  {onClickEvent: 'updateUserPass', btnText: 'Update Password'}]
+let actions = [
+    {onClickEvent: 'editUser', btnText: 'Edit', type: 'icon', icon: PencilSquareIcon, iconColor: 'fill-blue-700'},
+    {onClickEvent: 'deleteUser', btnText: 'Remove', type: 'icon', icon: TrashIcon, iconColor: 'fill-red-700'},
+    {onClickEvent: 'updateUserPass', btnText: 'Update Password'}
+]
 
 async function getUsers() {
   let response = await sendGetRequest(apiBaseUrl + "/users")

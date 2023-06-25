@@ -14,13 +14,14 @@ import TableComponent from '../components/TableComponent.vue'
 import {ref} from 'vue'
 import {sendGetRequest, sendJsonPostRequest} from "../js-modules/base-functions.js";
 import {apiBaseUrl} from "../js-modules/website-constants.js";
+import {TrashIcon, PencilSquareIcon} from '@heroicons/vue/24/solid'
 
 let paymentsTableCol = ['Id', 'Order Id', 'Paid Amount', 'Paid Date', 'Refunded', 'Modifications']
 let paymentsTableRows = ref([])
-let paymentsTableActions = [{onClickEvent: 'editPayment', btnText: 'Edit'}, {
-  onClickEvent: 'removePayment',
-  btnText: 'Remove'
-}]
+let paymentsTableActions = [
+    {onClickEvent: 'editPayment', btnText: 'Edit', type: 'icon', icon: PencilSquareIcon, iconColor: 'fill-blue-700'},
+    {  onClickEvent: 'removePayment', btnText: 'Remove', type: 'icon', icon: TrashIcon, iconColor: 'fill-red-700'}
+]
 
 async function getPayments() {
   let response = await sendGetRequest(apiBaseUrl + "/payments")
