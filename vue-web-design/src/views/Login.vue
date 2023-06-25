@@ -12,15 +12,16 @@ let password = ref('')
 if (window.loggedIn.value === true)
   router.push('/dashboard')
 
-async function loginUser(event) {
+async function loginUser() {
   let response = await sendJsonPostRequest(apiBaseUrl + "/login", {
     username: username.value,
     password: password.value
   })
   if (response.status === 'success') {
     localStorage.setItem('auth-token', response.data.token)
-    event.$emit('update:logged-in', true)
-    router.push('/dashboard')
+    window.httpHeaders['Authorization'] = 'Bearer ' + response.data.token
+    window.loggedIn.value = true
+    router.replace('/dashboard')
   } else {
     window.errorNotification('Login Error', response.data.message)
   }

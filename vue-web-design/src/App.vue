@@ -12,8 +12,11 @@ import Header from "./components/Header.vue";
 import SideMenu from "./components/SideMenu.vue";
 import LoadingScreen from './components/LoadingScreen.vue'
 
+let router = useRouter()
+
 let isLoading = ref(true)
 let showHeader = ref(false)
+let leftPadding = ref('')
 
 // Initializing app and checking whether user is loggedIn
 if (!window.loggedIn)
@@ -21,9 +24,12 @@ if (!window.loggedIn)
 
 watch(window.loggedIn, ()=>{
   showHeader.value = window.loggedIn.value
+  if (window.loggedIn.value === false){
+    router.push('/')
+    leftPadding.value = ''
+  } else
+    leftPadding.value = 'lg:pl-[200px]'
 })
-
-let router = useRouter()
 
 window.httpHeaders = {
   'Authorization': null
@@ -50,13 +56,13 @@ init()
   <!--    <LoadingScreen :loading="isLoading"/>-->
   <!--  </div>-->
   <Header v-show="showHeader"/>
-  <SideMenu class="hidden lg:block pt-12"/>
-  <div class="pt-12 lg:pl-[200px]">
+  <SideMenu v-show="showHeader" class="hidden lg:block pt-12"/>
+  <div class="pt-12" :class="leftPadding">
     <div class="container">
       <RouterView/>
     </div>
   </div>
-  <Notifications/>
+  <Notifications class="pt-6"/>
   <ConfirmationModal/>
   <AddNewModal/>
   <DataShowModal/>
