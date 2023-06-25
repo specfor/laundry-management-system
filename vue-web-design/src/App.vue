@@ -22,13 +22,17 @@ let leftPadding = ref('')
 if (!window.loggedIn)
   window.loggedIn = ref(false)
 
-watch(window.loggedIn, ()=>{
+watch(window.loggedIn, async ()=>{
   showHeader.value = window.loggedIn.value
   if (window.loggedIn.value === false){
     router.push('/')
     leftPadding.value = ''
-  } else
+  } else{
     leftPadding.value = 'lg:pl-[200px]'
+      console.log(router.currentRoute.value)
+    if (router.currentRoute.value['href'] === '/')
+      await router.replace('/dashboard')
+  }
 })
 
 window.httpHeaders = {
