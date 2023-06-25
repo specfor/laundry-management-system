@@ -1,8 +1,9 @@
 <template>
-  <h4>Add New Customer</h4>
-  <button class="bg-slate-400" @click="addNewCustomer">+</button>
+  <div class="flex justify-between mt-5 mb-3">
+    <h3 class="text-2xl font-semibold">Branches</h3>
+    <button class="bg-slate-600 text-slate-100 rounded-md py-2 px-3 font-semibold" @click="addNewCustomer">+ New Customer</button>
+  </div>
 
-  <h3 class="text-2xl font-semibold mb-5">Customers</h3>
   <TableComponent :tableColumns="customersTableCol" :tableRows="customersTableRows" :actions="customersTableActions"
                   @remove-customer="deleteCustomer($event)" @edit-customer="editCustomer($event)"/>
 

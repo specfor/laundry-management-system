@@ -217,17 +217,19 @@ async function deleteProduct(id) {
 </script>
 
 <template>
-  <h4>Add New Product</h4>
-  <button class="bg-slate-400" @click="addNewProduct">+</button>
+  <div class="flex justify-between mt-5 mb-3">
+    <h3 class="text-2xl font-semibold">Products</h3>
+    <button class="bg-slate-600 text-slate-100 rounded-md py-2 px-3 font-semibold" @click="addNewProduct">+ New Product</button>
+  </div>
 
-  <h3 class="text-2xl font-semibold mb-5">Products</h3>
   <TableComponent :tableColumns="productTableCol" :tableRows="productTableRows" :actions="productTableActions"
                   @remove-product="deleteProduct($event)" @edit-product="editProduct($event)"/>
 
-  <h4>Add New Action</h4>
-  <button class="bg-slate-400" @click="addNewAction">+</button>
+  <div class="flex justify-between mt-7 mb-3">
+    <h3 class="text-2xl font-semibold">Actions</h3>
+    <button class="bg-slate-600 text-slate-100 rounded-md py-2 px-3 font-semibold" @click="addNewAction">+ New Action</button>
+  </div>
 
-  <h3 class="text-2xl font-semibold mb-5">Actions</h3>
   <TableComponent :tableColumns="actionTableCol" :tableRows="actionTableRows" :actions="actionTableActions"
                   @remove-action="deleteAction($event)" @edit-action="editAction($event)"/>
 </template>

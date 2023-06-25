@@ -1,8 +1,9 @@
 <template>
-  <h4>Add New Payments</h4>
-  <button class="bg-slate-400" @click="addNewPayment">+</button>
+  <div class="flex justify-between mt-5 mb-3">
+    <h3 class="text-2xl font-semibold">Payments</h3>
+    <button class="bg-slate-600 text-slate-100 rounded-md py-2 px-3 font-semibold" @click="addNewPayment">+ New Payment</button>
+  </div>
 
-  <h3 class="text-2xl font-semibold mb-5">Payments</h3>
   <TableComponent :tableColumns="paymentsTableCol" :tableRows="paymentsTableRows" :actions="paymentsTableActions"
                   @remove-payment="deletePayment($event)" @edit-payment="editPayment($event)"/>
 

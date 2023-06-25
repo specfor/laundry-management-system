@@ -149,10 +149,11 @@ async function updatePasswordFunc(id) {
 </script>
 
 <template>
-  <h4>Add New User</h4>
-  <button class="bg-slate-400" @click="addNewUser">+</button>
+  <div class="flex justify-between mt-5 mb-3">
+    <h3 class="text-2xl font-semibold">Users</h3>
+    <button class="bg-slate-600 text-slate-100 rounded-md py-2 px-3 font-semibold" @click="addNewUser">+ New User</button>
+  </div>
 
-  <h3 class="text-2xl font-semibold mb-5">Users</h3>
   <TableComponent :tableColumns="tableCol" :tableRows="tableRows" :actions="actions"
                   @delete-user="deleteUser($event)" @edit-user="updateUser($event)"
                   @update-user-pass="updatePasswordFunc($event)"/>
