@@ -9,6 +9,7 @@ import ConfirmationModal from "./components/ConfirmationModal.vue";
 import AddNewModal from "./components/AddNewModal.vue";
 import DataShowModal from "./components/DataShowModal.vue";
 import Header from "./components/Header.vue";
+import SideMenu from "./components/SideMenu.vue";
 import LoadingScreen from './components/LoadingScreen.vue'
 
 let isLoading = ref(true)
@@ -49,8 +50,11 @@ init()
   <!--    <LoadingScreen :loading="isLoading"/>-->
   <!--  </div>-->
   <Header v-show="showHeader"/>
-  <div class="container">
-    <RouterView/>
+  <SideMenu class="hidden lg:block pt-12"/>
+  <div class="pt-12 lg:pl-[200px]">
+    <div class="container">
+      <RouterView/>
+    </div>
   </div>
   <Notifications/>
   <ConfirmationModal/>

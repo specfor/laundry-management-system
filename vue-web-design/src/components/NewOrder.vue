@@ -186,8 +186,12 @@ function addProduct() {
     quantity: parseInt(fieldValues.value['quantity']), actions: temp_actions,
     return_date: fieldValues.value['return_date'], defects: fieldValues.value['defects']
   })
+  let actions_ = {}
+  for (const actionsKey in Object.keys(fieldValues.value['actions'])) {
+    actions_[actionsKey] = false
+  }
   fieldValues.value = {
-    actions: {}, customer: fieldValues.value['customer'],
+    actions: actions_, customer: fieldValues.value['customer'],
     return_date: fieldValues.value['return_date']
   }
 }

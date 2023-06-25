@@ -3,7 +3,7 @@ import {UserIcon, BellIcon} from '@heroicons/vue/24/solid'
 </script>
 
 <template>
-  <div class="w-full bg-sky-700 px-3 py-1">
+  <div class="w-full bg-sky-700 px-3 py-1 fixed top-0 z-[9999]">
     <div class="flex justify-between">
       <div class="text-xl font-bold text-slate-200">
         Laundry Management System
