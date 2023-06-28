@@ -6,7 +6,7 @@
         <th class="text-left px-3 pt-4 pb-2 font-bold"
             v-for="(columnName, i) in tableColumns" :key="i">{{ columnName }}
         </th>
-        <th class="text-left px-3 pt-4 pb-2 font-bold sticky right-0 bg-neutral-400 text-center">{{
+        <th class="text-left px-3 pt-4 pb-2 font-bold sticky right-0 bg-neutral-400 text-center w-[200px] max-w-fit">{{
             modificationsColum
           }}
         </th>
@@ -21,7 +21,7 @@
           <span v-if="data === null || data === ''">None</span>
           <span v-else>{{ data }}</span>
         </td>
-        <td v-if="actions" class="px-3 py-1 sticky right-0 bg-neutral-300 flex items-center h-full">
+        <td v-if="actions" class="px-3 py-1 sticky right-0 bg-neutral-300 flex items-center justify-center h-full">
           <div v-for="action in actions">
             <Component v-if="action['type'] === 'icon'" :is="action['icon']" class="w-6 cursor-pointer mx-1"
                        :class="action['iconColor']" @click="$emit(action['onClickEvent'], row[0])"/>
