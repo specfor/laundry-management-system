@@ -59,7 +59,7 @@ init()
   <!--    <LoadingScreen :loading="isLoading"/>-->
   <!--  </div>-->
   <Header v-show="showHeader"/>
-  <SideMenu v-show="showHeader" class="hidden lg:block pt-12"/>
+  <SideMenu v-show="showHeader" class="pt-12"/>
   <div class="pt-12" :class="leftPadding">
     <div class="container">
       <RouterView/>
