@@ -11,8 +11,10 @@
   "dependencies": {
     "@headlessui/vue": "^1.7.13",
     "@heroicons/vue": "^2.0.18",
+    "chart.js": "^4.3.0",
     "tw-elements": "^1.0.0-beta2",
     "vue": "^3.2.47",
+    "vue-chartjs": "^5.2.0",
     "vue-router": "^4.2.1"
   },
   "devDependencies": {

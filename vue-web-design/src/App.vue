@@ -28,7 +28,7 @@ watch(window.loggedIn, async ()=>{
     router.push('/')
     leftPadding.value = ''
   } else{
-    leftPadding.value = 'lg:pl-[200px]'
+    leftPadding.value = 'ml-[200px]'
     if (router.currentRoute.value['href'] === '/')
       await router.replace('/dashboard')
   }
