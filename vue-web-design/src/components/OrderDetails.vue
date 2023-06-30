@@ -54,6 +54,7 @@
                           <thead class="bg-slate-300">
                           <tr>
                             <th class="w-[150px]">Name</th>
+                            <th class="w-[60px]">Price</th>
                             <th class="w-[170px]">Actions</th>
                             <th class="w-[80px]">Quantity</th>
                             <th>Defects</th>
@@ -64,8 +65,9 @@
                           <tr v-if="orderDetails['items'].length === 0">
                             <td class="text-center" colspan="100%">No products are added.</td>
                           </tr>
-                          <tr v-for="(item, i) in orderDetails['items']" :key="i">
+                          <tr v-for="(item, i) in orderDetails['items']" :key="i" class="max-h-[400px] overflow-y-auto">
                             <td>{{ item['item_name'] }}</td>
+                            <td>{{ item['price'] }}</td>
                             <td>{{ item['actions'] }}</td>
                             <td class="flex justify-center">{{ item['amount'] }}</td>
                             <td>{{ ((item['defects'].join(', ') !== '') ? item['defects'].join(', ') : 'None') }}</td>
