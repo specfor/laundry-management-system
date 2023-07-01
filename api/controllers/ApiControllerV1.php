@@ -5,6 +5,7 @@ namespace LogicLeap\StockManagement\controllers;
 use Exception;
 use LogicLeap\PhpServerCore\Application;
 use LogicLeap\PhpServerCore\MigrationManager;
+use LogicLeap\PhpServerCore\Reports;
 use LogicLeap\PhpServerCore\Request;
 use LogicLeap\PhpServerCore\SecureToken;
 use LogicLeap\PhpServerCore\ServerMetrics;
@@ -349,7 +350,7 @@ class ApiControllerV1 extends API
 
     public function getPriceCategories(): void
     {
-        self::checkPermissions(User::ROLE_ADMINISTRATOR);
+        self::checkPermissions();
 
         $pageNum = self::getParameter('page-num', 0, 'int');
         $categoryName = self::getParameter('category-name');
@@ -588,6 +589,10 @@ class ApiControllerV1 extends API
             self::sendError("Failed to delete the payment.");
     }
 
+    public function getReport() :void
+    {
+        (new Reports())->generatePdf();
+    }
 
     // Server Status Functions
 
