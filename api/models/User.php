@@ -277,7 +277,7 @@ class User extends DbModel
             return 'none';
     }
 
-    public static function getUserRole(int $userId): bool
+    public static function getUserRole(int $userId): int
     {
         $sql = "SELECT role FROM users WHERE id=$userId";
         $statement = self::prepare($sql);
