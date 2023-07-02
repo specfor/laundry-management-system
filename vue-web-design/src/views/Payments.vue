@@ -1,14 +1,3 @@
-<template>
-  <div class="flex justify-between mt-5 mb-3">
-    <h3 class="text-2xl font-semibold">Payments</h3>
-    <button class="bg-slate-600 text-slate-100 rounded-md py-2 px-3 font-semibold" @click="addNewPayment">+ New Payment</button>
-  </div>
-
-  <TableComponent :tableColumns="paymentsTableCol" :tableRows="paymentsTableRows" :actions="paymentsTableActions"
-                  @remove-payment="deletePayment($event)" @edit-payment="editPayment($event)"/>
-
-</template>
-
 <script setup>
 import TableComponent from '../components/TableComponent.vue'
 import {ref} from 'vue'
@@ -19,8 +8,8 @@ import {TrashIcon, PencilSquareIcon} from '@heroicons/vue/24/solid'
 let paymentsTableCol = ['Id', 'Order Id', 'Paid Amount', 'Paid Date', 'Refunded', 'Modifications']
 let paymentsTableRows = ref([])
 let paymentsTableActions = [
-    {onClickEvent: 'editPayment', btnText: 'Edit', type: 'icon', icon: PencilSquareIcon, iconColor: 'fill-blue-700'},
-    {  onClickEvent: 'removePayment', btnText: 'Remove', type: 'icon', icon: TrashIcon, iconColor: 'fill-red-700'}
+  {onClickEvent: 'editPayment', btnText: 'Edit', type: 'icon', icon: PencilSquareIcon, iconColor: 'fill-blue-700'},
+  {onClickEvent: 'removePayment', btnText: 'Remove', type: 'icon', icon: TrashIcon, iconColor: 'fill-red-700'}
 ]
 
 async function getPayments() {
@@ -42,8 +31,17 @@ getPayments()
 
 async function addNewPayment() {
   let employee = await window.addNewForm('New Payment', 'Add', [
-    {name: 'order', text: 'Order Id', type: 'number', min: 1},
-    {name: 'amount', text: 'Paid Amount (LKR)', type: 'number', min: 0}
+    {
+      name: 'order', text: 'Order Id', type: 'number', min: 1, validate: (value) => {
+        return ''
+      }
+    },
+    {
+      name: 'amount', text: 'Paid Amount (LKR)', type: 'number', min: 0, validate: (value) => {
+        if (value <= 0 && value !== '')
+          return 'Paid amount must be greater than 0'
+      }
+    }
   ])
 
   if (!employee['accepted'])
@@ -69,7 +67,7 @@ async function editPayment(id) {
 
   let payment = await window.addNewForm('Update Payment', 'Update', [
     {
-      name: 'refunded', text: 'Refunded', type: 'select', value: paymentData[4],
+      name: 'refunded', text: 'Refunded', type: 'select', value: paymentData[4].toLowerCase(),
       options: [{text: 'Yes', value: 'yes'}, {text: 'No', value: 'no'}]
     }
   ])
@@ -97,7 +95,7 @@ async function editPayment(id) {
 
 async function deletePayment(id) {
   let confirm = await window.popupConfirmation('Delete Payment',
-      'This action is irreversible. Are you sure you want to remove this payment?')
+    'This action is irreversible. Are you sure you want to remove this payment?')
   if (confirm === true) {
     let response = await sendJsonPostRequest(apiBaseUrl + "/payments/delete", {
       'payment-id': id
@@ -112,6 +110,19 @@ async function deletePayment(id) {
   }
 }
 </script>
+
+<template>
+  <div class="flex justify-between mt-5 mb-3">
+    <h3 class="text-2xl font-semibold">Payments</h3>
+    <button class="bg-slate-600 text-slate-100 rounded-md py-2 px-3 font-semibold" @click="addNewPayment">+ New
+      Payment
+    </button>
+  </div>
+
+  <TableComponent :tableColumns="paymentsTableCol" :tableRows="paymentsTableRows" :actions="paymentsTableActions"
+                  @remove-payment="deletePayment($event)" @edit-payment="editPayment($event)"/>
+
+</template>
 
 <style scoped>
 
