@@ -5,9 +5,9 @@ import {useRouter} from "vue-router";
 import {sendGetRequest} from "./js-modules/base-functions.js";
 import {apiBaseUrl} from "./js-modules/website-constants.js";
 import Notifications from "./components/Notifications.vue";
-import ConfirmationModal from "./components/ConfirmationModal.vue";
-import AddNewModal from "./components/AddNewModal.vue";
-import DataShowModal from "./components/DataShowModal.vue";
+import ConfirmationModal from "./components/form_modals/ConfirmationModal.vue";
+import AddNewModal from "./components/form_modals/AddNewModal.vue";
+import DataShowModal from "./components/form_modals/DataShowModal.vue";
 import Header from "./components/Header.vue";
 import SideMenu from "./components/SideMenu.vue";
 import LoadingScreen from './components/LoadingScreen.vue'

@@ -14,8 +14,8 @@
 <script setup>
 import {TrashIcon, PencilSquareIcon} from '@heroicons/vue/24/solid'
 import TableComponent from '../components/TableComponent.vue'
-import NewOrderModal from '../components/NewOrder.vue'
-import OrderDetailsModal from '../components/OrderDetails.vue'
+import NewOrderModal from '../components/form_modals/NewOrder.vue'
+import OrderDetailsModal from '../components/form_modals/OrderDetails.vue'
 import {ref} from 'vue'
 import {sendGetRequest, sendJsonPostRequest} from "../js-modules/base-functions.js";
 import {apiBaseUrl} from "../js-modules/website-constants.js";
