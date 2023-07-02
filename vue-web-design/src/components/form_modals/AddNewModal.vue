@@ -1,3 +1,55 @@
+<script setup>
+import {Dialog, DialogPanel, TransitionChild, TransitionRoot} from '@headlessui/vue'
+import {ref} from "vue";
+
+let show = ref(false)
+let success = ref(false)
+let title = ''
+let fields = ref([])
+let fieldValues = ref({})
+let successBtnText = ''
+let errorMessages = ref({})
+  
+window.addNewForm = (title_, successBtn_, fields_) => {
+  fieldValues.value = {}
+  success.value = false
+  title = title_
+  fields.value = fields_
+  successBtnText = successBtn_
+  for (const field of fields_) {
+    if (field['type'] === 'checkbox') {
+      fieldValues.value[field['name']] = {}
+      for (const option of field['options']) {
+        fieldValues.value[field['name']][option['name']] = !!option['checked'];
+      }
+    } else {
+      if (field['value'])
+        fieldValues.value[field['name']] = field['value']
+      else
+        fieldValues.value[field['name']] = ''
+    }
+    errorMessages.value[field['name']] = ''
+  }
+  show.value = true
+  return new Promise((resolve) => {
+    let id = setInterval(() => {
+      if (!show.value) {
+        clearInterval(id)
+        resolve({data: fieldValues.value, accepted: success.value})
+      }
+    }, 200)
+  })
+}
+
+function validateInput(name){
+  for (const field of fields.value) {
+    if (field['name'] === name){
+      errorMessages.value[name] = field['validate'](fieldValues.value[name]) ?? ''
+    }
+  }
+}
+</script>
+
 <template>
   <TransitionRoot as="template" :show="show">
     <Dialog as="div" class="relative z-10">
@@ -19,7 +71,7 @@
               <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                 <div class="text-center text-2xl font-bold mb-5 ">{{ title }}</div>
                 <div v-for="field in fields">
-                  <div v-if="field['type'] === 'select'" class="grid grid-cols-3 mb-1">
+                  <div v-if="field['type'] === 'select'" class="grid grid-cols-3 mb-1 relative">
                     <div class="font-semibold text-slate-700 py-0.5">
                       {{ field['text'] }}
                     </div>
@@ -32,8 +84,12 @@
                               v-for="option in field['options']" :value="option['value']">{{ option['text'] }}
                       </option>
                     </select>
+                    <div class="absolute top-7 right-0 z-[1000] w-2/3 px-2 rounded-lg bg-red-500/80 text-rose-900"
+                         v-if="errorMessages[field['name']]">
+                      {{  errorMessages[field['name']] }}
+                    </div>
                   </div>
-                  <div v-else-if="field['type'] === 'checkbox'" class="grid grid-cols-3 my-2">
+                  <div v-else-if="field['type'] === 'checkbox'" class="grid grid-cols-3 my-2 relative">
                     <div class="font-semibold text-slate-700 py-0.5">
                       {{ field['text'] }}
                     </div>
@@ -45,9 +101,13 @@
                         <p class="ml-2 font-semibold "
                         >{{ option['text'] }}</p>
                       </div>
+                      <div class="absolute top-7 right-0 z-[1000] w-2/3 px-2 rounded-lg bg-red-500/80 text-rose-900"
+                           v-if="errorMessages[field['name']]">
+                        {{  errorMessages[field['name']] }}
+                      </div>
                     </div>
                   </div>
-                  <div v-else-if="field['type'] === 'textarea'" class="grid grid-cols-3 mb-1">
+                  <div v-else-if="field['type'] === 'textarea'" class="grid grid-cols-3 mb-1 relative">
                     <div class="font-semibold text-slate-700 py-0.5">
                       {{ field['text'] }}
                     </div>
@@ -55,6 +115,10 @@
                               @input="event => fieldValues[field['name']] = event.target.value" :disabled="field['disabled']"
                               class="col-span-2 border-2 border-slate-400 rounded-md px-3 hover:border-slate-700
                                py-0.5 hover:bg-slate-100 focus:bg-slate-200 disabled:border"></textarea>
+                    <div class="absolute top-7 right-0 z-[1000] w-2/3 px-2 rounded-lg bg-red-500/80 text-rose-900"
+                         v-if="errorMessages[field['name']]">
+                      {{  errorMessages[field['name']] }}
+                    </div>
                   </div>
                   <div v-else-if="field['type'] === 'message'" class="mt-3 mb-1">
                     <div class="font-semibold text-slate-900 py-0.5 pl-4 pr-1 ml-5 bg-slate-300 rounded-l-full">
@@ -66,7 +130,7 @@
                       {{ field['text'] }}
                     </div>
                   </div>
-                  <div v-else class="grid grid-cols-3 mb-1">
+                  <div v-else class="grid grid-cols-3 mb-1 relative">
                     <div class="font-semibold text-slate-700 py-0.5">
                       {{ field['text'] }}
                     </div>
@@ -76,7 +140,11 @@
                         :disabled="field['disabled']"
                         :type="field['type']" :value="fieldValues[field['name']]" :min="field['min']"
                         :max="field['max']"
-                        @input="event => fieldValues[field['name']] = event.target.value">
+                        @input="(event) => {fieldValues[field['name']] = event.target.value; validateInput(field['name'])}">
+                    <div class="absolute top-7 right-0 z-[1000] w-2/3 px-2 rounded-b-lg bg-red-500/80 text-rose-900"
+                         v-if="errorMessages[field['name']]">
+                      {{  errorMessages[field['name']] }}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -97,48 +165,6 @@
     </Dialog>
   </TransitionRoot>
 </template>
-
-<script setup>
-import {Dialog, DialogPanel, TransitionChild, TransitionRoot} from '@headlessui/vue'
-import {ref} from "vue";
-
-let show = ref(false)
-let success = ref(false)
-let title = ''
-let fields = ref([])
-let fieldValues = ref({})
-let successBtnText = ''
-
-window.addNewForm = (title_, successBtn_, fields_) => {
-  fieldValues.value = {}
-  success.value = false
-  title = title_
-  fields.value = fields_
-  successBtnText = successBtn_
-  for (const field of fields_) {
-    if (field['type'] === 'checkbox') {
-      fieldValues.value[field['name']] = {}
-      for (const option of field['options']) {
-        fieldValues.value[field['name']][option['name']] = !!option['checked'];
-      }
-    } else {
-      if (field['value'])
-        fieldValues.value[field['name']] = field['value']
-      else
-        fieldValues.value[field['name']] = ''
-    }
-  }
-  show.value = true
-  return new Promise((resolve) => {
-    let id = setInterval(() => {
-      if (!show.value) {
-        clearInterval(id)
-        resolve({data: fieldValues.value, accepted: success.value})
-      }
-    }, 200)
-  })
-}
-</script>
 
 <style scoped>
 
