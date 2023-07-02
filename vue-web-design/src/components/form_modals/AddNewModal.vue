@@ -44,7 +44,9 @@ window.addNewForm = (title_, successBtn_, fields_) => {
 function validateInput(name) {
   for (const field of fields.value) {
     if (field['name'] === name) {
-      if (field['validate'])
+      if (fieldValues.value[name].length === 0)
+        errorMessages.value[name] = ''
+      else if (field['validate'])
         errorMessages.value[name] = field['validate'](fieldValues.value[name]) ?? ''
     }
   }
