@@ -31,14 +31,10 @@ getPayments()
 
 async function addNewPayment() {
   let employee = await window.addNewForm('New Payment', 'Add', [
-    {
-      name: 'order', text: 'Order Id', type: 'number', min: 1, validate: (value) => {
-        return ''
-      }
-    },
+    {name: 'order', text: 'Order Id', type: 'number', min: 1},
     {
       name: 'amount', text: 'Paid Amount (LKR)', type: 'number', min: 0, validate: (value) => {
-        if (value <= 0 && value !== '')
+        if (value <= 0)
           return 'Paid amount must be greater than 0'
       }
     }
