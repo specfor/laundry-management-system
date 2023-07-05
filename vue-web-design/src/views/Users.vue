@@ -4,13 +4,14 @@ import {ref} from "vue";
 import {sendGetRequest, sendJsonPostRequest} from "../js-modules/base-functions.js";
 import {apiBaseUrl} from "../js-modules/website-constants.js";
 import {PencilSquareIcon, TrashIcon} from "@heroicons/vue/24/solid/index.js";
+import {validateInput} from "../js-modules/form-validations.js";
 
 let tableCol = ['Id', 'Username', 'Email', 'Firstname', 'Lastname', 'Role', 'Branch Id', 'Modifications']
 let tableRows = ref([])
 let actions = [
-    {onClickEvent: 'editUser', btnText: 'Edit', type: 'icon', icon: PencilSquareIcon, iconColor: 'fill-blue-700'},
-    {onClickEvent: 'deleteUser', btnText: 'Remove', type: 'icon', icon: TrashIcon, iconColor: 'fill-red-700'},
-    {onClickEvent: 'updateUserPass', btnText: 'Update Password'}
+  {onClickEvent: 'editUser', btnText: 'Edit', type: 'icon', icon: PencilSquareIcon, iconColor: 'fill-blue-700'},
+  {onClickEvent: 'deleteUser', btnText: 'Remove', type: 'icon', icon: TrashIcon, iconColor: 'fill-red-700'},
+  {onClickEvent: 'updateUserPass', btnText: 'Update Password'}
 ]
 
 async function getUsers() {
@@ -33,9 +34,9 @@ getUsers()
 
 async function addNewUser() {
   let user = await window.addNewForm('New User', 'Add', [
-    {name: 'username', text: 'Username', type: 'text'},
-    {name: 'password', text: 'Password', type: 'password'},
-    {name: 'email', text: 'Email', type: 'email'},
+    {name: 'username', text: 'Username', type: 'text', validate: value => validateInput(value, 'username')},
+    {name: 'password', text: 'Password', type: 'password', validate: value => validateInput(value, 'password')},
+    {name: 'email', text: 'Email', type: 'email', validate: value => validateInput(value, 'email')},
     {name: 'firstname', text: 'First Name', type: 'text'},
     {name: 'lastname', text: 'Last Name', type: 'text'},
     {
@@ -73,7 +74,7 @@ async function updateUser(id) {
   })[0]
 
   let user = await window.addNewForm('Update User', 'Update', [
-    {name: 'email', text: 'Email', type: 'email', value: userData[2]},
+    {name: 'email', text: 'Email', type: 'email', value: userData[2], validate: value => validateInput(value, 'email')},
     {name: 'firstname', text: 'First Name', type: 'text', value: userData[3]},
     {name: 'lastname', text: 'Last Name', type: 'text', value: userData[4]},
     {
@@ -113,7 +114,7 @@ async function updateUser(id) {
 
 async function deleteUser(id) {
   let confirm = await window.popupConfirmation('Delete User',
-      'This action is irreversible. Are you sure you want to remove this user?')
+    'This action is irreversible. Are you sure you want to remove this user?')
   if (confirm) {
     let response = await sendJsonPostRequest(apiBaseUrl + "/users/delete", {
       "user-id": id
@@ -129,8 +130,11 @@ async function deleteUser(id) {
 
 async function updatePasswordFunc(id) {
   let user = await window.addNewForm('Update User Password', 'Update', [
-    {name: 'password', text: 'Password', type: 'password'},
-    {name: 'passwordConfirm', text: 'Confirm Password', type: 'password'}])
+    {name: 'password', text: 'Password', type: 'password', validate: value => validateInput(value, 'password')},
+    {
+      name: 'passwordConfirm', text: 'Confirm Password', type: 'password',
+      validate: value => validateInput(value, 'password')
+    }])
   if (!user['accepted'])
     return
 
@@ -155,7 +159,8 @@ async function updatePasswordFunc(id) {
 <template>
   <div class="flex justify-between mt-5 mb-3">
     <h3 class="text-2xl font-semibold">Users</h3>
-    <button class="bg-slate-600 text-slate-100 rounded-md py-2 px-3 font-semibold" @click="addNewUser">+ New User</button>
+    <button class="bg-slate-600 text-slate-100 rounded-md py-2 px-3 font-semibold" @click="addNewUser">+ New User
+    </button>
   </div>
 
   <TableComponent :tableColumns="tableCol" :tableRows="tableRows" :actions="actions"

@@ -15,6 +15,7 @@ import {ref} from 'vue'
 import {sendGetRequest, sendJsonPostRequest} from "../js-modules/base-functions.js";
 import {apiBaseUrl} from "../js-modules/website-constants.js";
 import {PencilSquareIcon, TrashIcon} from "@heroicons/vue/24/solid/index.js";
+import {validateInput} from "../js-modules/form-validations.js";
 
 let employeesTableCol = ['Id', 'Customer Name', 'Phone Number', 'Email', 'Address', 'Joined Date',
   'Left Date', 'Modifications']
@@ -44,9 +45,9 @@ getEmployees()
 async function addNewEmployee() {
   let employee = await window.addNewForm('New Employee', 'Add', [
     {name: 'name', text: 'Employee Name', type: 'text'},
-    {name: 'email', text: 'Email', type: 'email'},
+    {name: 'email', text: 'Email', type: 'email', validate: value => validateInput(value, 'email')},
     {name: 'address', text: 'Address', type: 'textarea'},
-    {name: 'phone', text: 'Phone Number', type: 'text'},
+    {name: 'phone', text: 'Phone Number', type: 'text', validate: value => validateInput(value, 'phone-number')},
     {name: 'join', text: 'Join Date', type: 'date'}
   ])
 
@@ -76,8 +77,10 @@ async function editEmployee(id) {
 
   let employee = await window.addNewForm('Update Employee', 'Update', [
     {name: 'name', text: 'Employee Name', type: 'text', value: employeeData[1]},
-    {name: 'phone', text: 'Phone Number', type: 'text', value: employeeData[2]},
-    {name: 'email', text: 'Email', type: 'email', value: employeeData[3]},
+    {name: 'phone', text: 'Phone Number', type: 'text', value: employeeData[2],
+      validate: value => validateInput(value, 'phone-number')},
+    {name: 'email', text: 'Email', type: 'email', value: employeeData[3],
+      validate: value => validateInput(value, 'email')},
     {name: 'address', text: 'Address', type: 'textarea', value: employeeData[4]},
     {name: 'join', text: 'Join Date', type: 'date', value: employeeData[5]},
     {name: 'left', text: 'Left Date', type: 'date', value: employeeData[6]}

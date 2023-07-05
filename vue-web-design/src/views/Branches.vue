@@ -15,6 +15,7 @@ import {ref} from 'vue'
 import {sendGetRequest, sendJsonPostRequest} from "../js-modules/base-functions.js";
 import {apiBaseUrl} from "../js-modules/website-constants.js";
 import {PencilSquareIcon, TrashIcon} from "@heroicons/vue/24/solid/index.js";
+import {validateInput} from "../js-modules/form-validations.js";
 
 let branchesTableCol = ['Id', 'Branch Name', 'Contact Info', 'Modifications']
 let branchesTableRows = ref([])
@@ -41,7 +42,7 @@ getBranches()
 async function addNewBranch() {
   let branch = await window.addNewForm('New Branch', 'Add', [
     {name: 'name', text: 'Branch Name', type: 'text'},
-    {name: 'phone', text: 'Phone Number', type: 'text'}
+    {name: 'phone', text: 'Phone Number', type: 'text', validate: value => validateInput(value, 'phone-number')}
   ])
 
   if (!branch['accepted'])
@@ -67,7 +68,8 @@ async function editBranch(id) {
 
   let branch = await window.addNewForm('Update Branch', 'Update', [
     {name: 'name', text: 'Branch Name', type: 'text', value: branchData[1]},
-    {name: 'phone', text: 'Phone Number', type: 'text', value: branchData[2]}
+    {name: 'phone', text: 'Phone Number', type: 'text', value: branchData[2],
+      validate: value => validateInput(value, 'phone-number')}
   ])
 
   if (!branch['accepted'])

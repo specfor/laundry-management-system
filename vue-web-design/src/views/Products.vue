@@ -4,6 +4,7 @@ import {ref} from 'vue'
 import {sendGetRequest, sendJsonPostRequest} from "../js-modules/base-functions.js";
 import {apiBaseUrl} from "../js-modules/website-constants.js";
 import {PencilSquareIcon, TrashIcon} from "@heroicons/vue/24/solid/index.js";
+import {validateInput} from "../js-modules/form-validations.js";
 
 let productTableCol = ['Id', 'Product Name', 'Actions', 'Unit Price', 'Modifications']
 let productTableRows = ref([])
@@ -125,7 +126,7 @@ async function addNewProduct() {
   let product = await window.addNewForm('New Product', 'Add', [
     {name: 'name', text: 'Product Name', type: 'text'},
     {name: 'actions', text: 'Actions', type: 'checkbox', options: optionsArray},
-    {name: 'price', text: 'Unit Price', type: 'number'}
+    {name: 'price', text: 'Unit Price', type: 'number', validate: value => validateInput(value, 'price')}
   ])
 
   if (!product['accepted'])
@@ -164,7 +165,7 @@ async function editProduct(id) {
   let product = await window.addNewForm('Update Product', 'Update', [
     {name: 'name', text: 'Product Name', type: 'text', value: productData[1]},
     {name: 'actions', text: 'Actions', type: 'checkbox', options: optionsArray},
-    {name: 'price', text: 'Unit Price', type: 'number', value: productData[3]}
+    {name: 'price', text: 'Unit Price', type: 'number', value: productData[3], validate: value => validateInput(value, 'price')}
   ])
 
   if (!product['accepted'])
