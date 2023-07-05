@@ -1,16 +1,3 @@
-<template>
-  <div class="flex justify-between mt-5 mb-3">
-    <h3 class="text-2xl font-semibold">Branches</h3>
-    <button class="bg-slate-600 text-slate-100 rounded-md py-2 px-3 font-semibold" @click="addNewCustomer">+ New
-      Customer
-    </button>
-  </div>
-
-  <TableComponent :tableColumns="customersTableCol" :tableRows="customersTableRows" :actions="customersTableActions"
-                  @remove-customer="deleteCustomer($event)" @edit-customer="editCustomer($event)"/>
-
-</template>
-
 <script setup>
 import TableComponent from '../components/TableComponent.vue'
 import {ref} from 'vue'
@@ -138,6 +125,19 @@ async function deleteCustomer(id) {
   }
 }
 </script>
+
+<template>
+  <div class="flex justify-between mt-5 mb-3">
+    <h3 class="text-2xl font-semibold">Customers</h3>
+    <button class="bg-slate-600 text-slate-100 rounded-md py-2 px-3 font-semibold" @click="addNewCustomer">+ New
+      Customer
+    </button>
+  </div>
+
+  <TableComponent :tableColumns="customersTableCol" :tableRows="customersTableRows" :actions="customersTableActions"
+                  @remove-customer="deleteCustomer($event)" @edit-customer="editCustomer($event)"/>
+
+</template>
 
 <style scoped>
 

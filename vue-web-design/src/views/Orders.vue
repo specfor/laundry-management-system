@@ -113,6 +113,11 @@ async function addNewOrder() {
   if (!customer['accepted'])
     return
 
+  if (!customer.data['customer']){
+    window.errorNotification('Add New Order', 'Customer must be selected.')
+    return
+  }
+
   let order = await window.newOrderModal(products, actions, {
     'customer': customerResponse.data['customers'].filter((row) => {
       return row['customer_id'] === parseInt(customer.data['customer'])
