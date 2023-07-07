@@ -528,6 +528,18 @@ class ApiControllerV1 extends API
             self::sendError('Failed to delete the order.');
     }
 
+    public function getOrderCount(): void
+    {
+        self::checkPermissions();
+
+        $branchId = User::getUserBranchId(self::getUserId());
+        if ($branchId == 0)
+            $branchId = self::getParameter('branch-id', dataType: 'int', isCompulsory: true);
+        $noOfDaysBackward = self::getParameter('no-days-backward', defaultValue: 7, dataType: 'int');
+
+        self::sendSuccess(['order-counts' => Orders::getOrderCount($branchId, $noOfDaysBackward)]);
+    }
+
     public function getOrderStatusMessages(): void
     {
         self::checkPermissions();

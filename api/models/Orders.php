@@ -2,6 +2,7 @@
 
 namespace LogicLeap\StockManagement\models;
 
+use DateInterval;
 use DateTime;
 use PDO;
 
@@ -37,7 +38,7 @@ class Orders extends DbModel
         }
 
         $itemIds = [];
-        foreach ($items as $singleItem){
+        foreach ($items as $singleItem) {
             foreach ($singleItem as $itemId => $itemData) {
                 if (!is_int($itemId))
                     return "All item ids must be integers.";
@@ -51,7 +52,7 @@ class Orders extends DbModel
                     return "Defects should be an array.";
                 if (!is_string($itemData['return-date']))
                     return "'return-date' should be a string.";
-                    $itemIds[] = "item_id=$itemId";
+                $itemIds[] = "item_id=$itemId";
             }
         }
         $itemIds = array_unique($itemIds);
@@ -106,8 +107,8 @@ class Orders extends DbModel
         if ($orderId)
             $filters[] = "order_id=$orderId";
         if ($addedDate) {
-            $filters[] = "added_date=:date";
-            $placeholders['date'] = $addedDate;
+            $filters[] = "added_date LIKE :date";
+            $placeholders['date'] = "%" . $addedDate;
         }
         if ($branchId)
             $filters[] = "branch_id=$branchId";
@@ -186,7 +187,7 @@ class Orders extends DbModel
 
         if ($items) {
             $itemIds = [];
-            foreach ($items as $singleItem){
+            foreach ($items as $singleItem) {
                 foreach ($singleItem as $itemId => $itemDataGiven) {
                     if (!is_int($itemId))
                         return "All item ids must be integers.";
@@ -205,7 +206,7 @@ class Orders extends DbModel
 
             $calculatedTotalPrice = 0;
             $newItemData = [];
-            foreach ($items as $singleItem){
+            foreach ($items as $singleItem) {
                 foreach ($singleItem as $itemId => $itemDataGiven) {
                     foreach ($itemData as $item) {
                         if ($itemId == $item['item_id']) {
@@ -241,6 +242,19 @@ class Orders extends DbModel
 
         $condition = "order_id=$orderId";
         return self::updateTableData('orders', $params, $condition);
+    }
+
+    public static function getOrderCount(int $branchId, int $noDaysBackward = 7)
+    {
+        $counts = [];
+        for ($i = 1; $i < $noDaysBackward + 1; $i++) {
+            $date = ((new DateTime('now'))
+                ->sub(new DateInterval("P" . $i . "D")))->format("Y-m-d");
+            $condition = "branch_id=$branchId AND added_date LIKE '" . $date . "%'";
+
+            $counts[$date] = (self::getDataFromTable(["order_id"], 'orders', $condition))->rowCount();
+        }
+        return $counts;
     }
 
     public static function getStatusMessages(): array

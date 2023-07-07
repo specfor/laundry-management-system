@@ -221,6 +221,11 @@ order-status - optional
 GET - /api/v1/orders/status-messages
 Get all available order status messages
 
+GET - /api/v1/orderCount
+Get daily order counts.
+branch-id - passed branch id is used only if user is admin level user.
+no-days-backward - number of days to look backward to get daily order counts.
+
 POST - /api/v1/orders/add
 Parameters
 items - compulsory - array of {item-id: {'amount':amount,'return-date': return-date, 'defects': [defect1, defect2,...]}, item-id2: { ...}}
