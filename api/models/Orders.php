@@ -244,10 +244,10 @@ class Orders extends DbModel
         return self::updateTableData('orders', $params, $condition);
     }
 
-    public static function getOrderCount(int $branchId, int $noDaysBackward = 7)
+    public static function getOrderCount(int $branchId, int $noDaysBackward = 7): array
     {
         $counts = [];
-        for ($i = 1; $i < $noDaysBackward + 1; $i++) {
+        for ($i = 0; $i < $noDaysBackward + 1; $i++) {
             $date = ((new DateTime('now'))
                 ->sub(new DateInterval("P" . $i . "D")))->format("Y-m-d");
             $condition = "branch_id=$branchId AND added_date LIKE '" . $date . "%'";
