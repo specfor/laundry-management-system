@@ -2,7 +2,6 @@
 
 namespace LogicLeap\StockManagement\models;
 
-use DateTime;
 use PDO;
 
 class User extends DbModel
@@ -11,14 +10,24 @@ class User extends DbModel
     // Following constants need to be initialized. They are used when executing Database actions.
 
     private const TABLE_NAME = 'users';
-    private const PRIMARY_KEY = 'id';
-    private const TABLE_COLUMNS = ['id', 'username', 'email', 'firstname', 'lastname', 'password', 'role'];
 
     // User Roles
     public const ROLE_SUPER_ADMINISTRATOR = 0;
     public const ROLE_ADMINISTRATOR = 1;
     public const ROLE_MANAGER = 2;
     public const ROLE_CASHIER = 3;
+
+    public const PERMISSIONS = [
+        'user' => ['write', 'remove', 'modify', 'read'],
+        'customers' => ['write', 'remove', 'modify', 'read'],
+        'branches' => ['write', 'remove', 'modify', 'read'],
+        'employees' => ['write', 'remove', 'modify', 'read'],
+        'categories' => ['write', 'remove', 'modify', 'read'],
+        'products' => ['write', 'remove', 'modify', 'read'],
+        'orders' => ['write', 'remove', 'modify', 'read'],
+        'payments' => ['write', 'remove', 'modify', 'read'],
+        'user-roles' => ['write', 'remove', 'modify', 'read'],
+    ];
 
     public int $userId;
     public string $username;
@@ -60,20 +69,27 @@ class User extends DbModel
     private const MIN_USERNAME_LENGTH = 6;
     private const MAX_USERNAME_LENGTH = 30;
 
-    public static function createNewUser(string $username, string $password, string $role, string $email = null,
-                                         string $firstname = null, string $lastname = null, int $branchId = null): array|string
-    {
+    public static function createNewUser(
+        string $username, string $password, string $role, string $email = null,
+        string $firstname = null, string $lastname = null, int $branchId = null
+    ): array|string {
         // Performing checks on input variables.
 
-        $statement = self::getDataFromTable(['id'], self::TABLE_NAME, 'username=:username',
-            [':username' => $username]);
+        $statement = self::getDataFromTable(
+            ['id'], self::TABLE_NAME,
+            'username=:username',
+            [':username' => $username]
+        );
         if ($statement->fetch(PDO::FETCH_ASSOC)) {
             return 'Username already exists.';
         }
 
         if ($email) {
-            $statement = self::getDataFromTable(['id'], self::TABLE_NAME, 'email=:email',
-                [':email' => $email]);
+            $statement = self::getDataFromTable(
+                ['id'], self::TABLE_NAME,
+                'email=:email',
+                [':email' => $email]
+            );
             if ($statement->fetch(PDO::FETCH_ASSOC)) {
                 return 'Email already exists.';
             }
@@ -132,9 +148,10 @@ class User extends DbModel
         return ['message' => 'New user created successfully.', 'user-id' => $id];
     }
 
-    public static function getUsers(int    $pageNumber = 0, string $username = null, string $name = null, string $email = null,
-                                    string $role = null, int $branchId = null, int $limit = 30): array
-    {
+    public static function getUsers(
+        int $pageNumber = 0, string $username = null, string $name = null, string $email = null,
+        string $role = null, int $branchId = null, int $limit = 30
+    ): array {
         $superAdminRole = self::ROLE_SUPER_ADMINISTRATOR;
         $startingIndex = $pageNumber * $limit;
 
@@ -167,8 +184,14 @@ class User extends DbModel
         if ($branchId)
             $condition .= " AND branch_id=$branchId";
 
-        $statement = self::getDataFromTable(['id', 'username', 'firstname', 'lastname', 'role', 'branch_id', 'email'],
-            'users', $condition, $placeholders, ['id', 'asc'], [$startingIndex, $limit]);
+        $statement = self::getDataFromTable(
+            ['id', 'username', 'firstname', 'lastname', 'role', 'branch_id', 'email'],
+            'users',
+            $condition,
+            $placeholders,
+            ['id', 'asc'],
+            [$startingIndex, $limit]
+        );
         $data = $statement->fetchAll(PDO::FETCH_ASSOC);
         for ($i = 0; $i < count($data); $i++) {
             $data[$i]['role'] = self::getUserRoleText($data[$i]['role']);
@@ -176,10 +199,11 @@ class User extends DbModel
         return $data;
     }
 
-    public static function updateUser(int    $userId, string $password = null, string $role = null,
-                                      string $email = null, string $firstname = null,
-                                      string $lastname = null, int $branchId = null): bool|string
-    {
+    public static function updateUser(
+        int $userId, string $password = null, string $role = null,
+        string $email = null, string $firstname = null,
+        string $lastname = null, int $branchId = null
+    ): bool|string {
         $updateFields = [];
 
         if ($password)

@@ -12,3 +12,4 @@ website/vendor/
 /website/.env
 tailwind-css/tailwindcss-windows-x64.exe
 /vue-web-design/.vscode/
+.vs/

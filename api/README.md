@@ -166,6 +166,27 @@ POST - /api/v1/users/delete
 Parameters
 user-id - compulsory
 
+GET - /api/v1/user-roles
+page-num - optional
+role-id - optional
+name - optional
+permissions - optional
+description - optional
+
+POST - /api/v1/user-roles/add
+name - compulsory
+permissions - compulsory
+description - optional
+
+POST - /api/v1/user-roles/update
+role-id - compulsory
+name - optional
+permissions - optional
+description - optional
+
+POST - /api/v1/user-roles/delete
+role-id - compulsory
+
 GET - /api/v1/category
 Parameters
 page-num - optional

@@ -146,4 +146,15 @@ abstract class DbModel
             return true;
         }
     }
+
+    protected static function removeTableData(string $tableName, string $condition, array $placeholders = []): bool
+    {
+        $sql = "DELETE FROM $tableName WHERE $condition";
+        $statement = self::prepare($sql);
+        if ($placeholders)
+            foreach ($placeholders as $placeholder => $value) {
+                $statement->bindValue($placeholder, $value);
+            }
+        return $statement->execute();
+    }
 }
