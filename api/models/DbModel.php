@@ -147,6 +147,14 @@ abstract class DbModel
         }
     }
 
+    /**
+     * Remove data from a table.
+     * @param string $tableName Name of the table.
+     * @param string $condition condition to remove data. May contain placeholders.
+     * @param array $placeholders An Associative array of [placeholder => value] for the condition if condition is
+     *      passed with placeholders.
+     * @return bool True if success, false if failed.
+     */
     protected static function removeTableData(string $tableName, string $condition, array $placeholders = []): bool
     {
         $sql = "DELETE FROM $tableName WHERE $condition";

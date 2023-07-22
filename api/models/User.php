@@ -72,7 +72,8 @@ class User extends DbModel
     public static function createNewUser(
         string $username, string $password, string $role, string $email = null,
         string $firstname = null, string $lastname = null, int $branchId = null
-    ): array|string {
+    ): array|string
+    {
         // Performing checks on input variables.
 
         $statement = self::getDataFromTable(
@@ -118,22 +119,27 @@ class User extends DbModel
         // Associative array of [table_column_name => value]
         $params = [];
 
-        if (strtolower($role) == 'administrator')
-            $params['role'] = self::ROLE_ADMINISTRATOR;
-        elseif (strtolower($role) == 'manager')
-            $params['role'] = self::ROLE_MANAGER;
-        elseif (strtolower($role == 'cashier'))
-            $params['role'] = self::ROLE_CASHIER;
-        else
-            return 'Invalid user role provided.';
-
-        $params['username'] = $username;
-        $params['password'] = self::generatePasswordHash($password);
-
         if ($email)
             if (!filter_var($email, FILTER_VALIDATE_EMAIL))
                 return 'Provided email address is invalid.';
         $params['email'] = $email;
+
+        $userRoles = UserRoles::getUserRoles(limit: 1000);
+
+        $roleId = null;
+        foreach ($userRoles as $userRole) {
+            if ($userRole['name'] == strtolower($role)) {
+                $roleId = $userRole['role_id'];
+                break;
+            }
+        }
+        if ($roleId === null)
+            return 'Invalid user role provided.';
+
+        $params['role'] = $roleId;
+        $params['username'] = $username;
+        $params['password'] = self::generatePasswordHash($password);
+
         if ($firstname)
             $params['firstname'] = $firstname;
         if ($lastname)
@@ -149,9 +155,10 @@ class User extends DbModel
     }
 
     public static function getUsers(
-        int $pageNumber = 0, string $username = null, string $name = null, string $email = null,
+        int    $pageNumber = 0, string $username = null, string $name = null, string $email = null,
         string $role = null, int $branchId = null, int $limit = 30
-    ): array {
+    ): array
+    {
         $superAdminRole = self::ROLE_SUPER_ADMINISTRATOR;
         $startingIndex = $pageNumber * $limit;
 
@@ -171,15 +178,17 @@ class User extends DbModel
             $placeholders['email'] = "%" . $email . "%";
         }
         if ($role) {
-            if (strtolower($role) == 'administrator')
-                $role = self::ROLE_ADMINISTRATOR;
-            elseif (strtolower($role) == 'manager')
-                $role = self::ROLE_MANAGER;
-            elseif (strtolower($role == 'cashier'))
-                $role = self::ROLE_CASHIER;
-            else
-                $role = 99;
-            $condition .= " AND role=$role";
+            $roleId = null;
+            $userRoles = UserRoles::getUserRoles(limit: 1000);
+
+            foreach ($userRoles as $userRole) {
+                if ($userRole['name'] == strtolower($role)) {
+                    $roleId = $userRole['role_id'];
+                    break;
+                }
+            }
+            if ($roleId)
+                $condition .= " AND role=$role";
         }
         if ($branchId)
             $condition .= " AND branch_id=$branchId";
@@ -200,23 +209,28 @@ class User extends DbModel
     }
 
     public static function updateUser(
-        int $userId, string $password = null, string $role = null,
+        int    $userId, string $password = null, string $role = null,
         string $email = null, string $firstname = null,
         string $lastname = null, int $branchId = null
-    ): bool|string {
+    ): bool|string
+    {
         $updateFields = [];
 
         if ($password)
             $updateFields['password'] = self::generatePasswordHash($password);
         if ($role) {
-            if (strtolower($role) == 'administrator')
-                $updateFields['role'] = self::ROLE_ADMINISTRATOR;
-            elseif (strtolower($role) == 'manager')
-                $updateFields['role'] = self::ROLE_MANAGER;
-            elseif (strtolower($role == 'cashier'))
-                $updateFields['role'] = self::ROLE_CASHIER;
-            else
-                return "Unknown user role provided.";
+            $userRoles = UserRoles::getUserRoles(limit: 1000);
+
+            $roleId = null;
+            foreach ($userRoles as $userRole) {
+                if ($userRole['name'] == strtolower($role)) {
+                    $roleId = $userRole['role_id'];
+                    break;
+                }
+            }
+            if ($roleId === null)
+                return 'Invalid user role provided.';
+            $updateFields['role'] = $roleId;
         }
         if ($email)
             if (!filter_var($email, FILTER_VALIDATE_EMAIL))
@@ -285,20 +299,28 @@ class User extends DbModel
         return $statement->rowCount();
     }
 
+
+    private static array $userRoles;
+
     /**
      * Get user type text.
      * @return string Return user type message. 'none' if no role found.
      */
     public static function getUserRoleText(int $role): string
     {
-        if ($role === User::ROLE_ADMINISTRATOR)
-            return 'administrator';
-        elseif ($role === User::ROLE_CASHIER)
-            return 'cashier';
-        elseif ($role === User::ROLE_MANAGER)
-            return 'manager';
-        else
-            return 'none';
+        if (!self::$userRoles)
+            self::$userRoles = UserRoles::getUserRoles(limit: 1000);
+
+        $roleText = null;
+        foreach (self::$userRoles as $userRole) {
+            if ($userRole['role_id'] == $role) {
+                $roleText = $userRole['name'];
+                break;
+            }
+        }
+        if (!$roleText)
+            return 'NO ROLE';
+        return $roleText;
     }
 
     public static function getUserRole(int $userId): int
