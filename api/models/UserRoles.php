@@ -19,7 +19,7 @@ class UserRoles extends DbModel
             $filters[] = 'role_id=' . $roleId;
         if ($name) {
             $filters[] = 'name LIKE :name';
-            $placeholders['name'] = $name . "%";
+            $placeholders['name'] = strtolower($name) . "%";
         }
         if ($permissions) {
             $filters[] = 'permissions=:permissions';
@@ -46,6 +46,7 @@ class UserRoles extends DbModel
 
     public static function createUserRole(string $name, array $permissions, string $description = null): bool|array|string
     {
+        $name = strtolower($name);
         $statement = self::getDataFromTable(['role_id'], self::TABLE_NAME, 'name=:name',
             ['name' => $name]);
         $statement->execute();
@@ -88,6 +89,13 @@ class UserRoles extends DbModel
         if (empty($name) && empty($permissions) && empty($description))
             return "No values were passed to update.";
 
+        $statement = self::getDataFromTable(['locked'], self::TABLE_NAME, "role_id=$roleId");
+        $statement->execute();
+        $data = $statement->fetch(PDO::FETCH_ASSOC);
+        if ($data['locked'])
+            return "This user role can not be updated.";
+
+        $name = strtolower($name);
         $statement = self::getDataFromTable(['role_id'], self::TABLE_NAME, 'name=:name',
             ['name' => $name]);
         $statement->execute();
