@@ -51,7 +51,7 @@ class ApiControllerV1 extends API
 
     public function addCustomer(): void
     {
-        self::checkPermissions();
+        self::checkPermissions(['customers' => [User::PERMISSION_WRITE]]);
 
         $customerName = self::getParameter('customer-name', isCompulsory: true);
         $email = self::getParameter('email');
@@ -71,7 +71,7 @@ class ApiControllerV1 extends API
 
     public function getCustomers(): void
     {
-        self::checkPermissions();
+        self::checkPermissions(['customers' => User::PERMISSION_READ]);
 
         $pageNum = self::getParameter('page-num', 0, 'int');
         $customerId = self::getParameter('customer-id', dataType: 'int');
@@ -92,7 +92,7 @@ class ApiControllerV1 extends API
 
     public function updateCustomer(): void
     {
-        self::checkPermissions();
+        self::checkPermissions(['customers' => [User::PERMISSION_MODIFY]]);
 
         $customerId = self::getParameter('customer-id', dataType: 'int', isCompulsory: true);
         $email = self::getParameter('email');
@@ -113,7 +113,7 @@ class ApiControllerV1 extends API
 
     public function deleteCustomer(): void
     {
-        self::checkPermissions();
+        self::checkPermissions(['customers' => [User::PERMISSION_DELETE]]);
 
         $customerId = self::getParameter('customer-id', dataType: 'int', isCompulsory: true);
         if (Customers::deleteCustomer($customerId))
@@ -124,7 +124,7 @@ class ApiControllerV1 extends API
 
     public function addBranch(): void
     {
-        self::checkPermissions(User::ROLE_ADMINISTRATOR);
+        self::checkPermissions(['branches' => [User::PERMISSION_WRITE]]);
 
         $branchName = self::getParameter('branch-name', isCompulsory: true);
         $address = self::getParameter('address');
@@ -140,7 +140,7 @@ class ApiControllerV1 extends API
 
     public function getBranches(): void
     {
-        self::checkPermissions(User::ROLE_ADMINISTRATOR);
+        self::checkPermissions(['branches' => [User::PERMISSION_READ]]);
 
         $pageNum = self::getParameter('page-num', 0, 'int');
         $branchName = self::getParameter('branch-name');
@@ -155,7 +155,7 @@ class ApiControllerV1 extends API
 
     public function updateBranch(): void
     {
-        self::checkPermissions(User::ROLE_ADMINISTRATOR);
+        self::checkPermissions(['branches' => [User::PERMISSION_MODIFY]]);
 
         $branchId = self::getParameter('branch-id', dataType: 'int', isCompulsory: true);
         $branchName = self::getParameter('branch-name');
@@ -170,7 +170,7 @@ class ApiControllerV1 extends API
 
     public function deleteBranch(): void
     {
-        self::checkPermissions(User::ROLE_ADMINISTRATOR);
+        self::checkPermissions(['branches' => [User::PERMISSION_DELETE]]);
 
         $branchId = self::getParameter('branch-id', dataType: 'int', isCompulsory: true);
         if (Branches::deleteBranch($branchId))
@@ -181,7 +181,7 @@ class ApiControllerV1 extends API
 
     public function addEmployee(): void
     {
-        self::checkPermissions(User::ROLE_MANAGER);
+        self::checkPermissions(['employees' => [User::PERMISSION_WRITE]]);
 
         $name = self::getParameter('employee-name', isCompulsory: true);
         $address = self::getParameter('address');
@@ -200,7 +200,7 @@ class ApiControllerV1 extends API
 
     public function getEmployees(): void
     {
-        self::checkPermissions(User::ROLE_MANAGER);
+        self::checkPermissions(['employees' => [User::PERMISSION_READ]]);
 
         $pageNum = self::getParameter('page-num', 0, 'int');
         $name = self::getParameter('name');
@@ -216,7 +216,7 @@ class ApiControllerV1 extends API
 
     public function updateEmployee(): void
     {
-        self::checkPermissions(User::ROLE_MANAGER);
+        self::checkPermissions(['employees' => [User::PERMISSION_MODIFY]]);
 
         $employeeId = self::getParameter('employee-id', dataType: 'int', isCompulsory: true);
         $name = self::getParameter('employee-name');
@@ -235,7 +235,7 @@ class ApiControllerV1 extends API
 
     public function deleteEmployee(): void
     {
-        self::checkPermissions(User::ROLE_MANAGER);
+        self::checkPermissions(['employees' => [User::PERMISSION_DELETE]]);
 
         $employeeId = self::getParameter('employee-id', dataType: 'int', isCompulsory: true);
         if (Employees::deleteEmployee($employeeId))
@@ -273,7 +273,7 @@ class ApiControllerV1 extends API
 
     public function addUser(): void
     {
-        self::checkPermissions(User::ROLE_ADMINISTRATOR);
+        self::checkPermissions(['users' => [User::PERMISSION_WRITE]]);
 
         $username = self::getParameter('username', isCompulsory: true);
         $email = self::getParameter('email');
@@ -292,7 +292,7 @@ class ApiControllerV1 extends API
 
     public function getUsers(): void
     {
-        self::checkPermissions(User::ROLE_ADMINISTRATOR);
+        self::checkPermissions(['users' => [User::PERMISSION_READ]]);
 
         $pageNum = self::getParameter('page-num', 0, 'int');
         $username = self::getParameter('username');
@@ -307,7 +307,7 @@ class ApiControllerV1 extends API
 
     public function deleteUser(): void
     {
-        self::checkPermissions(User::ROLE_ADMINISTRATOR);
+        self::checkPermissions(['users' => [User::PERMISSION_DELETE]]);
 
         $deleteUserId = self::getParameter('user-id', dataType: 'int', isCompulsory: true);
 
@@ -316,10 +316,8 @@ class ApiControllerV1 extends API
         if ($deleteUserRole == User::ROLE_SUPER_ADMINISTRATOR)
             self::sendError('Failed to delete the user.');
 
-        if ($deleteUserRole == User::ROLE_ADMINISTRATOR) {
-            if ($deleteUserId == self::getUserId()) {
-                self::sendError('You cannot delete your administrator account.');
-            }
+        if ($deleteUserId == self::getUserId()) {
+            self::sendError('You cannot delete your account.');
         }
 
         if (User::deleteUser($deleteUserId))
@@ -330,7 +328,7 @@ class ApiControllerV1 extends API
 
     public function updateUser(): void
     {
-        self::checkPermissions(User::ROLE_ADMINISTRATOR);
+        self::checkPermissions(['users' => [User::PERMISSION_MODIFY]]);
 
         $userId = self::getParameter('user-id', dataType: 'int', isCompulsory: true);
         $email = self::getParameter('email');
@@ -351,7 +349,7 @@ class ApiControllerV1 extends API
 
     public function addUserRole(): void
     {
-        self::checkPermissions();
+        self::checkPermissions(['user-roles' => [User::PERMISSION_WRITE]]);
 
         $name = self::getParameter('name', isCompulsory: true);
         $permissions = self::getParameter('permissions', dataType: 'array', isCompulsory: true);
@@ -368,7 +366,7 @@ class ApiControllerV1 extends API
 
     public function getUserRoles(): void
     {
-//        self::checkPermissions();
+        self::checkPermissions(['user-roles' => [User::PERMISSION_READ]]);
 
         $pageNum = self::getParameter('page-num', 0, 'int');
         $roleId = self::getParameter('role-id', dataType: 'int');
@@ -382,7 +380,7 @@ class ApiControllerV1 extends API
 
     public function updateUserRole()
     {
-//        self::checkPermissions();
+        self::checkPermissions(['user-roles' => [User::PERMISSION_MODIFY]]);
 
         $roleId = self::getParameter('role-id', dataType: 'int', isCompulsory: true);
         $name = self::getParameter('name');
@@ -400,7 +398,7 @@ class ApiControllerV1 extends API
 
     public function deleteUserRole()
     {
-//        self::checkPermissions();
+        self::checkPermissions(['user-roles' => [User::PERMISSION_DELETE]]);
 
         $roleId = self::getParameter('role-id', dataType: 'int', isCompulsory: true);
 
@@ -416,7 +414,7 @@ class ApiControllerV1 extends API
 
     public function getPriceCategories(): void
     {
-        self::checkPermissions();
+        self::checkPermissions(['categories' => [User::PERMISSION_READ]]);
 
         $pageNum = self::getParameter('page-num', 0, 'int');
         $categoryName = self::getParameter('category-name');
@@ -427,7 +425,7 @@ class ApiControllerV1 extends API
 
     public function addPriceCategory(): void
     {
-        self::checkPermissions(User::ROLE_ADMINISTRATOR);
+        self::checkPermissions(['categories' => [User::PERMISSION_WRITE]]);
 
         $categoryName = self::getParameter('category-name', isCompulsory: true);
 
@@ -442,7 +440,7 @@ class ApiControllerV1 extends API
 
     public function updatePriceCategory(): void
     {
-        self::checkPermissions(User::ROLE_ADMINISTRATOR);
+        self::checkPermissions(['categories' => [User::PERMISSION_MODIFY]]);
 
         $categoryId = self::getParameter('category-id', dataType: 'int', isCompulsory: true);
         $categoryName = self::getParameter('category-name', isCompulsory: true);
@@ -455,7 +453,7 @@ class ApiControllerV1 extends API
 
     public function deletePriceCategory(): void
     {
-        self::checkPermissions(User::ROLE_ADMINISTRATOR);
+        self::checkPermissions(['categories' => [User::PERMISSION_DELETE]]);
 
         $categoryId = self::getParameter('category-id', dataType: 'int', isCompulsory: true);
 
@@ -467,7 +465,7 @@ class ApiControllerV1 extends API
 
     public function getItems(): void
     {
-        self::checkPermissions();
+        self::checkPermissions(['products' => [User::PERMISSION_READ]]);
 
         $pageNum = self::getParameter('page-num', 0, 'int');
         $itemName = self::getParameter('item-name');
@@ -481,7 +479,7 @@ class ApiControllerV1 extends API
 
     public function addItem(): void
     {
-        self::checkPermissions(User::ROLE_ADMINISTRATOR);
+        self::checkPermissions(['products' => [User::PERMISSION_WRITE]]);
 
         $itemName = self::getParameter('item-name', isCompulsory: true);
         $prices = self::getParameter('item-price', defaultValue: [], dataType: 'array', isCompulsory: true);
@@ -498,7 +496,7 @@ class ApiControllerV1 extends API
 
     public function updateItem(): void
     {
-        self::checkPermissions(User::ROLE_ADMINISTRATOR);
+        self::checkPermissions(['products' => [User::PERMISSION_MODIFY]]);
 
         $itemId = self::getParameter('item-id', dataType: 'int', isCompulsory: true);
         $itemName = self::getParameter('item-name');
@@ -516,7 +514,7 @@ class ApiControllerV1 extends API
 
     public function deleteItem(): void
     {
-        self::checkPermissions(User::ROLE_ADMINISTRATOR);
+        self::checkPermissions(['products' => [User::PERMISSION_DELETE]]);
 
         $itemId = self::getParameter('item-id', dataType: 'int', isCompulsory: true);
 
@@ -528,7 +526,7 @@ class ApiControllerV1 extends API
 
     public function getOrders(): void
     {
-        self::checkPermissions();
+        self::checkPermissions(['orders' => [User::PERMISSION_READ]]);
 
         $pageNumber = self::getParameter('page-num', defaultValue: 0, dataType: 'int');
         $orderId = self::getParameter('order-id', dataType: 'int');
@@ -542,7 +540,7 @@ class ApiControllerV1 extends API
 
     public function addOrder(): void
     {
-        self::checkPermissions();
+        self::checkPermissions(['orders' => [User::PERMISSION_WRITE]]);
 
         $items = self::getParameter('items', dataType: 'array', isCompulsory: true);
         $totalPrice = self::getParameter('total-price', dataType: 'float');
@@ -564,7 +562,7 @@ class ApiControllerV1 extends API
 
     public function updateOrder(): void
     {
-        self::checkPermissions(User::ROLE_MANAGER);
+        self::checkPermissions(['orders' => [User::PERMISSION_MODIFY]]);
 
         $orderId = self::getParameter('order-id', dataType: 'int', isCompulsory: true);
         $branchId = self::getParameter('branch-id', dataType: 'int');
@@ -584,7 +582,7 @@ class ApiControllerV1 extends API
 
     public function deleteOrder(): void
     {
-        self::checkPermissions(User::ROLE_MANAGER);
+        self::checkPermissions(['orders' => [User::PERMISSION_DELETE]]);
 
         $orderId = self::getParameter('order-id', dataType: 'int', isCompulsory: true);
 
@@ -596,7 +594,7 @@ class ApiControllerV1 extends API
 
     public function getOrderCount(): void
     {
-        self::checkPermissions();
+        self::checkPermissions(['orders' => [User::PERMISSION_READ]]);
 
         $branchId = User::getUserBranchId(self::getUserId());
         if ($branchId == 0)
@@ -608,14 +606,14 @@ class ApiControllerV1 extends API
 
     public function getOrderStatusMessages(): void
     {
-        self::checkPermissions();
+        self::checkPermissions(['orders' => [User::PERMISSION_READ]]);
 
         self::sendSuccess(['status-messages' => Orders::getStatusMessages()]);
     }
 
     public function getPayments(): void
     {
-        self::checkPermissions();
+        self::checkPermissions(['payments' => [User::PERMISSION_READ]]);
 
         $pageNumber = self::getParameter('page-num', defaultValue: 0, dataType: 'int');
         $orderId = self::getParameter('order-id', dataType: 'int');
@@ -627,7 +625,7 @@ class ApiControllerV1 extends API
 
     public function addPayment(): void
     {
-        self::checkPermissions();
+        self::checkPermissions(['payments' => [User::PERMISSION_WRITE]]);
 
         $orderId = self::getParameter('order-id', dataType: 'int', isCompulsory: true);
         $paidAmount = self::getParameter('paid-amount', dataType: 'float', isCompulsory: true);
@@ -644,7 +642,7 @@ class ApiControllerV1 extends API
 
     public function updatePayment(): void
     {
-        self::checkPermissions();
+        self::checkPermissions(['payments' => [User::PERMISSION_MODIFY]]);
 
         $paymentId = self::getParameter('payment-id', dataType: 'int', isCompulsory: true);
         $refunded = self::getParameter('refunded', dataType: 'bool', isCompulsory: true);
@@ -657,7 +655,7 @@ class ApiControllerV1 extends API
 
     public function deletePayment(): void
     {
-        self::checkPermissions(User::ROLE_MANAGER);
+        self::checkPermissions(['payments' => [User::PERMISSION_DELETE]]);
 
         $paymentId = self::getParameter('payment-id', dataType: 'int', isCompulsory: true);
 
@@ -667,7 +665,7 @@ class ApiControllerV1 extends API
             self::sendError("Failed to delete the payment.");
     }
 
-    public function getReport() :void
+    public function getReport(): void
     {
         (new Reports())->generatePdf();
     }
@@ -676,7 +674,7 @@ class ApiControllerV1 extends API
 
     public function getRealtimePerformanceMetrics(): void
     {
-        self::checkPermissions(User::ROLE_SUPER_ADMINISTRATOR);
+        self::checkPermissions(onlyServerAdmins: true);
 
         $ram = ServerMetrics::getMemoryUsage();
         $cpu = ServerMetrics::getCpuUsage();
@@ -686,14 +684,14 @@ class ApiControllerV1 extends API
 
     public function getMaintenanceStatus(): void
     {
-        self::checkPermissions(User::ROLE_SUPER_ADMINISTRATOR);
+        self::checkPermissions(onlyServerAdmins: true);
 
         self::sendSuccess(['maintenance-mode' => (new MigrationManager())->isInMaintenanceMode()]);
     }
 
     public function setMaintenanceStatus(): void
     {
-        self::checkPermissions(User::ROLE_SUPER_ADMINISTRATOR);
+        self::checkPermissions(onlyServerAdmins: true);
 
         $enable = self::getParameter('enable', dataType: 'bool', isCompulsory: true);
 
@@ -706,7 +704,7 @@ class ApiControllerV1 extends API
 
     public function getMigrations(): void
     {
-        self::checkPermissions(User::ROLE_SUPER_ADMINISTRATOR);
+        self::checkPermissions(onlyServerAdmins: true);
 
         $migrations = (new MigrationManager())->getAvailableMigrations(true);
         self::sendSuccess(['available-migrations' => $migrations]);
@@ -714,7 +712,7 @@ class ApiControllerV1 extends API
 
     public function getAppliedMigrations(): void
     {
-        self::checkPermissions(User::ROLE_SUPER_ADMINISTRATOR);
+        self::checkPermissions(onlyServerAdmins: true);
 
         $pageNumber = self::getParameter('page-num', defaultValue: 0, dataType: 'int');
         $migrationName = self::getParameter('migration-name');
@@ -727,7 +725,7 @@ class ApiControllerV1 extends API
 
     public function attemptMigration(): void
     {
-        self::checkPermissions(User::ROLE_SUPER_ADMINISTRATOR);
+        self::checkPermissions(onlyServerAdmins: true);
 
         $migrationName = self::getParameter('migration-name', isCompulsory: true);
         $force = self::getParameter('force-run', defaultValue: false, dataType: 'bool');
@@ -744,14 +742,14 @@ class ApiControllerV1 extends API
 
     public function getMigrationToken(): void
     {
-        self::checkPermissions(User::ROLE_SUPER_ADMINISTRATOR);
+        self::checkPermissions(onlyServerAdmins: true);
 
         self::sendSuccess(['token' => (new MigrationManager())->getMigrationAuthToken()]);
     }
 
     public function blockMigrationToken(): void
     {
-        self::checkPermissions(User::ROLE_SUPER_ADMINISTRATOR);
+        self::checkPermissions(onlyServerAdmins: true);
 
         $token = self::getParameter('token', isCompulsory: true);
 
@@ -766,7 +764,7 @@ class ApiControllerV1 extends API
 
     public function validateMigrationToken(): void
     {
-        self::checkPermissions(User::ROLE_SUPER_ADMINISTRATOR);
+        self::checkPermissions(onlyServerAdmins: true);
 
         $token = self::getParameter('token', isCompulsory: true);
 
@@ -780,9 +778,9 @@ class ApiControllerV1 extends API
 
     /**
      * Check whether requests are coming from authorized users. If not send "401" unauthorized error message.
-     * @param int $requiredMinimumUserRole Minimum user role required to perform the action.
+     * @param array $permissions Array of permissions needed. [roleGroup => [permissions], ...]
      */
-    private static function checkPermissions(int $requiredMinimumUserRole = User::ROLE_CASHIER): void
+    private static function checkPermissions(array $permissions = [], bool $onlyServerAdmins = false): void
     {
         preg_match('/Bearer\s(\S+)/', self::getAuthorizationHeader(), $matches);
 
@@ -792,16 +790,38 @@ class ApiControllerV1 extends API
             exit();
         }
 
-        if (User::getUserRole(self::getUserId()) > $requiredMinimumUserRole) {
-            if ($requiredMinimumUserRole == User::ROLE_SUPER_ADMINISTRATOR) {
-                self::sendResponse(self::STATUS_CODE_NOTFOUND, self::STATUS_MSG_NOTFOUND,
-                    ['message' => 'Api end-point not Found.']);
-            } else {
-                self::sendResponse(self::STATUS_CODE_FORBIDDEN, self::STATUS_MSG_FORBIDDEN,
-                    ['message' => 'You are not authorized to perform this action.']);
+        $permitted = true;
+
+        $userRole = User::getUserRole(self::getUserId());
+
+        if (!$permissions && !$onlyServerAdmins)
+            return;
+
+        if ($userRole == User::ROLE_SUPER_ADMINISTRATOR)
+            return;
+
+        if (!$onlyServerAdmins) {
+            $permissionGroups = array_keys(User::PERMISSIONS);
+            foreach ($permissions as $group => $permissions_) {
+                if (!in_array($group, $permissionGroups)) {
+                    $permitted = false;
+                    break;
+                }
+                foreach ($permissions_ as $item) {
+                    if (!in_array($item, User::PERMISSIONS[$group])) {
+                        $permitted = false;
+                        break;
+                    }
+                }
             }
-            exit();
+        } else
+            $permitted = false;
+
+        if (!$permitted) {
+            self::sendResponse(self::STATUS_CODE_FORBIDDEN, self::STATUS_MSG_FORBIDDEN,
+                ['message' => 'You are not authorized to perform this action.']);
         }
+        exit();
     }
 
     private static function getUserId(): int
