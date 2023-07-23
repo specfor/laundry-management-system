@@ -13,20 +13,21 @@ class User extends DbModel
 
     // User Roles
     public const ROLE_SUPER_ADMINISTRATOR = 0;
-    public const ROLE_ADMINISTRATOR = 1;
-    public const ROLE_MANAGER = 2;
-    public const ROLE_CASHIER = 3;
+    public const PERMISSION_READ = 0;
+    public const PERMISSION_WRITE = 1;
+    public const PERMISSION_MODIFY = 3;
+    public const PERMISSION_DELETE = 4;
 
     public const PERMISSIONS = [
-        'user' => ['write', 'remove', 'modify', 'read'],
-        'customers' => ['write', 'remove', 'modify', 'read'],
-        'branches' => ['write', 'remove', 'modify', 'read'],
-        'employees' => ['write', 'remove', 'modify', 'read'],
-        'categories' => ['write', 'remove', 'modify', 'read'],
-        'products' => ['write', 'remove', 'modify', 'read'],
-        'orders' => ['write', 'remove', 'modify', 'read'],
-        'payments' => ['write', 'remove', 'modify', 'read'],
-        'user-roles' => ['write', 'remove', 'modify', 'read'],
+        'users' => [self::PERMISSION_WRITE, self::PERMISSION_READ, self::PERMISSION_MODIFY, self::PERMISSION_DELETE],
+        'customers' => [self::PERMISSION_WRITE, self::PERMISSION_READ, self::PERMISSION_MODIFY, self::PERMISSION_DELETE],
+        'branches' => [self::PERMISSION_WRITE, self::PERMISSION_READ, self::PERMISSION_MODIFY, self::PERMISSION_DELETE],
+        'employees' => [self::PERMISSION_WRITE, self::PERMISSION_READ, self::PERMISSION_MODIFY, self::PERMISSION_DELETE],
+        'categories' => [self::PERMISSION_WRITE, self::PERMISSION_READ, self::PERMISSION_MODIFY, self::PERMISSION_DELETE],
+        'products' => [self::PERMISSION_WRITE, self::PERMISSION_READ, self::PERMISSION_MODIFY, self::PERMISSION_DELETE],
+        'orders' => [self::PERMISSION_WRITE, self::PERMISSION_READ, self::PERMISSION_MODIFY, self::PERMISSION_DELETE],
+        'payments' => [self::PERMISSION_WRITE, self::PERMISSION_READ, self::PERMISSION_MODIFY, self::PERMISSION_DELETE],
+        'user-roles' => [self::PERMISSION_WRITE, self::PERMISSION_READ, self::PERMISSION_MODIFY, self::PERMISSION_DELETE],
     ];
 
     public int $userId;
@@ -203,7 +204,7 @@ class User extends DbModel
         );
         $data = $statement->fetchAll(PDO::FETCH_ASSOC);
         for ($i = 0; $i < count($data); $i++) {
-            $data[$i]['role'] = self::getUserRoleText($data[$i]['role']);
+            $data[$i]['role'] = UserRoles::getUserRoleText($data[$i]['role']);
         }
         return $data;
     }
@@ -300,29 +301,6 @@ class User extends DbModel
     }
 
 
-    private static array $userRoles;
-
-    /**
-     * Get user type text.
-     * @return string Return user type message. 'none' if no role found.
-     */
-    public static function getUserRoleText(int $role): string
-    {
-        if (!self::$userRoles)
-            self::$userRoles = UserRoles::getUserRoles(limit: 1000);
-
-        $roleText = null;
-        foreach (self::$userRoles as $userRole) {
-            if ($userRole['role_id'] == $role) {
-                $roleText = $userRole['name'];
-                break;
-            }
-        }
-        if (!$roleText)
-            return 'NO ROLE';
-        return $roleText;
-    }
-
     public static function getUserRole(int $userId): int
     {
         $sql = "SELECT role FROM users WHERE id=$userId";
@@ -337,5 +315,27 @@ class User extends DbModel
         if (self::exec($sql))
             return true;
         return false;
+    }
+
+    public static function getPermissionText(int $permission): string
+    {
+        return match ($permission) {
+            self::PERMISSION_READ => 'read',
+            self::PERMISSION_WRITE => 'write',
+            self::PERMISSION_MODIFY => 'modify',
+            self::PERMISSION_DELETE => 'delete',
+            default => 'INVALID PERMISSION',
+        };
+    }
+
+    public static function getPermissionId(string $permission): int
+    {
+        return match ($permission) {
+            'read' => self::PERMISSION_READ,
+            'write' => self::PERMISSION_WRITE,
+            'modify' => self::PERMISSION_MODIFY,
+            'delete' => self::PERMISSION_DELETE,
+            default => '-1'
+        };
     }
 }
