@@ -23,6 +23,11 @@ class UserRoles extends DbModel
         }
         if ($permissions) {
             $filters[] = 'permissions=:permissions';
+            foreach ($permissions as $group => &$permissions_) {
+                foreach ($permissions_ as &$permission) {
+                    $permission = User::getPermissionId($permission);
+                }
+            }
             $placeholders['permissions'] = json_encode($permissions);
         }
         if ($description) {
@@ -39,7 +44,15 @@ class UserRoles extends DbModel
         $statement->execute();
         $data = $statement->fetchAll(PDO::FETCH_ASSOC);
         foreach ($data as &$role) {
-            $role['permissions'] = json_decode($role['permissions']);
+            $role['permissions'] = json_decode($role['permissions'], flags: JSON_OBJECT_AS_ARRAY);
+
+            if (array_key_exists('all', $role['permissions']))
+                $role['permissions'] = User::PERMISSIONS;
+            foreach ($role['permissions'] as $permissionGroup => &$permissions_) {
+                foreach ($permissions_ as &$permission) {
+                    $permission = User::getPermissionText($permission);
+                }
+            }
         }
         return $data;
     }
@@ -60,14 +73,15 @@ class UserRoles extends DbModel
 
         $keys = array_keys(User::PERMISSIONS);
 
-        foreach ($permissions as $type => $permissions_) {
+        foreach ($permissions as $type => &$permissions_) {
             if (!is_array($permissions_))
                 return "Permission structure is invalid.";
 
             if (!in_array($type, $keys))
                 return "Invalid permission groups were sent.";
 
-            foreach ($permissions_ as $permission) {
+            foreach ($permissions_ as &$permission) {
+                $permission = User::getPermissionId($permission);
                 if (!in_array($permission, User::PERMISSIONS[$type]))
                     return "Invalid permissions were sent.";
             }
@@ -111,14 +125,15 @@ class UserRoles extends DbModel
         if ($permissions) {
             $keys = array_keys(User::PERMISSIONS);
 
-            foreach ($permissions as $type => $permissions_) {
+            foreach ($permissions as $type => &$permissions_) {
                 if (!is_array($permissions_))
                     return "Permission structure is invalid.";
 
                 if (!in_array($type, $keys))
                     return "Invalid permission groups were sent.";
 
-                foreach ($permissions_ as $permission) {
+                foreach ($permissions_ as &$permission) {
+                    $permission = User::getPermissionId($permission);
                     if (!in_array($permission, User::PERMISSIONS[$type]))
                         return "Invalid permissions were sent.";
                 }
@@ -142,5 +157,28 @@ class UserRoles extends DbModel
             return "This user-role can not be removed.";
 
         return self::removeTableData(self::TABLE_NAME, "role_id=$roleId");
+    }
+
+    private static array $userRoles = [];
+
+    /**
+     * Get user type text.
+     * @return string Return user type message. 'none' if no role found.
+     */
+    public static function getUserRoleText(int $role): string
+    {
+        if (!self::$userRoles)
+            self::$userRoles = self::getUserRoles(limit: 1000);
+
+        $roleText = null;
+        foreach (self::$userRoles as $userRole) {
+            if ($userRole['role_id'] == $role) {
+                $roleText = $userRole['name'];
+                break;
+            }
+        }
+        if (!$roleText)
+            return 'NO ROLE';
+        return $roleText;
     }
 }
