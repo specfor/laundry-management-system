@@ -28,6 +28,7 @@ class User extends DbModel
         'orders' => [self::PERMISSION_WRITE, self::PERMISSION_READ, self::PERMISSION_MODIFY, self::PERMISSION_DELETE],
         'payments' => [self::PERMISSION_WRITE, self::PERMISSION_READ, self::PERMISSION_MODIFY, self::PERMISSION_DELETE],
         'user-roles' => [self::PERMISSION_WRITE, self::PERMISSION_READ, self::PERMISSION_MODIFY, self::PERMISSION_DELETE],
+        'tax' => [self::PERMISSION_WRITE, self::PERMISSION_READ, self::PERMISSION_MODIFY, self::PERMISSION_DELETE]
     ];
 
     public int $userId;

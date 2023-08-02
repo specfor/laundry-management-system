@@ -22,6 +22,7 @@ class UserRoles extends DbModel
             $placeholders['name'] = strtolower($name) . "%";
         }
         if ($permissions) {
+            //TODO filter by permission does not work well this way. Fix it.
             $filters[] = 'permissions=:permissions';
             foreach ($permissions as $group => &$permissions_) {
                 foreach ($permissions_ as &$permission) {
@@ -41,7 +42,6 @@ class UserRoles extends DbModel
 
         $statement = self::getDataFromTable(['role_id', 'name', 'description', 'permissions'],
             self::TABLE_NAME, $condition, $placeholders, ['role_id', 'asc'], [$startingIndex, $limit]);
-        $statement->execute();
         $data = $statement->fetchAll(PDO::FETCH_ASSOC);
         foreach ($data as &$role) {
             $role['permissions'] = json_decode($role['permissions'], flags: JSON_OBJECT_AS_ARRAY);
@@ -62,7 +62,6 @@ class UserRoles extends DbModel
         $name = strtolower($name);
         $statement = self::getDataFromTable(['role_id'], self::TABLE_NAME, 'name=:name',
             ['name' => $name]);
-        $statement->execute();
         $data = $statement->fetch(PDO::FETCH_ASSOC);
 
         if (!empty($data))
@@ -104,7 +103,6 @@ class UserRoles extends DbModel
             return "No values were passed to update.";
 
         $statement = self::getDataFromTable(['locked'], self::TABLE_NAME, "role_id=$roleId");
-        $statement->execute();
         $data = $statement->fetch(PDO::FETCH_ASSOC);
         if ($data['locked'])
             return "This user role can not be updated.";
@@ -112,7 +110,6 @@ class UserRoles extends DbModel
         $name = strtolower($name);
         $statement = self::getDataFromTable(['role_id'], self::TABLE_NAME, 'name=:name',
             ['name' => $name]);
-        $statement->execute();
         $data = $statement->fetch(PDO::FETCH_ASSOC);
 
         if (!empty($data))
@@ -148,7 +145,6 @@ class UserRoles extends DbModel
     {
         $statement = self::getDataFromTable(['locked'], self::TABLE_NAME,
             "role_id=$roleId");
-        $statement->execute();
         $data = $statement->fetch(PDO::FETCH_ASSOC);
 
         if (empty($data))

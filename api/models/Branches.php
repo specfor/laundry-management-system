@@ -54,7 +54,6 @@ class Branches extends DbModel
 
         $statement = self::getDataFromTable(['branch_id', 'name', 'address', 'manager_id', 'phone_num'],
             'branches', $condition, $placeholders, ['branch_id', 'asc'], [$startingIndex, $limit]);
-        $statement->execute();
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 

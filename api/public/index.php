@@ -64,6 +64,10 @@ $app->router->addGetRoute('/api/v1/user-roles', [ApiControllerV1::class, 'getUse
 $app->router->addPostRoute('/api/v1/user-roles/add', [ApiControllerV1::class, 'addUserRole']);
 $app->router->addPostRoute('/api/v1/user-roles/update', [ApiControllerV1::class, 'updateUserRole']);
 $app->router->addPostRoute('/api/v1/user-roles/delete', [ApiControllerV1::class, 'deleteUserRole']);
+$app->router->addGetRoute('/api/v1/taxes', [ApiControllerV1::class, 'getTaxes']);
+$app->router->addPostRoute('/api/v1/taxes/add', [ApiControllerV1::class, 'addTax']);
+$app->router->addPostRoute('/api/v1/taxes/update', [ApiControllerV1::class, 'updateTax']);
+$app->router->addPostRoute('/api/v1/taxes/delete', [ApiControllerV1::class, 'deleteTax']);
 
 // Super admin routes
 $app->router->addGetRoute('/api/v1/realtime-metrics', [ApiControllerV1::class, 'getRealtimePerformanceMetrics']);

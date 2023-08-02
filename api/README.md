@@ -290,3 +290,29 @@ refunded - optional
 POST - /api/v1/payments/delete
 Parameters
 payment-id - compulsory
+
+GET - /api/v1/taxes
+Parameters
+page-num - optional
+tax-id - optional
+tax-name - optional
+description - optional
+rate-min - optional
+rate-max - optional
+
+POST - /api/v1/taxes/add
+Parameters
+tax-name - compulsory
+description - optional
+tax-rate - compulsory
+
+POST - /api/v1/taxes/update
+Parameters
+tax-id - compulsory
+tax-name - optional
+description - optional
+tax-rate - optional
+
+POST - /api/v1/taxes/delete
+Parameters
+tax-id - compulsory
