@@ -15,7 +15,7 @@ class m00009_orders extends MigrationScheme
                     order_id int AUTO_INCREMENT NOT NULL PRIMARY KEY,
                     items varchar(9000) NOT NULL,
                     comments varchar(300),
-                    total_price float NOT NULL,
+                    total_price decimal(15,3) NOT NULL,
                     added_date datetime NOT NULL,
                     branch_id int NOT NULL,
                     customer_id int NOT NULL,

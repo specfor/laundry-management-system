@@ -14,7 +14,7 @@ class m00010_payments extends MigrationScheme
         $sql = "CREATE TABLE IF NOT EXISTS payments (
                     payment_id int AUTO_INCREMENT NOT NULL PRIMARY KEY,
                     order_id int NOT NULL,
-                    paid_amount float NOT NULL,
+                    paid_amount decimal(15,3) NOT NULL,
                     paid_date date NOT NULL,
                     refunded bool default false NOT NULL  
                 )";
