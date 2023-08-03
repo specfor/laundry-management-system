@@ -68,6 +68,10 @@ $app->router->addGetRoute('/api/v1/taxes', [ApiControllerV1::class, 'getTaxes'])
 $app->router->addPostRoute('/api/v1/taxes/add', [ApiControllerV1::class, 'addTax']);
 $app->router->addPostRoute('/api/v1/taxes/update', [ApiControllerV1::class, 'updateTax']);
 $app->router->addPostRoute('/api/v1/taxes/delete', [ApiControllerV1::class, 'deleteTax']);
+$app->router->addGetRoute('/api/v1/financial-accounts', [ApiControllerV1::class, 'getFinancialAccounts']);
+$app->router->addPostRoute('/api/v1/financial-accounts/add', [ApiControllerV1::class, 'addFinancialAccount']);
+$app->router->addPostRoute('/api/v1/financial-accounts/update', [ApiControllerV1::class, 'updateFinancialAccount']);
+$app->router->addPostRoute('/api/v1/financial-accounts/delete', [ApiControllerV1::class, 'deleteFinancialAccount']);
 
 // Super admin routes
 $app->router->addGetRoute('/api/v1/realtime-metrics', [ApiControllerV1::class, 'getRealtimePerformanceMetrics']);

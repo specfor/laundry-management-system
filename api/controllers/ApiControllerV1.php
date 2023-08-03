@@ -9,6 +9,7 @@ use LogicLeap\PhpServerCore\Reports;
 use LogicLeap\PhpServerCore\Request;
 use LogicLeap\PhpServerCore\SecureToken;
 use LogicLeap\PhpServerCore\ServerMetrics;
+use LogicLeap\StockManagement\models\Accounting;
 use LogicLeap\StockManagement\models\API;
 use LogicLeap\StockManagement\models\Authorization;
 use LogicLeap\StockManagement\models\Branches;
@@ -683,7 +684,7 @@ class ApiControllerV1 extends API
 
     public function getTaxes(): void
     {
-        self::checkPermissions(['tax'=>[User::PERMISSION_READ]]);
+        self::checkPermissions(['tax' => [User::PERMISSION_READ]]);
 
         $pageNumber = self::getParameter('page-num', defaultValue: 0, dataType: 'int');
         $taxId = self::getParameter('tax-id', dataType: 'int');
@@ -727,6 +728,59 @@ class ApiControllerV1 extends API
             self::sendSuccess('Tax details were removed successfully.');
         else
             self::sendError('Failed to remove the tax details.');
+    }
+
+    public function getFinancialAccounts(): void
+    {
+//        self::checkPermissions(['financial_accounts'=>[User::PERMISSION_READ]]);
+
+        $pageNumber = self::getParameter('page-num', defaultValue: 0, dataType: 'int');
+        $name = self::getParameter('account-name');
+        $code = self::getParameter('account-code');
+        $type = self::getParameter('account-type');
+        $taxId = self::getParameter('tax-id', dataType: 'int');
+        $description = self::getParameter('description');
+
+        $data = Accounting::getAccounts($pageNumber, $name, $code, $type, $description, $taxId);
+        self::sendSuccess(['financial-accounts' => $data]);
+    }
+
+    public function addFinancialAccount(): void
+    {
+//        self::checkPermissions(['financial_accounts'=>[User::PERMISSION_WRITE]]);
+
+        $name = self::getParameter('account-name', isCompulsory: true);
+        $code = self::getParameter('account-code', isCompulsory: true);
+        $type = self::getParameter('account-type', isCompulsory: true);
+        $taxId = self::getParameter('tax-id', dataType: 'int', isCompulsory: true);
+        $description = self::getParameter('description');
+
+        $status = Accounting::createAccount($name, $code, $type, $taxId, $description);
+        if (is_string($status))
+            self::sendError($status);
+        else
+            self::sendSuccess($status);
+    }
+
+    public function updateFinancialAccount(): void
+    {
+//        self::checkPermissions(['financial_accounts'=>[User::PERMISSION_MODIFY]]);
+
+        $accountId = self::getParameter('account-id', dataType: 'int', isCompulsory: true);
+
+        self::sendError('Not implemented yet.');
+    }
+
+    public function deleteFinancialAccount(): void
+    {
+//        self::checkPermissions(['financial_accounts'=>[User::PERMISSION_DELETE]]);
+
+        $accountId = self::getParameter('account-id', dataType: 'int', isCompulsory: true);
+
+        $status = Accounting::deleteAccount($accountId);
+        if (is_string($status))
+            self::sendError($status);
+        self::sendSuccess('Successfully removed the account.');
     }
 
     public function getReport(): void
