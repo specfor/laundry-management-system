@@ -1,8 +1,9 @@
 <?php
 
-namespace LogicLeap\StockManagement\models;
+namespace LogicLeap\StockManagement\models\stock_management;
 
 use DateTime;
+use LogicLeap\StockManagement\models\DbModel;
 use PDO;
 
 class Customers extends DbModel

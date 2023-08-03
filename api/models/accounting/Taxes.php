@@ -1,7 +1,8 @@
 <?php
 
-namespace LogicLeap\StockManagement\models;
+namespace LogicLeap\StockManagement\models\accounting;
 
+use LogicLeap\StockManagement\models\DbModel;
 use PDO;
 
 class Taxes extends DbModel

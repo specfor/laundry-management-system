@@ -1,9 +1,10 @@
 <?php
 
-namespace LogicLeap\StockManagement\models;
+namespace LogicLeap\StockManagement\models\stock_management;
 
 use DateInterval;
 use DateTime;
+use LogicLeap\StockManagement\models\DbModel;
 use PDO;
 
 class Orders extends DbModel

@@ -1,7 +1,8 @@
 <?php
 
-namespace LogicLeap\StockManagement\models;
+namespace LogicLeap\StockManagement\models\user_management;
 
+use LogicLeap\StockManagement\models\DbModel;
 use PDO;
 
 class User extends DbModel

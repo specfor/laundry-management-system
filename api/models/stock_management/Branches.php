@@ -1,7 +1,8 @@
 <?php
 
-namespace LogicLeap\StockManagement\models;
+namespace LogicLeap\StockManagement\models\stock_management;
 
+use LogicLeap\StockManagement\models\DbModel;
 use PDO;
 
 class Branches extends DbModel

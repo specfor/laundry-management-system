@@ -9,19 +9,19 @@ use LogicLeap\PhpServerCore\Reports;
 use LogicLeap\PhpServerCore\Request;
 use LogicLeap\PhpServerCore\SecureToken;
 use LogicLeap\PhpServerCore\ServerMetrics;
-use LogicLeap\StockManagement\models\Accounting;
+use LogicLeap\StockManagement\models\accounting\Accounting;
 use LogicLeap\StockManagement\models\API;
-use LogicLeap\StockManagement\models\Authorization;
-use LogicLeap\StockManagement\models\Branches;
-use LogicLeap\StockManagement\models\Customers;
-use LogicLeap\StockManagement\models\Employees;
-use LogicLeap\StockManagement\models\Items;
-use LogicLeap\StockManagement\models\Orders;
-use LogicLeap\StockManagement\models\Payments;
-use LogicLeap\StockManagement\models\PriceCategories;
-use LogicLeap\StockManagement\models\User;
-use LogicLeap\StockManagement\models\UserRoles;
-use LogicLeap\StockManagement\models\Taxes;
+use LogicLeap\StockManagement\models\user_management\Authorization;
+use LogicLeap\StockManagement\models\stock_management\Branches;
+use LogicLeap\StockManagement\models\stock_management\Customers;
+use LogicLeap\StockManagement\models\stock_management\Employees;
+use LogicLeap\StockManagement\models\stock_management\Items;
+use LogicLeap\StockManagement\models\stock_management\Orders;
+use LogicLeap\StockManagement\models\stock_management\Payments;
+use LogicLeap\StockManagement\models\stock_management\PriceCategories;
+use LogicLeap\StockManagement\models\user_management\User;
+use LogicLeap\StockManagement\models\user_management\UserRoles;
+use LogicLeap\StockManagement\models\accounting\Taxes;
 
 class ApiControllerV1 extends API
 {
