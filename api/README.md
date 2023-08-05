@@ -317,6 +317,33 @@ POST - /api/v1/taxes/delete
 Parameters
 tax-id - compulsory
 
+GET - /api/v1/financial-accounts
+Parameters
+page-num
+account-id
+account-name
+account-code
+account-type
+tax-id
+description
+
+POST - /api/v1/financial-accounts/add
+Parameters
+account-name - compulsory
+account-code - compulsory
+account-type - compulsory
+tax-id - compulsory
+description
+
+POST - /api/v1/financial-accounts/update
+Parameters
+account-id - compulsory
+--------NOT YET IMPLEMENTED--------
+
+POST - /api/v1/financial-accounts/delete
+Parameters
+account-id - compulsory
+
 GET - /api/v1/general-ledger
 Parameters
 page-num
