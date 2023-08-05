@@ -72,6 +72,8 @@ $app->router->addGetRoute('/api/v1/financial-accounts', [ApiControllerV1::class,
 $app->router->addPostRoute('/api/v1/financial-accounts/add', [ApiControllerV1::class, 'addFinancialAccount']);
 $app->router->addPostRoute('/api/v1/financial-accounts/update', [ApiControllerV1::class, 'updateFinancialAccount']);
 $app->router->addPostRoute('/api/v1/financial-accounts/delete', [ApiControllerV1::class, 'deleteFinancialAccount']);
+$app->router->addGetRoute('/api/v1/general-ledger', [ApiControllerV1::class, 'getLedgerRecords']);
+$app->router->addPostRoute('/api/v1/general-ledger/add', [ApiControllerV1::class, 'addLedgerRecord']);
 
 // Super admin routes
 $app->router->addGetRoute('/api/v1/realtime-metrics', [ApiControllerV1::class, 'getRealtimePerformanceMetrics']);
