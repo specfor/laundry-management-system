@@ -17,13 +17,15 @@ class Accounting extends DbModel
         "revenue" => ['Other Income', 'Revenue', 'Sales']
     ];
 
-    public static function getAccounts(int    $pageNumber = 0, string $name = null, string $code = null, string $type = null,
-                                       string $description = null, int $taxId = null, int $limit = 30): array
+    public static function getAccounts(int    $pageNumber = 0, int $accountId = null, string $name = null, string $code = null,
+                                       string $type = null, string $description = null, int $taxId = null, int $limit = 30): array
     {
         $startingIndex = $pageNumber * $limit;
         $filters = [];
         $placeholders = [];
 
+        if  ($accountId)
+            $filters[]="account_id=$accountId";
         if ($name) {
             $filters[] = "name LIKE :name";
             $placeholders['name'] = "$name%";

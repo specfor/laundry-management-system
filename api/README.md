@@ -316,3 +316,24 @@ tax-rate - optional
 POST - /api/v1/taxes/delete
 Parameters
 tax-id - compulsory
+
+GET - /api/v1/general-ledger
+Parameters
+page-num
+account-id
+reference
+description
+is-debit
+amount-min
+amount-max
+tax-min
+tax-max
+
+POST - /api/v1/general-ledger/add
+Parameters
+account-id - compulsory
+reference
+description
+credit
+debit
+tax

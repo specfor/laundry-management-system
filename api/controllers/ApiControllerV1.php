@@ -10,6 +10,7 @@ use LogicLeap\PhpServerCore\Request;
 use LogicLeap\PhpServerCore\SecureToken;
 use LogicLeap\PhpServerCore\ServerMetrics;
 use LogicLeap\StockManagement\models\accounting\Accounting;
+use LogicLeap\StockManagement\models\accounting\GeneralLedger;
 use LogicLeap\StockManagement\models\API;
 use LogicLeap\StockManagement\models\user_management\Authorization;
 use LogicLeap\StockManagement\models\stock_management\Branches;
@@ -735,13 +736,14 @@ class ApiControllerV1 extends API
 //        self::checkPermissions(['financial_accounts'=>[User::PERMISSION_READ]]);
 
         $pageNumber = self::getParameter('page-num', defaultValue: 0, dataType: 'int');
+        $accountId = self::getParameter('account-id', dataType: 'int');
         $name = self::getParameter('account-name');
         $code = self::getParameter('account-code');
         $type = self::getParameter('account-type');
         $taxId = self::getParameter('tax-id', dataType: 'int');
         $description = self::getParameter('description');
 
-        $data = Accounting::getAccounts($pageNumber, $name, $code, $type, $description, $taxId);
+        $data = Accounting::getAccounts($pageNumber, $accountId, $name, $code, $type, $description, $taxId);
         self::sendSuccess(['financial-accounts' => $data]);
     }
 
@@ -781,6 +783,42 @@ class ApiControllerV1 extends API
         if (is_string($status))
             self::sendError($status);
         self::sendSuccess('Successfully removed the account.');
+    }
+
+    public function getLedgerRecords(): void
+    {
+//        self::checkPermissions(['financial_accounts'=>[User::PERMISSION_READ]]);
+
+        $pageNumber = self::getParameter('page-num', defaultValue: 0, dataType: 'int');
+        $accountId = self::getParameter('account-id', dataType: 'int');
+        $reference = self::getParameter('reference');
+        $description = self::getParameter('description');
+        $isDebit = self::getParameter('is-debit', dataType: 'bool');
+        $amountMin = self::getParameter('amount-min', dataType: 'decimal');
+        $amountMax = self::getParameter('amount-max', dataType: 'decimal');
+        $taxMin = self::getParameter('tax-min', dataType: 'decimal');
+        $taxMax = self::getParameter('tax-max', dataType: 'decimal');
+
+        $data = GeneralLedger::getLedgerRecords($pageNumber, $accountId, $reference, $description, $isDebit, $amountMin,
+            $amountMax, $taxMin, $taxMax);
+        self::sendSuccess(['records' => $data]);
+    }
+
+    public function addLedgerRecord(): void
+    {
+//        self::checkPermissions(['financial_accounts'=>[User::PERMISSION_WRITE]]);
+
+        $accountId = self::getParameter('account-id', dataType: 'int', isCompulsory: true);
+        $reference = self::getParameter('reference');
+        $description = self::getParameter('description');
+        $credit = self::getParameter('credit', dataType: 'decimal');
+        $debit = self::getParameter('debit', dataType: 'decimal');
+        $tax = self::getParameter('tax', dataType: 'decimal');
+
+        $status = GeneralLedger::createLedgerRecord($accountId, $reference, $description, $credit, $debit, $tax);
+        if (is_string($status))
+            self::sendError($status);
+        self::sendSuccess($status);
     }
 
     public function getReport(): void
@@ -1009,6 +1047,7 @@ class ApiControllerV1 extends API
     private static function getConvertedTo(string $parameterName, mixed $value, string $dataType): mixed
     {
         try {
+
             if ($dataType == 'string') {
                 if (!is_string($value))
                     throw new Exception('string required.');
@@ -1018,7 +1057,13 @@ class ApiControllerV1 extends API
                 $value = floatval($value);
             elseif ($dataType == 'bool')
                 $value = boolval($value);
-            elseif ($dataType == 'array')
+            elseif ($dataType == 'decimal') {
+                var_dump($value);
+                if (!preg_match('/^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$/', $value))
+                    throw new Exception('invalid decimal number');
+                if ("$value"[0] == '.')
+                    $value = "0$value";
+            } elseif ($dataType == 'array')
                 if (!is_array($value))
                     throw new Exception('array required.');
             return $value;
