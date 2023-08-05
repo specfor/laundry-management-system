@@ -350,7 +350,7 @@ page-num
 account-id
 reference
 description
-is-debit
+is-debit - to filter whether records are debit or credit. use following amount filter to filter amount.
 amount-min
 amount-max
 tax-min

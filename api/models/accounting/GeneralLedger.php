@@ -54,7 +54,10 @@ class GeneralLedger extends DbModel
                                               string $credit = null, string $debit = null, string $tax = null): string|array
     {
         if (!empty($credit) && !empty($debit))
-            return "Can not credit and debit in a single record.";
+            return "Can not both credit and debit in a single record.";
+
+        if (empty($credit) && empty($debit))
+            return "Can not both credit and debit be empty in a single record.";
 
         $data = Accounting::getAccounts(accountId: $accountId);
         if (empty($data))

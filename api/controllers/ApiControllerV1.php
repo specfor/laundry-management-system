@@ -381,7 +381,7 @@ class ApiControllerV1 extends API
         self::sendSuccess(['user-roles' => $data]);
     }
 
-    public function updateUserRole()
+    public function updateUserRole(): void
     {
         self::checkPermissions(['user-roles' => [User::PERMISSION_MODIFY]]);
 
@@ -399,7 +399,7 @@ class ApiControllerV1 extends API
             self::sendError('Failed to update the user role.');
     }
 
-    public function deleteUserRole()
+    public function deleteUserRole(): void
     {
         self::checkPermissions(['user-roles' => [User::PERMISSION_DELETE]]);
 
@@ -676,11 +676,12 @@ class ApiControllerV1 extends API
         $description = self::getParameter('description');
         $rate = self::getParameter('tax-rate', dataType: 'float', isCompulsory: true);
 
-        $taxId = Taxes::createTax($name, $rate, $description);
-        if (is_array($taxId))
-            self::sendSuccess($taxId);
-        else
-            self::sendError($taxId);
+        $status = Taxes::createTax($name, $rate, $description);
+        if (is_array($status)) {
+            $status['message'] = "Successfully created the new tax.";
+            self::sendSuccess($status);
+        } else
+            self::sendError($status);
     }
 
     public function getTaxes(): void
@@ -760,8 +761,10 @@ class ApiControllerV1 extends API
         $status = Accounting::createAccount($name, $code, $type, $taxId, $description);
         if (is_string($status))
             self::sendError($status);
-        else
+        else {
+            $status['message'] = "Successfully created the new account.";
             self::sendSuccess($status);
+        }
     }
 
     public function updateFinancialAccount(): void
@@ -818,7 +821,10 @@ class ApiControllerV1 extends API
         $status = GeneralLedger::createLedgerRecord($accountId, $reference, $description, $credit, $debit, $tax);
         if (is_string($status))
             self::sendError($status);
-        self::sendSuccess($status);
+        else {
+            $status['message'] = "Successfully created the new ledger record.";
+            self::sendSuccess($status);
+        }
     }
 
     public function getReport(): void
@@ -1047,7 +1053,6 @@ class ApiControllerV1 extends API
     private static function getConvertedTo(string $parameterName, mixed $value, string $dataType): mixed
     {
         try {
-
             if ($dataType == 'string') {
                 if (!is_string($value))
                     throw new Exception('string required.');
@@ -1058,7 +1063,6 @@ class ApiControllerV1 extends API
             elseif ($dataType == 'bool')
                 $value = boolval($value);
             elseif ($dataType == 'decimal') {
-                var_dump($value);
                 if (!preg_match('/^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$/', $value))
                     throw new Exception('invalid decimal number');
                 if ("$value"[0] == '.')
