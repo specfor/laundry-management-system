@@ -33,7 +33,12 @@ class Request
             }
         }
         if ($this->getMethod() === 'post') {
-            $body = json_decode(file_get_contents('php://input'), true);
+            // Convert all numbers to strings to prevent unexpected conversion to float precision errors.
+            // If needed to work with high precision in floating point numbers, these string type numbers can be
+            // used in BC Maths library.
+            $inputData = file_get_contents('php://input');
+            $newData = preg_replace('/":(\d+)/', '":"\1"', $inputData);
+            $body = json_decode($newData, true);
             if (!is_array($body))
                 $body = [];
         }
