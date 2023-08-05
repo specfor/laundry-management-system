@@ -1,7 +1,7 @@
 <?php
 
 use LogicLeap\PhpServerCore\MigrationScheme;
-use LogicLeap\StockManagement\models\User;
+use LogicLeap\StockManagement\models\user_management\User;
 
 class m00002_users extends MigrationScheme
 {
