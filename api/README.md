@@ -338,7 +338,9 @@ description
 POST - /api/v1/financial-accounts/update
 Parameters
 account-id - compulsory
---------NOT YET IMPLEMENTED--------
+account-name
+tax-id
+description
 
 POST - /api/v1/financial-accounts/delete
 Parameters
