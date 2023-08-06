@@ -2,7 +2,7 @@
 
 namespace LogicLeap\StockManagement\controllers\v1\accounting;
 
-use LogicLeap\PhpServerCore\Controller;
+use LogicLeap\StockManagement\controllers\v1\Controller;
 use LogicLeap\StockManagement\models\accounting\GeneralLedger;
 
 class LedgerRecordController extends Controller
@@ -35,7 +35,7 @@ class LedgerRecordController extends Controller
         $description = self::getParameter('description');
         $credit = self::getParameter('credit', dataType: 'decimal');
         $debit = self::getParameter('debit', dataType: 'decimal');
-        $tax = self::getParameter('tax', dataType: 'decimal');
+        $tax = self::getParameter('tax-inclusive', defaultValue: false, dataType: 'bool');
 
         $status = GeneralLedger::createLedgerRecord($accountId, $reference, $description, $credit, $debit, $tax);
         if (is_string($status))

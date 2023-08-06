@@ -4,7 +4,7 @@ namespace LogicLeap\StockManagement\controllers\v1\user_management;
 
 use LogicLeap\PhpServerCore\Request;
 use LogicLeap\PhpServerCore\SecureToken;
-use LogicLeap\PhpServerCore\Controller;
+use LogicLeap\StockManagement\controllers\v1\Controller;
 use LogicLeap\StockManagement\models\user_management\Authorization;
 use LogicLeap\StockManagement\models\user_management\User;
 

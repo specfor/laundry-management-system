@@ -1,10 +1,10 @@
 <?php
 
-namespace LogicLeap\PhpServerCore;
+namespace LogicLeap\StockManagement\controllers\v1;
 
-use LogicLeap\StockManagement\models\API;
 use LogicLeap\PhpServerCore\Application;
 use LogicLeap\PhpServerCore\MigrationManager;
+use LogicLeap\StockManagement\models\API;
 use LogicLeap\StockManagement\models\user_management\Authorization;
 use LogicLeap\StockManagement\models\user_management\User;
 use LogicLeap\StockManagement\Util\Util;

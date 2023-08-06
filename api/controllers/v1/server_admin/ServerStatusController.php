@@ -4,7 +4,7 @@ namespace LogicLeap\StockManagement\controllers\v1\server_admin;
 
 use LogicLeap\PhpServerCore\MigrationManager;
 use LogicLeap\PhpServerCore\ServerMetrics;
-use LogicLeap\PhpServerCore\Controller;
+use LogicLeap\StockManagement\controllers\v1\Controller;
 
 class ServerStatusController extends Controller
 {   

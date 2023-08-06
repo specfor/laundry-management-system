@@ -2,10 +2,10 @@
 
 use Dotenv\Dotenv;
 use LogicLeap\PhpServerCore\Application;
-use LogicLeap\PhpServerCore\Controller;
 use LogicLeap\StockManagement\controllers\v1\accounting\FinancialAccountController;
 use LogicLeap\StockManagement\controllers\v1\accounting\LedgerRecordController;
 use LogicLeap\StockManagement\controllers\v1\accounting\TaxController;
+use LogicLeap\StockManagement\controllers\v1\Controller;
 use LogicLeap\StockManagement\controllers\v1\ReportController;
 use LogicLeap\StockManagement\controllers\v1\server_admin\MigrationsController;
 use LogicLeap\StockManagement\controllers\v1\server_admin\ServerStatusController;

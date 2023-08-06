@@ -2,7 +2,7 @@
 
 namespace LogicLeap\StockManagement\controllers\v1\accounting;
 
-use LogicLeap\PhpServerCore\Controller;
+use LogicLeap\StockManagement\controllers\v1\Controller;
 use LogicLeap\StockManagement\models\accounting\Accounting;
 
 class FinancialAccountController extends Controller

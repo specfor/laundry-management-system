@@ -3,7 +3,7 @@
 namespace LogicLeap\StockManagement\controllers\v1\server_admin;
 
 use LogicLeap\PhpServerCore\MigrationManager;
-use LogicLeap\PhpServerCore\Controller;
+use LogicLeap\StockManagement\controllers\v1\Controller;
 
 class MigrationsController extends Controller
 {   

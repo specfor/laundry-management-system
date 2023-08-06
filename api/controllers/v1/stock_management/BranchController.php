@@ -2,7 +2,7 @@
 
 namespace LogicLeap\StockManagement\controllers\v1\stock_management;
 
-use LogicLeap\PhpServerCore\Controller;
+use LogicLeap\StockManagement\controllers\v1\Controller;
 use LogicLeap\StockManagement\models\stock_management\Branches;
 use LogicLeap\StockManagement\models\user_management\User;
 
