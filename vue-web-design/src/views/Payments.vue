@@ -5,7 +5,7 @@ import {sendGetRequest, sendJsonPostRequest} from "../js-modules/base-functions.
 import {apiBaseUrl} from "../js-modules/website-constants.js";
 import {TrashIcon, PencilSquareIcon} from '@heroicons/vue/24/solid'
 
-let paymentsTableCol = ['Id', 'Order Id', 'Paid Amount', 'Paid Date', 'Refunded', 'Modifications']
+let paymentsTableCol = ['Select','Id', 'Order Id', 'Paid Amount', 'Paid Date', 'Refunded', 'Modifications']
 let paymentsTableRows = ref([])
 let paymentsTableActions = [
   {onClickEvent: 'editPayment', btnText: 'Edit', type: 'icon', icon: PencilSquareIcon, iconColor: 'fill-blue-700'},

@@ -17,7 +17,7 @@ import {apiBaseUrl} from "../js-modules/website-constants.js";
 import {PencilSquareIcon, TrashIcon} from "@heroicons/vue/24/solid/index.js";
 import {validateInput} from "../js-modules/form-validations.js";
 
-let branchesTableCol = ['Id', 'Branch Name', 'Contact Info', 'Modifications']
+let branchesTableCol = ['Select','Id', 'Branch Name', 'Contact Info', 'Modifications']
 let branchesTableRows = ref([])
 let branchesTableActions = [
     {onClickEvent: 'editBranch', btnText: 'Edit', type: 'icon', icon: PencilSquareIcon, iconColor: 'fill-blue-700'},
