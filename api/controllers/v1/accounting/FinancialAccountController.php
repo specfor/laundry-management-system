@@ -6,7 +6,7 @@ use LogicLeap\StockManagement\controllers\v1\Controller;
 use LogicLeap\StockManagement\models\accounting\Accounting;
 
 class FinancialAccountController extends Controller
-{   
+{
     public function getFinancialAccounts(): void
     {
 //        self::checkPermissions(['financial_accounts'=>[User::PERMISSION_READ]]);
@@ -61,5 +61,12 @@ class FinancialAccountController extends Controller
         if (is_string($status))
             self::sendError($status);
         self::sendSuccess('Successfully removed the account.');
+    }
+
+    public function getAccountTypes(): void
+    {
+//        self::checkPermissions(['financial_accounts'=>[User::PERMISSION_READ]]);
+
+        self::sendSuccess(['account-types' => Accounting::getAccountTypes()]);
     }
 }

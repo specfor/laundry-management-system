@@ -88,6 +88,7 @@ $app->router->addGetRoute('/api/v1/financial-accounts', [FinancialAccountControl
 $app->router->addPostRoute('/api/v1/financial-accounts/add', [FinancialAccountController::class, 'addFinancialAccount']);
 $app->router->addPostRoute('/api/v1/financial-accounts/update', [FinancialAccountController::class, 'updateFinancialAccount']);
 $app->router->addPostRoute('/api/v1/financial-accounts/delete', [FinancialAccountController::class, 'deleteFinancialAccount']);
+$app->router->addGetRoute('/api/v1/financial-account-types', [FinancialAccountController::class, 'getAccountTypes']);
 $app->router->addGetRoute('/api/v1/general-ledger', [LedgerRecordController::class, 'getLedgerRecords']);
 $app->router->addPostRoute('/api/v1/general-ledger/add', [LedgerRecordController::class, 'addLedgerRecord']);
 

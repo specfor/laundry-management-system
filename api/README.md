@@ -344,6 +344,9 @@ POST - /api/v1/financial-accounts/delete
 Parameters
 account-id - compulsory
 
+GET - /api/v1/financial-account-types
+Returns all account categories and their sub categories.
+
 GET - /api/v1/general-ledger
 Parameters
 page-num
