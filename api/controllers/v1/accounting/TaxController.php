@@ -1,10 +1,10 @@
 <?php
 
-namespace LogicLeap\StockManagement\controllers;
+namespace LogicLeap\StockManagement\controllers\v1\accounting;
 
+use LogicLeap\StockManagement\models\accounting\Taxes;
 use LogicLeap\StockManagement\models\API;
 use LogicLeap\StockManagement\models\user_management\User;
-use LogicLeap\StockManagement\models\accounting\Taxes;
 
 class TaxController extends API
 {

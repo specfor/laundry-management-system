@@ -2,22 +2,22 @@
 
 use Dotenv\Dotenv;
 use LogicLeap\PhpServerCore\Application;
-use LogicLeap\StockManagement\Controllers\AuthController;
-use LogicLeap\StockManagement\Controllers\BranchController;
-use LogicLeap\StockManagement\Controllers\CustomerController;
-use LogicLeap\StockManagement\Controllers\EmployeeController;
-use LogicLeap\StockManagement\Controllers\FinancialAccountController;
-use LogicLeap\StockManagement\Controllers\ItemController;
-use LogicLeap\StockManagement\Controllers\LedgerRecordController;
-use LogicLeap\StockManagement\Controllers\MigrationsController;
-use LogicLeap\StockManagement\Controllers\OrderController;
-use LogicLeap\StockManagement\Controllers\PaymentController;
-use LogicLeap\StockManagement\Controllers\PriceCategoryController;
-use LogicLeap\StockManagement\Controllers\ReportController;
-use LogicLeap\StockManagement\Controllers\ServerStatusController;
-use LogicLeap\StockManagement\Controllers\TaxController;
-use LogicLeap\StockManagement\Controllers\UserController;
-use LogicLeap\StockManagement\Controllers\UserRoleController;
+use LogicLeap\StockManagement\controllers\v1\accounting\FinancialAccountController;
+use LogicLeap\StockManagement\controllers\v1\accounting\LedgerRecordController;
+use LogicLeap\StockManagement\controllers\v1\accounting\TaxController;
+use LogicLeap\StockManagement\controllers\v1\ReportController;
+use LogicLeap\StockManagement\controllers\v1\server_admin\MigrationsController;
+use LogicLeap\StockManagement\controllers\v1\server_admin\ServerStatusController;
+use LogicLeap\StockManagement\controllers\v1\stock_management\BranchController;
+use LogicLeap\StockManagement\controllers\v1\stock_management\CustomerController;
+use LogicLeap\StockManagement\controllers\v1\stock_management\EmployeeController;
+use LogicLeap\StockManagement\controllers\v1\stock_management\ItemController;
+use LogicLeap\StockManagement\controllers\v1\stock_management\OrderController;
+use LogicLeap\StockManagement\controllers\v1\stock_management\PaymentController;
+use LogicLeap\StockManagement\controllers\v1\stock_management\PriceCategoryController;
+use LogicLeap\StockManagement\controllers\v1\user_management\AuthController;
+use LogicLeap\StockManagement\controllers\v1\user_management\UserController;
+use LogicLeap\StockManagement\controllers\v1\user_management\UserRoleController;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 

@@ -1,10 +1,11 @@
 <?php
 
-namespace LogicLeap\StockManagement\controllers;
+namespace LogicLeap\StockManagement\controllers\v1\stock_management;
 
 use LogicLeap\StockManagement\models\API;
 use LogicLeap\StockManagement\models\stock_management\Employees;
 use LogicLeap\StockManagement\models\user_management\User;
+
 class EmployeeController extends API
 {   
     public function addEmployee(): void

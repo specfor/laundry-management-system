@@ -1,6 +1,6 @@
 <?php
 
-namespace LogicLeap\StockManagement\controllers;
+namespace LogicLeap\StockManagement\controllers\v1\accounting;
 
 use LogicLeap\StockManagement\models\accounting\Accounting;
 use LogicLeap\StockManagement\models\API;

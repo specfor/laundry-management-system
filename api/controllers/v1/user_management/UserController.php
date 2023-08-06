@@ -1,6 +1,6 @@
 <?php
 
-namespace LogicLeap\StockManagement\controllers;
+namespace LogicLeap\StockManagement\controllers\v1\user_management;
 
 use LogicLeap\StockManagement\models\API;
 use LogicLeap\StockManagement\models\user_management\User;

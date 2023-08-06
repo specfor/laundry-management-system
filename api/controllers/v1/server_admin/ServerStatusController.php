@@ -1,6 +1,6 @@
 <?php
 
-namespace LogicLeap\StockManagement\controllers;
+namespace LogicLeap\StockManagement\controllers\v1\server_admin;
 
 use LogicLeap\PhpServerCore\MigrationManager;
 use LogicLeap\PhpServerCore\ServerMetrics;

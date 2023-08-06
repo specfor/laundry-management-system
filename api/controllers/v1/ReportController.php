@@ -1,6 +1,6 @@
 <?php
 
-namespace LogicLeap\StockManagement\controllers;
+namespace LogicLeap\StockManagement\controllers\v1;
 
 use LogicLeap\PhpServerCore\Reports;
 use LogicLeap\StockManagement\models\API;

@@ -1,6 +1,6 @@
 <?php
 
-namespace LogicLeap\StockManagement\Controllers;
+namespace LogicLeap\StockManagement\controllers\v1\user_management;
 
 use LogicLeap\PhpServerCore\Request;
 use LogicLeap\PhpServerCore\SecureToken;
