@@ -38,6 +38,9 @@ class Controller
             header('Access-Control-Allow-Credentials: true');
             header('Access-Control-Max-Age: 86400');    // cache for 1 day
         }
+
+        // set bc maths library number of decimal places for calculations.
+        bcscale(4);
     }
 
     private static function isSiteMigrator(): bool

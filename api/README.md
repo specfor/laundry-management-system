@@ -363,4 +363,4 @@ reference
 description
 credit
 debit
-tax
+tax-inclusive - whether credit/debit values have added tax
