@@ -2,6 +2,7 @@
 
 use Dotenv\Dotenv;
 use LogicLeap\PhpServerCore\Application;
+use LogicLeap\PhpServerCore\Controller;
 use LogicLeap\StockManagement\controllers\v1\accounting\FinancialAccountController;
 use LogicLeap\StockManagement\controllers\v1\accounting\LedgerRecordController;
 use LogicLeap\StockManagement\controllers\v1\accounting\TaxController;
@@ -33,7 +34,7 @@ $config = [
         "password" => $_ENV['DB_PASSWORD'],
         "dbName" => $_ENV['DB_NAME']
     ],
-    'ExceptionHandler' => [API::class, 'errorHandler']
+    'ExceptionHandler' => [Controller::class, 'errorHandler']
 ];
 
 $app = new Application($config);
