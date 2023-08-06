@@ -125,4 +125,9 @@ class Accounting extends DbModel
             return true;
         return "Failed to remove data from database.";
     }
+
+    public static function getAccountTypes():array
+    {
+        return self::ACCOUNT_TYPES;
+    }
 }

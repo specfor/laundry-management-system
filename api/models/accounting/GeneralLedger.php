@@ -51,7 +51,7 @@ class GeneralLedger extends DbModel
     }
 
     public static function createLedgerRecord(int    $accountId, string $reference = null, string $description = null,
-                                              string $credit = null, string $debit = null, string $tax = null): string|array
+                                              string $credit = null, string $debit = null, bool $taxInclusive = false): string|array
     {
         if (!empty($credit) && !empty($debit))
             return "Can not both credit and debit in a single record.";
@@ -66,9 +66,31 @@ class GeneralLedger extends DbModel
         $params['account_id'] = $accountId;
         $params['reference'] = $reference;
         $params['description'] = $description;
-        $params['credit'] = $credit;
-        $params['debit'] = $debit;
-        $params['tax'] = $tax;
+
+        $taxDataSql = "select tax_rate from taxes where tax_id=(Select tax_id from 
+                                                           financial_accounts where account_id=$accountId)";
+        $statement = self::prepare($taxDataSql);
+        $statement->execute();
+        $taxRate = $statement->fetch(PDO::FETCH_ASSOC)['tax_rate'];
+
+        if ($taxInclusive) {
+            if ($credit) {
+                $params['credit'] = bcdiv(bcmul($credit, "100"), bcadd($taxRate, "100"));
+                $params['tax'] = bcsub($credit, $params['credit']);
+            } else {
+                $params['debit'] = bcdiv(bcmul($debit, "100"), bcadd($taxRate, "100"));
+                $params['tax'] = bcsub($credit, $params['debit']);
+            }
+        } else {
+            if ($credit) {
+                $params['credit'] = $credit;
+                $params['tax'] = bcmul(bcdiv($credit, "100"), $taxRate);
+            } else {
+                $params['debit'] = $debit;
+                $params['tax'] = bcmul(bcdiv($debit, "100"), $taxRate);
+            }
+        }
+
         $params['timestamp'] = time();
 
         $id = self::insertIntoTable(self::TABLE_NAME, $params);

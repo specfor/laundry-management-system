@@ -18,6 +18,7 @@
     "require": {
         "vlucas/phpdotenv": "^5.5@dev",
       "ext-pdo": "*",
-        "dompdf/dompdf": "dev-master"
+        "dompdf/dompdf": "dev-master",
+      "ext-bcmath": "*"
     }
 }

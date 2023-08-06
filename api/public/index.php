@@ -1,8 +1,24 @@
 <?php
 
 use Dotenv\Dotenv;
-use LogicLeap\StockManagement\controllers\ApiControllerV1;
 use LogicLeap\PhpServerCore\Application;
+use LogicLeap\StockManagement\controllers\v1\accounting\FinancialAccountController;
+use LogicLeap\StockManagement\controllers\v1\accounting\LedgerRecordController;
+use LogicLeap\StockManagement\controllers\v1\accounting\TaxController;
+use LogicLeap\StockManagement\controllers\v1\Controller;
+use LogicLeap\StockManagement\controllers\v1\ReportController;
+use LogicLeap\StockManagement\controllers\v1\server_admin\MigrationsController;
+use LogicLeap\StockManagement\controllers\v1\server_admin\ServerStatusController;
+use LogicLeap\StockManagement\controllers\v1\stock_management\BranchController;
+use LogicLeap\StockManagement\controllers\v1\stock_management\CustomerController;
+use LogicLeap\StockManagement\controllers\v1\stock_management\EmployeeController;
+use LogicLeap\StockManagement\controllers\v1\stock_management\ItemController;
+use LogicLeap\StockManagement\controllers\v1\stock_management\OrderController;
+use LogicLeap\StockManagement\controllers\v1\stock_management\PaymentController;
+use LogicLeap\StockManagement\controllers\v1\stock_management\PriceCategoryController;
+use LogicLeap\StockManagement\controllers\v1\user_management\AuthController;
+use LogicLeap\StockManagement\controllers\v1\user_management\UserController;
+use LogicLeap\StockManagement\controllers\v1\user_management\UserRoleController;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
@@ -18,72 +34,73 @@ $config = [
         "password" => $_ENV['DB_PASSWORD'],
         "dbName" => $_ENV['DB_NAME']
     ],
-    'ExceptionHandler' => [ApiControllerV1::class, 'errorHandler']
+    'ExceptionHandler' => [Controller::class, 'errorHandler']
 ];
 
 $app = new Application($config);
 // API routes
-$app->router->addPostRoute('/api/v1/login', [ApiControllerV1::class, 'login']);
-$app->router->addGetRoute('/api/v1/whoami', [ApiControllerV1::class, 'whoAmI']);
-$app->router->addGetRoute('/api/v1/users', [ApiControllerV1::class, 'getUsers']);
-$app->router->addPostRoute('/api/v1/users/add', [ApiControllerV1::class, 'addUser']);
-$app->router->addPostRoute('/api/v1/users/update', [ApiControllerV1::class, 'updateUser']);
-$app->router->addPostRoute('/api/v1/users/delete', [ApiControllerV1::class, 'deleteUser']);
-$app->router->addGetRoute('/api/v1/customers', [ApiControllerV1::class, 'getCustomers']);
-$app->router->addPostRoute('/api/v1/customers/add', [ApiControllerV1::class, 'addCustomer']);
-$app->router->addPostRoute('/api/v1/customers/update', [ApiControllerV1::class, 'updateCustomer']);
-$app->router->addPostRoute('/api/v1/customers/delete', [ApiControllerV1::class, 'deleteCustomer']);
-$app->router->addGetRoute('/api/v1/branches', [ApiControllerV1::class, 'getBranches']);
-$app->router->addPostRoute('/api/v1/branches/add', [ApiControllerV1::class, 'addBranch']);
-$app->router->addPostRoute('/api/v1/branches/update', [ApiControllerV1::class, 'updateBranch']);
-$app->router->addPostRoute('/api/v1/branches/delete', [ApiControllerV1::class, 'deleteBranch']);
-$app->router->addGetRoute('/api/v1/employees', [ApiControllerV1::class, 'getEmployees']);
-$app->router->addPostRoute('/api/v1/employees/add', [ApiControllerV1::class, 'addEmployee']);
-$app->router->addPostRoute('/api/v1/employees/update', [ApiControllerV1::class, 'updateEmployee']);
-$app->router->addPostRoute('/api/v1/employees/delete', [ApiControllerV1::class, 'deleteEmployee']);
-$app->router->addGetRoute('/api/v1/category', [ApiControllerV1::class, 'getPriceCategories']);
-$app->router->addPostRoute('/api/v1/category/add', [ApiControllerV1::class, 'addPriceCategory']);
-$app->router->addPostRoute('/api/v1/category/update', [ApiControllerV1::class, 'updatePriceCategory']);
-$app->router->addPostRoute('/api/v1/category/delete', [ApiControllerV1::class, 'deletePriceCategory']);
-$app->router->addGetRoute('/api/v1/items', [ApiControllerV1::class, 'getItems']);
-$app->router->addPostRoute('/api/v1/items/add', [ApiControllerV1::class, 'addItem']);
-$app->router->addPostRoute('/api/v1/items/update', [ApiControllerV1::class, 'updateItem']);
-$app->router->addPostRoute('/api/v1/items/delete', [ApiControllerV1::class, 'deleteItem']);
-$app->router->addGetRoute('/api/v1/orders', [ApiControllerV1::class, 'getOrders']);
-$app->router->addGetRoute('/api/v1/orders/status-messages', [ApiControllerV1::class, 'getOrderStatusMessages']);
-$app->router->addGetRoute('/api/v1/orderCount', [ApiControllerV1::class, 'getOrderCount']);
-$app->router->addPostRoute('/api/v1/orders/add', [ApiControllerV1::class, 'addOrder']);
-$app->router->addPostRoute('/api/v1/orders/update', [ApiControllerV1::class, 'updateOrder']);
-$app->router->addPostRoute('/api/v1/orders/delete', [ApiControllerV1::class, 'deleteOrder']);
-$app->router->addGetRoute('/api/v1/payments', [ApiControllerV1::class, 'getPayments']);
-$app->router->addPostRoute('/api/v1/payments/add', [ApiControllerV1::class, 'addPayment']);
-$app->router->addPostRoute('/api/v1/payments/update', [ApiControllerV1::class, 'updatePayment']);
-$app->router->addPostRoute('/api/v1/payments/delete', [ApiControllerV1::class, 'deletePayment']);
-$app->router->addGetRoute('/api/v1/reports', [ApiControllerV1::class, 'getReport']);
-$app->router->addGetRoute('/api/v1/user-roles', [ApiControllerV1::class, 'getUserRoles']);
-$app->router->addPostRoute('/api/v1/user-roles/add', [ApiControllerV1::class, 'addUserRole']);
-$app->router->addPostRoute('/api/v1/user-roles/update', [ApiControllerV1::class, 'updateUserRole']);
-$app->router->addPostRoute('/api/v1/user-roles/delete', [ApiControllerV1::class, 'deleteUserRole']);
-$app->router->addGetRoute('/api/v1/taxes', [ApiControllerV1::class, 'getTaxes']);
-$app->router->addPostRoute('/api/v1/taxes/add', [ApiControllerV1::class, 'addTax']);
-$app->router->addPostRoute('/api/v1/taxes/update', [ApiControllerV1::class, 'updateTax']);
-$app->router->addPostRoute('/api/v1/taxes/delete', [ApiControllerV1::class, 'deleteTax']);
-$app->router->addGetRoute('/api/v1/financial-accounts', [ApiControllerV1::class, 'getFinancialAccounts']);
-$app->router->addPostRoute('/api/v1/financial-accounts/add', [ApiControllerV1::class, 'addFinancialAccount']);
-$app->router->addPostRoute('/api/v1/financial-accounts/update', [ApiControllerV1::class, 'updateFinancialAccount']);
-$app->router->addPostRoute('/api/v1/financial-accounts/delete', [ApiControllerV1::class, 'deleteFinancialAccount']);
-$app->router->addGetRoute('/api/v1/general-ledger', [ApiControllerV1::class, 'getLedgerRecords']);
-$app->router->addPostRoute('/api/v1/general-ledger/add', [ApiControllerV1::class, 'addLedgerRecord']);
+$app->router->addPostRoute('/api/v1/login', [AuthController::class, 'login']);
+$app->router->addGetRoute('/api/v1/whoami', [AuthController::class, 'whoAmI']);
+$app->router->addGetRoute('/api/v1/users', [UserController::class, 'getUsers']);
+$app->router->addPostRoute('/api/v1/users/add', [UserController::class, 'addUser']);
+$app->router->addPostRoute('/api/v1/users/update', [UserController::class, 'updateUser']);
+$app->router->addPostRoute('/api/v1/users/delete', [UserController::class, 'deleteUser']);
+$app->router->addGetRoute('/api/v1/customers', [CustomerController::class, 'getCustomers']);
+$app->router->addPostRoute('/api/v1/customers/add', [CustomerController::class, 'addCustomer']);
+$app->router->addPostRoute('/api/v1/customers/update', [CustomerController::class, 'updateCustomer']);
+$app->router->addPostRoute('/api/v1/customers/delete', [CustomerController::class, 'deleteCustomer']);
+$app->router->addGetRoute('/api/v1/branches', [BranchController::class, 'getBranches']);
+$app->router->addPostRoute('/api/v1/branches/add', [BranchController::class, 'addBranch']);
+$app->router->addPostRoute('/api/v1/branches/update', [BranchController::class, 'updateBranch']);
+$app->router->addPostRoute('/api/v1/branches/delete', [BranchController::class, 'deleteBranch']);
+$app->router->addGetRoute('/api/v1/employees', [EmployeeController::class, 'getEmployees']);
+$app->router->addPostRoute('/api/v1/employees/add', [EmployeeController::class, 'addEmployee']);
+$app->router->addPostRoute('/api/v1/employees/update', [EmployeeController::class, 'updateEmployee']);
+$app->router->addPostRoute('/api/v1/employees/delete', [EmployeeController::class, 'deleteEmployee']);
+$app->router->addGetRoute('/api/v1/category', [PriceCategoryController::class, 'getPriceCategories']);
+$app->router->addPostRoute('/api/v1/category/add', [PriceCategoryController::class, 'addPriceCategory']);
+$app->router->addPostRoute('/api/v1/category/update', [PriceCategoryController::class, 'updatePriceCategory']);
+$app->router->addPostRoute('/api/v1/category/delete', [PriceCategoryController::class, 'deletePriceCategory']);
+$app->router->addGetRoute('/api/v1/items', [ItemController::class, 'getItems']);
+$app->router->addPostRoute('/api/v1/items/add', [ItemController::class, 'addItem']);
+$app->router->addPostRoute('/api/v1/items/update', [ItemController::class, 'updateItem']);
+$app->router->addPostRoute('/api/v1/items/delete', [ItemController::class, 'deleteItem']);
+$app->router->addGetRoute('/api/v1/orders', [OrderController::class, 'getOrders']);
+$app->router->addGetRoute('/api/v1/orders/status-messages', [OrderController::class, 'getOrderStatusMessages']);
+$app->router->addGetRoute('/api/v1/orderCount', [OrderController::class, 'getOrderCount']);
+$app->router->addPostRoute('/api/v1/orders/add', [OrderController::class, 'addOrder']);
+$app->router->addPostRoute('/api/v1/orders/update', [OrderController::class, 'updateOrder']);
+$app->router->addPostRoute('/api/v1/orders/delete', [OrderController::class, 'deleteOrder']);
+$app->router->addGetRoute('/api/v1/payments', [PaymentController::class, 'getPayments']);
+$app->router->addPostRoute('/api/v1/payments/add', [PaymentController::class, 'addPayment']);
+$app->router->addPostRoute('/api/v1/payments/update', [PaymentController::class, 'updatePayment']);
+$app->router->addPostRoute('/api/v1/payments/delete', [PaymentController::class, 'deletePayment']);
+$app->router->addGetRoute('/api/v1/reports', [ReportController::class, 'getReport']);
+$app->router->addGetRoute('/api/v1/user-roles', [UserRoleController::class, 'getUserRoles']);
+$app->router->addPostRoute('/api/v1/user-roles/add', [UserRoleController::class, 'addUserRole']);
+$app->router->addPostRoute('/api/v1/user-roles/update', [UserRoleController::class, 'updateUserRole']);
+$app->router->addPostRoute('/api/v1/user-roles/delete', [UserRoleController::class, 'deleteUserRole']);
+$app->router->addGetRoute('/api/v1/taxes', [TaxController::class, 'getTaxes']);
+$app->router->addPostRoute('/api/v1/taxes/add', [TaxController::class, 'addTax']);
+$app->router->addPostRoute('/api/v1/taxes/update', [TaxController::class, 'updateTax']);
+$app->router->addPostRoute('/api/v1/taxes/delete', [TaxController::class, 'deleteTax']);
+$app->router->addGetRoute('/api/v1/financial-accounts', [FinancialAccountController::class, 'getFinancialAccounts']);
+$app->router->addPostRoute('/api/v1/financial-accounts/add', [FinancialAccountController::class, 'addFinancialAccount']);
+$app->router->addPostRoute('/api/v1/financial-accounts/update', [FinancialAccountController::class, 'updateFinancialAccount']);
+$app->router->addPostRoute('/api/v1/financial-accounts/delete', [FinancialAccountController::class, 'deleteFinancialAccount']);
+$app->router->addGetRoute('/api/v1/financial-account-types', [FinancialAccountController::class, 'getAccountTypes']);
+$app->router->addGetRoute('/api/v1/general-ledger', [LedgerRecordController::class, 'getLedgerRecords']);
+$app->router->addPostRoute('/api/v1/general-ledger/add', [LedgerRecordController::class, 'addLedgerRecord']);
 
 // Super admin routes
-$app->router->addGetRoute('/api/v1/realtime-metrics', [ApiControllerV1::class, 'getRealtimePerformanceMetrics']);
-$app->router->addGetRoute('/api/v1/server-manager/maintenanceMode', [ApiControllerV1::class, 'getMaintenanceStatus']);
-$app->router->addPostRoute('/api/v1/server-manager/maintenanceMode', [ApiControllerV1::class, 'setMaintenanceStatus']);
-$app->router->addGetRoute('/api/v1/server-manager/migrations', [ApiControllerV1::class, 'getMigrations']);
-$app->router->addGetRoute('/api/v1/server-manager/migrations/applied', [ApiControllerV1::class, 'getAppliedMigrations']);
-$app->router->addPostRoute('/api/v1/server-manager/migrations/run', [ApiControllerV1::class, 'attemptMigration']);
-$app->router->addGetRoute('/api/v1/server-manager/migration-token', [ApiControllerV1::class, 'getMigrationToken']);
-$app->router->addPostRoute('/api/v1/server-manager/migration-token/block', [ApiControllerV1::class, 'blockMigrationToken']);
-$app->router->addPostRoute('/api/v1/server-manager/migration-token/validate', [ApiControllerV1::class, 'validateMigrationToken']);
+$app->router->addGetRoute('/api/v1/realtime-metrics', [ServerStatusController::class, 'getRealtimePerformanceMetrics']);
+$app->router->addGetRoute('/api/v1/server-manager/maintenanceMode', [ServerStatusController::class, 'getMaintenanceStatus']);
+$app->router->addPostRoute('/api/v1/server-manager/maintenanceMode', [ServerStatusController::class, 'setMaintenanceStatus']);
+$app->router->addGetRoute('/api/v1/server-manager/migrations', [MigrationsController::class, 'getMigrations']);
+$app->router->addGetRoute('/api/v1/server-manager/migrations/applied', [MigrationsController::class, 'getAppliedMigrations']);
+$app->router->addPostRoute('/api/v1/server-manager/migrations/run', [MigrationsController::class, 'attemptMigration']);
+$app->router->addGetRoute('/api/v1/server-manager/migration-token', [MigrationsController::class, 'getMigrationToken']);
+$app->router->addPostRoute('/api/v1/server-manager/migration-token/block', [MigrationsController::class, 'blockMigrationToken']);
+$app->router->addPostRoute('/api/v1/server-manager/migration-token/validate', [MigrationsController::class, 'validateMigrationToken']);
 
 $app->run();
