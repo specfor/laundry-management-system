@@ -39,20 +39,20 @@ class Orders extends DbModel
         }
 
         $itemIds = [];
-        foreach ($items as $singleItem) {
-            foreach ($singleItem as $itemId => $itemData) {
+        foreach ($items as &$singleItem) {
+            foreach ($singleItem as $itemId => &$itemData) {
                 if (!is_int($itemId))
                     return "All item ids must be integers.";
                 if (!isset($itemData['amount'], $itemData['return-date'], $itemData['defects']))
                     return "Every item should contain 'amount', 'return-date', 'defects'";
-                if (!is_int($itemData['amount']))
-                    return "All amounts should be integers";
                 if ($itemData['amount'] < 1)
                     return "All amounts must be greater than 0";
                 if (!is_array($itemData['defects']))
                     return "Defects should be an array.";
                 if (!is_string($itemData['return-date']))
                     return "'return-date' should be a string.";
+
+                $itemData['amount'] = intval($itemData['amount']);
                 $itemIds[] = "item_id=$itemId";
             }
         }
