@@ -6,7 +6,7 @@ import {apiBaseUrl} from "../js-modules/website-constants.js";
 import {PencilSquareIcon, TrashIcon} from "@heroicons/vue/24/solid/index.js";
 import {validateInput} from "../js-modules/form-validations.js";
 
-let tableCol = ['Id', 'Username', 'Email', 'Firstname', 'Lastname', 'Role', 'Branch Id', 'Modifications']
+let tableCol = ['Select','Id', 'Username', 'Email', 'Firstname', 'Lastname', 'Role', 'Branch Id', 'Modifications']
 let tableRows = ref([])
 let actions = [
   {onClickEvent: 'editUser', btnText: 'Edit', type: 'icon', icon: PencilSquareIcon, iconColor: 'fill-blue-700'},

@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-import {TrashIcon, PencilSquareIcon} from '@heroicons/vue/24/solid'
+import {PencilSquareIcon} from '@heroicons/vue/24/solid'
 import TableComponent from '../components/TableComponent.vue'
 import NewOrderModal from '../components/form_modals/NewOrder.vue'
 import OrderDetailsModal from '../components/form_modals/OrderDetails.vue'
@@ -20,13 +20,12 @@ import {ref} from 'vue'
 import {sendGetRequest, sendJsonPostRequest} from "../js-modules/base-functions.js";
 import {apiBaseUrl} from "../js-modules/website-constants.js";
 
-let ordersTableCol = ['Id', 'Value (LKR)', 'Customer', 'Products', 'Status', 'Branch', 'Added On', 'Comments',
+let ordersTableCol = ['Select','Id', 'Value (LKR)', 'Customer', 'Products', 'Status', 'Branch', 'Added On', 'Comments',
   'Modifications']
 let ordersTableRows = ref([])
 let ordersTableActions = [
   {onClickEvent: 'moreInfo', btnText: 'More Info'},
   {onClickEvent: 'editOrder', btnText: 'Edit', type: 'icon', icon: PencilSquareIcon, iconColor: 'fill-blue-700'},
-  {onClickEvent: 'removeOrder', btnText: 'Remove', type: 'icon', icon: TrashIcon, iconColor: 'fill-red-700'}
 ]
 let productArray = {}
 let orders = []
@@ -185,12 +184,14 @@ async function editOrder(id) {
   }
 }
 
-async function deleteOrder(id) {
-  let confirm = await window.popupConfirmation('Delete Order',
+async function deleteOrder(ids) {
+  if(ids.length === 1){
+    let confirm = await window.popupConfirmation('Delete Order',
       'This action is irreversible. Are you sure you want to remove this order?')
-  if (confirm === true) {
+
+      if (confirm === true) {
     let response = await sendJsonPostRequest(apiBaseUrl + "/orders/delete", {
-      'order-id': id
+      'order-id': ids[0]
     })
 
     if (response.status === "success") {
@@ -200,6 +201,27 @@ async function deleteOrder(id) {
       window.errorNotification('Delete order', response.message)
     }
   }
+  }else{
+    let confirm = await window.popupConfirmation('Delete Order',
+      'This action is irreversible. Are you sure you want to remove these orders?')
+
+    if(confirm === true){
+      ids.forEach(async(id)=>{
+        let response = await sendJsonPostRequest(apiBaseUrl + "/orders/delete", {
+      'order-id': id
+    })
+
+    if (response.status === "success") {
+      getOrders()
+      window.successNotification('Delete order', response.message)
+    } else {
+      window.errorNotification('Delete order', response.message)
+    }
+      })
+    }  
+  }
+  
+  
 }
 </script>
 

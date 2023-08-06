@@ -1,6 +1,10 @@
 <template>
   <div class="w-full overflow-x-auto">
+    
+    <button :disabled="isDisabled" class="rounded-md px-3 py-1 transition duration-300  mb-4 subpixel-antialiased	font-medium	" :class="{'bg-red-600 text-white hover:bg-red-700':isActive,'bg-stone-200 text-stone-600':!isActive}" @click="$emit('remove-order',selectedIds)">Delete</button>
+    
     <table class="table-auto border-collapse border w-full">
+      
       <thead>
       <tr class="border-0 border-y-2 border-t-0 border-slate-500 bg-neutral-300">
         <th class="text-left px-3 pt-4 pb-2 font-bold"
@@ -12,11 +16,13 @@
         </th>
       </tr>
       </thead>
+      
       <tbody class="font-semibold">
       <tr v-if="tableRows.length === 0">
         <td colspan="100%" class="text-center pt-2 text-slate-700">No Data To Display.</td>
       </tr>
       <tr v-for="row in tableRows" :key="row[0]" class="border-y border-slate-400 bg-neutral-100 hover:bg-neutral-200">
+        <input type="checkbox" class="ml-3" :value="row[0]" v-model="selectedIds" v-on:change="isChecked()">
         <td v-for="data in row" class="px-3 py-1 text-slate-800">
           <span v-if="data === null || data === ''">None</span>
           <span v-else>{{ data }}</span>
@@ -37,7 +43,22 @@
 </template>
 
 <script setup>
-import {defineProps} from "vue";
+import {defineProps,ref} from "vue";
+
+let selectedIds = ref([])
+let isDisabled = ref(true)
+let isActive = ref(false)
+
+function isChecked(){
+    
+  if(selectedIds.value.length === 0){
+    isActive.value = false
+    isDisabled.value = true
+  }else{
+    isActive.value = true
+    isDisabled.value = false
+  }
+}
 
 let {tableColumns, tableRows, actions} = defineProps(['tableColumns', 'tableRows', 'actions'])
 

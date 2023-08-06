@@ -6,7 +6,7 @@ import {apiBaseUrl} from "../js-modules/website-constants.js";
 import {PencilSquareIcon, TrashIcon} from "@heroicons/vue/24/solid/index.js";
 import {validateInput} from "../js-modules/form-validations.js";
 
-let customersTableCol = ['Id', 'Customer Name', 'Phone Number', 'Email', 'Address', 'Joined Date',
+let customersTableCol = ['Select','Id', 'Customer Name', 'Phone Number', 'Email', 'Address', 'Joined Date',
   'Banned', 'Modifications']
 let customersTableRows = ref([])
 let customersTableActions = [
