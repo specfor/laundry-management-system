@@ -24,8 +24,8 @@ class Accounting extends DbModel
         $filters = [];
         $placeholders = [];
 
-        if  ($accountId)
-            $filters[]="account_id=$accountId";
+        if ($accountId)
+            $filters[] = "account_id=$accountId";
         if ($name) {
             $filters[] = "name LIKE :name";
             $placeholders['name'] = "$name%";
@@ -119,14 +119,18 @@ class Accounting extends DbModel
         if (!$data['deletable'])
             return "This account can not be deleted.";
 
-        //TODO check if account is used to store any record and let to delete if not.
+        $ledgerRecords = GeneralLedger::getLedgerRecords(accountId: $accountId);
+        if (!empty($ledgerRecords)) {
+            self::updateTableData(self::TABLE_NAME, ['deletable' => false], "account_id=$accountId");
+            return "This account can not be deleted.";
+        }
 
         if (self::removeTableData(self::TABLE_NAME, "account_id=$accountId"))
             return true;
         return "Failed to remove data from database.";
     }
 
-    public static function getAccountTypes():array
+    public static function getAccountTypes(): array
     {
         return self::ACCOUNT_TYPES;
     }
