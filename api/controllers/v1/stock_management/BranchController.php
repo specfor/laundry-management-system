@@ -2,11 +2,11 @@
 
 namespace LogicLeap\StockManagement\controllers\v1\stock_management;
 
-use LogicLeap\StockManagement\models\API;
+use LogicLeap\PhpServerCore\Controller;
 use LogicLeap\StockManagement\models\stock_management\Branches;
 use LogicLeap\StockManagement\models\user_management\User;
 
-class BranchController extends API
+class BranchController extends Controller
 {   
     public function addBranch(): void
     {

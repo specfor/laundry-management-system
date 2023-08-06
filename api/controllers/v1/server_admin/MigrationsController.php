@@ -3,9 +3,9 @@
 namespace LogicLeap\StockManagement\controllers\v1\server_admin;
 
 use LogicLeap\PhpServerCore\MigrationManager;
-use LogicLeap\StockManagement\models\API;
+use LogicLeap\PhpServerCore\Controller;
 
-class MigrationsController extends API
+class MigrationsController extends Controller
 {   
     public function getMigrations(): void
     {

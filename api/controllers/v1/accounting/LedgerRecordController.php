@@ -2,10 +2,10 @@
 
 namespace LogicLeap\StockManagement\controllers\v1\accounting;
 
+use LogicLeap\PhpServerCore\Controller;
 use LogicLeap\StockManagement\models\accounting\GeneralLedger;
-use LogicLeap\StockManagement\models\API;
 
-class LedgerRecordController extends API
+class LedgerRecordController extends Controller
 {   
     public function getLedgerRecords(): void
     {

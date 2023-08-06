@@ -3,9 +3,9 @@
 namespace LogicLeap\StockManagement\controllers\v1;
 
 use LogicLeap\PhpServerCore\Reports;
-use LogicLeap\StockManagement\models\API;
+use LogicLeap\PhpServerCore\Controller;
 
-class ReportController extends API
+class ReportController extends Controller
 {   
     public function getReport(): void
     {

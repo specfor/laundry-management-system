@@ -1,11 +1,31 @@
 <?php
 
-namespace LogicLeap\StockManagement\controllers\v1;
+namespace LogicLeap\PhpServerCore;
 
 use LogicLeap\StockManagement\models\API;
+use LogicLeap\PhpServerCore\Application;
+use LogicLeap\PhpServerCore\MigrationManager;
+use LogicLeap\StockManagement\models\user_management\Authorization;
+use LogicLeap\StockManagement\models\user_management\User;
+use LogicLeap\StockManagement\Util\Util;
 
-class APIBase
+class Controller
 {
+    // public const STATUS_CODE_SUCCESS = 200;
+    // public const STATUS_CODE_NOTFOUND = 404;
+    // public const STATUS_CODE_FORBIDDEN = 403;
+    // public const STATUS_CODE_MAINTENANCE = 503;
+    // public const STATUS_CODE_UNAUTHORIZED = 401;
+    // public const STATUS_CODE_SERVER_ERROR = 500;
+
+    // public const STATUS_MSG_SUCCESS = 'success';
+    // public const STATUS_MSG_ERROR = 'error';
+    // public const STATUS_MSG_NOTFOUND = 'not-found';
+    // public const STATUS_MSG_FORBIDDEN = 'forbidden';
+    // public const STATUS_MSG_MAINTENANCE = 'maintenance';
+    // public const STATUS_MSG_UNAUTHORIZED = 'unauthorized';
+    // public const STATUS_MSG_SERVER_ERROR = 'server-error';
+
     public function __construct()
     {
         $maintenanceModeFilePath = Application::$ROOT_DIR . "/maintenanceLock.lock";
@@ -18,8 +38,11 @@ class APIBase
         // If in maintenance mode, maintenance page is displayed. Application exits.
         if (is_file($maintenanceModeFilePath)) {
             if (!self::isSiteMigrator()) {
-                self::sendResponse(API::STATUS_CODE_MAINTENANCE, API::STATUS_MSG_MAINTENANCE,
-                    ['error' => 'Server is under maintenance']);
+                self::sendResponse(
+                    API::STATUS_CODE_MAINTENANCE,
+                    API::STATUS_MSG_MAINTENANCE,
+                    ['error' => 'Server is under maintenance']
+                );
                 exit();
             }
         }
@@ -40,8 +63,6 @@ class APIBase
         }
         return false;
     }
-
-
 
     /**
      * Send JSON formatted crafted response to the called API user.
@@ -64,27 +85,20 @@ class APIBase
         echo json_encode($finalPayload);
     }
 
-    public static function endPointNotFound(): void
-    {
-        $finalPayload = [
-            'statusCode' => self::STATUS_CODE_NOTFOUND,
-            'statusMessage' => self::STATUS_MSG_NOTFOUND,
-            'body' => ['error' => 'Requested API endpoint was not found.']
-        ];
-        echo json_encode($finalPayload);
-    }
-
     /**
      * Check whether requests are coming from authorized users. If not send "401" unauthorized error message.
      * @param array $permissions Array of permissions needed. [roleGroup => [permissions], ...]
      */
     public static function checkPermissions(array $permissions = [], bool $onlyServerAdmins = false): void
     {
-        preg_match('/Bearer\s(\S+)/', self::getAuthorizationHeader(), $matches);
+        preg_match('/Bearer\s(\S+)/', Util::getAuthorizationHeader(), $matches);
 
         if (!$matches || !Authorization::isValidToken($matches[1])) {
-            self::sendResponse(self::STATUS_CODE_FORBIDDEN, self::STATUS_MSG_FORBIDDEN,
-                ['message' => 'You are not authorized to perform this action.']);
+            self::sendResponse(
+                API::STATUS_CODE_FORBIDDEN,
+                API::STATUS_MSG_FORBIDDEN,
+                ['message' => 'You are not authorized to perform this action.']
+            );
             exit();
         }
 
@@ -116,35 +130,19 @@ class APIBase
             $permitted = false;
 
         if (!$permitted) {
-            self::sendResponse(self::STATUS_CODE_FORBIDDEN, self::STATUS_MSG_FORBIDDEN,
-                ['message' => 'You are not authorized to perform this action.']);
+            self::sendResponse(
+                API::STATUS_CODE_FORBIDDEN,
+                API::STATUS_MSG_FORBIDDEN,
+                ['message' => 'You are not authorized to perform this action.']
+            );
         }
         exit();
     }
 
     public static function getUserId(): int
     {
-        preg_match('/Bearer\s(\S+)/', self::getAuthorizationHeader(), $matches);
+        preg_match('/Bearer\s(\S+)/', Util::getAuthorizationHeader(), $matches);
         return Authorization::getUserId($matches[1]);
-    }
-
-    public static function getAuthorizationHeader(): string|null
-    {
-        $authHeader = null;
-        if (isset($_SERVER['Authorization'])) {
-            $authHeader = trim($_SERVER["Authorization"]);
-        } else if (isset($_SERVER['HTTP_AUTHORIZATION'])) { //Nginx or fast CGI
-            $authHeader = trim($_SERVER["HTTP_AUTHORIZATION"]);
-        } elseif (function_exists('apache_request_headers')) {
-            $requestHeaders = apache_request_headers();
-            // Server-side fix for bug in old Android versions (a nice side-effect of this fix means we don't care about capitalization for Authorization)
-            $requestHeaders = array_combine(array_map('ucwords', array_keys($requestHeaders)), array_values($requestHeaders));
-            //print_r($requestHeaders);
-            if (isset($requestHeaders['Authorization'])) {
-                $authHeader = trim($requestHeaders['Authorization']);
-            }
-        }
-        return $authHeader;
     }
 
     /**
@@ -156,9 +154,12 @@ class APIBase
      * @param bool $isCompulsory If set to True, send an error message if specified parameter is not passed.
      * @return mixed Value of the parameter.
      */
-    public static function getParameter(string $parameterIdentifier, mixed $defaultValue = null,
-                                        string $dataType = 'string', bool $isCompulsory = false): mixed
-    {
+    public static function getParameter(
+        string $parameterIdentifier,
+        mixed $defaultValue = null,
+        string $dataType = 'string',
+        bool $isCompulsory = false
+    ): mixed {
         $params = Application::$app->request->getBodyParams();
 
         if (!isset($params[$parameterIdentifier]))
@@ -167,41 +168,12 @@ class APIBase
             else
                 return $defaultValue;
 
-        return self::getConvertedTo($parameterIdentifier, $params[$parameterIdentifier], $dataType);
-    }
+        $ret = Util::getConvertedTo($parameterIdentifier, $params[$parameterIdentifier], $dataType);
+        if ($ret == null) {
+            self::sendError("$parameterIdentifier must be type '$dataType'");
+        } else return $ret;
 
-    /**
-     * Convert to a specific data type. If value cannot be converted, send an error to user.
-     * @param string $parameterName request parameter to send with error message
-     * @param mixed $value value to be converted
-     * @param string $dataType 'int', 'float', 'bool'. Should be one of those
-     * @return mixed Converted data
-     */
-    public static function getConvertedTo(string $parameterName, mixed $value, string $dataType): mixed
-    {
-        try {
-            if ($dataType == 'string') {
-                if (!is_string($value))
-                    throw new Exception('string required.');
-            } elseif ($dataType == 'int')
-                $value = intval($value);
-            elseif ($dataType == 'float')
-                $value = floatval($value);
-            elseif ($dataType == 'bool')
-                $value = boolval($value);
-            elseif ($dataType == 'decimal') {
-                if (!preg_match('/^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$/', $value))
-                    throw new Exception('invalid decimal number');
-                if ("$value"[0] == '.')
-                    $value = "0$value";
-            } elseif ($dataType == 'array')
-                if (!is_array($value))
-                    throw new Exception('array required.');
-            return $value;
-        } catch (Exception) {
-            self::sendError("$parameterName must be type '$dataType'");
-            return null;
-        }
+        // return self::getConvertedTo($parameterIdentifier, $params[$parameterIdentifier], $dataType);
     }
 
     /**
@@ -210,18 +182,24 @@ class APIBase
      */
     public static function sendError(string $message): void
     {
-        self::sendResponse(self::STATUS_CODE_SUCCESS, self::STATUS_MSG_ERROR,
-            ['message' => $message]);
+        self::sendResponse(
+            API::STATUS_CODE_SUCCESS,
+            API::STATUS_MSG_ERROR,
+            ['message' => $message]
+        );
         exit();
     }
 
     public static function sendSuccess(array|string $body): void
     {
         if (is_array($body))
-            self::sendResponse(self::STATUS_CODE_SUCCESS, self::STATUS_MSG_SUCCESS, $body);
+            self::sendResponse(API::STATUS_CODE_SUCCESS, API::STATUS_MSG_SUCCESS, $body);
         else
-            self::sendResponse(self::STATUS_CODE_SUCCESS, self::STATUS_MSG_SUCCESS,
-                ['message' => $body]);
+            self::sendResponse(
+                API::STATUS_CODE_SUCCESS,
+                API::STATUS_MSG_SUCCESS,
+                ['message' => $body]
+            );
         exit();
     }
 
@@ -238,14 +216,23 @@ class APIBase
     public function errorHandler(int|string $errorCode, string $errorMessage): void
     {
         if ($errorCode === 404)
-            self::sendResponse(self::STATUS_CODE_NOTFOUND, self::STATUS_MSG_NOTFOUND,
-                ['message' => $errorMessage]);
+            self::sendResponse(
+                API::STATUS_CODE_NOTFOUND,
+                API::STATUS_MSG_NOTFOUND,
+                ['message' => $errorMessage]
+            );
         elseif ($errorCode === 403)
-            self::sendResponse(self::STATUS_CODE_FORBIDDEN, self::STATUS_MSG_FORBIDDEN,
-                ['message' => $errorMessage]);
+            self::sendResponse(
+                API::STATUS_CODE_FORBIDDEN,
+                API::STATUS_MSG_FORBIDDEN,
+                ['message' => $errorMessage]
+            );
         else
-            self::sendResponse(self::STATUS_CODE_SERVER_ERROR, self::STATUS_MSG_SERVER_ERROR,
-                ['message' => 'A server error occurred.']);
+            self::sendResponse(
+                API::STATUS_CODE_SERVER_ERROR,
+                API::STATUS_MSG_SERVER_ERROR,
+                ['message' => 'A server error occurred.']
+            );
         exit();
     }
 }

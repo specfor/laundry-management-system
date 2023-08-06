@@ -2,13 +2,7 @@
 
 namespace LogicLeap\StockManagement\models;
 
-use Exception;
-use LogicLeap\PhpServerCore\Application;
-use LogicLeap\PhpServerCore\MigrationManager;
-use LogicLeap\StockManagement\models\user_management\Authorization;
-use LogicLeap\StockManagement\models\user_management\User;
-
-abstract class API
+class API
 {
     public const STATUS_CODE_SUCCESS = 200;
     public const STATUS_CODE_NOTFOUND = 404;
@@ -24,5 +18,4 @@ abstract class API
     public const STATUS_MSG_MAINTENANCE = 'maintenance';
     public const STATUS_MSG_UNAUTHORIZED = 'unauthorized';
     public const STATUS_MSG_SERVER_ERROR = 'server-error';
-
 }

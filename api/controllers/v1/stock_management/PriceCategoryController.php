@@ -2,11 +2,11 @@
 
 namespace LogicLeap\StockManagement\controllers\v1\stock_management;
 
-use LogicLeap\StockManagement\models\API;
+use LogicLeap\PhpServerCore\Controller;
 use LogicLeap\StockManagement\models\stock_management\PriceCategories;
 use LogicLeap\StockManagement\models\user_management\User;
 
-class PriceCategoryController extends API
+class PriceCategoryController extends Controller
 {
     public function getPriceCategories(): void
     {

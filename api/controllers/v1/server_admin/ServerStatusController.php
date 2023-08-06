@@ -4,9 +4,9 @@ namespace LogicLeap\StockManagement\controllers\v1\server_admin;
 
 use LogicLeap\PhpServerCore\MigrationManager;
 use LogicLeap\PhpServerCore\ServerMetrics;
-use LogicLeap\StockManagement\models\API;
+use LogicLeap\PhpServerCore\Controller;
 
-class ServerStatusController extends API
+class ServerStatusController extends Controller
 {   
     // Server Status Functions
 

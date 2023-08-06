@@ -2,11 +2,11 @@
 
 namespace LogicLeap\StockManagement\controllers\v1\user_management;
 
-use LogicLeap\StockManagement\models\API;
+use LogicLeap\PhpServerCore\Controller;
 use LogicLeap\StockManagement\models\user_management\User;
 use LogicLeap\StockManagement\models\user_management\UserRoles;
 
-class UserRoleController extends API
+class UserRoleController extends Controller
 {
     public function addUserRole(): void
     {

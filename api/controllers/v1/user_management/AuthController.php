@@ -4,11 +4,11 @@ namespace LogicLeap\StockManagement\controllers\v1\user_management;
 
 use LogicLeap\PhpServerCore\Request;
 use LogicLeap\PhpServerCore\SecureToken;
-use LogicLeap\StockManagement\models\API;
+use LogicLeap\PhpServerCore\Controller;
 use LogicLeap\StockManagement\models\user_management\Authorization;
 use LogicLeap\StockManagement\models\user_management\User;
 
-class AuthController extends API
+class AuthController extends Controller
 {   
     public function whoAmI(): void
     {

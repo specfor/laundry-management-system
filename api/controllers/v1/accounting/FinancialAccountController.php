@@ -2,10 +2,10 @@
 
 namespace LogicLeap\StockManagement\controllers\v1\accounting;
 
+use LogicLeap\PhpServerCore\Controller;
 use LogicLeap\StockManagement\models\accounting\Accounting;
-use LogicLeap\StockManagement\models\API;
 
-class FinancialAccountController extends API
+class FinancialAccountController extends Controller
 {   
     public function getFinancialAccounts(): void
     {

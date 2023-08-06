@@ -2,10 +2,10 @@
 
 namespace LogicLeap\StockManagement\controllers\v1\user_management;
 
-use LogicLeap\StockManagement\models\API;
+use LogicLeap\PhpServerCore\Controller;
 use LogicLeap\StockManagement\models\user_management\User;
 
-class UserController extends API
+class UserController extends Controller
 {   
     public function addUser(): void
     {

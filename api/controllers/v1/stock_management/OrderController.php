@@ -2,11 +2,11 @@
 
 namespace LogicLeap\StockManagement\controllers\v1\stock_management;
 
-use LogicLeap\StockManagement\models\API;
+use LogicLeap\PhpServerCore\Controller;
 use LogicLeap\StockManagement\models\stock_management\Orders;
 use LogicLeap\StockManagement\models\user_management\User;
 
-class OrderController extends API
+class OrderController extends Controller
 {
     public function getOrders(): void
     {

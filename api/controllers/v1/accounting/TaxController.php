@@ -2,11 +2,11 @@
 
 namespace LogicLeap\StockManagement\controllers\v1\accounting;
 
+use LogicLeap\PhpServerCore\Controller;
 use LogicLeap\StockManagement\models\accounting\Taxes;
-use LogicLeap\StockManagement\models\API;
 use LogicLeap\StockManagement\models\user_management\User;
 
-class TaxController extends API
+class TaxController extends Controller
 {
     public function addTax(): void
     {
