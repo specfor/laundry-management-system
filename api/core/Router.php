@@ -58,7 +58,7 @@ class Router
         if ($callback === false) {
             $pathPieces = explode('/', $path);
             if ($pathPieces[0] === 'api'){
-                API::endPointNotFound();
+                self::endPointNotFound();
             }else{
                 throw new NotFoundException();
             }
@@ -67,6 +67,16 @@ class Router
             $controller = new $callback[0];
             $controller->{$callback[1]}();
         }
+    }
+
+    public static function endPointNotFound(): void
+    {
+        $finalPayload = [
+            'statusCode' => API::STATUS_CODE_NOTFOUND,
+            'statusMessage' => API::STATUS_MSG_NOTFOUND,
+            'body' => ['error' => 'Requested API endpoint was not found.']
+        ];
+        echo json_encode($finalPayload);
     }
 
 }
