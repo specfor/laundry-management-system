@@ -75,10 +75,10 @@ class GeneralLedger extends DbModel
 
         if ($taxInclusive) {
             if ($credit) {
-                $params['credit'] = bcmul(bcdiv($credit, bcadd($taxRate, "100")), "100");
+                $params['credit'] = bcdiv(bcmul($credit, "100"), bcadd($taxRate, "100"));
                 $params['tax'] = bcsub($credit, $params['credit']);
             } else {
-                $params['debit'] = bcmul(bcdiv($debit, bcadd($taxRate, "100")), "100");
+                $params['debit'] = bcdiv(bcmul($debit, "100"), bcadd($taxRate, "100"));
                 $params['tax'] = bcsub($credit, $params['debit']);
             }
         } else {
