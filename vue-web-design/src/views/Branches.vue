@@ -4,7 +4,7 @@
     <button class="bg-slate-600 text-slate-100 rounded-md py-2 px-3 font-semibold" @click="addNewBranch">+ New Branch</button>
   </div>
 
-  <TableComponent :tableColumns="branchesTableCol" :tableRows="branchesTableRows" :actions="branchesTableActions"
+  <TableComponent :tableColumns="branchesTableCol" :tableRows="branchesTableRows" :actions="branchesTableActions" :deleteMultiple="deleteBtn"
                   @remove-branch="deleteBranch($event)" @edit-branch="editBranch($event)"/>
 
 </template>
@@ -14,14 +14,18 @@ import TableComponent from '../components/TableComponent.vue'
 import {ref} from 'vue'
 import {sendGetRequest, sendJsonPostRequest} from "../js-modules/base-functions.js";
 import {apiBaseUrl} from "../js-modules/website-constants.js";
-import {PencilSquareIcon, TrashIcon} from "@heroicons/vue/24/solid/index.js";
+import {PencilSquareIcon} from "@heroicons/vue/24/solid/index.js";
 import {validateInput} from "../js-modules/form-validations.js";
 
 let branchesTableCol = ['Select','Id', 'Branch Name', 'Contact Info', 'Modifications']
 let branchesTableRows = ref([])
 let branchesTableActions = [
     {onClickEvent: 'editBranch', btnText: 'Edit', type: 'icon', icon: PencilSquareIcon, iconColor: 'fill-blue-700'},
-    {onClickEvent: 'removeBranch', btnText: 'Remove', type: 'icon', icon: TrashIcon, iconColor: 'fill-red-700'}]
+]
+
+let deleteBtn = [{
+  onClickEvent:'removeBranch'
+}]
 
 async function getBranches() {
   let response = await sendGetRequest(apiBaseUrl + "/branches")
@@ -95,12 +99,14 @@ async function editBranch(id) {
   }
 }
 
-async function deleteBranch(id) {
-  let confirm = await window.popupConfirmation('Delete Branch',
+async function deleteBranch(ids) {
+
+  if(ids.length === 1){
+    let confirm = await window.popupConfirmation('Delete Branch',
       'This action is irreversible. Are you sure you want to remove this branch?')
   if (confirm === true) {
     let response = await sendJsonPostRequest(apiBaseUrl + "/branches/delete", {
-      'branch-id': id
+      'branch-id': ids[0]
     })
 
     if (response.status === 'success') {
@@ -110,6 +116,26 @@ async function deleteBranch(id) {
       window.errorNotification('Delete Branch', response.message)
     }
   }
+  }else{
+    let confirm = await window.popupConfirmation('Delete Branch',
+      'This action is irreversible. Are you sure you want to remove these branches?')
+
+    if(confirm === true){
+      ids.forEach(async(id) => {
+        let response = await sendJsonPostRequest(apiBaseUrl + "/branches/delete", {
+      'branch-id': id
+    })
+
+    if (response.status === 'success') {
+      getBranches()
+      window.successNotification('Delete Branch', response.message)
+    } else {
+      window.errorNotification('Delete Branch', response.message)
+    }
+      });
+    }  
+  }
+  
 }
 </script>
 

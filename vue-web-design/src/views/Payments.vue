@@ -9,8 +9,11 @@ let paymentsTableCol = ['Select','Id', 'Order Id', 'Paid Amount', 'Paid Date', '
 let paymentsTableRows = ref([])
 let paymentsTableActions = [
   {onClickEvent: 'editPayment', btnText: 'Edit', type: 'icon', icon: PencilSquareIcon, iconColor: 'fill-blue-700'},
-  {onClickEvent: 'removePayment', btnText: 'Remove', type: 'icon', icon: TrashIcon, iconColor: 'fill-red-700'}
 ]
+
+let deleteBtn = [{
+  onClickEvent:'removePayment'
+}]
 
 async function getPayments() {
   let response = await sendGetRequest(apiBaseUrl + "/payments")
@@ -89,12 +92,14 @@ async function editPayment(id) {
   }
 }
 
-async function deletePayment(id) {
-  let confirm = await window.popupConfirmation('Delete Payment',
+async function deletePayment(ids) {
+
+  if(ids.length === 1){
+    let confirm = await window.popupConfirmation('Delete Payment',
     'This action is irreversible. Are you sure you want to remove this payment?')
   if (confirm === true) {
     let response = await sendJsonPostRequest(apiBaseUrl + "/payments/delete", {
-      'payment-id': id
+      'payment-id': ids[0]
     })
 
     if (response.status === "success") {
@@ -104,6 +109,28 @@ async function deletePayment(id) {
       window.errorNotification('Delete Payment', response.message)
     }
   }
+  }else{
+    let confirm = await window.popupConfirmation('Delete Payment',
+    'This action is irreversible. Are you sure you want to remove these payments?')
+
+    if (confirm === true) {
+      ids.forEach(async(id)=>{
+        let response = await sendJsonPostRequest(apiBaseUrl + "/payments/delete", {
+      'payment-id': id
+    })
+
+    if (response.status === "success") {
+      getPayments()
+      window.successNotification('Delete Payment', response.message)
+    } else {
+      window.errorNotification('Delete Payment', response.message)
+    }
+    
+      })    
+  }
+
+  }
+  
 }
 </script>
 
@@ -115,7 +142,7 @@ async function deletePayment(id) {
     </button>
   </div>
 
-  <TableComponent :tableColumns="paymentsTableCol" :tableRows="paymentsTableRows" :actions="paymentsTableActions"
+  <TableComponent :tableColumns="paymentsTableCol" :tableRows="paymentsTableRows" :actions="paymentsTableActions" :deleteMultiple="deleteBtn"
                   @remove-payment="deletePayment($event)" @edit-payment="editPayment($event)"/>
 
 </template>

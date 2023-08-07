@@ -1,7 +1,8 @@
 <template>
   <div class="w-full overflow-x-auto">
-    
-    <button :disabled="isDisabled" class="rounded-md px-3 py-1 transition duration-300  mb-4 subpixel-antialiased	font-medium	" :class="{'bg-red-600 text-white hover:bg-red-700':isActive,'bg-stone-200 text-stone-600':!isActive}" @click="$emit('remove-order',selectedIds)">Delete</button>
+
+        <button :disabled="isDisabled" class="rounded-md px-3 py-1 transition duration-300  mb-4 subpixel-antialiased	font-medium	" :class="{'bg-red-600 text-white hover:bg-red-700':isActive,'bg-stone-200 text-stone-600':!isActive}" @click="()=>{$emit(deleteMultiple[0]['onClickEvent'],selectedIds) 
+    selectedIds = []}" >Delete</button>
     
     <table class="table-auto border-collapse border w-full">
       
@@ -60,7 +61,7 @@ function isChecked(){
   }
 }
 
-let {tableColumns, tableRows, actions} = defineProps(['tableColumns', 'tableRows', 'actions'])
+let {tableColumns, tableRows, actions, deleteMultiple} = defineProps(['tableColumns', 'tableRows', 'actions','deleteMultiple'])
 
 let modificationsColum = tableColumns.pop()
 </script>

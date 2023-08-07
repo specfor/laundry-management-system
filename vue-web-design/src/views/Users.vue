@@ -10,9 +10,12 @@ let tableCol = ['Select','Id', 'Username', 'Email', 'Firstname', 'Lastname', 'Ro
 let tableRows = ref([])
 let actions = [
   {onClickEvent: 'editUser', btnText: 'Edit', type: 'icon', icon: PencilSquareIcon, iconColor: 'fill-blue-700'},
-  {onClickEvent: 'deleteUser', btnText: 'Remove', type: 'icon', icon: TrashIcon, iconColor: 'fill-red-700'},
   {onClickEvent: 'updateUserPass', btnText: 'Update Password'}
 ]
+
+let deleteBtn = [{
+  onClickEvent:'deleteUser'
+}]
 
 async function getUsers() {
   let response = await sendGetRequest(apiBaseUrl + "/users")
@@ -112,11 +115,29 @@ async function updateUser(id) {
   }
 }
 
-async function deleteUser(id) {
-  let confirm = await window.popupConfirmation('Delete User',
+async function deleteUser(ids) {
+
+  if(ids.length === 1){
+    let confirm = await window.popupConfirmation('Delete User',
     'This action is irreversible. Are you sure you want to remove this user?')
   if (confirm) {
     let response = await sendJsonPostRequest(apiBaseUrl + "/users/delete", {
+      "user-id": ids[0]
+    })
+    if (response.status === 'success') {
+      window.successNotification('User Removal', response.message)
+      getUsers()
+    } else {
+      window.errorNotification('User Removal', response.message)
+    }
+    }
+  }else{
+    let confirm = await window.popupConfirmation('Delete User',
+    'This action is irreversible. Are you sure you want to remove these users?')
+
+    if (confirm) {
+      ids.forEach(async(id)=>{
+        let response = await sendJsonPostRequest(apiBaseUrl + "/users/delete", {
       "user-id": id
     })
     if (response.status === 'success') {
@@ -125,7 +146,12 @@ async function deleteUser(id) {
     } else {
       window.errorNotification('User Removal', response.message)
     }
+      })
+    
+    }
   }
+
+  
 }
 
 async function updatePasswordFunc(id) {
@@ -163,7 +189,7 @@ async function updatePasswordFunc(id) {
     </button>
   </div>
 
-  <TableComponent :tableColumns="tableCol" :tableRows="tableRows" :actions="actions"
+  <TableComponent :tableColumns="tableCol" :tableRows="tableRows" :actions="actions" :deleteMultiple="deleteBtn"
                   @delete-user="deleteUser($event)" @edit-user="updateUser($event)"
                   @update-user-pass="updatePasswordFunc($event)"/>
 </template>
