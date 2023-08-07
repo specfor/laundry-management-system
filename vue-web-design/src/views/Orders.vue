@@ -39,6 +39,7 @@ let actions = []
 let products = []
 
 async function getOrders() {
+  actions = []
   let response = await sendGetRequest(apiBaseUrl + "/orders")
 
   if (response.status === 'success') {
@@ -58,6 +59,7 @@ async function getOrders() {
   if (response.status === "success") {
       let data = response.data["categories"];
       for (const action of data) {
+          
           actions.push({text: action['name'], name: action['category_id']})
       }
   } else {
