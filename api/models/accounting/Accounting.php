@@ -90,7 +90,7 @@ class Accounting extends DbModel
 
         $data = Taxes::getTaxes(taxId: $taxId);
         if (empty($data))
-            return "Invalid tax id.";
+            return "Invalid tax ID.";
 
         $params['tax_id'] = $taxId;
         $params['description'] = $description;
@@ -104,9 +104,35 @@ class Accounting extends DbModel
         return ['account_id' => $id];
     }
 
-    public static function updateAccount()
+    public static function updateAccount(int $accountId, string $name = null, int $taxId = null, string $description = null): string|bool
     {
-        //Todo implement update account.
+        $data = self::getDataFromTable(['account_id'], self::TABLE_NAME,
+            "account_id=$accountId")->fetch(PDO::FETCH_ASSOC);
+        if (empty($data))
+            return "Invalid account ID.";
+
+        if (empty($name) && empty($taxId) && empty($description))
+            return "Nothing was passed to update.";
+
+        if ($name) {
+            $params['name'] = ucwords($name);
+            $data = self::getDataFromTable(['account_id'], self::TABLE_NAME,
+                'name=:name', $params)->fetch(PDO::FETCH_ASSOC);
+            if (!empty($data))
+                return "Account name already in use.";
+        }
+        if ($taxId) {
+            $data = Taxes::getTaxes(taxId: $taxId);
+            if (empty($data))
+                return "Invalid tax ID.";
+            $params['tax_id'] = $taxId;
+        }
+        if ($description)
+            $params['description'] = $description;
+
+        if (self::updateTableData(self::TABLE_NAME, $params, "account_id=$accountId"))
+            return true;
+        return "Failed to update the database.";
     }
 
     public static function deleteAccount(int $accountId): bool|string

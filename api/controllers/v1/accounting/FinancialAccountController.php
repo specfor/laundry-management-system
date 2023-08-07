@@ -47,8 +47,15 @@ class FinancialAccountController extends Controller
 //        self::checkPermissions(['financial_accounts'=>[User::PERMISSION_MODIFY]]);
 
         $accountId = self::getParameter('account-id', dataType: 'int', isCompulsory: true);
+        $name = self::getParameter('account-name');
+        $taxId = self::getParameter('tax-id', dataType: 'int');
+        $desc = self::getParameter('description');
 
-        self::sendError('Not implemented yet.');
+        $status = Accounting::updateAccount($accountId, $name, $taxId, $desc);
+        if (is_string($status))
+            self::sendError($status);
+        else
+            self::sendSuccess("Successfully updated the account.");
     }
 
     public function deleteFinancialAccount(): void
