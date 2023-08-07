@@ -10,9 +10,12 @@ let customersTableCol = ['Select','Id', 'Customer Name', 'Phone Number', 'Email'
   'Banned', 'Modifications']
 let customersTableRows = ref([])
 let customersTableActions = [
-  {onClickEvent: 'editCustomer', btnText: 'Edit', type: 'icon', icon: PencilSquareIcon, iconColor: 'fill-blue-700'},
-  {onClickEvent: 'removeCustomer', btnText: 'Remove', type: 'icon', icon: TrashIcon, iconColor: 'fill-red-700'}
+  {onClickEvent: 'editCustomer', btnText: 'Edit', type: 'icon', icon: PencilSquareIcon, iconColor: 'fill-blue-700'}
 ]
+
+let deleteBtn = [{
+  onClickEvent:'removeCustomer'
+}]
 
 async function getCustomers() {
   let response = await sendGetRequest(apiBaseUrl + "/customers")
@@ -108,12 +111,13 @@ async function editCustomer(id) {
   }
 }
 
-async function deleteCustomer(id) {
-  let confirm = await window.popupConfirmation('Delete Customer',
+async function deleteCustomer(ids) {
+  if(ids.length === 1){
+    let confirm = await window.popupConfirmation('Delete Customer',
     'This action is irreversible. Are you sure you want to remove this customer?')
   if (confirm === true) {
     let response = await sendJsonPostRequest(apiBaseUrl + "/customers/delete", {
-      'customer-id': id
+      'customer-id': ids[0]
     }, window.httpHeaders)
 
     if (response.status === "success") {
@@ -123,6 +127,29 @@ async function deleteCustomer(id) {
       window.errorNotification('Delete Customer', response.message)
     }
   }
+  }else{
+    let confirm = await window.popupConfirmation('Delete Customer',
+    'This action is irreversible. Are you sure you want to remove these customers?')
+
+    if (confirm === true) {
+
+      ids.forEach(async(id)=>{
+        let response = await sendJsonPostRequest(apiBaseUrl + "/customers/delete", {
+      'customer-id': id
+    }, window.httpHeaders)
+
+    if (response.status === "success") {
+      getCustomers()
+      window.successNotification('Delete Customer', response.message)
+    } else {
+      window.errorNotification('Delete Customer', response.message)
+    }
+      })
+    
+  }
+
+  }
+  
 }
 </script>
 
@@ -134,7 +161,7 @@ async function deleteCustomer(id) {
     </button>
   </div>
 
-  <TableComponent :tableColumns="customersTableCol" :tableRows="customersTableRows" :actions="customersTableActions"
+  <TableComponent :tableColumns="customersTableCol" :tableRows="customersTableRows" :actions="customersTableActions" :deleteMultiple="deleteBtn"
                   @remove-customer="deleteCustomer($event)" @edit-customer="editCustomer($event)"/>
 
 </template>

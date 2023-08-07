@@ -10,14 +10,23 @@ let productTableCol = ['Select','Id', 'Product Name', 'Actions', 'Unit Price', '
 let productTableRows = ref([])
 let productTableActions = [
     {onClickEvent: 'editProduct', btnText: 'Edit', type: 'icon', icon: PencilSquareIcon, iconColor: 'fill-blue-700'},
-    {onClickEvent: 'removeProduct', btnText: 'Remove', type: 'icon', icon: TrashIcon, iconColor: 'fill-red-700'}]
+  ]
+
+
 
 let actionTableCol = ['Id', 'Action', 'Modifications']
 let actionTableRows = ref([])
 let actionTableActions = [
     {onClickEvent: 'editAction', btnText: 'Edit', type: 'icon', icon: PencilSquareIcon, iconColor: 'fill-blue-700'},
-    {onClickEvent: 'removeAction', btnText: 'Remove', type: 'icon', icon: TrashIcon, iconColor: 'fill-red-700'}
 ]
+
+let deleteBtnAction = [{
+  onClickEvent:'removeAction'
+}]
+
+let deleteBtnProduct = [{
+  onClickEvent:'removeProduct'
+}]
 
 async function getActions() {
   let response = await sendGetRequest(apiBaseUrl + "/category")
@@ -83,12 +92,14 @@ async function editAction(id) {
   }
 }
 
-async function deleteAction(id) {
-  let confirm = await window.popupConfirmation('Delete User',
+async function deleteAction(ids) {
+
+  if(ids.length === 1){
+    let confirm = await window.popupConfirmation('Delete User',
       'This action is irreversible. Are you sure you want to remove this action?')
   if (confirm) {
     let response = await sendJsonPostRequest(apiBaseUrl + "/category/delete", {
-      "category-id": id
+      "category-id": ids[0]
     })
 
     if (response.status === 'success') {
@@ -98,6 +109,27 @@ async function deleteAction(id) {
       window.errorNotification('Action Removal', response.message)
     }
   }
+  }else{
+    let confirm = await window.popupConfirmation('Delete User',
+      'This action is irreversible. Are you sure you want to remove these actions?')
+      if (confirm) {
+        ids.forEach(async(id)=>{
+          let response = await sendJsonPostRequest(apiBaseUrl + "/category/delete", {
+      "category-id": id
+    })
+
+    if (response.status === 'success') {
+      getActions()
+      window.successNotification('Action Removal', response.message)
+    } else {
+      window.errorNotification('Action Removal', response.message)
+    }
+        })  
+  }
+
+
+    }
+
 }
 
 async function getProducts() {
@@ -198,12 +230,14 @@ async function editProduct(id) {
   }
 }
 
-async function deleteProduct(id) {
-  let confirm = await window.popupConfirmation('Delete Product',
+async function deleteProduct(ids) {
+
+  if(ids.length === 1){
+    let confirm = await window.popupConfirmation('Delete Product',
       'This action is irreversible. Are you sure you want to remove this product?')
   if (confirm === true) {
     let response = await sendJsonPostRequest(apiBaseUrl + "/items/delete", {
-      'item-id': id
+      'item-id': ids[0]
     })
 
     if (response.status === 'success') {
@@ -213,6 +247,28 @@ async function deleteProduct(id) {
       window.errorNotification('Delete Product', response.message)
     }
   }
+  }else{
+    let confirm = await window.popupConfirmation('Delete Product',
+      'This action is irreversible. Are you sure you want to remove these products?')
+    if (confirm === true) {
+      ids.forEach(async(id)=>{
+        let response = await sendJsonPostRequest(apiBaseUrl + "/items/delete", {
+      'item-id': id
+    })
+
+    if (response.status === 'success') {
+      getProducts()
+      window.successNotification('Delete Product', response.message)
+    } else {
+      window.errorNotification('Delete Product', response.message)
+    }
+      })
+    
+  }
+
+  }
+
+  
 }
 
 </script>
@@ -223,15 +279,15 @@ async function deleteProduct(id) {
     <button class="bg-slate-600 text-slate-100 rounded-md py-2 px-3 font-semibold" @click="addNewProduct">+ New Product</button>
   </div>
 
-  <TableComponent :tableColumns="productTableCol" :tableRows="productTableRows" :actions="productTableActions"
-                  @remove-product="deleteProduct($event)" @edit-product="editProduct($event)"/>
+  <TableComponent :tableColumns="productTableCol" :tableRows="productTableRows" :actions="productTableActions" :deleteMultiple="deleteBtnProduct"
+                  @remove-product="deleteProduct($event)" @edit-product="editProduct($event)"/> 
 
   <div class="flex justify-between mt-7 mb-3">
     <h3 class="text-2xl font-semibold">Actions</h3>
     <button class="bg-slate-600 text-slate-100 rounded-md py-2 px-3 font-semibold" @click="addNewAction">+ New Action</button>
   </div>
 
-  <TableComponent :tableColumns="actionTableCol" :tableRows="actionTableRows" :actions="actionTableActions"
+  <TableComponent :tableColumns="actionTableCol" :tableRows="actionTableRows" :actions="actionTableActions" :deleteMultiple="deleteBtnAction"
                   @remove-action="deleteAction($event)" @edit-action="editAction($event)"/>
 </template>
 

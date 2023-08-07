@@ -4,7 +4,7 @@
     <button class="bg-slate-600 text-slate-100 rounded-md py-2 px-3 font-semibold" @click="addNewEmployee">+ New Employee</button>
   </div>
 
-  <TableComponent :tableColumns="employeesTableCol" :tableRows="employeesTableRows" :actions="employeesTableActions"
+  <TableComponent :tableColumns="employeesTableCol" :tableRows="employeesTableRows" :actions="employeesTableActions" :deleteMultiple="deleteBtn"
                   @remove-employee="deleteEmployee($event)" @edit-employee="editEmployee($event)"/>
 
 </template>
@@ -22,8 +22,11 @@ let employeesTableCol = ['Select','Id', 'Customer Name', 'Phone Number', 'Email'
 let employeesTableRows = ref([])
 let employeesTableActions = [
     {onClickEvent: 'editEmployee', btnText: 'Edit', type: 'icon', icon: PencilSquareIcon, iconColor: 'fill-blue-700'},
-    {onClickEvent: 'removeEmployee', btnText: 'Remove', type: 'icon', icon: TrashIcon, iconColor: 'fill-red-700'}
 ]
+
+let deleteBtn = [{
+  onClickEvent:'removeEmployee'
+}]
 
 async function getEmployees() {
   let response = await sendGetRequest(apiBaseUrl + "/employees")
@@ -117,12 +120,14 @@ async function editEmployee(id) {
   }
 }
 
-async function deleteEmployee(id) {
-  let confirm = await window.popupConfirmation('Delete Employee',
+async function deleteEmployee(ids) {
+
+  if(ids.length === 1){
+    let confirm = await window.popupConfirmation('Delete Employee',
       'This action is irreversible. Are you sure you want to remove this employee?')
   if (confirm === true) {
     let response = await sendJsonPostRequest(apiBaseUrl + "/employees/delete", {
-      'employee-id': id
+      'employee-id': ids[0]
     })
 
     if (response.status === "success") {
@@ -132,6 +137,29 @@ async function deleteEmployee(id) {
       window.errorNotification('Delete Customer', response.message)
     }
   }
+  }else{
+    let confirm = await window.popupConfirmation('Delete Employee',
+      'This action is irreversible. Are you sure you want to remove these employees?')
+      if (confirm === true) {
+
+        ids.forEach(async(id)=>{
+          let response = await sendJsonPostRequest(apiBaseUrl + "/employees/delete", {
+      'employee-id': id
+    })
+
+    if (response.status === "success") {
+      getEmployees()
+      window.successNotification('Delete Customer', response.message)
+    } else {
+      window.errorNotification('Delete Customer', response.message)
+    }
+        })
+    
+  }
+
+  }
+
+  
 }
 </script>
 
