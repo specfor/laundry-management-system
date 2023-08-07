@@ -94,6 +94,7 @@ $app->router->addPostRoute('/api/v1/general-ledger/add', [LedgerRecordController
 
 // Super admin routes
 $app->router->addGetRoute('/api/v1/realtime-metrics', [ServerStatusController::class, 'getRealtimePerformanceMetrics']);
+$app->router->addGetRoute('/api/v1/server-manager/dashboard', [ServerStatusController::class, 'getAdminPanel']);
 $app->router->addGetRoute('/api/v1/server-manager/maintenanceMode', [ServerStatusController::class, 'getMaintenanceStatus']);
 $app->router->addPostRoute('/api/v1/server-manager/maintenanceMode', [ServerStatusController::class, 'setMaintenanceStatus']);
 $app->router->addGetRoute('/api/v1/server-manager/migrations', [MigrationsController::class, 'getMigrations']);
