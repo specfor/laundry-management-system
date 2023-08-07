@@ -26,7 +26,7 @@ let ordersTableCol = ['Select','Id', 'Value (LKR)', 'Customer', 'Products', 'Sta
 let ordersTableRows = ref([])
 let ordersTableActions = [
   {onClickEvent: 'moreInfo', btnText: 'More Info'},
-  {onClickEvent: 'editOrder', btnText: 'Edit', type: 'icon', icon: PencilSquareIcon, iconColor: 'fill-blue-700'}
+  {onClickEvent: 'editOrders', btnText: 'Edit', type: 'icon', icon: PencilSquareIcon, iconColor: 'fill-blue-700'}
 ]
 
 let deleteBtn = [{
@@ -123,7 +123,7 @@ async function addNewOrder() {
     return
   }
 
-  let order = await window.newOrderModal(products, actions, {
+  let order = await window.newOrderModal('New Order',products, actions, {
     'customer': customerResponse.data['customers'].filter((row) => {
       return row['customer_id'] === parseInt(customer.data['customer'])
     })[0]['name']
@@ -157,33 +157,69 @@ async function addNewOrder() {
   }
 }
 
-async function editOrder(id) {
-  let paymentData = ordersTableRows.value.filter((row) => {
-    return row[0] === id
-  })[0]
 
-  let payment = await window.addNewForm('Update Payment', 'Update', [
-    {
-      name: 'refunded', text: 'Refunded', type: 'select', value: paymentData[4],
-      options: [{text: 'Yes', value: 'yes'}, {text: 'No', value: 'no'}]
+
+async function editOrder(id) {
+  let customerResponse = await sendGetRequest(apiBaseUrl + "/customers")
+  let customers = []
+
+  if (customerResponse.status === "success") {
+    let data = customerResponse.data["customers"];
+    for (const customer of data) {
+      customers.push({text: customer['name'], value: customer['customer_id']})
     }
+  } else {
+    window.errorNotification('Fetch Customer Data', customerResponse.message)
+    return
+  }
+
+  let customer = await window.addNewForm('Select Customer', 'Proceed', [
+    {name: 'customer', text: 'Customer', type: 'select', options: customers},
+    {text: 'New Customer', type: 'heading'},
+    {name: 'name', text: 'Customer Name', type: 'text'},
+    {name: 'phone', text: 'Phone Number', type: 'number'},
+    {name: 'email', text: 'Email', type: 'email'},
+    {name: 'address', text: 'Address', type: 'textarea'}
   ])
 
-  if (!payment['accepted'])
+  if (!customer['accepted'])
     return
 
+
+    if (!customer.data['customer']){
+    window.errorNotification('Update Order', 'Customer must be selected.')
+    return
+  }
+
+  let order = await window.newOrderModal('Update Order',products, actions, {
+    'customer': customerResponse.data['customers'].filter((row) => {
+      return row['customer_id'] === parseInt(customer.data['customer'])
+    })[0]['name']
+  });
+
+  if (!order['accepted'])
+    return
+  
+    let items = []
+  order.data.products.forEach((product) => {
+    let dict = {}
+    dict[product['id']] = {
+      'amount': product['quantity'],
+      'return-date': product['return_date'],
+      'defects': [product['defects']] ?? []
+    }
+    items.push(dict)
+  })
+
   let response = await sendJsonPostRequest(apiBaseUrl + "/orders/update", {
-    'payment-id': id,
-    "refunded": (payment['data']['refunded'] === 'yes')
+    "order-id":id,
+    "items": items,
+    "customer-id": customer.data['customer'],
+    "customer-comments": order.data['comment']
   })
 
   if (response.status === "success") {
-    ordersTableRows.value.filter((row) => {
-      if (row[0] === id) {
-        row[4] = payment['data']['refunded']
-        return row
-      }
-    })
+    getOrders()
     window.successNotification('Update Payment', response.message)
   } else {
     window.errorNotification('Update Payment', response.message)
