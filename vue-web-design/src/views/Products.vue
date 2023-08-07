@@ -14,7 +14,7 @@ let productTableActions = [
 
 
 
-let actionTableCol = ['Id', 'Action', 'Modifications']
+let actionTableCol = ['Select','Id', 'Action', 'Modifications']
 let actionTableRows = ref([])
 let actionTableActions = [
     {onClickEvent: 'editAction', btnText: 'Edit', type: 'icon', icon: PencilSquareIcon, iconColor: 'fill-blue-700'},

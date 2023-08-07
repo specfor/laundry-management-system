@@ -17,7 +17,7 @@
                 class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all
                  sm:my-8 sm:w-full sm:max-w-6xl">
               <div class="bg-white px-5 pb-4 pt-2 sm:pt-3 sm:pb-4">
-                <div class="text-center text-2xl font-bold mb-5 ">New Order</div>
+                <div class="text-center text-2xl font-bold mb-5 ">{{ typeOfTheOrder }}</div>
                 <div class="grid grid-cols-3">
                   <div class="pr-3 flex flex-col">
                     <div class="border border-slate-400 rounded-md p-2 mb-2">
@@ -106,7 +106,7 @@
                             <th class="w-[80px]">Quantity</th>
                             <th>Defects</th>
                             <th class="w-[100px]">Return Date</th>
-                            <th class="w-7"></th>
+                            <th class="w-7">Modify</th>
                           </tr>
                           </thead>
                           <tbody>
@@ -120,7 +120,6 @@
                             <td>{{ row.defects ?? 'None' }}</td>
                             <td>{{ row.return_date }}</td>
                             <td class="flex">
-                              <PencilSquareIcon class="fill-blue-700 w-6 h-5 cursor-pointer" @click="editProduct(i)"/>
                               <TrashIcon class="fill-red-700 w-6 h-5 cursor-pointer" @click="removeProduct(i)"/>
                             </td>
                           </tr>
@@ -161,6 +160,7 @@ let actions = ref([])
 let products = ref([])
 let productNames = ref([])
 let orderProducts = ref({products: [], comment: null})
+let typeOfTheOrder = ref('')
 
 function addProduct() {
   let temp_actions = null
@@ -200,11 +200,9 @@ function removeProduct(index) {
   orderProducts.value.products.splice(index, 1)
 }
 
-function editProduct(index){
 
-}
-
-window.newOrderModal = (products_, actions_, values = {}) => {
+window.newOrderModal = (orderType,products_, actions_, values = {}) => {
+  typeOfTheOrder.value = orderType
   if (!values.actions)
     values.actions = {}
   fieldValues.value = values

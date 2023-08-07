@@ -14,7 +14,7 @@ import TableComponent from '../components/TableComponent.vue'
 import {ref} from 'vue'
 import {sendGetRequest, sendJsonPostRequest} from "../js-modules/base-functions.js";
 import {apiBaseUrl} from "../js-modules/website-constants.js";
-import {PencilSquareIcon, TrashIcon} from "@heroicons/vue/24/solid/index.js";
+import {PencilSquareIcon} from "@heroicons/vue/24/solid/index.js";
 import {validateInput} from "../js-modules/form-validations.js";
 
 let employeesTableCol = ['Select','Id', 'Customer Name', 'Phone Number', 'Email', 'Address', 'Joined Date',
