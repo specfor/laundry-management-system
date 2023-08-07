@@ -144,10 +144,11 @@ class Controller
      */
     public static function getParameter(
         string $parameterIdentifier,
-        mixed $defaultValue = null,
+        mixed  $defaultValue = null,
         string $dataType = 'string',
-        bool $isCompulsory = false
-    ): mixed {
+        bool   $isCompulsory = false
+    ): mixed
+    {
         $params = Application::$app->request->getBodyParams();
 
         if (!isset($params[$parameterIdentifier]))
@@ -157,9 +158,10 @@ class Controller
                 return $defaultValue;
 
         $ret = Util::getConvertedTo($parameterIdentifier, $params[$parameterIdentifier], $dataType);
-        if ($ret == null) {
+        if ($ret === null) {
             self::sendError("$parameterIdentifier must be type '$dataType'");
-        } else return $ret;
+        }
+        return $ret;
 
         // return self::getConvertedTo($parameterIdentifier, $params[$parameterIdentifier], $dataType);
     }
