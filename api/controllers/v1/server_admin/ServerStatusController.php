@@ -47,7 +47,7 @@ class ServerStatusController extends Controller
 
         $page = self::getParameter('page');
 
-        preg_match('/^[A-Za-z]+$/', $page, $pageName);
+        preg_match('/^[A-Za-z0-9_-]+$/', $page, $pageName);
 
         if (empty($pageName[0]))
             exit();
