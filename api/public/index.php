@@ -2,6 +2,7 @@
 
 use Dotenv\Dotenv;
 use LogicLeap\PhpServerCore\Application;
+use LogicLeap\StockManagement\controllers\v1\accounting\AccountTotalsController;
 use LogicLeap\StockManagement\controllers\v1\accounting\FinancialAccountController;
 use LogicLeap\StockManagement\controllers\v1\accounting\LedgerRecordController;
 use LogicLeap\StockManagement\controllers\v1\accounting\TaxController;
@@ -91,6 +92,7 @@ $app->router->addPostRoute('/api/v1/financial-accounts/delete', [FinancialAccoun
 $app->router->addGetRoute('/api/v1/financial-account-types', [FinancialAccountController::class, 'getAccountTypes']);
 $app->router->addGetRoute('/api/v1/general-ledger', [LedgerRecordController::class, 'getLedgerRecords']);
 $app->router->addPostRoute('/api/v1/general-ledger/add', [LedgerRecordController::class, 'addLedgerRecord']);
+$app->router->addGetRoute('/api/v1/financial-account-totals', [AccountTotalsController::class, 'calculateTotals']);
 
 // Super admin routes
 $app->router->addGetRoute('/api/v1/realtime-metrics', [ServerStatusController::class, 'getRealtimePerformanceMetrics']);

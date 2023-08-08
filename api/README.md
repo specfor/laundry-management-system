@@ -369,3 +369,11 @@ description
 credit
 debit
 tax-inclusive - whether credit/debit values have added tax
+
+GET - /api/v1/financial-account-totals
+By just hitting the endpoint without 'force-recalculate' will calculate total credit & debit amounts in a smart way
+    preventing read of whole ledger records table.
+Parameters
+force-recalculate - optional - only use when necessary. this will read whole ledger record table and calculate total
+                                credit & debit amounts. with billions of records this can take some time.
+                                
