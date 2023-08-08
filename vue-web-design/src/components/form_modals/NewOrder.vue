@@ -1,5 +1,5 @@
 <template>
-  <ModelBase>
+  <ModelBase :show="show">
     <div class="bg-white px-5 pb-4 pt-2 sm:pt-3 sm:pb-4">
       <div class="text-center text-2xl font-bold mb-5 ">{{ typeOfTheOrder }}</div>
       <div class="grid grid-cols-3">
@@ -99,30 +99,27 @@
     <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
       <button type="button"
         class="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto"
-        @click="show = false; success = true">Place Order
+        @click="closeModel(true)">Place Order
       </button>
       <button type="button"
         class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-        @click="show = false" ref="cancelButtonRef">Cancel
+        @click="closeModel(false)" ref="cancelButtonRef">Cancel
       </button>
     </div>
   </ModelBase>
 </template>
 
 <script setup>
-import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { ref } from "vue";
-import { TrashIcon, PencilSquareIcon } from '@heroicons/vue/24/solid'
+import { TrashIcon } from '@heroicons/vue/24/solid'
 import ModelBase from './ModelBase.vue';
 
-let show = ref(false)
-let success = ref(false)
-let fieldValues = ref({})
-let actions = ref([])
-let products = ref([])
+const { show, typeOfTheOrder, actions, values, ...props } = defineProps(['show', 'typeOfTheOrder', 'actions', 'values', 'products']);
+
+let fieldValues = ref(values || {})
+let products = ref(props.products)
 let productNames = ref([])
 let orderProducts = ref({ products: [], comment: null })
-let typeOfTheOrder = ref('')
 
 function addProduct() {
   let temp_actions = null
@@ -152,8 +149,8 @@ function addProduct() {
     actions_[actionsKey] = false
   }
   fieldValues.value = {
-    actions: actions_, customer: fieldValues.value['customer'],
-    return_date: fieldValues.value['return_date']
+    actions: actions_, 
+    ...fieldValues.value
   }
 }
 
@@ -161,33 +158,18 @@ function removeProduct(index) {
   orderProducts.value.products.splice(index, 1)
 }
 
-
-window.newOrderModal = (orderType, products_, actions_, values = {}) => {
-  actions.value = []
-  typeOfTheOrder.value = orderType
-  if (!values.actions)
-    values.actions = {}
-  fieldValues.value = values
-  success.value = false
-  products.value = products_
-  for (const product of products_) {
+onMounted(() => {
+  for (const product of products) {
     if (!productNames.value.includes(product['text'])) {
       productNames.value.push(product['text'])
     }
   }
-  actions.value = actions_
-  orderProducts.value = { products: [], comment: null }
-  show.value = true
-  return new Promise((resolve) => {
-    let id = setInterval(() => {
-      if (!show.value) {
-        clearInterval(id)
-        orderProducts.value.comment = fieldValues.value['comments']
-        resolve({ data: orderProducts.value, accepted: success.value })
-      }
-    }, 200)
-  })
-}
+});
+
+const closeModel = (accepted) => {
+  orderProducts.value.comment = fieldValues.value['comments'];
+  this.$emit('onClose', { data: orderProducts.value, accepted });
+};
 </script>
 
 <style scoped></style>

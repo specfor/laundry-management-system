@@ -8,8 +8,10 @@
   <TableComponent :tableColumns="ordersTableCol" :tableRows="ordersTableRows" :actions="ordersTableActions"
     @remove-order="deleteOrder($event)" @edit-orders="editOrder($event)" @more-info="moreOrderInfo($event)"
     :deleteMultiple="deleteBtn" />
-  <NewOrder : />
-  <OrderDetailsModal />
+
+  <NewOrderModel :show="newOrderModelShow" :typeOfTheOrder="newOrderModelTypeOfTheOrder" :actions="" :products="" />
+  <OrderDetailsModel :show="orderDetailsModelShow" :orderDetails="orderDetailsModelOrderDetails" />
+  <AddNewModal :show="addNewModelShow" :title="addNewModelTitle" :successBtnText="addNewModelSuccessButtonText" :fields="addNewModelFields"></AddNewModal>
 </template>
 
 <script setup>
@@ -20,8 +22,8 @@ import { PencilSquareIcon } from '@heroicons/vue/24/solid'
 
 // Components
 import TableComponent from '../components/TableComponent.vue'
-import NewOrder from '../components/form_modals/NewOrder.vue'
-import OrderDetailsModal from '../components/form_modals/OrderDetails.vue'
+import NewOrderModel from '../components/form_modals/NewOrder.vue'
+import OrderDetailsModel from '../components/form_modals/OrderDetails.vue'
 
 // Constants
 import { apiBaseUrl } from "../js-modules/website-constants.js";
@@ -29,6 +31,26 @@ import { apiBaseUrl } from "../js-modules/website-constants.js";
 // Global functions
 import { sendGetRequest, sendJsonPostRequest } from "../js-modules/base-functions.js";
 import { pushSuccessNotification, pushErrorNotification } from '../stores/notification-store';
+import AddNewModal from '../components/form_modals/AddNewModal.vue'
+
+// AddNewModel Refs
+const addNewModelShow = ref(false);
+const addNewModelTitle = ref('');
+const addNewModelFields = ref([]);
+const addNewModelSuccessButtonText = ref('');
+const addNewModelOnClose = ref(null);
+
+// NewOrderModel Refs
+const newOrderModelShow = ref(false);
+const newOrderModelTypeOfTheOrder = ref('');
+const newOrderModelActions = ref([]);
+const newOrderModelProducts = ref([]);
+const newOrderModelOnClose = ref(null);
+
+// OrderDetailsModel Refs
+const orderDetailsModelShow = ref(false);
+const orderDetailsModelOrderDetails = ref('');
+const orderDetailsModelOnClose = ref(null);
 
 let ordersTableCol = ['Select', 'Id', 'Value (LKR)', 'Customer', 'Products', 'Status', 'Branch', 'Added On', 'Comments',
   'Modifications']
@@ -117,55 +139,64 @@ async function addNewOrder() {
     return
   }
 
-  let customer = await window.addNewForm('Select Customer', 'Proceed', [
+  addNewModelTitle.value = 'Select Customer';
+  addNewModelSuccessButtonText.value = 'Proceed';
+  addNewModelFields.value = [
     { name: 'customer', text: 'Customer', type: 'select', options: customers },
     { text: 'New Customer', type: 'heading' },
     { name: 'name', text: 'Customer Name', type: 'text' },
     { name: 'phone', text: 'Phone Number', type: 'number' },
     { name: 'email', text: 'Email', type: 'email' },
     { name: 'address', text: 'Address', type: 'textarea' }
-  ])
+  ];
 
-  if (!customer['accepted'])
-    return
+  addNewModelOnClose.value = ({ accepted, data }) => {
+    addNewModelShow.value = false;
+    if (!accepted)
+      return
 
-  if (!customer.data['customer']) {
-    pushErrorNotification('Add New Order', 'Customer must be selected.')
-    return
-  }
-
-  let order = await window.newOrderModal('New Order', products, actions, {
-    'customer': customerResponse.data['customers'].filter((row) => {
-      return row['customer_id'] === parseInt(customer.data['customer'])
-    })[0]['name']
-  });
-
-  if (!order['accepted'])
-    return
-
-  let items = []
-  order.data.products.forEach((product) => {
-    let dict = {}
-    dict[product['id']] = {
-      'amount': product['quantity'],
-      'return-date': product['return_date'],
-      'defects': [product['defects']] ?? []
+    if (!data['customer']) {
+      pushErrorNotification('Add New Order', 'Customer must be selected.')
+      return
     }
-    items.push(dict)
-  })
 
-  let response = await sendJsonPostRequest(apiBaseUrl + "/orders/add", {
-    "items": items,
-    "customer-id": customer.data['customer'],
-    "customer-comments": order.data['comment']
-  })
+    newOrderModelActions.value = actions;
+    newOrderModelProducts.value = products;
+    newOrderModelTypeOfTheOrder.value = 'New Order';
+    
+    // order: { data, accepted }
+    // Cannot use destructure due to clashing with outer scope variables
+    newOrderModelOnClose.value = (order) => {
+      newOrderModelShow.value = false;
 
-  if (response.status === "success") {
-    getOrders()
-    pushSuccessNotification('Add New Payment', response.message)
-  } else {
-    pushErrorNotification('Add New Payment', response.message)
+      if (!order.accepted)
+        return
+
+      let items = order.data.products.map(({ id, quantity, return_date, defects }) => ({
+        [id] : {
+          amount: quantity,
+          return_date,
+          defects: defects ?? []
+        }
+      }));
+
+      let response = await sendJsonPostRequest(apiBaseUrl + "/orders/add", {
+        "items": items,
+        "customer-id": data['customer'], // From AddNewModel
+        "customer-comments": order.data['comment']
+      })
+
+      if (response.status === "success") {
+        getOrders()
+        pushSuccessNotification('Add New Payment', response.message)
+      } else {
+        pushErrorNotification('Add New Payment', response.message)
+      }
+    };
+    newOrderModelShow.value = true;
   }
+
+  addNewModelShow.value = true;
 }
 
 
