@@ -1,7 +1,6 @@
 <template>
   <div class="w-full overflow-x-auto">
-
-        <button :disabled="isDisabled" class="rounded-md px-3 py-1 transition duration-300  mb-4 subpixel-antialiased	font-medium	" :class="{'bg-red-600 text-white hover:bg-red-700':isActive,'bg-stone-200 text-stone-600':!isActive}" @click="()=>{$emit(deleteMultiple[0]['onClickEvent'],selectedIds) 
+    <button :disabled="isDisabled" class="rounded-md px-3 py-1 transition duration-300  mb-4 subpixel-antialiased	font-medium	" :class="{'bg-red-600 text-white hover:bg-red-700':!isDisabled,'bg-stone-200 text-stone-600':isActive}" @click="()=>{$emit(deleteMultiple[0]['onClickEvent'],selectedIds) 
     selectedIds = []}" >Delete</button>
     
     <table class="table-auto border-collapse border w-full">
@@ -11,7 +10,7 @@
         <th class="text-left px-3 pt-4 pb-2 font-bold"
             v-for="(columnName, i) in tableColumns" :key="i">{{ columnName }}
         </th>
-        <th class="text-left px-3 pt-4 pb-2 font-bold sticky right-0 bg-neutral-400 text-center w-[200px] max-w-fit">{{
+        <th class="px-3 pt-4 pb-2 font-bold sticky right-0 bg-neutral-400 text-center w-[200px] max-w-fit">{{
             modificationsColum
           }}
         </th>
@@ -44,22 +43,13 @@
 </template>
 
 <script setup>
-import {defineProps,ref} from "vue";
+import {ref, computed} from "vue";
 
 let selectedIds = ref([])
-let isDisabled = ref(true)
-let isActive = ref(false)
 
-function isChecked(){
-    
-  if(selectedIds.value.length === 0){
-    isActive.value = false
-    isDisabled.value = true
-  }else{
-    isActive.value = true
-    isDisabled.value = false
-  }
-}
+let isDisabled = computed(() => {
+  return selectedIds.value.length === 0
+})
 
 let {tableColumns, tableRows, actions, deleteMultiple} = defineProps(['tableColumns', 'tableRows', 'actions','deleteMultiple'])
 

@@ -3,6 +3,7 @@ import {ref} from "vue";
 import {sendJsonPostRequest} from '../js-modules/base-functions.js'
 import {apiBaseUrl} from '../js-modules/website-constants.js'
 import {useRouter} from "vue-router";
+import { pushErrorNotification } from '../stores/notification-store';
 
 const router = useRouter()
 
@@ -23,7 +24,7 @@ async function loginUser() {
     window.loggedIn.value = true
     router.replace('/dashboard')
   } else {
-    window.errorNotification('Login Error', response.data.message)
+    pushErrorNotification('Login Error', response.data.message)
   }
 }
 </script>

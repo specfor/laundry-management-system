@@ -4,6 +4,7 @@ import {ref} from 'vue'
 import {sendGetRequest, sendJsonPostRequest} from "../js-modules/base-functions.js";
 import {apiBaseUrl} from "../js-modules/website-constants.js";
 import {TrashIcon, PencilSquareIcon} from '@heroicons/vue/24/solid'
+import { pushSuccessNotification, pushErrorNotification } from '../stores/notification-store';
 
 let paymentsTableCol = ['Select','Id', 'Order Id', 'Paid Amount', 'Paid Date', 'Refunded', 'Modifications']
 let paymentsTableRows = ref([])
@@ -26,7 +27,7 @@ async function getPayments() {
         payment['paid_date'], payment['refunded'] ? 'Yes' : 'No'])
     }
   } else {
-    window.errorNotification('Fetch Payment Data', response.message)
+    pushErrorNotification('Fetch Payment Data', response.message)
   }
 }
 
@@ -53,9 +54,9 @@ async function addNewPayment() {
 
   if (response.status === "success") {
     getPayments()
-    window.successNotification('Add New Payment', response.message)
+    pushSuccessNotification('Add New Payment', response.message)
   } else {
-    window.errorNotification('Add New Payment', response.message)
+    pushErrorNotification('Add New Payment', response.message)
   }
 }
 
@@ -86,9 +87,9 @@ async function editPayment(id) {
         return row
       }
     })
-    window.successNotification('Update Payment', response.message)
+    pushSuccessNotification('Update Payment', response.message)
   } else {
-    window.errorNotification('Update Payment', response.message)
+    pushErrorNotification('Update Payment', response.message)
   }
 }
 
@@ -104,9 +105,9 @@ async function deletePayment(ids) {
 
     if (response.status === "success") {
       getPayments()
-      window.successNotification('Delete Payment', response.message)
+      pushSuccessNotification('Delete Payment', response.message)
     } else {
-      window.errorNotification('Delete Payment', response.message)
+      pushErrorNotification('Delete Payment', response.message)
     }
   }
   }else{
@@ -121,9 +122,9 @@ async function deletePayment(ids) {
 
     if (response.status === "success") {
       getPayments()
-      window.successNotification('Delete Payment', response.message)
+      pushSuccessNotification('Delete Payment', response.message)
     } else {
-      window.errorNotification('Delete Payment', response.message)
+      pushErrorNotification('Delete Payment', response.message)
     }
     
       })    

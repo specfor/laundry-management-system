@@ -5,6 +5,7 @@ import {sendGetRequest, sendJsonPostRequest} from "../js-modules/base-functions.
 import {apiBaseUrl} from "../js-modules/website-constants.js";
 import {PencilSquareIcon, TrashIcon} from "@heroicons/vue/24/solid/index.js";
 import {validateInput} from "../js-modules/form-validations.js";
+import { pushSuccessNotification, pushErrorNotification } from '../stores/notification-store';
 
 let customersTableCol = ['Select','Id', 'Customer Name', 'Phone Number', 'Email', 'Address', 'Joined Date',
   'Banned', 'Modifications']
@@ -28,7 +29,7 @@ async function getCustomers() {
         customer['email'], customer['address'], customer['joined_date'], customer['banned'] ? 'Yes' : 'No'])
     }
   } else {
-    window.errorNotification('Fetch Customer Data', response.message)
+    pushErrorNotification('Fetch Customer Data', response.message)
   }
 }
 
@@ -54,9 +55,9 @@ async function addNewCustomer() {
 
   if (response.status === "success") {
     getCustomers()
-    window.successNotification('Add New Customer', response.message)
+    pushSuccessNotification('Add New Customer', response.message)
   } else {
-    window.errorNotification('Add New Customer', response.message)
+    pushErrorNotification('Add New Customer', response.message)
   }
 }
 
@@ -105,9 +106,9 @@ async function editCustomer(id) {
         return row
       }
     })
-    window.successNotification('Update Branch', response.message)
+    pushSuccessNotification('Update Branch', response.message)
   } else {
-    window.errorNotification('Update Branch', response.message)
+    pushErrorNotification('Update Branch', response.message)
   }
 }
 
@@ -122,9 +123,9 @@ async function deleteCustomer(ids) {
 
     if (response.status === "success") {
       getCustomers()
-      window.successNotification('Delete Customer', response.message)
+      pushSuccessNotification('Delete Customer', response.message)
     } else {
-      window.errorNotification('Delete Customer', response.message)
+      pushErrorNotification('Delete Customer', response.message)
     }
   }
   }else{
@@ -140,9 +141,9 @@ async function deleteCustomer(ids) {
 
     if (response.status === "success") {
       getCustomers()
-      window.successNotification('Delete Customer', response.message)
+      pushSuccessNotification('Delete Customer', response.message)
     } else {
-      window.errorNotification('Delete Customer', response.message)
+      pushErrorNotification('Delete Customer', response.message)
     }
       })
     

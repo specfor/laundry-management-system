@@ -1,42 +1,34 @@
 <template>
   <div class="h-screen bg-gray-500 w-[200px] text-lg font-semibold fixed pl-1">
-    <RouterLink to="/dashboard" class="flex w-full px-2 py-1 rounded-l-lg hover:bg-slate-700 items-center"
-                active-class="active-side-menu-element">
+    <RouterLink to="/dashboard" class="flex w-full px-2 py-1 rounded-l-lg hover:bg-slate-700 items-center">
       <HomeIcon class="w-6 h-6 mr-3"/>
       Dashboard
     </RouterLink>
-    <RouterLink to="/orders" class="flex w-full px-2 py-1 rounded-l-lg hover:bg-slate-700 items-center"
-                active-class="active-side-menu-element">
+    <RouterLink to="/orders" class="flex w-full px-2 py-1 rounded-l-lg hover:bg-slate-700 items-center">
       <RectangleStackIcon class="w-6 h-6 mr-3"/>
       Orders
     </RouterLink>
-    <RouterLink to="/payments" class="flex w-full px-2 py-1 rounded-l-lg hover:bg-slate-700 items-center"
-                active-class="active-side-menu-element">
+    <RouterLink to="/payments" class="flex w-full px-2 py-1 rounded-l-lg hover:bg-slate-700 items-center">
       <CreditCardIcon class="w-6 h-6 mr-3"/>
       Payments
     </RouterLink>
-    <RouterLink to="/customers" class="flex w-full px-2 py-1 rounded-l-lg hover:bg-slate-700 items-center"
-                active-class="active-side-menu-element">
+    <RouterLink to="/customers" class="flex w-full px-2 py-1 rounded-l-lg hover:bg-slate-700 items-center">
       <UserGroupIcon class="w-6 h-6 mr-3"/>
       Customers
     </RouterLink>
-    <RouterLink to="/products" class="flex w-full px-2 py-1 rounded-l-lg hover:bg-slate-700 items-center"
-                active-class="active-side-menu-element">
+    <RouterLink to="/products" class="flex w-full px-2 py-1 rounded-l-lg hover:bg-slate-700 items-center">
       <ArchiveBoxIcon class="w-6 h-6 mr-3"/>
       Products
     </RouterLink>
-    <RouterLink to="/branches" class="flex w-full px-2 py-1 rounded-l-lg hover:bg-slate-700 items-center"
-                active-class="active-side-menu-element">
+    <RouterLink to="/branches" class="flex w-full px-2 py-1 rounded-l-lg hover:bg-slate-700 items-center">
       <BuildingOffice2Icon class="w-6 h-6 mr-3"/>
       Branches
     </RouterLink>
-    <RouterLink to="/employees" class="flex w-full px-2 py-1 rounded-l-lg hover:bg-slate-700 items-center"
-                active-class="active-side-menu-element">
+    <RouterLink to="/employees" class="flex w-full px-2 py-1 rounded-l-lg hover:bg-slate-700 items-center">
       <IdentificationIcon class="w-6 h-6 mr-3"/>
       Employees
     </RouterLink>
-    <RouterLink to="/users" class="flex w-full px-2 py-1 rounded-l-lg hover:bg-slate-700 items-center"
-                active-class="active-side-menu-element">
+    <RouterLink to="/users" class="flex w-full px-2 py-1 rounded-l-lg hover:bg-slate-700 items-center">
       <UsersIcon class="w-6 h-6 mr-3"/>
       Users
     </RouterLink>
@@ -57,7 +49,7 @@ import {
 </script>
 
 <style scoped>
-.active-side-menu-element {
+.router-link-exact-active {
   @apply bg-white;
 }
 </style>

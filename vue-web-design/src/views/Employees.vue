@@ -16,6 +16,7 @@ import {sendGetRequest, sendJsonPostRequest} from "../js-modules/base-functions.
 import {apiBaseUrl} from "../js-modules/website-constants.js";
 import {PencilSquareIcon} from "@heroicons/vue/24/solid/index.js";
 import {validateInput} from "../js-modules/form-validations.js";
+import { pushSuccessNotification, pushErrorNotification } from '../stores/notification-store';
 
 let employeesTableCol = ['Select','Id', 'Customer Name', 'Phone Number', 'Email', 'Address', 'Joined Date',
   'Left Date', 'Modifications']
@@ -39,7 +40,7 @@ async function getEmployees() {
         employee['email'], employee['address'], employee['join_date'], employee['left_date']])
     }
   } else {
-    window.errorNotification('Fetch Employee Data', response.message)
+    pushErrorNotification('Fetch Employee Data', response.message)
   }
 }
 
@@ -67,9 +68,9 @@ async function addNewEmployee() {
 
   if (response.status === "success") {
     getEmployees()
-    window.successNotification('Add New Employee', response.message)
+    pushSuccessNotification('Add New Employee', response.message)
   } else {
-    window.errorNotification('Add New Employee', response.message)
+    pushErrorNotification('Add New Employee', response.message)
   }
 }
 
@@ -114,9 +115,9 @@ async function editEmployee(id) {
         return row
       }
     })
-    window.successNotification('Update Employee', response.message)
+    pushSuccessNotification('Update Employee', response.message)
   } else {
-    window.errorNotification('Update Employee', response.message)
+    pushErrorNotification('Update Employee', response.message)
   }
 }
 
@@ -132,9 +133,9 @@ async function deleteEmployee(ids) {
 
     if (response.status === "success") {
       getEmployees()
-      window.successNotification('Delete Customer', response.message)
+      pushSuccessNotification('Delete Customer', response.message)
     } else {
-      window.errorNotification('Delete Customer', response.message)
+      pushErrorNotification('Delete Customer', response.message)
     }
   }
   }else{
@@ -149,9 +150,9 @@ async function deleteEmployee(ids) {
 
     if (response.status === "success") {
       getEmployees()
-      window.successNotification('Delete Customer', response.message)
+      pushSuccessNotification('Delete Customer', response.message)
     } else {
-      window.errorNotification('Delete Customer', response.message)
+      pushErrorNotification('Delete Customer', response.message)
     }
         })
     

@@ -17,6 +17,8 @@ import {apiBaseUrl} from "../js-modules/website-constants.js";
 import {PencilSquareIcon} from "@heroicons/vue/24/solid/index.js";
 import {validateInput} from "../js-modules/form-validations.js";
 
+import { pushSuccessNotification, pushErrorNotification } from '../stores/notification-store';
+
 let branchesTableCol = ['Select','Id', 'Branch Name', 'Contact Info', 'Modifications']
 let branchesTableRows = ref([])
 let branchesTableActions = [
@@ -37,7 +39,7 @@ async function getBranches() {
       branchesTableRows.value.push([branch['branch_id'], branch['name'], branch['phone_num']])
     }
   } else {
-    window.errorNotification('Fetch Actions Data', response.message)
+    pushErrorNotification('Fetch Actions Data', response.message)
   }
 }
 
@@ -59,9 +61,9 @@ async function addNewBranch() {
 
   if (response.status === 'success') {
     getBranches()
-    window.successNotification('Add New Branch', response.message)
+    pushSuccessNotification('Add New Branch', response.message)
   } else {
-    window.errorNotification('Add New Branch', response.message)
+    pushErrorNotification('Add New Branch', response.message)
   }
 }
 
@@ -93,9 +95,9 @@ async function editBranch(id) {
         return row
       }
     })
-    window.successNotification('Update Branch', response.message)
+    pushSuccessNotification('Update Branch', response.message)
   } else {
-    window.errorNotification('Update Branch', response.message)
+    pushErrorNotification('Update Branch', response.message)
   }
 }
 
@@ -111,9 +113,9 @@ async function deleteBranch(ids) {
 
     if (response.status === 'success') {
       getBranches()
-      window.successNotification('Delete Branch', response.message)
+      pushSuccessNotification('Delete Branch', response.message)
     } else {
-      window.errorNotification('Delete Branch', response.message)
+      pushErrorNotification('Delete Branch', response.message)
     }
   }
   }else{
@@ -128,9 +130,9 @@ async function deleteBranch(ids) {
 
     if (response.status === 'success') {
       getBranches()
-      window.successNotification('Delete Branch', response.message)
+      pushSuccessNotification('Delete Branch', response.message)
     } else {
-      window.errorNotification('Delete Branch', response.message)
+      pushErrorNotification('Delete Branch', response.message)
     }
       });
     }  

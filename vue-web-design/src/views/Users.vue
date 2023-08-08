@@ -5,6 +5,7 @@ import {sendGetRequest, sendJsonPostRequest} from "../js-modules/base-functions.
 import {apiBaseUrl} from "../js-modules/website-constants.js";
 import {PencilSquareIcon, TrashIcon} from "@heroicons/vue/24/solid/index.js";
 import {validateInput} from "../js-modules/form-validations.js";
+import { pushSuccessNotification, pushErrorNotification } from '../stores/notification-store';
 
 let tableCol = ['Select','Id', 'Username', 'Email', 'Firstname', 'Lastname', 'Role', 'Branch Id', 'Modifications']
 let tableRows = ref([])
@@ -29,7 +30,7 @@ async function getUsers() {
         user["role"], user["branch_id"]])
     }
   } else {
-    window.errorNotification('Fetch User Data', response.message)
+    pushErrorNotification('Fetch User Data', response.message)
   }
 }
 
@@ -65,9 +66,9 @@ async function addNewUser() {
 
   if (response.status === "success") {
     getUsers()
-    window.successNotification('User Creation', response.message)
+    pushSuccessNotification('User Creation', response.message)
   } else {
-    window.errorNotification('User Creation', response.message)
+    pushErrorNotification('User Creation', response.message)
   }
 }
 
@@ -109,9 +110,9 @@ async function updateUser(id) {
         return row
       }
     })
-    window.successNotification('User Update', response.message)
+    pushSuccessNotification('User Update', response.message)
   } else {
-    window.errorNotification('User Update', response.message)
+    pushErrorNotification('User Update', response.message)
   }
 }
 
@@ -125,10 +126,10 @@ async function deleteUser(ids) {
       "user-id": ids[0]
     })
     if (response.status === 'success') {
-      window.successNotification('User Removal', response.message)
+      pushSuccessNotification('User Removal', response.message)
       getUsers()
     } else {
-      window.errorNotification('User Removal', response.message)
+      pushErrorNotification('User Removal', response.message)
     }
     }
   }else{
@@ -141,10 +142,10 @@ async function deleteUser(ids) {
       "user-id": id
     })
     if (response.status === 'success') {
-      window.successNotification('User Removal', response.message)
+      pushSuccessNotification('User Removal', response.message)
       getUsers()
     } else {
-      window.errorNotification('User Removal', response.message)
+      pushErrorNotification('User Removal', response.message)
     }
       })
     
@@ -165,7 +166,7 @@ async function updatePasswordFunc(id) {
     return
 
   if (user['password'] !== user['passwordConfirm']) {
-    window.errorNotification('User Password Change', 'Password & Confirm Password should be the same.')
+    pushErrorNotification('User Password Change', 'Password & Confirm Password should be the same.')
     return
   }
 
@@ -175,9 +176,9 @@ async function updatePasswordFunc(id) {
   })
 
   if (response.status === 'success') {
-    window.successNotification('User Update', response.message)
+    pushSuccessNotification('User Update', response.message)
   } else
-    window.errorNotification('User Password Change', response.message)
+    pushErrorNotification('User Password Change', response.message)
 }
 
 </script>

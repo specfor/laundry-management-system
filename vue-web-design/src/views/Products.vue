@@ -5,6 +5,7 @@ import {sendGetRequest, sendJsonPostRequest} from "../js-modules/base-functions.
 import {apiBaseUrl} from "../js-modules/website-constants.js";
 import {PencilSquareIcon, TrashIcon} from "@heroicons/vue/24/solid/index.js";
 import {validateInput} from "../js-modules/form-validations.js";
+import { pushSuccessNotification, pushErrorNotification } from '../stores/notification-store';
 
 let productTableCol = ['Select','Id', 'Product Name', 'Actions', 'Unit Price', 'Modifications']
 let productTableRows = ref([])
@@ -38,7 +39,7 @@ async function getActions() {
       actionTableRows.value.push([category['category_id'], category['name']])
     }
   } else {
-    window.errorNotification('Fetch Actions Data', response.message)
+    pushErrorNotification('Fetch Actions Data', response.message)
   }
 }
 
@@ -58,9 +59,9 @@ async function addNewAction() {
 
   if (response.status === 'success') {
     getActions()
-    window.successNotification('Add New Action', response.message)
+    pushSuccessNotification('Add New Action', response.message)
   } else {
-    window.errorNotification('Add New Action', response.message)
+    pushErrorNotification('Add New Action', response.message)
   }
 }
 
@@ -86,9 +87,9 @@ async function editAction(id) {
       if (row[0] === id)
         return row[1] = action['data']['action']
     })
-    window.successNotification('Update Action', response.message)
+    pushSuccessNotification('Update Action', response.message)
   } else {
-    window.errorNotification('Update Action', response.message)
+    pushErrorNotification('Update Action', response.message)
   }
 }
 
@@ -104,9 +105,9 @@ async function deleteAction(ids) {
 
     if (response.status === 'success') {
       getActions()
-      window.successNotification('Action Removal', response.message)
+      pushSuccessNotification('Action Removal', response.message)
     } else {
-      window.errorNotification('Action Removal', response.message)
+      pushErrorNotification('Action Removal', response.message)
     }
   }
   }else{
@@ -120,9 +121,9 @@ async function deleteAction(ids) {
 
     if (response.status === 'success') {
       getActions()
-      window.successNotification('Action Removal', response.message)
+      pushSuccessNotification('Action Removal', response.message)
     } else {
-      window.errorNotification('Action Removal', response.message)
+      pushErrorNotification('Action Removal', response.message)
     }
         })  
   }
@@ -144,7 +145,7 @@ async function getProducts() {
       productTableRows.value.push([product["item_id"], product["name"], actions, product["price"]])
     }
   } else {
-    window.errorNotification('Fetch Product Data', response.message)
+    pushErrorNotification('Fetch Product Data', response.message)
   }
 }
 
@@ -177,9 +178,9 @@ async function addNewProduct() {
 
   if (response.status === 'success') {
     getProducts()
-    window.successNotification('Add New Product', response.message)
+    pushSuccessNotification('Add New Product', response.message)
   } else {
-    window.errorNotification('Add New Product', response.message)
+    pushErrorNotification('Add New Product', response.message)
   }
 }
 
@@ -224,9 +225,9 @@ async function editProduct(id) {
         return row
       }
     })
-    window.successNotification('Update Product', response.message)
+    pushSuccessNotification('Update Product', response.message)
   } else {
-    window.errorNotification('Update Product', response.message)
+    pushErrorNotification('Update Product', response.message)
   }
 }
 
@@ -242,9 +243,9 @@ async function deleteProduct(ids) {
 
     if (response.status === 'success') {
       getProducts()
-      window.successNotification('Delete Product', response.message)
+      pushSuccessNotification('Delete Product', response.message)
     } else {
-      window.errorNotification('Delete Product', response.message)
+      pushErrorNotification('Delete Product', response.message)
     }
   }
   }else{
@@ -258,9 +259,9 @@ async function deleteProduct(ids) {
 
     if (response.status === 'success') {
       getProducts()
-      window.successNotification('Delete Product', response.message)
+      pushSuccessNotification('Delete Product', response.message)
     } else {
-      window.errorNotification('Delete Product', response.message)
+      pushErrorNotification('Delete Product', response.message)
     }
       })
     

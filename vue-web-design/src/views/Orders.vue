@@ -20,6 +20,7 @@ import OrderDetailsModal from '../components/form_modals/OrderDetails.vue'
 import {ref} from 'vue'
 import {sendGetRequest, sendJsonPostRequest} from "../js-modules/base-functions.js";
 import {apiBaseUrl} from "../js-modules/website-constants.js";
+import { pushSuccessNotification, pushErrorNotification } from '../stores/notification-store';
 
 let ordersTableCol = ['Select','Id', 'Value (LKR)', 'Customer', 'Products', 'Status', 'Branch', 'Added On', 'Comments',
   'Modifications']
@@ -51,7 +52,7 @@ async function getOrders() {
       productArray[order['order_id']] = order['items']
     }
   } else {
-    window.errorNotification('Fetch Payment Data', response.message)
+    pushErrorNotification('Fetch Payment Data', response.message)
   }
 
   response = await sendGetRequest(apiBaseUrl + "/category")
@@ -63,7 +64,7 @@ async function getOrders() {
           actions.push({text: action['name'], name: action['category_id']})
       }
   } else {
-      window.errorNotification('Fetch Actions Data', response.message)
+      pushErrorNotification('Fetch Actions Data', response.message)
   }
 
   response = await sendGetRequest(apiBaseUrl + "/items")
@@ -74,7 +75,7 @@ async function getOrders() {
           products.push({text: product['name'], value: product['item_id'], actions: product['categories']})
       }
   } else {
-      window.errorNotification('Fetch Product Data', response.message)
+      pushErrorNotification('Fetch Product Data', response.message)
   }
 }
 
@@ -104,7 +105,7 @@ async function addNewOrder() {
       customers.push({text: customer['name'], value: customer['customer_id']})
     }
   } else {
-    window.errorNotification('Fetch Customer Data', customerResponse.message)
+    pushErrorNotification('Fetch Customer Data', customerResponse.message)
     return
   }
 
@@ -121,7 +122,7 @@ async function addNewOrder() {
     return
 
   if (!customer.data['customer']){
-    window.errorNotification('Add New Order', 'Customer must be selected.')
+    pushErrorNotification('Add New Order', 'Customer must be selected.')
     return
   }
 
@@ -153,9 +154,9 @@ async function addNewOrder() {
 
   if (response.status === "success") {
     getOrders()
-    window.successNotification('Add New Payment', response.message)
+    pushSuccessNotification('Add New Payment', response.message)
   } else {
-    window.errorNotification('Add New Payment', response.message)
+    pushErrorNotification('Add New Payment', response.message)
   }
 }
 
@@ -171,7 +172,7 @@ async function editOrder(id) {
       customers.push({text: customer['name'], value: customer['customer_id']})
     }
   } else {
-    window.errorNotification('Fetch Customer Data', customerResponse.message)
+    pushErrorNotification('Fetch Customer Data', customerResponse.message)
     return
   }
 
@@ -189,7 +190,7 @@ async function editOrder(id) {
 
 
     if (!customer.data['customer']){
-    window.errorNotification('Update Order', 'Customer must be selected.')
+    pushErrorNotification('Update Order', 'Customer must be selected.')
     return
   }
 
@@ -222,9 +223,9 @@ async function editOrder(id) {
 
   if (response.status === "success") {
     getOrders()
-    window.successNotification('Update Payment', response.message)
+    pushSuccessNotification('Update Payment', response.message)
   } else {
-    window.errorNotification('Update Payment', response.message)
+    pushErrorNotification('Update Payment', response.message)
   }
 }
 
@@ -240,9 +241,9 @@ async function deleteOrder(ids) {
 
     if (response.status === "success") {
       getOrders()
-      window.successNotification('Delete order', response.message)
+      pushSuccessNotification('Delete order', response.message)
     } else {
-      window.errorNotification('Delete order', response.message)
+      pushErrorNotification('Delete order', response.message)
     }
   }
   }else{
@@ -257,9 +258,9 @@ async function deleteOrder(ids) {
 
     if (response.status === "success") {
       getOrders()
-      window.successNotification('Delete order', response.message)
+      pushSuccessNotification('Delete order', response.message)
     } else {
-      window.errorNotification('Delete order', response.message)
+      pushErrorNotification('Delete order', response.message)
     }
       })
     }  
