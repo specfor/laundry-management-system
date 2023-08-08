@@ -12,7 +12,7 @@ class Items extends DbModel
 
     public static function addItem(string $itemName, array $prices, bool $blocked): bool|string|array
     {
-        $params['name'] = strtolower($itemName);
+        $params['name'] = ucwords($itemName);
 
         // $prices => [[categ_1, categ_2], 350.00]
 
@@ -54,8 +54,13 @@ class Items extends DbModel
 
         $params = [];
         if ($itemName) {
-            $params['name'] = strtolower($itemName);
-            $conditionPayload['name'] = strtolower($itemName);
+            $params['name'] = ucwords($itemName);
+            $condition = "name=:name";
+            $conditionPayload['name'] = ucwords($itemName);
+            $data = (self::getDataFromTable(['item_id'], self::TABLE_NAME,
+                $condition, $conditionPayload))->fetch(PDO::FETCH_ASSOC);
+            if (!empty($data))
+                return "There is already an item with name '" . $params['name'];
         }
         if ($prices) {
             $categories = [];
@@ -68,27 +73,30 @@ class Items extends DbModel
                     return "No category with name '$priceCategoryName'";
                 $categories[] = $category;
             }
-            $params['category_ids'] = implode(',', $categories);
-            $conditionPayload['category_ids'] = $params['category_ids'];
-            $params['price'] = $prices[1];
+            $paramsPrice['category_ids'] = implode(',', $categories);
+            $paramsPrice['price'] = $prices[1];
+
+            $condition = "name=:name AND category_ids=:category_ids";
+            $payload['category_ids'] = $paramsPrice['category_ids'];
+            $payload['name'] = $savedData['name'];
+
+            $data = self::getDataFromTable(['item_id'], self::TABLE_NAME, $condition, $payload)
+                ->fetch(PDO::FETCH_ASSOC);
+            if (!empty($data) && $data['item_id'] !== $itemId)
+                return "There is already a item with specified categories.";
         }
 
-        if ($itemName && $prices)
-            $condition = "name=:name AND category_ids=:category_ids";
-        elseif ($itemName)
-            $condition = "name=:name";
-        elseif ($prices)
-            $condition = "category_ids=:category_ids";
+        if ($itemName)
+           self::updateTableData(self::TABLE_NAME, $params, 'name=:oldName',
+                ['oldName' => $savedData['name']]);
 
-        $data = (self::getDataFromTable(['name', 'category_ids'], self::TABLE_NAME,
-            $condition, $conditionPayload))->fetch(PDO::FETCH_ASSOC);
-        if ($data)
-            return "There is already an item with name '" . $data['name'] . "' and  same categories.";
+        if ($prices)
+            self::updateTableData(self::TABLE_NAME, $paramsPrice, "item_id=$itemId");
+
 
         if ($blocked)
-            $params['blocked'] = $blocked;
-
-        return self::updateTableData(self::TABLE_NAME, $params, "item_id=$itemId");
+            self::updateTableData(self::TABLE_NAME, ['blocked' => $blocked], "item_id=$itemId");
+        return true;
     }
 
     public static function deleteItem(int $itemId): bool
