@@ -14,5 +14,5 @@
 <script setup>
 import { CheckCircleIcon, XMarkIcon } from '@heroicons/vue/24/solid';
 
-const { notification } = defineProps([notification]);
+const { notification } = defineProps(['notification']);
 </script>
