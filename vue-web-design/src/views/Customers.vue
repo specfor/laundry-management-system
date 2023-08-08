@@ -105,9 +105,9 @@ async function editCustomer(id) {
         return row
       }
     })
-    window.successNotification('Update Branch', response.message)
+    window.successNotification('Update Customer', response.message)
   } else {
-    window.errorNotification('Update Branch', response.message)
+    window.errorNotification('Update Customer', response.message)
   }
 }
 

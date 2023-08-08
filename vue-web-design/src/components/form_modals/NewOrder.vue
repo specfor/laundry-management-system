@@ -202,7 +202,6 @@ function removeProduct(index) {
 
 
 window.newOrderModal = (orderType,products_, actions_, values = {}) => {
-  actions.value = []
   typeOfTheOrder.value = orderType
   if (!values.actions)
     values.actions = {}
