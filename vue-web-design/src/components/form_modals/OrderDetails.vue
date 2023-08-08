@@ -81,12 +81,9 @@
 </template>
 
 <script setup>
-import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { ref } from "vue";
 
-let show = ref(false)
-let success = ref(false)
-let orderDetails = ref({})
+const { show, orderDetails } = defineProps(['show', 'orderDetails']);
 
 window.orderDetailsModal = (orderData) => {
   orderDetails.value = orderData
