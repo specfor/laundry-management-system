@@ -242,11 +242,32 @@ async function editProduct(id) {
   } else {
     window.errorNotification('Update Product', response.message)
   }
-  }else{
+  }else if(product['data']['name'] !== productData[1]){
 
     let response = await sendJsonPostRequest(apiBaseUrl + "/items/update", {
     'item-id': id,
     "item-name": product['data']['name'],
+    "item-price": [options, parseFloat(product['data']['price'])]
+  })
+
+  if (response.status === 'success') {
+    productTableRows.value.filter((row) => {
+      if (row[0] === id) {
+        row[1] = product['data']['name']
+        row[2] = options.join(', ')
+        row[3] = product['data']['price']
+        return row
+      }
+    })
+    window.successNotification('Update Product', response.message)
+  } else {
+    window.errorNotification('Update Product', response.message)
+  }
+
+  }else{
+
+    let response = await sendJsonPostRequest(apiBaseUrl + "/items/update", {
+    'item-id': id,
     "item-price": [options, parseFloat(product['data']['price'])]
   })
 
