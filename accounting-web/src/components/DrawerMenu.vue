@@ -20,10 +20,8 @@
         </li>
     </router-link>
 </template>
-<script>
-export default {
 
-}
+<script>
 </script>
 
 <style scoped>

@@ -1,22 +1,100 @@
 <template>
     <Drawer>
         <template #drawer-content>
-            <DrawerMenu/>
+            <DrawerMenu />
         </template>
-
-        <h2>Welcome to Accounting!</h2>
-        <router-link :to="{ name: 'GeneralLedger' }">
-            <a href="">Goto General Ledger</a>
-        </router-link>
+        <div class="mt-3 font-default">
+            <CompactLedger :data="data" :name="'Bank Account'"></CompactLedger>
+        </div>
     </Drawer>
 </template>
 
 <script setup>
+import CompactLedger from '../components/CompactLedger.vue';
 import Drawer from '../components/Drawer.vue';
 import DrawerMenu from '../components/DrawerMenu.vue';
 
+const data = [
+    [
+        {
+            record_id: 12323,
+            account_id: 123213,
+            credit: 232.0,
+            debit: 0,
+            description: "dwdwdwdwd",
+            timestamp: new Date('2023/04/05'),
+        },
+        {
+            record_id: 12323,
+            account_id: 123213,
+            credit: 0,
+            debit: 2323.0,
+            description: "dwdwdwdwd",
+            timestamp: new Date('2023/04/05'),
+        },
+        {
+            record_id: 12323,
+            account_id: 123213,
+            credit: 0,
+            debit: 223.0,
+            description: "dwdwdwdwd",
+            timestamp: new Date('2023/04/05'),
+        },
+    ],
+    [
+        {
+            record_id: 12323,
+            account_id: 123213,
+            credit: 232.0,
+            debit: 0,
+            description: "dwdwdwdwd",
+            timestamp: new Date('2023/05/05'),
+        },
+        {
+            record_id: 12323,
+            account_id: 123213,
+            credit: 0,
+            description: "dwdwdwdwd",
+            debit: 2323.0,
+            timestamp: new Date('2023/05/05'),
+        },
+        {
+            record_id: 12323,
+            account_id: 123213,
+            credit: 0,
+            description: "dwdwdwdwd",
+            debit: 223.0,
+            timestamp: new Date('2023/05/05'),
+        },
+    ],
+    [
+        {
+            record_id: 12323,
+            account_id: 123213,
+            credit: 232.0,
+            debit: 0,
+            description: "dwdwdwdwd",
+            timestamp: new Date('2023/06/05'),
+        },
+        {
+            record_id: 12323,
+            account_id: 123213,
+            credit: 0,
+            debit: 2323.0,
+            description: "dwdwdwdwd",
+            timestamp: new Date('2023/06/05'),
+        },
+        {
+            record_id: 12323,
+            account_id: 123213,
+            credit: 0,
+            debit: 223.0,
+            description: "dwdwdwdwd",
+            timestamp: new Date('2023/06/05'),
+        },
+    ],
+]
+
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
