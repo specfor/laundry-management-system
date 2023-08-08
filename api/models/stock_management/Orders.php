@@ -119,7 +119,7 @@ class Orders extends DbModel
         }
         $condition = implode(" AND ", $filters);
 
-        $data = (self::getDataFromTable(["*"], 'orders', $condition, $placeholders, ['order_id', 'asc'],
+        $data = (self::getDataFromTable(["*"], 'orders', $condition, $placeholders, ['order_id', 'desc'],
             [$startingIndex, $limit]))->fetchAll(PDO::FETCH_ASSOC);
 
 
