@@ -20,6 +20,7 @@ import OrderDetailsModal from '../components/form_modals/OrderDetails.vue'
 import {ref} from 'vue'
 import {sendGetRequest, sendJsonPostRequest} from "../js-modules/base-functions.js";
 import {apiBaseUrl} from "../js-modules/website-constants.js";
+import { validateInput } from '../js-modules/form-validations'
 
 let ordersTableCol = ['Select','Id', 'Value (LKR)', 'Customer', 'Products', 'Status', 'Branch', 'Added On', 'Comments',
   'Modifications']
@@ -112,16 +113,32 @@ async function addNewOrder() {
     {name: 'customer', text: 'Customer', type: 'select', options: customers},
     {text: 'New Customer', type: 'heading'},
     {name: 'name', text: 'Customer Name', type: 'text'},
-    {name: 'phone', text: 'Phone Number', type: 'number'},
-    {name: 'email', text: 'Email', type: 'email'},
+    {name: 'phone', text: 'Phone Number', type: 'number',validate:value => validateInput(value,'phone-number')},
+    {name: 'email', text: 'Email', type: 'email',validate:value => validateInput(value,'email')},
     {name: 'address', text: 'Address', type: 'textarea'}
   ])
+
+
 
   if (!customer['accepted'])
     return
 
   if (!customer.data['customer']){
-    window.errorNotification('Add New Order', 'Customer must be selected.')
+
+    
+    let response = await sendJsonPostRequest(apiBaseUrl + "/customers/add", {
+    "customer-name": customer['data']['name'],
+    "phone-number": customer['data']['phone'],
+    "email": customer['data']['email'],
+    "address": customer['data']['address']
+  }, window.httpHeaders)
+
+  if (response.status === "success") {
+    window.successNotification('Add New Customer', response.message)
+  } else {
+    window.errorNotification('Add New Customer', response.message)
+  }
+    
     return
   }
 
@@ -179,8 +196,8 @@ async function editOrder(id) {
     {name: 'customer', text: 'Customer', type: 'select', options: customers},
     {text: 'New Customer', type: 'heading'},
     {name: 'name', text: 'Customer Name', type: 'text'},
-    {name: 'phone', text: 'Phone Number', type: 'number'},
-    {name: 'email', text: 'Email', type: 'email'},
+    {name: 'phone', text: 'Phone Number', type: 'number',validate:value => validateInput(value,'phone-number')},
+    {name: 'email', text: 'Email', type: 'email',validate:value => validateInput(value,'email')},
     {name: 'address', text: 'Address', type: 'textarea'}
   ])
 
@@ -189,7 +206,18 @@ async function editOrder(id) {
 
 
     if (!customer.data['customer']){
-    window.errorNotification('Update Order', 'Customer must be selected.')
+      let response = await sendJsonPostRequest(apiBaseUrl + "/customers/add", {
+    "customer-name": customer['data']['name'],
+    "phone-number": customer['data']['phone'],
+    "email": customer['data']['email'],
+    "address": customer['data']['address']
+  }, window.httpHeaders)
+
+  if (response.status === "success") {
+    window.successNotification('Add New Customer', response.message)
+  } else {
+    window.errorNotification('Add New Customer', response.message)
+  }
     return
   }
 

@@ -200,6 +200,10 @@ async function editProduct(id) {
     {name: 'price', text: 'Unit Price', type: 'number', value: productData[3], validate: value => validateInput(value, 'price')}
   ])
 
+  //console.log(product)
+  //console.log(productData)
+
+
   if (!product['accepted'])
     return
 
@@ -209,7 +213,38 @@ async function editProduct(id) {
       options.push(key)
   }
 
-  let response = await sendJsonPostRequest(apiBaseUrl + "/items/update", {
+  let arrayOfCheckedActions = []
+
+  Object.keys(product['data']['actions']).forEach((key)=>{
+    if(product['data']['actions'][key] === true){
+      arrayOfCheckedActions.push(key)
+    }
+  })
+
+  if(id === productData[0] && product['data']['name'] === productData[1] && arrayOfCheckedActions.toString() === productData[2].replaceAll(", ",",")){
+
+    
+    let response = await sendJsonPostRequest(apiBaseUrl + "/items/update", {
+    'item-id': id,
+    "item-price": [options, parseFloat(product['data']['price'])]
+     }) 
+
+     if (response.status === 'success') {
+    productTableRows.value.filter((row) => {
+      if (row[0] === id) {
+        row[1] = product['data']['name']
+        row[2] = options.join(', ')
+        row[3] = product['data']['price']
+        return row
+      }
+    })
+    window.successNotification('Update Product', response.message)
+  } else {
+    window.errorNotification('Update Product', response.message)
+  }
+  }else{
+
+    let response = await sendJsonPostRequest(apiBaseUrl + "/items/update", {
     'item-id': id,
     "item-name": product['data']['name'],
     "item-price": [options, parseFloat(product['data']['price'])]
@@ -228,6 +263,9 @@ async function editProduct(id) {
   } else {
     window.errorNotification('Update Product', response.message)
   }
+
+  }
+ 
 }
 
 async function deleteProduct(ids) {
