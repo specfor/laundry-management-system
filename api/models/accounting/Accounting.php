@@ -101,6 +101,7 @@ class Accounting extends DbModel
         if ($id === false)
             return "Failed to insert data into the database.";
 
+        AccountTotals::createTableRowForNewAccount($id);
         return ['account_id' => $id];
     }
 

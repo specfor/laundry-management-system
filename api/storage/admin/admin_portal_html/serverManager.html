@@ -52,8 +52,6 @@
         <div class="col-2 vh-100 border-start position-fixed top-0 end-0 overflow-auto">
             <h6 class="mt-5 text-center">API Maintenance Mode</h6>
             <button id="apiMaintenanceModeStatus" class="text-center btn btn-success w-100 fw-bold">Disabled</button>
-            <h6 class="mt-3 text-center">Web Maintenance Mode</h6>
-            <button id="webMaintenanceModeStatus" class="text-center btn btn-success w-100 fw-bold">Disabled</button>
 
             <h5 class="text-center mt-5 mb-3">Special Actions</h5>
 
@@ -69,24 +67,22 @@
 
     let migrationAuthToken = null
     let isApiInMaintenanceMode = null
-    let isWebInMaintenanceMode = null
+
+
 
     checkMigrationToken()
     getMaintenanceMode('api')
-    // getMaintenanceMode('web')
     getMigrations()
     getAppliedMigrations()
 
     setTimeout(() => {
         getMaintenanceMode('api')
-        // getMaintenanceMode('web')
     }, 5000)
 
     let appliedMigrationsTable = document.getElementById("appliedMigrationsTable")
     let availableMigrationsTable = document.getElementById("availableMigrationsTable")
 
     let apiMaintenanceModeBtn = document.getElementById('apiMaintenanceModeStatus')
-    let webMaintenanceModeBtn = document.getElementById('webMaintenanceModeStatus')
 
     apiMaintenanceModeBtn.addEventListener('click', () => {
         let msg = null
@@ -106,10 +102,7 @@
 
     function setUiMaintenanceMode(target, enabled = true) {
         let btn = null
-        if (target === 'web') {
-            btn = webMaintenanceModeBtn
-            isWebInMaintenanceMode = enabled
-        } else if (target === 'api') {
+        if (target === 'api') {
             btn = apiMaintenanceModeBtn
             isApiInMaintenanceMode = enabled
         }
@@ -171,9 +164,7 @@
 
     async function setMaintenanceMode(target, enable = true) {
         let url = ''
-        if (target === 'web') {
-            url = webBaseUrl + ''
-        } else if (target === 'api') {
+        if (target === 'api') {
             url = apiBaseUrl + '/server-manager/maintenanceMode'
         }
         let response = await sendJsonPostRequest(url, {enable: enable})
@@ -187,18 +178,14 @@
 
     async function getMaintenanceMode(target) {
         let url = ''
-        if (target === 'web') {
-            url = webBaseUrl + ''
-        } else if (target === 'api') {
+        if (target === 'api') {
             url = apiBaseUrl + '/server-manager/maintenanceMode'
         }
         let response = await sendGetRequest(url)
         if (response.status === 200) {
             let data = await response.json()
             if (data.statusMessage === 'success') {
-                if (target === 'web')
-                    isWebInMaintenanceMode = data.body['maintenance-mode']
-                else if (target === 'api')
+                if (target === 'api')
                     isApiInMaintenanceMode = data.body['maintenance-mode']
                 setUiMaintenanceMode(target, data.body['maintenance-mode'])
             }
