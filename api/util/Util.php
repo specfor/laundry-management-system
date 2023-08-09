@@ -32,12 +32,11 @@ class Util
 
     /**
      * Convert to a specific data type. If value cannot be converted, send an error to user.
-     * @param string $parameterName request parameter to send with error message
      * @param mixed $value value to be converted
      * @param string $dataType 'int', 'float', 'bool'. Should be one of those
      * @return mixed Converted data
      */
-    public static function getConvertedTo(string $parameterName, mixed $value, string $dataType): mixed
+    public static function getConvertedTo(mixed $value, string $dataType): mixed
     {
         try {
             if ($dataType == 'string') {
