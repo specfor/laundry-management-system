@@ -42,12 +42,19 @@ class Util
             if ($dataType == 'string') {
                 if (!is_string($value))
                     throw new Exception('string required.');
-            } elseif ($dataType == 'int')
+            } elseif ($dataType == 'int') {
+                if (!preg_match('/^[+-]?([0-9]+)$/', $value))
+                    throw new Exception('invalid integer number');
                 $value = intval($value);
-            elseif ($dataType == 'float')
+            } elseif ($dataType == 'float') {
+                if (!preg_match('/^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$/', $value))
+                    throw new Exception('invalid float number');
                 $value = floatval($value);
-            elseif ($dataType == 'bool')
+            } elseif ($dataType == 'bool') {
+                if (!preg_match('/(^false$|^true$|^0$|^1$)/', $value))
+                    throw new Exception('invalid decimal number');
                 $value = boolval($value);
+            }
             elseif ($dataType == 'decimal') {
                 if (!preg_match('/^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$/', $value))
                     throw new Exception('invalid decimal number');
