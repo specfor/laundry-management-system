@@ -25,6 +25,4 @@ export const useAuthorizedFetch = createFetch({
     },
 });
 
-export const useErrorHandledFetch = ({ origin }) => {
-    
-}
+useAuthorizedFetch().json()

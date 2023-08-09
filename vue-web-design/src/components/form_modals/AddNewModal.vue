@@ -3,9 +3,9 @@ import { ref, computed, onMounted } from "vue";
 import ModelBase from "./ModelBase.vue";
 import ModelInputs from "./ModelInputs.vue";
 
-const { title, successBtnText, show, ...props } = defineProps(['show', 'title', 'fields', 'successBtnText']);
+const { title, successBtnText, show, fields: propFields } = defineProps(['show', 'title', 'fields', 'successBtnText']);
 
-let fields = ref(props.fields)
+let fields = ref(propFields)
 let fieldValues = ref({})
 
 onMounted(() => {
