@@ -51,11 +51,12 @@ class Util
                     throw new Exception('invalid float number');
                 $value = floatval($value);
             } elseif ($dataType == 'bool') {
-                if (!preg_match('/(^false$|^true$|^0$|^1$)/', $value))
-                    throw new Exception('invalid decimal number');
-                $value = boolval($value);
-            }
-            elseif ($dataType == 'decimal') {
+                if (!is_bool($value)) {
+                    if (!preg_match('/(^false$|^true$|^0$|^1$)/', $value))
+                        throw new Exception('invalid decimal number');
+                    $value = boolval($value);
+                }
+            } elseif ($dataType == 'decimal') {
                 if (!preg_match('/^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$/', $value))
                     throw new Exception('invalid decimal number');
                 if ("$value"[0] == '.')
