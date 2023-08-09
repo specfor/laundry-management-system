@@ -291,6 +291,11 @@ POST - /api/v1/payments/delete
 Parameters
 payment-id - compulsory
 
+
+
+ACCOUNTING API SECTION
+
+
 GET - /api/v1/taxes
 Parameters
 page-num - optional
@@ -349,7 +354,7 @@ account-id - compulsory
 GET - /api/v1/financial-account-types
 Returns all account categories and their sub categories.
 
-GET - /api/v1/general-ledger
+GET - /api/v1/general-ledger (-----Undergoing modifications. Wait for the new.------- )
 Parameters
 page-num
 account-id
@@ -361,7 +366,7 @@ amount-max
 tax-min
 tax-max
 
-POST - /api/v1/general-ledger/add
+POST - /api/v1/general-ledger/add (-----Undergoing modifications. Wait for the new.------- )
 Parameters
 account-id - compulsory
 reference
