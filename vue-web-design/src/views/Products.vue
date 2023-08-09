@@ -6,19 +6,14 @@ import {apiBaseUrl} from "../js-modules/website-constants.js";
 import {PencilSquareIcon, TrashIcon} from "@heroicons/vue/24/solid/index.js";
 import {validateInput} from "../js-modules/form-validations.js";
 
-let productTableCol = ['Select','Id', 'Product Name', 'Actions', 'Unit Price', 'Modifications']
+let productTableCol = ['Select','Id', 'Product Name', 'Actions', 'Unit Price']
 let productTableRows = ref([])
-let productTableActions = [
-    {onClickEvent: 'editProduct', btnText: 'Edit', type: 'icon', icon: PencilSquareIcon, iconColor: 'fill-blue-700'},
-  ]
 
 
 
-let actionTableCol = ['Select','Id', 'Action', 'Modifications']
+let actionTableCol = ['Select','Id', 'Action']
 let actionTableRows = ref([])
-let actionTableActions = [
-    {onClickEvent: 'editAction', btnText: 'Edit', type: 'icon', icon: PencilSquareIcon, iconColor: 'fill-blue-700'},
-]
+
 
 let deleteBtnAction = [{
   onClickEvent:'removeAction'
@@ -26,6 +21,14 @@ let deleteBtnAction = [{
 
 let deleteBtnProduct = [{
   onClickEvent:'removeProduct'
+}]
+
+let editBtnProduct = [{
+  onClickEvent:'editProduct'
+}]
+
+let editBtnAction = [{
+  onClickEvent:'editAction'
 }]
 
 async function getActions() {
@@ -65,6 +68,10 @@ async function addNewAction() {
 }
 
 async function editAction(id) {
+
+  id = parseInt(id.toString())
+
+
   let action = await window.addNewForm('Update Action', 'Update', [
     {
       name: 'action', text: 'Action Name', type: 'text', value: actionTableRows.value.filter(function (oneAction) {
@@ -184,6 +191,11 @@ async function addNewProduct() {
 }
 
 async function editProduct(id) {
+
+
+  id = parseInt(id.toString())
+
+
   let productData = productTableRows.value.filter((row) => {
     return row[0] === id
   })[0]
@@ -338,7 +350,7 @@ async function deleteProduct(ids) {
     <button class="bg-slate-600 text-slate-100 rounded-md py-2 px-3 font-semibold" @click="addNewProduct">+ New Product</button>
   </div>
 
-  <TableComponent :tableColumns="productTableCol" :tableRows="productTableRows" :actions="productTableActions" :deleteMultiple="deleteBtnProduct"
+  <TableComponent :tableColumns="productTableCol" :tableRows="productTableRows" :actions="productTableActions" :deleteMultiple="deleteBtnProduct" :edit="editBtnProduct"
                   @remove-product="deleteProduct($event)" @edit-product="editProduct($event)"/> 
 
   <div class="flex justify-between mt-7 mb-3">
@@ -346,7 +358,7 @@ async function deleteProduct(ids) {
     <button class="bg-slate-600 text-slate-100 rounded-md py-2 px-3 font-semibold" @click="addNewAction">+ New Action</button>
   </div>
 
-  <TableComponent :tableColumns="actionTableCol" :tableRows="actionTableRows" :actions="actionTableActions" :deleteMultiple="deleteBtnAction"
+  <TableComponent :tableColumns="actionTableCol" :tableRows="actionTableRows" :actions="actionTableActions" :deleteMultiple="deleteBtnAction" :edit="editBtnAction"
                   @remove-action="deleteAction($event)" @edit-action="editAction($event)"/>
 </template>
 

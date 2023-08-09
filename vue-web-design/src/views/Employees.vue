@@ -4,7 +4,7 @@
     <button class="bg-slate-600 text-slate-100 rounded-md py-2 px-3 font-semibold" @click="addNewEmployee">+ New Employee</button>
   </div>
 
-  <TableComponent :tableColumns="employeesTableCol" :tableRows="employeesTableRows" :actions="employeesTableActions" :deleteMultiple="deleteBtn"
+  <TableComponent :tableColumns="employeesTableCol" :tableRows="employeesTableRows" :actions="employeesTableActions" :deleteMultiple="deleteBtn" :edit="editBtn"
                   @remove-employee="deleteEmployee($event)" @edit-employee="editEmployee($event)"/>
 
 </template>
@@ -18,14 +18,15 @@ import {PencilSquareIcon} from "@heroicons/vue/24/solid/index.js";
 import {validateInput} from "../js-modules/form-validations.js";
 
 let employeesTableCol = ['Select','Id', 'Customer Name', 'Phone Number', 'Email', 'Address', 'Joined Date',
-  'Left Date', 'Modifications']
+  'Left Date']
 let employeesTableRows = ref([])
-let employeesTableActions = [
-    {onClickEvent: 'editEmployee', btnText: 'Edit', type: 'icon', icon: PencilSquareIcon, iconColor: 'fill-blue-700'},
-]
 
 let deleteBtn = [{
   onClickEvent:'removeEmployee'
+}]
+
+let editBtn = [{
+  onClickEvent:'editEmployee'
 }]
 
 async function getEmployees() {
@@ -74,6 +75,9 @@ async function addNewEmployee() {
 }
 
 async function editEmployee(id) {
+
+  id = parseInt(id.toString())
+
   let employeeData = employeesTableRows.value.filter((row) => {
     return row[0] === id
   })[0]

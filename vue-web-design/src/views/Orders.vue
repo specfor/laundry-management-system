@@ -7,7 +7,8 @@
   <TableComponent :tableColumns="ordersTableCol" :tableRows="ordersTableRows" :actions="ordersTableActions"
                   @remove-order="deleteOrder($event)" @edit-orders="editOrder($event)"
                   @more-info="moreOrderInfo($event)"
-                  :deleteMultiple="deleteBtn"/>
+                  :deleteMultiple="deleteBtn"
+                  :edit="editBtn"/>
   <NewOrderModal/>
   <OrderDetailsModal/>
 </template>
@@ -27,8 +28,11 @@ let ordersTableCol = ['Select','Id', 'Value (LKR)', 'Customer', 'Products', 'Sta
 let ordersTableRows = ref([])
 let ordersTableActions = [
   {onClickEvent: 'moreInfo', btnText: 'More Info'},
-  {onClickEvent: 'editOrders', btnText: 'Edit', type: 'icon', icon: PencilSquareIcon, iconColor: 'fill-blue-700'}
 ]
+
+let editBtn = [{
+  onClickEvent:'editOrders'
+}]
 
 let deleteBtn = [{
   onClickEvent:'remove-order'

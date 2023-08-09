@@ -7,14 +7,16 @@ import {PencilSquareIcon, TrashIcon} from "@heroicons/vue/24/solid/index.js";
 import {validateInput} from "../js-modules/form-validations.js";
 
 let customersTableCol = ['Select','Id', 'Customer Name', 'Phone Number', 'Email', 'Address', 'Joined Date',
-  'Banned', 'Modifications']
+  'Banned']
 let customersTableRows = ref([])
-let customersTableActions = [
-  {onClickEvent: 'editCustomer', btnText: 'Edit', type: 'icon', icon: PencilSquareIcon, iconColor: 'fill-blue-700'}
-]
+
 
 let deleteBtn = [{
   onClickEvent:'removeCustomer'
+}]
+
+let editBtn = [{
+  onClickEvent:'editCustomer'
 }]
 
 async function getCustomers() {
@@ -61,6 +63,9 @@ async function addNewCustomer() {
 }
 
 async function editCustomer(id) {
+
+  id = parseInt(id.toString())
+
   let customerData = customersTableRows.value.filter((row) => {
     return row[0] === id
   })[0]
@@ -161,7 +166,7 @@ async function deleteCustomer(ids) {
     </button>
   </div>
 
-  <TableComponent :tableColumns="customersTableCol" :tableRows="customersTableRows" :actions="customersTableActions" :deleteMultiple="deleteBtn"
+  <TableComponent :tableColumns="customersTableCol" :tableRows="customersTableRows" :actions="customersTableActions" :deleteMultiple="deleteBtn" :edit="editBtn"
                   @remove-customer="deleteCustomer($event)" @edit-customer="editCustomer($event)"/>
 
 </template>

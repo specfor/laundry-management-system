@@ -9,12 +9,15 @@ import {validateInput} from "../js-modules/form-validations.js";
 let tableCol = ['Select','Id', 'Username', 'Email', 'Firstname', 'Lastname', 'Role', 'Branch Id', 'Modifications']
 let tableRows = ref([])
 let actions = [
-  {onClickEvent: 'editUser', btnText: 'Edit', type: 'icon', icon: PencilSquareIcon, iconColor: 'fill-blue-700'},
   {onClickEvent: 'updateUserPass', btnText: 'Update Password'}
 ]
 
 let deleteBtn = [{
   onClickEvent:'deleteUser'
+}]
+
+let editBtn = [{
+  onClickEvent:'editUser'
 }]
 
 async function getUsers() {
@@ -72,6 +75,10 @@ async function addNewUser() {
 }
 
 async function updateUser(id) {
+
+  id = parseInt(id.toString())
+
+
   let userData = tableRows.value.filter((row) => {
     return row[0] === id
   })[0]
@@ -189,7 +196,7 @@ async function updatePasswordFunc(id) {
     </button>
   </div>
 
-  <TableComponent :tableColumns="tableCol" :tableRows="tableRows" :actions="actions" :deleteMultiple="deleteBtn"
+  <TableComponent :tableColumns="tableCol" :tableRows="tableRows" :actions="actions" :deleteMultiple="deleteBtn" :edit="editBtn"
                   @delete-user="deleteUser($event)" @edit-user="updateUser($event)"
                   @update-user-pass="updatePasswordFunc($event)"/>
 </template>

@@ -3,16 +3,17 @@ import TableComponent from '../components/TableComponent.vue'
 import {ref} from 'vue'
 import {sendGetRequest, sendJsonPostRequest} from "../js-modules/base-functions.js";
 import {apiBaseUrl} from "../js-modules/website-constants.js";
-import {TrashIcon, PencilSquareIcon} from '@heroicons/vue/24/solid'
+import { PencilSquareIcon} from '@heroicons/vue/24/solid'
 
-let paymentsTableCol = ['Select','Id', 'Order Id', 'Paid Amount', 'Paid Date', 'Refunded', 'Modifications']
+let paymentsTableCol = ['Select','Id', 'Order Id', 'Paid Amount', 'Paid Date', 'Refunded']
 let paymentsTableRows = ref([])
-let paymentsTableActions = [
-  {onClickEvent: 'editPayment', btnText: 'Edit', type: 'icon', icon: PencilSquareIcon, iconColor: 'fill-blue-700'},
-]
 
 let deleteBtn = [{
   onClickEvent:'removePayment'
+}]
+
+let editBtn = [{
+  onClickEvent:'editPayment'
 }]
 
 async function getPayments() {
@@ -60,6 +61,9 @@ async function addNewPayment() {
 }
 
 async function editPayment(id) {
+
+  id = parseInt(id.toString())
+
   let paymentData = paymentsTableRows.value.filter((row) => {
     return row[0] === id
   })[0]
@@ -142,7 +146,7 @@ async function deletePayment(ids) {
     </button>
   </div>
 
-  <TableComponent :tableColumns="paymentsTableCol" :tableRows="paymentsTableRows" :actions="paymentsTableActions" :deleteMultiple="deleteBtn"
+  <TableComponent :tableColumns="paymentsTableCol" :tableRows="paymentsTableRows" :actions="paymentsTableActions" :deleteMultiple="deleteBtn" :edit="editBtn"
                   @remove-payment="deletePayment($event)" @edit-payment="editPayment($event)"/>
 
 </template>
