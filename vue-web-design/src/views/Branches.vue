@@ -4,7 +4,7 @@
     <button class="bg-slate-600 text-slate-100 rounded-md py-2 px-3 font-semibold" @click="addNewBranch">+ New Branch</button>
   </div>
 
-  <TableComponent :tableColumns="branchesTableCol" :tableRows="branchesTableRows" :actions="branchesTableActions" :deleteMultiple="deleteBtn"
+  <TableComponent :edit="editBtn" :tableColumns="branchesTableCol" :tableRows="branchesTableRows" :actions="branchesTableActions" :deleteMultiple="deleteBtn"
                   @remove-branch="deleteBranch($event)" @edit-branch="editBranch($event)"/>
 
 </template>
@@ -17,14 +17,16 @@ import {apiBaseUrl} from "../js-modules/website-constants.js";
 import {PencilSquareIcon} from "@heroicons/vue/24/solid/index.js";
 import {validateInput} from "../js-modules/form-validations.js";
 
-let branchesTableCol = ['Select','Id', 'Branch Name', 'Contact Info', 'Modifications']
+let branchesTableCol = ['Select','Id', 'Branch Name', 'Contact Info']
 let branchesTableRows = ref([])
-let branchesTableActions = [
-    {onClickEvent: 'editBranch', btnText: 'Edit', type: 'icon', icon: PencilSquareIcon, iconColor: 'fill-blue-700'},
-]
+
 
 let deleteBtn = [{
   onClickEvent:'removeBranch'
+}]
+
+let editBtn = [{
+  onClickEvent:'editBranch'
 }]
 
 async function getBranches() {
@@ -66,6 +68,9 @@ async function addNewBranch() {
 }
 
 async function editBranch(id) {
+
+  id = parseInt(id.toString())
+
   let branchData = branchesTableRows.value.filter((row) => {
     return row[0] === id
   })[0]

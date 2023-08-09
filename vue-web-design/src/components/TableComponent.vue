@@ -1,8 +1,20 @@
 <template>
   <div class="w-full overflow-x-auto">
 
-        <button :disabled="isDisabled" class="rounded-md px-3 py-1 transition duration-300  mb-4 subpixel-antialiased	font-medium	" :class="{'bg-red-600 text-white hover:bg-red-700':isActive,'bg-stone-200 text-stone-600':!isActive}" @click="()=>{$emit(deleteMultiple[0]['onClickEvent'],selectedIds) 
+
+     <div class="flex justify-between w-full">
+        <div class="flex">
+
+          <button :disabled="isDisabled" class="rounded-md px-3 py-1 transition duration-300  mb-4 subpixel-antialiased	font-medium	" :class="{'bg-red-600 text-white hover:bg-red-700':isActive,'bg-stone-200 text-stone-600':!isActive}" @click="()=>{$emit(deleteMultiple[0]['onClickEvent'],selectedIds) 
     selectedIds = []}" >Delete</button>
+
+            <button :disabled="isEditDisabled" class="ml-5 rounded-md px-3 py-1 transition duration-300  mb-4 subpixel-antialiased	font-medium" :class="{'bg-blue-600 text-white hover:bg-blue-700':isEditActive,'bg-stone-200 text-stone-600':!isEditActive}" @click="()=>{$emit(edit[0]['onClickEvent'],selectedIds)}">Edit</button>
+
+        </div>
+        <div class="w-20">
+
+        </div>
+      </div>
     
     <table class="table-auto border-collapse border w-full">
       
@@ -23,7 +35,7 @@
         <td colspan="100%" class="text-center pt-2 text-slate-700">No Data To Display.</td>
       </tr>
       <tr v-for="row in tableRows" :key="row[0]" class="border-y border-slate-400 bg-neutral-100 hover:bg-neutral-200">
-        <input type="checkbox" class="ml-3" :value="row[0]" v-model="selectedIds" v-on:change="isChecked()">
+        <input type="checkbox" class="ml-3" :value="row[0]" v-model="selectedIds" v-on:change="()=>{isChecked();isMultipleChecked()}">
         <td v-for="data in row" class="px-3 py-1 text-slate-800">
           <span v-if="data === null || data === ''">None</span>
           <span v-else>{{ data }}</span>
@@ -49,6 +61,19 @@ import {defineProps,ref} from "vue";
 let selectedIds = ref([])
 let isDisabled = ref(true)
 let isActive = ref(false)
+let isEditDisabled = ref(true)
+let isEditActive = ref(false)
+
+function isMultipleChecked(){
+
+  if(selectedIds.value.length === 1){
+    isEditDisabled.value = false
+    isEditActive.value = true
+  }else{
+    isEditDisabled.value = true
+    isEditActive.value = false
+  }
+}
 
 function isChecked(){
     
@@ -61,7 +86,7 @@ function isChecked(){
   }
 }
 
-let {tableColumns, tableRows, actions, deleteMultiple} = defineProps(['tableColumns', 'tableRows', 'actions','deleteMultiple'])
+let {tableColumns, tableRows, actions, deleteMultiple,edit} = defineProps(['tableColumns', 'tableRows', 'actions','deleteMultiple','edit'])
 
 let modificationsColum = tableColumns.pop()
 </script>
