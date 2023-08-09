@@ -10,7 +10,7 @@ use LogicLeap\StockManagement\models\user_management\Authorization;
 use LogicLeap\StockManagement\models\user_management\User;
 
 class Util
-{   
+{
     public static function getAuthorizationHeader(): string|null
     {
         $authHeader = null;
@@ -54,12 +54,12 @@ class Util
                     throw new Exception('invalid decimal number');
                 if ("$value"[0] == '.')
                     $value = "0$value";
-            } elseif ($dataType == 'array')
+            } elseif ($dataType == 'array') {
                 if (!is_array($value))
                     throw new Exception('array required.');
+            }
             return $value;
         } catch (Exception) {
-            // self::sendError("$parameterName must be type '$dataType'");
             return null;
         }
     }

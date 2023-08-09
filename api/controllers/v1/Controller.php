@@ -159,7 +159,7 @@ class Controller
 
         $ret = Util::getConvertedTo($parameterIdentifier, $params[$parameterIdentifier], $dataType);
         if ($ret === null) {
-            self::sendError("$parameterIdentifier must be type '$dataType'");
+            self::sendError("$parameterIdentifier must be a valid '$dataType'");
         }
         return $ret;
 
