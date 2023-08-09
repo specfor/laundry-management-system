@@ -14,9 +14,11 @@
 </template>
 
 <script setup>
-import { notifications, removeNotification } from '../stores/notification-store'
+import { useNotification } from '../composibles/notifications'
 import ErrorNotification from './notification-components/ErrorNotification.vue';
 import SuccessNotification from './notification-components/SuccessNotification.vue';
+
+const { notifications, removeNotification } = useNotification();
 </script>
 
 <style scoped>
