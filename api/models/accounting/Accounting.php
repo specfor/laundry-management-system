@@ -147,6 +147,7 @@ class Accounting extends DbModel
         if (!$data['deletable'])
             return "This account can not be deleted.";
 
+        //Todo implement proper checks
 //        $ledgerRecords = GeneralLedger::getLedgerRecords(accountId: $accountId);
         if (!empty($ledgerRecords)) {
             self::updateTableData(self::TABLE_NAME, ['deletable' => false], "account_id=$accountId");
