@@ -6,7 +6,7 @@
                 fill="#000000" />
         </svg>
     </button>
-    <div :class="{ 'hidden': !open }" class="mt-2 absolute px-2 py-3 shadow-sm shadow-gray-800 rounded-md">
+    <div v-on-click-outside="close" :class="{ 'hidden': !open }" class="mt-2 absolute px-2 py-3 shadow-sm shadow-gray-800 rounded-md">
         <slot name="filter-controls" :values="valuesForChildren"></slot>
         <div class="flex justify-around gap-2 mt-4">
             <button class="btn btn-primary btn-sm" @click="closeAndEmit(true)">Filter</button>
@@ -17,8 +17,9 @@
 
 <script setup>
 // @ts-check
-import { ref, toValue, onUnmounted, unref } from "vue";
-import { syncRef } from '@vueuse/core'
+import { ref, toValue, onUnmounted } from "vue";
+import { syncRef } from '@vueuse/core';
+import { vOnClickOutside } from '@vueuse/components'
 
 const open = ref(false);
 
@@ -61,6 +62,9 @@ const closeAndEmit = (filtred) => {
     // Close the popup
     open.value = false;
 }
+
+// Just closes the popup
+const close = () => open.value = false;
 </script>
 
 <style scoped lang="scss"></style>
