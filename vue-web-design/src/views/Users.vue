@@ -22,36 +22,44 @@ let editBtn = [{
 let searchParam = [{
   searchParameter:'Username',
   searchParamType:'userName'
+},{
+  searchParameter:'Name'
 }]
 
 let typingTimer;
 let doneTypingInterval = 500;
 
-async function getUsersWithParams(name){
-  clearTimeout(typingTimer);
-  typingTimer = setTimeout(getUsersSearch(name), doneTypingInterval)
-}
+async function getUsersWithParams(params){
+  let username= params['paramOne']
+  let name = params['paramTwo']
 
-async function getUsersSearch(name){
-  let response = await sendGetRequest(apiBaseUrl + "/users",{
-    'username':name
-  })
-
-if (response.status === 'success') {
-  tableRows.value = []
-  let users = response.data["users"]
-
-  for (const user of users) {
-    tableRows.value.push([user["id"], user["username"], user["email"], user["firstname"], user["lastname"],
-      user["role"], user["branch_id"]])
+  if(username && name){
+    clearInterval(typingTimer)
+    typingTimer = setTimeout(getUsers(username,name), doneTypingInterval)
+  }else if(username){
+    clearInterval(typingTimer)
+    typingTimer = setTimeout(getUsers(username,null), doneTypingInterval)
+  }else if(name){
+    clearInterval(typingTimer)
+    typingTimer = setTimeout(getUsers(null,name), doneTypingInterval)
+  }else{
+    getUsers()
   }
-} else {
-  window.errorNotification('Fetch User Data', response.message)
-}
 }
 
-async function getUsers() {
-  let response = await sendGetRequest(apiBaseUrl + "/users")
+async function getUsers(paramOne=null,paramTwo=null) {
+
+  let params = {}
+
+  if(paramOne){
+    params["username"] = paramOne
+  }
+
+  if(paramTwo){
+    params['name'] = paramTwo
+  }
+
+  let response = await sendGetRequest(apiBaseUrl + "/users",params)
 
   if (response.status === 'success') {
     tableRows.value = []

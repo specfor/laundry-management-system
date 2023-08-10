@@ -21,10 +21,23 @@ let editBtn = [{
 let searchParam = [{
   searchParameter:'Customer Name',
   searchParamType:'customerName'
+},{
+  searchParameter:'Phone Number'
 }]
 
-async function getCustomers() {
-  let response = await sendGetRequest(apiBaseUrl + "/customers")
+async function getCustomers(paramOne=null,paramTwo=null) {
+
+  let params = {}
+
+  if(paramOne){
+    params["name"] = paramOne
+  }
+
+  if(paramTwo){
+    params['phone-number'] = paramTwo
+  }
+
+  let response = await sendGetRequest(apiBaseUrl + "/customers",params)
 
   if (response.status === "success") {
     customersTableRows.value = []
@@ -69,28 +82,24 @@ async function addNewCustomer() {
 let typingTimer;
 let doneTypingInterval = 500
 
-async function getCustomersWithParams(name){
-  console.log('working')
-  clearTimeout(typingTimer);
-  typingTimer = setTimeout(getCustomersSearch(name), doneTypingInterval)
-}
+async function getCustomersWithParams(params){
+  let customerName = params['paramOne']
+  let phoneNumber = parseInt(params['paramTwo'])
 
-async function getCustomersSearch(name){
-  let response = await sendGetRequest(apiBaseUrl + "/customers",{
-    'name':name
-  })
-
-if (response.status === "success") {
-  customersTableRows.value = []
-  let customers = response.data["customers"];
-  for (const customer of customers) {
-    customersTableRows.value.push([customer['customer_id'], customer['name'], customer['phone_num'],
-      customer['email'], customer['address'], customer['joined_date'], customer['banned'] ? 'Yes' : 'No'])
+  if(customerName && Number.isInteger(phoneNumber)){
+    clearInterval(typingTimer)
+    typingTimer = setTimeout(getCustomers(customerName,phoneNumber), doneTypingInterval)
+  }else if(customerName){
+    clearInterval(typingTimer)
+    typingTimer = setTimeout(getCustomers(customerName,null), doneTypingInterval)
+  }else if(Number.isInteger(phoneNumber)){
+    clearInterval(typingTimer)
+    typingTimer = setTimeout(getCustomers(null,phoneNumber), doneTypingInterval)
+  }else{
+    getCustomers()
   }
-} else {
-  window.errorNotification('Fetch Customer Data', response.message)
 }
-}
+
 
 async function editCustomer(id) {
 

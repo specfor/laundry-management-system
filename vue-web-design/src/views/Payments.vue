@@ -19,10 +19,23 @@ let editBtn = [{
 let searchParam = [{
   searchParameter:'Order Id',
   searchParamType:'orderId'
+},{
+  searchParameter:'Payment Id'
 }]
 
-async function getPayments() {
-  let response = await sendGetRequest(apiBaseUrl + "/payments")
+async function getPayments(paramOne=null,paramTwo=null) {
+
+  let params = {}
+
+  if(paramOne){
+    params["order-id"] = paramOne
+  }
+
+  if(paramTwo){
+    params['payment-id'] = paramTwo
+  }
+
+  let response = await sendGetRequest(apiBaseUrl + "/payments",params)
 
   if (response.status === 'success') {
     paymentsTableRows.value = []
@@ -36,22 +49,6 @@ async function getPayments() {
   }
 }
 
-async function getPaymentsWithParams(id){
-  let response = await sendGetRequest(apiBaseUrl + "/payments",{
-    "order-id":id
-  })
-
-if (response.status === 'success') {
-  paymentsTableRows.value = []
-  let payments = response.data["payments"];
-  for (const payment of payments) {
-    paymentsTableRows.value.push([payment['payment_id'], payment['order_id'], payment['paid_amount'],
-      payment['paid_date'], payment['refunded'] ? 'Yes' : 'No'])
-  }
-} else {
-  window.errorNotification('Fetch Payment Data', response.message)
-}
-}
 
 getPayments()
 
@@ -85,11 +82,26 @@ async function addNewPayment() {
 let typingTimer;
 let doneTypingInterval = 500;
 
-async function searchPayment(id){
-  id = parseInt(id)
-  if(Number.isInteger(id)){
-    clearTimeout(typingTimer);
-    typingTimer = setTimeout(getPaymentsWithParams(id), doneTypingInterval) 
+async function searchPayment(params){
+
+  let orderId = parseInt(params['paramOne'])
+  let paymentId = parseInt(params['paramTwo'])
+
+  if(Number.isInteger(orderId) && Number.isInteger(paymentId)){
+    clearInterval(typingTimer)
+    typingTimer = setTimeout(getPayments(orderId,paymentId), doneTypingInterval)
+  
+  
+  }else if(Number.isInteger(orderId)){
+    clearInterval(typingTimer)
+    typingTimer = setTimeout(getPayments(orderId,null), doneTypingInterval)
+  
+  
+  }else if(Number.isInteger(paymentId)){
+    clearInterval(typingTimer)
+    typingTimer = setTimeout(getPayments(null,paymentId), doneTypingInterval)
+  
+  
   }else{
     getPayments()
   }

@@ -39,61 +39,71 @@ let doneTypingInterval = 500;
 let searchParamProduct = [{
   searchParameter:'Product Name',
   searchParamType:'productName'
+},{
+  searchParameter:'Item Price',
+
 }]
 
 let searchParamAction = [{
   searchParameter:'Action Name',
   searchParamType:'actionId'
+},{
+  searchParameter:'Page Number',
 }]
 
-async function getProductsWithParams(name){
-  clearTimeout(typingTimer);
-  typingTimer = setTimeout(getProductsSearch(name), doneTypingInterval) 
-}
+async function getProductsWithParams(params){
+  let name = params['paramOne']
+  let price = parseInt(params['paramTwo'])
 
-async function getProductsSearch(name){
-  let response = await sendGetRequest(apiBaseUrl + "/items",{
-    'item-name':name
-  })
-
-if (response.status === "success") {
-  productTableRows.value = []
-  let products = response.data["items"]
-
-  for (const product of products) {
-    let actions = product['categories'].join(', ')
-    productTableRows.value.push([product["item_id"], product["name"], actions, product["price"]])
+  if(name && Number.isInteger(price)){
+    clearInterval(typingTimer)
+    typingTimer = setTimeout(getProducts(name,price), doneTypingInterval)
+  }else if(name){
+    clearInterval(typingTimer)
+    typingTimer = setTimeout(getProducts(name,null), doneTypingInterval)
+  }else if(Number.isInteger(price)){
+    clearInterval(typingTimer)
+    typingTimer = setTimeout(getProducts(null,price), doneTypingInterval)
+  }else{
+    getProducts()
   }
-} else {
-  window.errorNotification('Fetch Product Data', response.message)
-}
 }
 
 let typingTimerTwo 
 
-async function getActionsWithParams(name){
-  clearTimeout(typingTimerTwo);
-  typingTimerTwo = setTimeout(getActionsSearch(name), doneTypingInterval)
-}
+async function getActionsWithParams(params){
+  let actionName = params['paramOne']
+  let pageNum = parseInt(params['paramTwo'])
 
-async function getActionsSearch(name){
-  let response = await sendGetRequest(apiBaseUrl + "/category",{
-    'category-name':name
-  })
-
-  if (response.status === "success") {
-    actionTableRows.value = []
-    let categories = response.data["categories"];
-    for (const category of categories) {
-      actionTableRows.value.push([category['category_id'], category['name']])
-    }
-  } else {
-    window.errorNotification('Fetch Actions Data', response.message)
+  if(actionName && Number.isInteger(pageNum)){
+    clearInterval(typingTimerTwo)
+    typingTimerTwo = setTimeout(getActions(actionName,pageNum), doneTypingInterval)
+  }else if(actionName){
+    clearInterval(typingTimerTwo)
+    typingTimerTwo = setTimeout(getActions(actionName,null), doneTypingInterval)
+  }else if(Number.isInteger(pageNum)){
+    clearInterval(typingTimerTwo)
+    typingTimerTwo = setTimeout(getActions(null,pageNum), doneTypingInterval)
+  }else{
+    getActions()
   }
 }
 
-async function getActions() {
-  let response = await sendGetRequest(apiBaseUrl + "/category")
+
+
+async function getActions(paramOne=null,paramTwo=null) {
+
+  let params = {}
+
+  if(paramOne){
+    params["category-name"] = paramOne
+  }
+
+  if(paramTwo){
+    params['page-num'] = paramTwo
+  }
+
+  let response = await sendGetRequest(apiBaseUrl + "/category",params)
 
   if (response.status === "success") {
     actionTableRows.value = []
@@ -200,8 +210,19 @@ async function deleteAction(ids) {
 
 }
 
-async function getProducts() {
-  let response = await sendGetRequest(apiBaseUrl + "/items")
+async function getProducts(paramOne=null,paramTwo=null) {
+
+  let params = {}
+
+  if(paramOne){
+    params["item-name"] = paramOne
+  }
+
+  if(paramTwo){
+    params['item-price'] = paramTwo
+  }
+
+  let response = await sendGetRequest(apiBaseUrl + "/items",params)
 
   if (response.status === "success") {
     productTableRows.value = []

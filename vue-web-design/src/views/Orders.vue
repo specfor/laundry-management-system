@@ -16,7 +16,6 @@
 </template>
 
 <script setup>
-import {PencilSquareIcon} from '@heroicons/vue/24/solid'
 import TableComponent from '../components/TableComponent.vue'
 import NewOrderModal from '../components/form_modals/NewOrder.vue'
 import OrderDetailsModal from '../components/form_modals/OrderDetails.vue'
@@ -43,6 +42,8 @@ let deleteBtn = [{
 let searchParam = [{
   searchParameter:'Order Id',
   searchParamType:'customerName'
+},{
+  searchParameter:'Branch Id'
 }]
 
 let productArray = {}
@@ -54,11 +55,20 @@ let products = []
 let typingTimer;
 let doneTypingInterval = 500;
 
-async function searchOrderId(id){
-  id = parseInt(id)
-  if(Number.isInteger(id)){
-    clearTimeout(typingTimer);
-    typingTimer = setTimeout(getOrdersWithParams(id), doneTypingInterval) 
+async function searchOrderId(params){
+  
+  let orderId = parseInt(params['paramOne'])
+  let branchId = parseInt(params['paramTwo'])
+
+  if(Number.isInteger(orderId) && Number.isInteger(branchId)){
+    clearInterval(typingTimer)
+    typingTimer = setTimeout(getOrders(orderId,branchId), doneTypingInterval)
+  }else if(Number.isInteger(orderId)){
+    clearInterval(typingTimer)
+    typingTimer = setTimeout(getOrders(orderId,null), doneTypingInterval)
+  }else if(Number.isInteger(branchId)){
+    clearInterval(typingTimer)
+    typingTimer = setTimeout(getOrders(null,branchId), doneTypingInterval)
   }else{
     getOrders()
   }
@@ -66,51 +76,21 @@ async function searchOrderId(id){
 }
 
 
-async function getOrdersWithParams(paramOne){
+async function getOrders(paramOne=null,paramTwo=null) {
+
+  let params = {}
+
+  if(paramOne){
+    params["order-id"] = paramOne
+  }
+
+  if(paramTwo){
+    params['branch-id'] = paramTwo
+  }
+
+
   actions = []
-  let response = await sendGetRequest(apiBaseUrl + "/orders",{
-    'order-id':paramOne
-  })
-
-  if (response.status === 'success') {
-    ordersTableRows.value = []
-    orders = response.data["orders"];
-    for (const order of orders) {
-      ordersTableRows.value.push([order['order_id'], order['total_price'], order['customer_name'], 'See "More Info"',
-        order['status'], order['branch_id'], order['added_date'], order['comments']])
-      productArray[order['order_id']] = order['items']
-    }
-  } else {
-    window.errorNotification('Fetch Payment Data', response.message)
-  }
-
-  response = await sendGetRequest(apiBaseUrl + "/category")
-
-  if (response.status === "success") {
-      let data = response.data["categories"];
-      for (const action of data) {
-          
-          actions.push({text: action['name'], name: action['category_id']})
-      }
-  } else {
-      window.errorNotification('Fetch Actions Data', response.message)
-  }
-
-  response = await sendGetRequest(apiBaseUrl + "/items")
-
-  if (response.status === "success") {
-      let data = response.data["items"];
-      for (const product of data) {
-          products.push({text: product['name'], value: product['item_id'], actions: product['categories']})
-      }
-  } else {
-      window.errorNotification('Fetch Product Data', response.message)
-  }
-}
-
-async function getOrders() {
-  actions = []
-  let response = await sendGetRequest(apiBaseUrl + "/orders")
+  let response = await sendGetRequest(apiBaseUrl + "/orders",params)
 
   if (response.status === 'success') {
     ordersTableRows.value = []

@@ -11,9 +11,12 @@
 
         </div>
         <div class="flex">
-      
+
           <label for="search" class="bg-stone-400 text-white subpixel-antialiased px-3 py-1 h-8">Search</label>
-          <input type="text" class="w-full border-2 border-stone-400 bg-stone-200  h-8" v-model="searchInput" :placeholder="search[0]['searchParameter']" @keyup="$emit(search[0]['searchParamType'],searchInput)">
+          <input type="text" class="w-full border-2 border-stone-400 bg-stone-200  h-8" v-model="searchInput['paramOne']" :placeholder="search[0]['searchParameter']" @keyup="$emit(search[0]['searchParamType'],searchInput)">
+      
+          <label for="search" class="bg-stone-400 ml-3 text-white subpixel-antialiased px-3 py-1 h-8">Search</label>
+          <input type="text" class="w-full border-2 border-stone-400 bg-stone-200  h-8" v-model="searchInput['paramTwo']" :placeholder="search[1]['searchParameter']" @keyup="$emit(search[0]['searchParamType'],searchInput)">
         </div>
       </div>
     
@@ -64,7 +67,7 @@ let isDisabled = ref(true)
 let isActive = ref(false)
 let isEditDisabled = ref(true)
 let isEditActive = ref(false)
-let searchInput = ref("")
+let searchInput = ref({})
 
 
 function isMultipleChecked(){

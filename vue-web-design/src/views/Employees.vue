@@ -35,32 +35,42 @@ let doneTypingInterval = 500;
 let searchParam = [{
   searchParameter:'Employee Name',
   searchParamType:'employeeName'
+},{
+  searchParameter:'Phone Number'
 }]
 
-async function getEmployeesWithParams(name){
-  clearTimeout(typingTimer);
-  typingTimer = setTimeout(getEmployeesSearch(name), doneTypingInterval)
-}
+async function getEmployeesWithParams(params){
+  let empName = params['paramOne']
+  let phoneNumber = parseInt(params['paramTwo'])
 
-async function getEmployeesSearch(name){
-  let response = await sendGetRequest(apiBaseUrl + "/employees",{
-    'name':name
-  })
-
-if (response.status === 'success') {
-  employeesTableRows.value = []
-  let employees = response.data["employees"];
-  for (const employee of employees) {
-    employeesTableRows.value.push([employee['employee_id'], employee['name'], employee['phone_num'],
-      employee['email'], employee['address'], employee['join_date'], employee['left_date']])
+  if(empName && Number.isInteger(phoneNumber)){
+    clearInterval(typingTimer)
+    typingTimer = setTimeout(getEmployees(empName,phoneNumber), doneTypingInterval)
+  }else if(empName){
+    clearInterval(typingTimer)
+    typingTimer = setTimeout(getEmployees(empName,null), doneTypingInterval)
+  }else if(Number.isInteger(phoneNumber)){
+    clearInterval(typingTimer)
+    typingTimer = setTimeout(getEmployees(null,phoneNumber), doneTypingInterval)
+  }else{
+    getEmployees()
   }
-} else {
-  window.errorNotification('Fetch Employee Data', response.message)
-}
 }
 
-async function getEmployees() {
-  let response = await sendGetRequest(apiBaseUrl + "/employees")
+
+async function getEmployees(paramOne=null,paramTwo=null) {
+
+  let params = {}
+
+  if(paramOne){
+    params["name"] = paramOne
+  }
+
+  if(paramTwo){
+    params['phone-number'] = paramTwo
+  }
+
+  let response = await sendGetRequest(apiBaseUrl + "/employees",params)
 
   if (response.status === 'success') {
     employeesTableRows.value = []

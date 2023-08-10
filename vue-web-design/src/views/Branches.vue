@@ -32,35 +32,44 @@ let editBtn = [{
 let searchParam = [{
   searchParameter:'Branch Name',
   searchParamType:'branchName'
+},{
+  searchParameter:"phone-number"
 }]
 
 let typingTimer;
 let doneTypingInterval = 500;
 
-async function getBranchesWithParams(name){
-  clearTimeout(typingTimer);
-  typingTimer = setTimeout(getBranchesSearch(name), doneTypingInterval) 
-}
+async function getBranchesWithParams(params){
+  let branchName = params['paramOne']
+  let phoneNumber = parseInt(params['paramTwo'])
 
-async function getBranchesSearch(name){
-  let response = await sendGetRequest(apiBaseUrl + "/branches",{
-    'branch-name':name
-  })
-
-  if (response.status === "success") {
-    branchesTableRows.value = []
-    let branches = response.data["branches"];
-    for (const branch of branches) {
-      branchesTableRows.value.push([branch['branch_id'], branch['name'], branch['phone_num']])
-    }
-  } else {
-    window.errorNotification('Fetch Actions Data', response.message)
+  if(branchName && Number.isInteger(phoneNumber)){
+    clearInterval(typingTimer)
+    typingTimer = setTimeout(getBranches(branchName,phoneNumber), doneTypingInterval)
+  }else if(branchName){
+    clearInterval(typingTimer)
+    typingTimer = setTimeout(getBranches(branchName,null), doneTypingInterval)
+  }else if(Number.isInteger(phoneNumber)){
+    clearInterval(typingTimer)
+    typingTimer = setTimeout(getBranches(null,phoneNumber), doneTypingInterval)
+  }else{
+    getBranches()
   }
 }
 
+async function getBranches(paramOne=null,paramTwo=null) {
 
-async function getBranches() {
-  let response = await sendGetRequest(apiBaseUrl + "/branches")
+  let params = {}
+
+  if(paramOne){
+    params["branch-name"] = paramOne
+  }
+
+  if(paramTwo){
+    params['phone-number'] = paramTwo
+  }
+
+  let response = await sendGetRequest(apiBaseUrl + "/branches",params)
 
   if (response.status === "success") {
     branchesTableRows.value = []
