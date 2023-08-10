@@ -1,7 +1,7 @@
 <template>
     <div class="p-7">
-        <h3 class="text-blue-600 text-3xl font-bold tracking-wider">Account Name</h3>
-        <h4 class="text-gray-500">Account Sub Name</h4>
+        <h3 class="text-blue-600 text-lg font-bold tracking-wider">{{ name }}</h3>
+        <h4 class="text-gray-500">{{ sub }}</h4>
 
         <div class="overflow-x-auto mt-5">
             <table class="border-t-4 pt-3 border-blue-700 table table-lg table-pin-rows table-pin-cols">
@@ -14,60 +14,32 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="hover">
+                    <tr v-for="(row, index) in rows" :key="index" class="hover">
                         <td>
-                            Payment
-                            <span class="text-slate-500 block">00000000213</span>
+                            {{ row.description }}
+                            <span class="text-slate-500 block">{{ row.reference }}</span>
                         </td>
-                        <td>July, 16 2022</td>
-                        <td>2342.99</td>
-                        <td></td>
-                    </tr>
-                    <tr class="hover">
-                        <td>
-                            Payment
-                            <span class="text-slate-500 block">00000000213</span>
+                        <td>{{ row.timestamp.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) }}
                         </td>
-                        <td>July, 16 2022</td>
-                        <td>2342.99</td>
-                        <td></td>
-                    </tr>
-                    <tr class="hover">
-                        <td>
-                            Payment
-                            <span class="text-slate-500 block">00000000213</span>
-                        </td>
-                        <td>July, 16 2022</td>
-                        <td>2342.99</td>
-                        <td></td>
-                    </tr>
-                    <tr class="hover">
-                        <td>
-                            Payment
-                            <span class="text-slate-500 block">00000000213</span>
-                        </td>
-                        <td>July, 16 2022</td>
-                        <td></td>
-                        <td>2342.99</td>
-                    </tr>
-                    <tr class="hover">
-                        <td>
-                            Payment
-                            <span class="text-slate-500 block">00000000213</span>
-                        </td>
-                        <td>July, 16 2022</td>
-                        <td></td>
-                        <td>2342.99</td>
+                        <td>{{ row.debit > 0 ? row.debit.toFixed(2) : "" }}</td>
+                        <td>{{ row.credit > 0 ? row.credit.toFixed(2) : "" }}</td>
                     </tr>
                     <tr class="hover border-t-4 border-double border-gray-600">
                         <td colspan="2">
                             <b>Net Movement</b>
                         </td>
                         <td>
-                            <span class="text-slate-500 text-sm">RS. </span>
-                            <b>213,434.00</b>
+                            <template v-if="isDebitMore">
+                                <span class="text-slate-500 text-sm">RS. </span>
+                                <b>{{ diff.toFixed(2) }}</b>
+                            </template>
                         </td>
-                        <td></td>
+                        <td>
+                            <template v-if="!isDebitMore">
+                                <span class="text-slate-500 text-sm">RS. </span>
+                                <b>{{ diff.toFixed(2) }}</b>
+                            </template>
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -76,6 +48,23 @@
 </template>
 
 <script setup>
+// @ts-check
+
+import { useNetMovement } from "../composibles/net-movement";
+import '../types'
+
+
+const { name, sub, rows } = defineProps({
+    name: String,
+    sub: String,
+    rows: {
+        // For better IntelliSense
+        /** @type {import('vue').PropType<LedgerRecord[]>} */
+        type: Array
+    }
+});
+
+const { diff, isDebitMore } = useNetMovement(rows ?? [], 'debit', 'credit');
 
 </script>
 

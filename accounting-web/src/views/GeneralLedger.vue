@@ -1,5 +1,5 @@
 <template>
-    <GeneralLedgerTable></GeneralLedgerTable>
+    <GeneralLedgerTable name="Account Name" sub="Sub Account"></GeneralLedgerTable>
 </template>
 
 <script setup>

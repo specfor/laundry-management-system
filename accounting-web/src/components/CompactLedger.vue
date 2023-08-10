@@ -23,24 +23,20 @@
 </template>
 
 <script setup>
+// @ts-check
 import CompactLedgerRows from './CompactLedgerRows.vue';
-/*
+import '../types'
 
-data should be of type,
-
-{
-    record_id: number
-    account_id: number
-    reference: string
-    description: string
-    credit: number
-    debit: number
-    tax: number
-    timestamp: Date
-}[][]
-
-*/
-let { data, name } = defineProps(['data', 'name']);
+const { data, name } = defineProps({
+    data: {
+        /** @type {import('vue').PropType<LedgerRecord[][]>} */
+        type: Array,
+        default() {
+            return [];
+        }
+    },
+    name: String
+});
 
 const mappedData = data.map(x => ({
     credit: x.filter(y => y.credit > 0),
