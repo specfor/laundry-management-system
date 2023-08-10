@@ -32,9 +32,10 @@ class LedgerRecordController extends Controller
 
         $narration = self::getParameter('narration', isCompulsory: true);
         $body = self::getParameter('body', dataType: 'array', isCompulsory: true);
+        $taxType = self::getParameter('tax-type', isCompulsory: true);
         $date = self::getParameter('date');
 
-        $status = GeneralLedger::createLedgerRecord($narration, $body, $date);
+        $status = GeneralLedger::createLedgerRecord($narration, $body, $taxType, $date);
         if (is_string($status))
             self::sendError($status);
         else {

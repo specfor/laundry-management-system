@@ -372,17 +372,19 @@ narration - compulsory - a message explaining why this entry is adding
 body - compulsory - structure is as folllows
         {
             "narration": "buying some blue berries",
+            "tax-type": 'tax inclusive',          ---one of 'no tax', 'tax inclusive' or 'tax exclusive'. 'no tax' will
+                                                    not add any taxes. use 'tax inclusive' when taxes are already in the 
+                                                    credit/debit amount.
             "body": [
                 {
                 "account_id": 3,
                 "debit": 2300.50,
-                "tax_inclusive": false,      ---whether debit/credit amount contains its taxes
-                "description": "ha"
+                "description": "ha",
+                "tax_id": 2                  ---optional. use when need to override the default account tax rate.
                 },
                 {
                 "account_id": 2,
                 "credit": 2300.50,
-                "tax_inclusive": false,
                 "description": ""
                 }, 
                 {...}
