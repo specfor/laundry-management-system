@@ -3,7 +3,6 @@ import TableComponent from '../components/TableComponent.vue'
 import {ref} from 'vue'
 import {sendGetRequest, sendJsonPostRequest} from "../js-modules/base-functions.js";
 import {apiBaseUrl} from "../js-modules/website-constants.js";
-import {PencilSquareIcon, TrashIcon} from "@heroicons/vue/24/solid/index.js";
 import {validateInput} from "../js-modules/form-validations.js";
 
 let customersTableCol = ['Select','Id', 'Customer Name', 'Phone Number', 'Email', 'Address', 'Joined Date',
@@ -17,6 +16,11 @@ let deleteBtn = [{
 
 let editBtn = [{
   onClickEvent:'editCustomer'
+}]
+
+let searchParam = [{
+  searchParameter:'Customer Name',
+  searchParamType:'customerName'
 }]
 
 async function getCustomers() {
@@ -60,6 +64,32 @@ async function addNewCustomer() {
   } else {
     window.errorNotification('Add New Customer', response.message)
   }
+}
+
+let typingTimer;
+let doneTypingInterval = 500
+
+async function getCustomersWithParams(name){
+  console.log('working')
+  clearTimeout(typingTimer);
+  typingTimer = setTimeout(getCustomersSearch(name), doneTypingInterval)
+}
+
+async function getCustomersSearch(name){
+  let response = await sendGetRequest(apiBaseUrl + "/customers",{
+    'name':name
+  })
+
+if (response.status === "success") {
+  customersTableRows.value = []
+  let customers = response.data["customers"];
+  for (const customer of customers) {
+    customersTableRows.value.push([customer['customer_id'], customer['name'], customer['phone_num'],
+      customer['email'], customer['address'], customer['joined_date'], customer['banned'] ? 'Yes' : 'No'])
+  }
+} else {
+  window.errorNotification('Fetch Customer Data', response.message)
+}
 }
 
 async function editCustomer(id) {
@@ -166,8 +196,8 @@ async function deleteCustomer(ids) {
     </button>
   </div>
 
-  <TableComponent :tableColumns="customersTableCol" :tableRows="customersTableRows" :actions="customersTableActions" :deleteMultiple="deleteBtn" :edit="editBtn"
-                  @remove-customer="deleteCustomer($event)" @edit-customer="editCustomer($event)"/>
+  <TableComponent :tableColumns="customersTableCol" :tableRows="customersTableRows" :actions="customersTableActions" :deleteMultiple="deleteBtn" :edit="editBtn" :search="searchParam"
+                  @remove-customer="deleteCustomer($event)" @edit-customer="editCustomer($event)" @customer-name="getCustomersWithParams($event)"/>
 
 </template>
 

@@ -3,7 +3,6 @@ import TableComponent from "../components/TableComponent.vue";
 import {ref} from "vue";
 import {sendGetRequest, sendJsonPostRequest} from "../js-modules/base-functions.js";
 import {apiBaseUrl} from "../js-modules/website-constants.js";
-import {PencilSquareIcon, TrashIcon} from "@heroicons/vue/24/solid/index.js";
 import {validateInput} from "../js-modules/form-validations.js";
 
 let tableCol = ['Select','Id', 'Username', 'Email', 'Firstname', 'Lastname', 'Role', 'Branch Id', 'Modifications']
@@ -19,6 +18,37 @@ let deleteBtn = [{
 let editBtn = [{
   onClickEvent:'editUser'
 }]
+
+let searchParam = [{
+  searchParameter:'Username',
+  searchParamType:'userName'
+}]
+
+let typingTimer;
+let doneTypingInterval = 500;
+
+async function getUsersWithParams(name){
+  clearTimeout(typingTimer);
+  typingTimer = setTimeout(getUsersSearch(name), doneTypingInterval)
+}
+
+async function getUsersSearch(name){
+  let response = await sendGetRequest(apiBaseUrl + "/users",{
+    'username':name
+  })
+
+if (response.status === 'success') {
+  tableRows.value = []
+  let users = response.data["users"]
+
+  for (const user of users) {
+    tableRows.value.push([user["id"], user["username"], user["email"], user["firstname"], user["lastname"],
+      user["role"], user["branch_id"]])
+  }
+} else {
+  window.errorNotification('Fetch User Data', response.message)
+}
+}
 
 async function getUsers() {
   let response = await sendGetRequest(apiBaseUrl + "/users")
@@ -198,7 +228,7 @@ async function updatePasswordFunc(id) {
 
   <TableComponent :tableColumns="tableCol" :tableRows="tableRows" :actions="actions" :deleteMultiple="deleteBtn" :edit="editBtn"
                   @delete-user="deleteUser($event)" @edit-user="updateUser($event)"
-                  @update-user-pass="updatePasswordFunc($event)"/>
+                  @update-user-pass="updatePasswordFunc($event)" :search="searchParam" @user-name="getUsersWithParams($event)"/>
 </template>
 
 <style scoped>

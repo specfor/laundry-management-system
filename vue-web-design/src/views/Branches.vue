@@ -5,7 +5,7 @@
   </div>
 
   <TableComponent :edit="editBtn" :tableColumns="branchesTableCol" :tableRows="branchesTableRows" :actions="branchesTableActions" :deleteMultiple="deleteBtn"
-                  @remove-branch="deleteBranch($event)" @edit-branch="editBranch($event)"/>
+                  @remove-branch="deleteBranch($event)" @edit-branch="editBranch($event)" :search="searchParam" @branch-name="getBranchesWithParams"/>
 
 </template>
 
@@ -14,8 +14,8 @@ import TableComponent from '../components/TableComponent.vue'
 import {ref} from 'vue'
 import {sendGetRequest, sendJsonPostRequest} from "../js-modules/base-functions.js";
 import {apiBaseUrl} from "../js-modules/website-constants.js";
-import {PencilSquareIcon} from "@heroicons/vue/24/solid/index.js";
 import {validateInput} from "../js-modules/form-validations.js";
+
 
 let branchesTableCol = ['Select','Id', 'Branch Name', 'Contact Info']
 let branchesTableRows = ref([])
@@ -28,6 +28,36 @@ let deleteBtn = [{
 let editBtn = [{
   onClickEvent:'editBranch'
 }]
+
+let searchParam = [{
+  searchParameter:'Branch Name',
+  searchParamType:'branchName'
+}]
+
+let typingTimer;
+let doneTypingInterval = 500;
+
+async function getBranchesWithParams(name){
+  clearTimeout(typingTimer);
+  typingTimer = setTimeout(getBranchesSearch(name), doneTypingInterval) 
+}
+
+async function getBranchesSearch(name){
+  let response = await sendGetRequest(apiBaseUrl + "/branches",{
+    'branch-name':name
+  })
+
+  if (response.status === "success") {
+    branchesTableRows.value = []
+    let branches = response.data["branches"];
+    for (const branch of branches) {
+      branchesTableRows.value.push([branch['branch_id'], branch['name'], branch['phone_num']])
+    }
+  } else {
+    window.errorNotification('Fetch Actions Data', response.message)
+  }
+}
+
 
 async function getBranches() {
   let response = await sendGetRequest(apiBaseUrl + "/branches")

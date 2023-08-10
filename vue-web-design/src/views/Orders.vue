@@ -7,8 +7,10 @@
   <TableComponent :tableColumns="ordersTableCol" :tableRows="ordersTableRows" :actions="ordersTableActions"
                   @remove-order="deleteOrder($event)" @edit-orders="editOrder($event)"
                   @more-info="moreOrderInfo($event)"
+                  @customerName="searchOrderId($event)"
                   :deleteMultiple="deleteBtn"
-                  :edit="editBtn"/>
+                  :edit="editBtn"
+                  :search="searchParam" />
   <NewOrderModal/>
   <OrderDetailsModal/>
 </template>
@@ -38,10 +40,67 @@ let deleteBtn = [{
   onClickEvent:'remove-order'
 }]
 
+let searchParam = [{
+  searchParameter:'Order Id',
+  searchParamType:'customerName'
+}]
+
 let productArray = {}
 let orders = []
 let actions = []
 let products = []
+
+
+let typingTimer;
+let doneTypingInterval = 500;
+
+async function searchOrderId(id){
+  clearTimeout(typingTimer);
+  typingTimer = setTimeout(getOrdersWithParams(id), doneTypingInterval)  
+}
+
+
+async function getOrdersWithParams(paramOne){
+  actions = []
+  let response = await sendGetRequest(apiBaseUrl + "/orders",{
+    'order-id':paramOne
+  })
+
+  if (response.status === 'success') {
+    ordersTableRows.value = []
+    orders = response.data["orders"];
+    for (const order of orders) {
+      ordersTableRows.value.push([order['order_id'], order['total_price'], order['customer_name'], 'See "More Info"',
+        order['status'], order['branch_id'], order['added_date'], order['comments']])
+      productArray[order['order_id']] = order['items']
+    }
+  } else {
+    window.errorNotification('Fetch Payment Data', response.message)
+  }
+
+  response = await sendGetRequest(apiBaseUrl + "/category")
+
+  if (response.status === "success") {
+      let data = response.data["categories"];
+      for (const action of data) {
+          
+          actions.push({text: action['name'], name: action['category_id']})
+      }
+  } else {
+      window.errorNotification('Fetch Actions Data', response.message)
+  }
+
+  response = await sendGetRequest(apiBaseUrl + "/items")
+
+  if (response.status === "success") {
+      let data = response.data["items"];
+      for (const product of data) {
+          products.push({text: product['name'], value: product['item_id'], actions: product['categories']})
+      }
+  } else {
+      window.errorNotification('Fetch Product Data', response.message)
+  }
+}
 
 async function getOrders() {
   actions = []

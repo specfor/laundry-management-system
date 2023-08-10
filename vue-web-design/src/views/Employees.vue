@@ -5,7 +5,7 @@
   </div>
 
   <TableComponent :tableColumns="employeesTableCol" :tableRows="employeesTableRows" :actions="employeesTableActions" :deleteMultiple="deleteBtn" :edit="editBtn"
-                  @remove-employee="deleteEmployee($event)" @edit-employee="editEmployee($event)"/>
+                  @remove-employee="deleteEmployee($event)" @edit-employee="editEmployee($event)" :search="searchParam" @employee-name="getEmployeesWithParams"/>
 
 </template>
 
@@ -28,6 +28,36 @@ let deleteBtn = [{
 let editBtn = [{
   onClickEvent:'editEmployee'
 }]
+
+let typingTimer;
+let doneTypingInterval = 500;
+
+let searchParam = [{
+  searchParameter:'Employee Name',
+  searchParamType:'employeeName'
+}]
+
+async function getEmployeesWithParams(name){
+  clearTimeout(typingTimer);
+  typingTimer = setTimeout(getEmployeesSearch(name), doneTypingInterval)
+}
+
+async function getEmployeesSearch(name){
+  let response = await sendGetRequest(apiBaseUrl + "/employees",{
+    'name':name
+  })
+
+if (response.status === 'success') {
+  employeesTableRows.value = []
+  let employees = response.data["employees"];
+  for (const employee of employees) {
+    employeesTableRows.value.push([employee['employee_id'], employee['name'], employee['phone_num'],
+      employee['email'], employee['address'], employee['join_date'], employee['left_date']])
+  }
+} else {
+  window.errorNotification('Fetch Employee Data', response.message)
+}
+}
 
 async function getEmployees() {
   let response = await sendGetRequest(apiBaseUrl + "/employees")
