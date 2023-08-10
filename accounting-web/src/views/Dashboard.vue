@@ -1,9 +1,20 @@
 <template>
-    <CompactLedger :data="data" :name="'Bank Account'"></CompactLedger>
+    <!-- <CompactLedger :data="data" :name="'Bank Account'"></CompactLedger> -->
+    <Filter>
+        <template #filter-controls="props">
+            <Input :label="'Name'" v-model:value="props.values['name']" :placeholder="'Your Name'"></Input>
+            <Input :label="'Age'" v-model:value="props.values['age']" :placeholder="'Your Age'" :type="'number'"></Input>
+            <Select :label="'City'" :placeholder="'Select City'" :options="selectOptions" v-model:value="props.values['city']"></Select>
+        </template>
+    </Filter>
 </template>
 
 <script setup>
+// @ts-check
 import CompactLedger from '../components/CompactLedger.vue';
+import Filter from '../components/inputs/Filter.vue';
+import Select from '../components/inputs/Select.vue';
+import Input from '../components/inputs/Input.vue';
 
 const data = [
     [
@@ -85,6 +96,8 @@ const data = [
         },
     ],
 ]
+
+const selectOptions = [{text: 'Matara', value: 'matara'}, {text: 'Galle', value: 'galle'}, {text: 'Colombo', value: 'colombo'}]
 
 </script>
 
