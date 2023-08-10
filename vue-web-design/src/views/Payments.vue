@@ -3,7 +3,7 @@ import TableComponent from '../components/TableComponent.vue'
 import {ref} from 'vue'
 import {sendGetRequest, sendJsonPostRequest} from "../js-modules/base-functions.js";
 import {apiBaseUrl} from "../js-modules/website-constants.js";
-import { PencilSquareIcon} from '@heroicons/vue/24/solid'
+
 
 let paymentsTableCol = ['Select','Id', 'Order Id', 'Paid Amount', 'Paid Date', 'Refunded']
 let paymentsTableRows = ref([])
@@ -14,6 +14,11 @@ let deleteBtn = [{
 
 let editBtn = [{
   onClickEvent:'editPayment'
+}]
+
+let searchParam = [{
+  searchParameter:'Order Id',
+  searchParamType:'orderId'
 }]
 
 async function getPayments() {
@@ -29,6 +34,23 @@ async function getPayments() {
   } else {
     window.errorNotification('Fetch Payment Data', response.message)
   }
+}
+
+async function getPaymentsWithParams(id){
+  let response = await sendGetRequest(apiBaseUrl + "/payments",{
+    "order-id":id
+  })
+
+if (response.status === 'success') {
+  paymentsTableRows.value = []
+  let payments = response.data["payments"];
+  for (const payment of payments) {
+    paymentsTableRows.value.push([payment['payment_id'], payment['order_id'], payment['paid_amount'],
+      payment['paid_date'], payment['refunded'] ? 'Yes' : 'No'])
+  }
+} else {
+  window.errorNotification('Fetch Payment Data', response.message)
+}
 }
 
 getPayments()
@@ -58,6 +80,14 @@ async function addNewPayment() {
   } else {
     window.errorNotification('Add New Payment', response.message)
   }
+}
+
+let typingTimer;
+let doneTypingInterval = 500;
+
+async function searchPayment(id){
+  clearTimeout(typingTimer);
+  typingTimer = setTimeout(getPaymentsWithParams(id), doneTypingInterval)  
 }
 
 async function editPayment(id) {
@@ -146,8 +176,8 @@ async function deletePayment(ids) {
     </button>
   </div>
 
-  <TableComponent :tableColumns="paymentsTableCol" :tableRows="paymentsTableRows" :actions="paymentsTableActions" :deleteMultiple="deleteBtn" :edit="editBtn"
-                  @remove-payment="deletePayment($event)" @edit-payment="editPayment($event)"/>
+  <TableComponent :tableColumns="paymentsTableCol" :tableRows="paymentsTableRows" :actions="paymentsTableActions" :deleteMultiple="deleteBtn" :edit="editBtn" :search="searchParam"
+                  @remove-payment="deletePayment($event)" @edit-payment="editPayment($event)" @orderId="searchPayment($event)" />
 
 </template>
 

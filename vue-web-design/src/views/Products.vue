@@ -31,6 +31,67 @@ let editBtnAction = [{
   onClickEvent:'editAction'
 }]
 
+
+
+let typingTimer;
+let doneTypingInterval = 500;
+
+let searchParamProduct = [{
+  searchParameter:'Product Name',
+  searchParamType:'productName'
+}]
+
+let searchParamAction = [{
+  searchParameter:'Action Name',
+  searchParamType:'actionId'
+}]
+
+async function getProductsWithParams(name){
+  clearTimeout(typingTimer);
+  typingTimer = setTimeout(getProductsSearch(name), doneTypingInterval) 
+}
+
+async function getProductsSearch(name){
+  let response = await sendGetRequest(apiBaseUrl + "/items",{
+    'item-name':name
+  })
+
+if (response.status === "success") {
+  productTableRows.value = []
+  let products = response.data["items"]
+
+  for (const product of products) {
+    let actions = product['categories'].join(', ')
+    productTableRows.value.push([product["item_id"], product["name"], actions, product["price"]])
+  }
+} else {
+  window.errorNotification('Fetch Product Data', response.message)
+}
+}
+
+let typingTimerTwo 
+
+async function getActionsWithParams(name){
+  clearTimeout(typingTimerTwo);
+  typingTimerTwo = setTimeout(getActionsSearch(name), doneTypingInterval)
+}
+
+async function getActionsSearch(name){
+  let response = await sendGetRequest(apiBaseUrl + "/category",{
+    'category-name':name
+  })
+
+  if (response.status === "success") {
+    actionTableRows.value = []
+    let categories = response.data["categories"];
+    for (const category of categories) {
+      actionTableRows.value.push([category['category_id'], category['name']])
+    }
+  } else {
+    window.errorNotification('Fetch Actions Data', response.message)
+  }
+}
+
 async function getActions() {
   let response = await sendGetRequest(apiBaseUrl + "/category")
 
@@ -212,10 +273,7 @@ async function editProduct(id) {
     {name: 'price', text: 'Unit Price', type: 'number', value: productData[3], validate: value => validateInput(value, 'price')}
   ])
 
-  //console.log(product)
-  //console.log(productData)
-
-
+ 
   if (!product['accepted'])
     return
 
@@ -351,7 +409,7 @@ async function deleteProduct(ids) {
   </div>
 
   <TableComponent :tableColumns="productTableCol" :tableRows="productTableRows" :actions="productTableActions" :deleteMultiple="deleteBtnProduct" :edit="editBtnProduct"
-                  @remove-product="deleteProduct($event)" @edit-product="editProduct($event)"/> 
+                  @remove-product="deleteProduct($event)" @edit-product="editProduct($event)" :search="searchParamProduct" @product-name="getProductsWithParams($event)"/> 
 
   <div class="flex justify-between mt-7 mb-3">
     <h3 class="text-2xl font-semibold">Actions</h3>
@@ -359,7 +417,7 @@ async function deleteProduct(ids) {
   </div>
 
   <TableComponent :tableColumns="actionTableCol" :tableRows="actionTableRows" :actions="actionTableActions" :deleteMultiple="deleteBtnAction" :edit="editBtnAction"
-                  @remove-action="deleteAction($event)" @edit-action="editAction($event)"/>
+                  @remove-action="deleteAction($event)" @edit-action="editAction($event)" :search="searchParamAction" @action-id="getActionsWithParams($event)"/>
 </template>
 
 <style scoped>

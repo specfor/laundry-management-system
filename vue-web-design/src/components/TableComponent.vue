@@ -1,7 +1,6 @@
 <template>
   <div class="w-full overflow-x-auto">
-
-
+    
      <div class="flex justify-between w-full">
         <div class="flex">
 
@@ -11,8 +10,10 @@
             <button :disabled="isEditDisabled" class="ml-5 rounded-md px-3 py-1 transition duration-300  mb-4 subpixel-antialiased	font-medium" :class="{'bg-blue-600 text-white hover:bg-blue-700':isEditActive,'bg-stone-200 text-stone-600':!isEditActive}" @click="()=>{$emit(edit[0]['onClickEvent'],selectedIds)}">Edit</button>
 
         </div>
-        <div class="w-20">
-
+        <div class="flex">
+      
+          <label for="search" class="bg-stone-400 text-white subpixel-antialiased px-3 py-1 h-8">Search</label>
+          <input type="text" class="w-full border-2 border-stone-400 bg-stone-200  h-8" v-model="searchInput" :placeholder="search[0]['searchParameter']" @keyup="$emit(search[0]['searchParamType'],searchInput)">
         </div>
       </div>
     
@@ -63,6 +64,8 @@ let isDisabled = ref(true)
 let isActive = ref(false)
 let isEditDisabled = ref(true)
 let isEditActive = ref(false)
+let searchInput = ref("")
+
 
 function isMultipleChecked(){
 
@@ -86,7 +89,7 @@ function isChecked(){
   }
 }
 
-let {tableColumns, tableRows, actions, deleteMultiple,edit} = defineProps(['tableColumns', 'tableRows', 'actions','deleteMultiple','edit'])
+let {tableColumns, tableRows, actions, deleteMultiple,edit,search} = defineProps(['tableColumns', 'tableRows', 'actions','deleteMultiple','edit','search'])
 
 let modificationsColum = tableColumns.pop()
 </script>
