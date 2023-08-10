@@ -7,7 +7,7 @@ use LogicLeap\PhpServerCore\Request;
 use LogicLeap\PhpServerCore\Router;
 use LogicLeap\PhpServerCore\SecureToken;
 use LogicLeap\PhpServerCore\ServerMetrics;
-use LogicLeap\PhpServerCore\StorageManager;
+use LogicLeap\PhpServerCore\FileHandler;
 use LogicLeap\StockManagement\controllers\v1\Controller;
 use LogicLeap\StockManagement\models\API;
 use LogicLeap\StockManagement\models\user_management\Authorization;
@@ -73,7 +73,7 @@ class ServerAdminPanelController extends Controller
 
             $pageName = 'admin_portal_html/' . $pageName[0] . '.html';
         }
-        StorageManager::streamFile($pageName, true);
+        FileHandler::streamFile($pageName, true);
     }
 
     public function adminLogin(): void

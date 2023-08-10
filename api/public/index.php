@@ -9,6 +9,7 @@ use LogicLeap\StockManagement\controllers\v1\accounting\TaxController;
 use LogicLeap\StockManagement\controllers\v1\Controller;
 use LogicLeap\StockManagement\controllers\v1\ReportController;
 use LogicLeap\StockManagement\controllers\v1\server_admin\MigrationsController;
+use LogicLeap\StockManagement\controllers\v1\server_admin\PackageInitController;
 use LogicLeap\StockManagement\controllers\v1\server_admin\ServerAdminPanelController;
 use LogicLeap\StockManagement\controllers\v1\stock_management\BranchController;
 use LogicLeap\StockManagement\controllers\v1\stock_management\CustomerController;
@@ -106,5 +107,6 @@ $app->router->addPostRoute('/api/v1/server-manager/migrations/run', [MigrationsC
 $app->router->addGetRoute('/api/v1/server-manager/migration-token', [MigrationsController::class, 'getMigrationToken']);
 $app->router->addPostRoute('/api/v1/server-manager/migration-token/block', [MigrationsController::class, 'blockMigrationToken']);
 $app->router->addPostRoute('/api/v1/server-manager/migration-token/validate', [MigrationsController::class, 'validateMigrationToken']);
+$app->router->addPostRoute('/api/v1/server-manager/init/accounting', [PackageInitController::class, 'intAccountingPackage']);
 
 $app->run();

@@ -57,7 +57,8 @@ class Accounting extends DbModel
         return $accounts;
     }
 
-    public static function createAccount(string $name, string $code, string $type, int $taxId, string $description = null): string|array
+    public static function createAccount(string $name, string $code, string $type, int $taxId, string $description = null,
+                                         bool $deletable = true): string|array
     {
         $params['name'] = ucwords($name);
         $params['code'] = strtoupper($code);
@@ -95,7 +96,7 @@ class Accounting extends DbModel
         $params['tax_id'] = $taxId;
         $params['description'] = $description;
         $params['archived'] = false;
-        $params['deletable'] = true;
+        $params['deletable'] = $deletable;
 
         $id = self::insertIntoTable(self::TABLE_NAME, $params);
         if ($id === false)
@@ -146,7 +147,8 @@ class Accounting extends DbModel
         if (!$data['deletable'])
             return "This account can not be deleted.";
 
-        $ledgerRecords = GeneralLedger::getLedgerRecords(accountId: $accountId);
+        //Todo implement proper checks
+//        $ledgerRecords = GeneralLedger::getLedgerRecords(accountId: $accountId);
         if (!empty($ledgerRecords)) {
             self::updateTableData(self::TABLE_NAME, ['deletable' => false], "account_id=$accountId");
             return "This account can not be deleted.";

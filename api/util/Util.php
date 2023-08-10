@@ -10,7 +10,7 @@ use LogicLeap\StockManagement\models\user_management\Authorization;
 use LogicLeap\StockManagement\models\user_management\User;
 
 class Util
-{   
+{
     public static function getAuthorizationHeader(): string|null
     {
         $authHeader = null;
@@ -32,34 +32,41 @@ class Util
 
     /**
      * Convert to a specific data type. If value cannot be converted, send an error to user.
-     * @param string $parameterName request parameter to send with error message
      * @param mixed $value value to be converted
      * @param string $dataType 'int', 'float', 'bool'. Should be one of those
      * @return mixed Converted data
      */
-    public static function getConvertedTo(string $parameterName, mixed $value, string $dataType): mixed
+    public static function getConvertedTo(mixed $value, string $dataType): mixed
     {
         try {
             if ($dataType == 'string') {
                 if (!is_string($value))
                     throw new Exception('string required.');
-            } elseif ($dataType == 'int')
+            } elseif ($dataType == 'int') {
+                if (!preg_match('/^[+-]?([0-9]+)$/', $value))
+                    throw new Exception('invalid integer number');
                 $value = intval($value);
-            elseif ($dataType == 'float')
+            } elseif ($dataType == 'float') {
+                if (!preg_match('/^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$/', $value))
+                    throw new Exception('invalid float number');
                 $value = floatval($value);
-            elseif ($dataType == 'bool')
-                $value = boolval($value);
-            elseif ($dataType == 'decimal') {
+            } elseif ($dataType == 'bool') {
+                if (!is_bool($value)) {
+                    if (!preg_match('/(^false$|^true$|^0$|^1$)/', $value))
+                        throw new Exception('invalid decimal number');
+                    $value = boolval($value);
+                }
+            } elseif ($dataType == 'decimal') {
                 if (!preg_match('/^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$/', $value))
                     throw new Exception('invalid decimal number');
                 if ("$value"[0] == '.')
                     $value = "0$value";
-            } elseif ($dataType == 'array')
+            } elseif ($dataType == 'array') {
                 if (!is_array($value))
                     throw new Exception('array required.');
+            }
             return $value;
         } catch (Exception) {
-            // self::sendError("$parameterName must be type '$dataType'");
             return null;
         }
     }

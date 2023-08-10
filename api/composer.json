@@ -19,6 +19,7 @@
         "vlucas/phpdotenv": "^5.5@dev",
       "ext-pdo": "*",
         "dompdf/dompdf": "dev-master",
-      "ext-bcmath": "*"
+      "ext-bcmath": "*",
+      "ext-fileinfo": "*"
     }
 }

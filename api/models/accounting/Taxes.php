@@ -20,6 +20,7 @@ class Taxes extends DbModel
         if ($taxId)
             $filters[] = "tax_id=$taxId";
         if ($taxName) {
+            $taxName = ucwords($taxName);
             $filters[] = "name LIKE :name";
             $placeholders['name'] = "%$taxName%";
         }
@@ -41,11 +42,11 @@ class Taxes extends DbModel
 
     public static function createTax(string $taxName, float $rate, string $description = null): string|array
     {
-        $data = self::getTaxes(taxName: $taxName);
+        $data = self::getTaxes(taxName: ucwords($taxName));
         if (!empty($data))
             return "Tax name has already been used.";
 
-        $params['name'] = $taxName;
+        $params['name'] = ucwords($taxName);
         $params['description'] = $description;
         $params['tax_rate'] = $rate;
 

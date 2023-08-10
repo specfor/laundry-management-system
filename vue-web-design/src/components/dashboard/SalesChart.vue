@@ -10,16 +10,29 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, T
 let label = []
 let orderCount = []
 let showGraph = ref(false)
+let orderMax = 2;
 
 async function getOrderCounts() {
-  let response = await sendGetRequest(apiBaseUrl + '/orderCount?branch-id=0&no-days-backward=10')
+  let response = await sendGetRequest(apiBaseUrl + '/orderCount', {'branch-id': 0, 'no-days-backward': 10})
   if (response.status === 'success') {
     for (const key of Object.keys(response.data['order-counts'])) {
       label.push(key)
       orderCount.push(response.data['order-counts'][key])
+      if (response.data['order-counts'][key] > orderMax)
+        orderMax = response.data['order-counts'][key];
     }
+
+    let quotient = Math.floor(orderMax / 10);
+    if (orderMax === 0)
+      orderMax = 1
+    else if (quotient < 1)
+      orderMax = orderMax + 2
+    else if (quotient < 2)
+      orderMax = orderMax + 5
+    else
+      orderMax = orderMax + 10
+
     showGraph.value = true;
-    console.log(orderCount)
   }
 }
 
@@ -41,9 +54,19 @@ let options = {
   maintainAspectRatio: false,
   scales: {
     y: {
-      min: 0
+      min: 0,
+      suggestedMax: orderMax,
+      grid: {
+        display: false
+      },
+      ticks: {
+        stepSize: 1
+      }
     },
     x: {
+      grid: {
+        display: false
+      },
       reverse: true
     }
   }
