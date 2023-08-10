@@ -366,16 +366,31 @@ amount-max
 tax-min
 tax-max
 
-POST - /api/v1/general-ledger/add (-----Undergoing modifications. Wait for the new.------- )
+POST - /api/v1/general-ledger/add 
 Parameters
-account-id - compulsory
-reference
-description
-credit
-debit
-tax-inclusive - whether credit/debit values have added tax
+narration - compulsory - a message explaining why this entry is adding
+body - compulsory - structure is as folllows
+        {
+            "narration": "buying some blue berries",
+            "body": [
+                {
+                "account_id": 3,
+                "debit": 2300.50,
+                "tax_inclusive": false,      ---whether debit/credit amount contains its taxes
+                "description": "ha"
+                },
+                {
+                "account_id": 2,
+                "credit": 2300.50,
+                "tax_inclusive": false,
+                "description": ""
+                }, 
+                {...}
+            ]
+        }     
+date - optional - "yyyy-mm-dd"
 
-GET - /api/v1/financial-account-totals
+GET - /api/v1/financial-account-totals  (-----Undergoing modifications. Wait for the new.------- )
 By just hitting the endpoint without 'force-recalculate' will calculate total credit & debit amounts in a smart way
     preventing read of whole ledger records table.
 Parameters

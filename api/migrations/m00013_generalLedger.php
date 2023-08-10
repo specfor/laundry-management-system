@@ -13,13 +13,10 @@ class m00013_generalLedger extends MigrationScheme
     {
         $sql = "CREATE TABLE IF NOT EXISTS general_ledger (
                     record_id int AUTO_INCREMENT NOT NULL PRIMARY KEY,
-                    account_id int NOT NULL,
-                    reference varchar(255),
-                    description varchar(500),
-                    credit decimal(20,4),
-                    debit decimal(20,4),
-                    tax decimal(20,4),
-                    timestamp varchar(15) NOT NULL
+                    narration varchar(255) NOT NULL,
+                    body json NOT NULL,
+                    tot_amount decimal(30,4),
+                    date date NOT NULL
                 )";
         try {
             self::$pdo->exec($sql);
