@@ -86,8 +86,13 @@ let typingTimer;
 let doneTypingInterval = 500;
 
 async function searchPayment(id){
-  clearTimeout(typingTimer);
-  typingTimer = setTimeout(getPaymentsWithParams(id), doneTypingInterval)  
+  id = parseInt(id)
+  if(Number.isInteger(id)){
+    clearTimeout(typingTimer);
+    typingTimer = setTimeout(getPaymentsWithParams(id), doneTypingInterval) 
+  }else{
+    getPayments()
+  }
 }
 
 async function editPayment(id) {

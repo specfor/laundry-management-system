@@ -55,8 +55,14 @@ let typingTimer;
 let doneTypingInterval = 500;
 
 async function searchOrderId(id){
-  clearTimeout(typingTimer);
-  typingTimer = setTimeout(getOrdersWithParams(id), doneTypingInterval)  
+  id = parseInt(id)
+  if(Number.isInteger(id)){
+    clearTimeout(typingTimer);
+    typingTimer = setTimeout(getOrdersWithParams(id), doneTypingInterval) 
+  }else{
+    getOrders()
+  }
+   
 }
 
 
