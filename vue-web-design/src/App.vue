@@ -11,6 +11,7 @@ import DataShowModal from "./components/form_modals/DataShowModal.vue";
 import Header from "./components/Header.vue";
 import SideMenu from "./components/SideMenu.vue";
 import LoadingScreen from './components/LoadingScreen.vue'
+import Alerts from "./components/Alerts.vue";
 
 let router = useRouter()
 
@@ -65,7 +66,8 @@ init()
       <RouterView/>
     </div>
   </div>
-  <Notifications class="pt-6"/>
+  <Alerts class="pt-6"/>
+<!--  <Notifications class="pt-6"/>-->
   <ConfirmationModal/>
   <AddNewModal/>
   <DataShowModal/>

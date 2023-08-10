@@ -9,7 +9,7 @@ class PackageInitController extends Controller
 {
     public function intAccountingPackage(): void
     {
-//        self::checkPermissions(onlyServerAdmins: true);
+        self::checkPermissions(onlyServerAdmins: true);
 
         if (InitAccountingPackage::init())
             self::sendSuccess("Successfully initialized the 'Accounting' package.");

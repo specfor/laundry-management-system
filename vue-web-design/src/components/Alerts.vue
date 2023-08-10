@@ -1,14 +1,7 @@
 <template>
-  <div class="fixed right-14 top-4 z-40">
+  <div class="fixed right-4 top-4 z-30">
     <div class="space-y-3 items-end flex flex-col">
-      <TransitionGroup name="notifications" :show="false">
-        <div class="bg-[#3b71ca] rounded-b-lg rounded-l-lg w-[800px] p-3">
-          haogaeog
-          <br>
-          aghaoeg
-          <br>
-          aeghaoigo
-        </div>
+      <TransitionGroup name="notifications">
         <div v-for="notification in notifications" :key="notification['id']">
           <div v-if="notification['value'][0] === 'success'"
                class="flex p-2 bg-green-400/90 rounded-lg space-x-5 w-max">
