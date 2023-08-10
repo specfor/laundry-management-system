@@ -2,14 +2,16 @@
 
 namespace LogicLeap\StockManagement\models\accounting;
 
+use DateTime;
 use LogicLeap\StockManagement\models\DbModel;
+use LogicLeap\StockManagement\Util\Util;
 use PDO;
 
 class GeneralLedger extends DbModel
 {
     private const TABLE_NAME = 'general_ledger';
 
-    public static function getLedgerRecords(int    $pageNumber = 0, int $accountId = null, string $reference = null,
+    public static function getLedgerRecords(int    $pageNumber = 0, string $narration = null, string $date = null,
                                             string $description = null, bool $isDebit = null, string $amountMin = null,
                                             string $amountMax = null, string $taxMin = null, string $taxMax = null,
                                             int    $limit = 30): array
@@ -18,11 +20,9 @@ class GeneralLedger extends DbModel
         $filters = [];
         $placeholders = [];
 
-        if ($accountId)
-            $filters[] = "account_id=$accountId";
-        if ($reference) {
-            $filters[] = "reference LIKE :reference";
-            $placeholders['reference'] = "%" . $reference . "%";
+        if ($narration) {
+            $filters[] = "$narration LIKE :narration";
+            $placeholders['narration'] = "%" . $narration . "%";
         }
         if ($description) {
             $filters[] = "description LIKE :desc";
@@ -50,48 +50,92 @@ class GeneralLedger extends DbModel
         return $data;
     }
 
-    public static function createLedgerRecord(int    $accountId, string $reference = null, string $description = null,
-                                              string $credit = null, string $debit = null, bool $taxInclusive = false): string|array
+    public static function createLedgerRecord(string $narration, array $body, string $date = null): string|array
     {
-        if (!empty($credit) && !empty($debit))
-            return "Can not both credit and debit in a single record.";
+        if (empty($narration))
+            return "Narration can not be empty.";
 
-        if (empty($credit) && empty($debit))
-            return "Can not both credit and debit be empty in a single record.";
+        // Following variables must be strings as BC Maths lib only accept numbers as strings.
+        $totalCredit = "0";
+        $totalDebit = "0";
 
-        $data = Accounting::getAccounts(accountId: $accountId);
-        if (empty($data))
-            return "Invalid account ID.";
+        // Doing basic data type and data structure validations.
+        foreach ($body as &$record) {
+            if (!isset($record['account_id'], $record['description'], $record['tax_inclusive']) &&
+                (!isset($record['credit']) || !isset($record['debit'])))
+                return "Each record in body must contain 'account_id','description', 'tax_inclusive' and 'credit' or 'debit'";
 
-        $params['account_id'] = $accountId;
-        $params['reference'] = $reference;
-        $params['description'] = $description;
+            if (isset($record['debit'], $record['credit']))
+                return "'credit' and 'debit' can not be in a single record.";
 
-        $taxDataSql = "select tax_rate from taxes where tax_id=(Select tax_id from 
-                                                           financial_accounts where account_id=$accountId)";
-        $statement = self::prepare($taxDataSql);
-        $statement->execute();
-        $taxRate = $statement->fetch(PDO::FETCH_ASSOC)['tax_rate'];
+            $record['account_id'] = Util::getConvertedTo($record['account_id'], 'int');
+            if ($record['account_id'] === null)
+                return "'account_id' '" . $record['account_id'] . "' is not integer.";
 
-        if ($taxInclusive) {
-            if ($credit) {
-                $params['credit'] = bcdiv(bcmul($credit, "100"), bcadd($taxRate, "100"));
-                $params['tax'] = bcsub($credit, $params['credit']);
+            $record['tax_inclusive'] = Util::getConvertedTo($record['tax_inclusive'], 'bool');
+            if ($record['tax_inclusive'] === null)
+                return "'tax_inclusive' '" . $record['tax_inclusive'] . "' is not boolean.";
+
+            if (isset($record['credit'])) {
+                $record['credit'] = Util::getConvertedTo($record['credit'], 'decimal');
+                if ($record['credit'] === null)
+                    return "'credit' '" . $record['credit'] . "' is not decimal.";
             } else {
-                $params['debit'] = bcdiv(bcmul($debit, "100"), bcadd($taxRate, "100"));
-                $params['tax'] = bcsub($credit, $params['debit']);
-            }
-        } else {
-            if ($credit) {
-                $params['credit'] = $credit;
-                $params['tax'] = bcmul(bcdiv($credit, "100"), $taxRate);
-            } else {
-                $params['debit'] = $debit;
-                $params['tax'] = bcmul(bcdiv($debit, "100"), $taxRate);
+                $record['debit'] = Util::getConvertedTo($record['debit'], 'decimal');
+                if ($record['debit'] === null)
+                    return "'debit' '" . $record['debit'] . "' is not decimal.";
             }
         }
 
-        $params['timestamp'] = time();
+        $taxAccountId = Accounting::getAccounts(name: 'sales tax')[0]['account_id'];
+        $taxRecords = [];
+
+        // Doing all the calculations.
+        foreach ($body as &$record) {
+            $accountData = Accounting::getAccounts(accountId: $record['account_id']);
+            if (empty($accountData))
+                return $record['account_id'] . " is an invalid account ID.";
+
+            $taxRate = Taxes::getTaxes(taxId: $accountData[0]['tax_id'])[0]['tax_rate'];
+
+            if ($record['tax_inclusive']) {
+                if (isset($record['credit'])) {
+                    $credit = $record['credit'];
+                    $record['credit'] = bcdiv(bcmul($record['credit'], "100"), bcadd($taxRate, "100"));
+                    $tax = bcsub($credit, $record['credit']);
+                } else {
+                    $debit = $record['debit'];
+                    $record['debit'] = bcdiv(bcmul($record['debit'], "100"), bcadd($taxRate, "100"));
+                    $tax = bcsub($debit, $record['debit']);
+                }
+            } else {
+                if (isset($record['credit'])) {
+                    $tax = bcmul(bcdiv($record['credit'], "100"), $taxRate);
+                } else {
+                    $tax = bcmul(bcdiv($record['debit'], "100"), $taxRate);
+                }
+            }
+
+            if (isset($record['credit'])) {
+                $taxRecords[] = ['account_id' => $taxAccountId, 'credit' => $tax, 'description' => ''];
+                $totalCredit = bcadd($totalCredit, $record['credit']);
+                $totalCredit = bcadd($totalCredit, $tax);
+            } else {
+                $taxRecords[] = ['account_id' => $taxAccountId, 'debit' => $tax, 'description' => ''];
+                $totalDebit = bcadd($totalDebit, $record['debit']);
+                $totalDebit = bcadd($totalDebit, $tax);
+            }
+        }
+
+        $body = array_merge($body, $taxRecords);
+
+        if ($totalDebit !== $totalCredit)
+            return "Total credits must always be equal to total debits.";
+
+        $params['narration'] = $narration;
+        $params['body'] = json_encode($body);
+        $params['tot_amount'] = $totalCredit;
+        $params['date'] = $date ?? (new DateTime('now'))->format('Y-m-d');
 
         $id = self::insertIntoTable(self::TABLE_NAME, $params);
         if ($id === false)

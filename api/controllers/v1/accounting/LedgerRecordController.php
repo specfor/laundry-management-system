@@ -6,7 +6,7 @@ use LogicLeap\StockManagement\controllers\v1\Controller;
 use LogicLeap\StockManagement\models\accounting\GeneralLedger;
 
 class LedgerRecordController extends Controller
-{   
+{
     public function getLedgerRecords(): void
     {
 //        self::checkPermissions(['financial_accounts'=>[User::PERMISSION_READ]]);
@@ -30,14 +30,11 @@ class LedgerRecordController extends Controller
     {
 //        self::checkPermissions(['financial_accounts'=>[User::PERMISSION_WRITE]]);
 
-        $accountId = self::getParameter('account-id', dataType: 'int', isCompulsory: true);
-        $reference = self::getParameter('reference');
-        $description = self::getParameter('description');
-        $credit = self::getParameter('credit', dataType: 'decimal');
-        $debit = self::getParameter('debit', dataType: 'decimal');
-        $tax = self::getParameter('tax-inclusive', defaultValue: false, dataType: 'bool');
+        $narration = self::getParameter('narration', isCompulsory: true);
+        $body = self::getParameter('body', dataType: 'array', isCompulsory: true);
+        $date = self::getParameter('date');
 
-        $status = GeneralLedger::createLedgerRecord($accountId, $reference, $description, $credit, $debit, $tax);
+        $status = GeneralLedger::createLedgerRecord($narration, $body, $date);
         if (is_string($status))
             self::sendError($status);
         else {
