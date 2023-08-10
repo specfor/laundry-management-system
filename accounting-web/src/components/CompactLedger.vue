@@ -1,6 +1,6 @@
 <template>
-    <div class="overflow-x-auto flex items-center flex-col w-[300px]">
-        <h3>{{ name }}</h3>
+    <div class="overflow-x-auto flex items-center flex-col w-[300px] bg-gray-100 p-5 rounded-lg">
+        <h3 class="font-bold text-lg tracking-wide">{{ name }}</h3>
         <table class="table">
             <thead>
                 <tr>
@@ -72,6 +72,10 @@ td {
     width: 50%;
     padding-top: 0.25rem;
     padding-bottom: 0.25rem;
+}
+
+.month-start:first-of-type td {
+    padding-top: 1rem;
 }
 
 tr.month-start td {

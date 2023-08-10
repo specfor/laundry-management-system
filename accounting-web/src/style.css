@@ -8,3 +8,7 @@
 body {
     font-family: 'Work Sans', sans-serif;
 }
+
+.drawer-side {
+    z-index: 100;
+}

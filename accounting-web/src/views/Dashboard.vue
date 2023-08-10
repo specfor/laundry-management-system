@@ -1,18 +1,9 @@
 <template>
-    <Drawer>
-        <template #drawer-content>
-            <DrawerMenu />
-        </template>
-        <div class="mt-3 font-default">
-            <CompactLedger :data="data" :name="'Bank Account'"></CompactLedger>
-        </div>
-    </Drawer>
+    <CompactLedger :data="data" :name="'Bank Account'"></CompactLedger>
 </template>
 
 <script setup>
 import CompactLedger from '../components/CompactLedger.vue';
-import Drawer from '../components/Drawer.vue';
-import DrawerMenu from '../components/DrawerMenu.vue';
 
 const data = [
     [

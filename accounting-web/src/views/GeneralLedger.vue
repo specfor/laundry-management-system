@@ -1,13 +1,12 @@
 <template>
-    <div>
-        
-    </div>
+    <GeneralLedgerTable></GeneralLedgerTable>
 </template>
-<script>
-export default {
-    
-}
+
+<script setup>
+import GeneralLedgerTable from '../components/GeneralLedgerTable.vue';
+
 </script>
+
 <style>
     
 </style>

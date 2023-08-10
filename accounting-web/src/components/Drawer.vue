@@ -1,8 +1,8 @@
 <template>
     <div class="drawer lg:drawer-open">
-        <input :id="drawerId" type="checkbox" class="drawer-toggle" v-model="isOpen" />
+        <input :id="drawerId" type="checkbox" class="drawer-toggle" v-model="open" />
         <div class="drawer-content flex flex-col items-center justify-center">
-            <label @click="isOpen = !isOpen" class="drawer-button lg:hidden absolute top-1 left-1">
+            <label @click="open = !open" class="drawer-button lg:hidden absolute top-1 left-1">
                 <button class="btn btn-square btn-outline">
                     <v-icon name="hi-menu" />
                 </button>
@@ -10,9 +10,9 @@
             <slot></slot>
         </div>
         <div class="drawer-side">
-            <label @click="isOpen = !isOpen" class="drawer-overlay"></label>
+            <label @click="open = !open" class="drawer-overlay"></label>
             <div class="menu p-4 w-80 h-full bg-base-200 text-base-content">
-                <button @click="isOpen = !isOpen" class="btn btn-square">
+                <button @click="open = !open" class="btn btn-square lg:hidden">
                     <v-icon name="md-close-round" />
                 </button>
                 <slot name="drawer-content"></slot>
@@ -22,9 +22,13 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { useVModel } from "@vueuse/core";
 
-const isOpen = ref(false);
+const props = defineProps(['open']);
+const emit = defineEmits(['update:open']);
+
+const open = useVModel(props, 'open', emit)
+
 const drawerId = "drawer" + Math.floor(Math.random() * 100);
 </script>
 
