@@ -11,10 +11,8 @@ class GeneralLedger extends DbModel
 {
     private const TABLE_NAME = 'general_ledger';
 
-    public static function getLedgerRecords(int    $pageNumber = 0, string $narration = null, string $date = null,
-                                            string $description = null, bool $isDebit = null, string $amountMin = null,
-                                            string $amountMax = null, string $taxMin = null, string $taxMax = null,
-                                            int    $limit = 30): array
+    public static function getLedgerRecords(int $pageNumber = 0, string $narration = null, string $date = null,
+                                            int $limit = 30): array
     {
         $startingIndex = $pageNumber * $limit;
         $filters = [];
@@ -24,24 +22,9 @@ class GeneralLedger extends DbModel
             $filters[] = "narration LIKE :narration";
             $placeholders['narration'] = "%" . $narration . "%";
         }
-        if ($description) {
-            $filters[] = "description LIKE :desc";
-            $placeholders['desc'] = "%$description%";
-        }
-        if ($isDebit || $amountMax || $amountMin) {
-            if ($isDebit === null)
-                $type = '';
-            $filters[] = "debit < :amountMax AND debit > :amountMin";
-            $placeholders['amountMax'] = $amountMax;
-            $placeholders['amountMin'] = $amountMin;
-        }
-        if ($taxMax) {
-            $filters[] = "tax < :max";
-            $placeholders['max'] = $taxMax;
-        }
-        if ($taxMin) {
-            $filters[] = "tax > :min";
-            $placeholders['min'] = $taxMin;
+        if ($date) {
+            $filters[] = "date LIKE :date";
+            $placeholders['date'] = "%$date%";
         }
 
         $condition = implode(' AND ', $filters);

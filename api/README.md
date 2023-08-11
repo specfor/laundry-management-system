@@ -354,17 +354,11 @@ account-id - compulsory
 GET - /api/v1/financial-account-types
 Returns all account categories and their sub categories.
 
-GET - /api/v1/general-ledger (-----Undergoing modifications. Wait for the new.------- )
+GET - /api/v1/general-ledger
 Parameters
 page-num
-account-id
-reference
-description
-is-debit - to filter whether records are debit or credit. use following amount filter to filter amount.
-amount-min
-amount-max
-tax-min
-tax-max
+narration
+date
 
 POST - /api/v1/general-ledger/add 
 Parameters
