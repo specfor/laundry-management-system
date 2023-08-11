@@ -1,12 +1,14 @@
 <template>
     <!-- <CompactLedger :data="data" :name="'Bank Account'"></CompactLedger> -->
-    <Filter>
+    <!-- <Filter>
         <template #filter-controls="props">
             <Input :label="'Name'" v-model:value="props.values['name']" :placeholder="'Your Name'"></Input>
             <Input :label="'Age'" v-model:value="props.values['age']" :placeholder="'Your Age'" :type="'number'"></Input>
             <Select :label="'City'" :placeholder="'Select City'" :options="selectOptions" v-model:value="props.values['city']"></Select>
         </template>
     </Filter>
+    <DateRangeSelector></DateRangeSelector> -->
+    <LedgerRecordEntryTable></LedgerRecordEntryTable>
 </template>
 
 <script setup>
@@ -15,6 +17,8 @@ import CompactLedger from '../components/CompactLedger.vue';
 import Filter from '../components/inputs/Filter.vue';
 import Select from '../components/inputs/Select.vue';
 import Input from '../components/inputs/Input.vue';
+import DateRangeSelector from '../components/inputs/DateRangeSelector.vue';
+import LedgerRecordEntryTable from '../components/LedgerRecordEntryTable.vue';
 
 const data = [
     [

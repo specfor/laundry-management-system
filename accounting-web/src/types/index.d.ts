@@ -1,0 +1,36 @@
+export interface LedgerRecord {
+    record_id: number,
+    account_id: number,
+    reference: string,
+    description: string,
+    credit: number,
+    debit: number,
+    tax: number,
+    timestamp: Date
+}
+
+import { DefineComponent } from "vue";
+import { Object } from 'ts-toolbelt'
+
+export type ComponentOptions<T> = T extends DefineComponent<A, infer P, B> ? P extends { $props: infer Props } ? Object.Writable<Props> : never : never;
+
+// export type ComponentOptions<T> = T extends DefineComponent<A, infer O, B> ?
+//     O extends { $emit: infer E, $props: infer P } ?
+//         E extends (event: infer EventName, ...rest: infer Rest) ? never : never
+
+// export type ComponentOptions<T> = T extends DefineComponent<A, infer O, B> ?
+//     OptionsType<O>
+//     : never;
+
+// type OptionsType<O> = 
+//     O extends { $emit: infer E, $props: infer P} ? 
+//     "both" : 
+//     O extends { $emit: infer E } ? "emit-only" :
+//     O extends { $props: infer PP} ? "props-only" :
+//     "none";
+
+// type EmitsToObject<E> = E extends Array ? 
+
+// export type ComponentWithTemplateOptions<T> = T extends 
+
+export as namespace Types;

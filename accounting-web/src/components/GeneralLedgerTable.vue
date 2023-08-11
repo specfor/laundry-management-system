@@ -51,15 +51,13 @@
 // @ts-check
 
 import { useNetMovement } from "../composibles/net-movement";
-import '../types'
-
 
 const { name, sub, rows } = defineProps({
     name: String,
     sub: String,
     rows: {
         // For better IntelliSense
-        /** @type {import('vue').PropType<LedgerRecord[]>} */
+        /** @type {import('vue').PropType<import('../types').LedgerRecord[]>} */
         type: Array
     }
 });

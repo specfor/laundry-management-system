@@ -25,11 +25,10 @@
 <script setup>
 // @ts-check
 import CompactLedgerRows from './CompactLedgerRows.vue';
-import '../types'
 
 const { data, name } = defineProps({
     data: {
-        /** @type {import('vue').PropType<LedgerRecord[][]>} */
+        /** @type {import('vue').PropType<import('../types').LedgerRecord[][]>} */
         type: Array,
         default() {
             return [];
