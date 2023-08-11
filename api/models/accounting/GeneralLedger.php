@@ -3,6 +3,7 @@
 namespace LogicLeap\StockManagement\models\accounting;
 
 use DateTime;
+use Exception;
 use LogicLeap\StockManagement\models\DbModel;
 use LogicLeap\StockManagement\Util\Util;
 use PDO;
@@ -38,6 +39,15 @@ class GeneralLedger extends DbModel
     {
         if (empty($narration))
             return "Narration can not be empty.";
+
+        if ($date) {
+            try {
+                $date = (new DateTime($date))->format("Y-m-d");
+            } catch (Exception $e) {
+                return "Invalid date.";
+            }
+        } else
+            $date = (new DateTime('now'))->format('Y-m-d');
 
         $taxType = strtolower($taxType);
         if ($taxType !== 'no tax' && $taxType !== 'tax inclusive' && $taxType !== 'tax exclusive')
@@ -132,7 +142,7 @@ class GeneralLedger extends DbModel
         $params['narration'] = $narration;
         $params['body'] = json_encode($body);
         $params['tot_amount'] = $totalCredit;
-        $params['date'] = $date ?? (new DateTime('now'))->format('Y-m-d');
+        $params['date'] = $date;
 
         $id = self::insertIntoTable(self::TABLE_NAME, $params);
         if ($id === false)
