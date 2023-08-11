@@ -341,4 +341,15 @@ class User extends DbModel
             default => '-1'
         };
     }
+
+    public static function getAllPermissions(): array
+    {
+        $tmpPerms = self::PERMISSIONS;
+        foreach ($tmpPerms as $type => &$perms) {
+            foreach ($perms as &$perm) {
+                $perm = self::getPermissionText($perm);
+            }
+        }
+        return $tmpPerms;
+    }
 }

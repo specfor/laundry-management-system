@@ -166,6 +166,9 @@ POST - /api/v1/users/delete
 Parameters
 user-id - compulsory
 
+GET - /api/v1/user-roles/permissions
+Get all permission types available
+
 GET - /api/v1/user-roles
 page-num - optional
 role-id - optional
@@ -182,6 +185,10 @@ POST - /api/v1/user-roles/update
 role-id - compulsory
 name - optional
 permissions - optional
+            {
+                "users": ["read", "write", "modify", "delete"]       "users"-> main permission class, one or more of
+                                                                    permissions from ["read", "write", "modify", "delete"]
+            }
 description - optional
 
 POST - /api/v1/user-roles/delete

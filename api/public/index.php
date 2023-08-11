@@ -78,6 +78,7 @@ $app->router->addPostRoute('/api/v1/payments/add', [PaymentController::class, 'a
 $app->router->addPostRoute('/api/v1/payments/update', [PaymentController::class, 'updatePayment']);
 $app->router->addPostRoute('/api/v1/payments/delete', [PaymentController::class, 'deletePayment']);
 $app->router->addGetRoute('/api/v1/reports', [ReportController::class, 'getReport']);
+$app->router->addGetRoute('/api/v1/user-roles/permissions', [UserRoleController::class, 'getAvailablePermissions']);
 $app->router->addGetRoute('/api/v1/user-roles', [UserRoleController::class, 'getUserRoles']);
 $app->router->addPostRoute('/api/v1/user-roles/add', [UserRoleController::class, 'addUserRole']);
 $app->router->addPostRoute('/api/v1/user-roles/update', [UserRoleController::class, 'updateUserRole']);
