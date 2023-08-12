@@ -20,12 +20,12 @@ class AccountTotalsController extends Controller
 
     public function getTotalByDate(): void
     {
-        self::checkPermissions(['financial_accounts' => [User::PERMISSION_READ]]);
+//        self::checkPermissions(['financial_accounts' => [User::PERMISSION_READ]]);
 
         $accountId = self::getParameter('account-id', dataType: 'int');
         $date = self::getParameter('date');
 
-        $this->calculateTotals();
+        AccountTotals::calculateAccountTotals();
         self::sendSuccess(['account-totals' => AccountTotals::getTotalsByDate($accountId, $date)]);
     }
 
@@ -37,7 +37,7 @@ class AccountTotalsController extends Controller
         $month = self::getParameter('month');
         $year = self::getParameter('year');
 
-        $this->calculateTotals();
+        AccountTotals::calculateAccountTotals();
         self::sendSuccess(['account-totals' => AccountTotals::getTotalsByMonth($accountId, $month, $year)]);
     }
 }
