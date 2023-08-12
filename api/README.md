@@ -393,10 +393,20 @@ body - compulsory - structure is as folllows
         }     
 date - optional - "yyyy-mm-dd"
 
-GET - /api/v1/financial-account-totals  (-----Undergoing modifications. Wait for the new.------- )
+GET - /api/v1/account-totals
 By just hitting the endpoint without 'force-recalculate' will calculate total credit & debit amounts in a smart way
     preventing read of whole ledger records table.
 Parameters
 force-recalculate - optional - only use when necessary. this will read whole ledger record table and calculate total
                                 credit & debit amounts. with billions of records this can take some time.
-                                
+
+GET - /api/v1/account-totals/day-basis
+Parameters
+account-id
+date
+
+GET - /api/v1/account-totals/month-basis  (---------- Still developing ------------)
+Parameters
+account-id
+month
+year

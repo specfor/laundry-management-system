@@ -13,7 +13,31 @@ class AccountTotalsController extends Controller
         self::checkPermissions(['financial_accounts' => [User::PERMISSION_READ]]);
 
         $forceRecalculate = self::getParameter('force-recalculate', defaultValue: false, dataType: 'bool');
+        AccountTotals::calculateAccountTotals($forceRecalculate);
 
-        self::sendSuccess(['account-totals' => AccountTotals::calculateAccountTotals($forceRecalculate)]);
+        self::sendSuccess("Successfully calculated the totals.");
+    }
+
+    public function getTotalByDate(): void
+    {
+        self::checkPermissions(['financial_accounts' => [User::PERMISSION_READ]]);
+
+        $accountId = self::getParameter('account-id', dataType: 'int');
+        $date = self::getParameter('date');
+
+        $this->calculateTotals();
+        self::sendSuccess(['account-totals' => AccountTotals::getTotalsByDate($accountId, $date)]);
+    }
+
+    public function getTotalByMonth(): void
+    {
+//        self::checkPermissions(['financial_accounts' => [User::PERMISSION_READ]]);
+
+        $accountId = self::getParameter('account-id', dataType: 'int');
+        $month = self::getParameter('month');
+        $year = self::getParameter('year');
+
+        $this->calculateTotals();
+        self::sendSuccess(['account-totals' => AccountTotals::getTotalsByMonth($accountId, $month, $year)]);
     }
 }
