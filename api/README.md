@@ -403,7 +403,7 @@ force-recalculate - optional - only use when necessary. this will read whole led
 GET - /api/v1/account-totals/day-basis
 Parameters
 account-id
-date
+dates - 2023-08-10,2023-08-11,... - can get details of more dates once by sending a string of dates seperated by commas.
 
 GET - /api/v1/account-totals/month-basis  (---------- Still developing ------------)
 Parameters

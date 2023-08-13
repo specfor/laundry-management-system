@@ -107,16 +107,20 @@ class AccountTotals extends DbModel
             }
     }
 
-    public static function getTotalsByDate(int $accountId = null, string $date = null): array
+    public static function getTotalsByDate(int $accountId = null, array $dates = null): array
     {
         $filters = [];
         $placeholders = [];
 
         if ($accountId)
             $filters[] = "account_id=$accountId";
-        if ($date) {
-            $filters[] = "date = :date";
-            $placeholders['date'] = $date;
+        if ($dates) {
+            $fil = [];
+            foreach ($dates as $index => $date) {
+                $fil[] = "date = :date$index";
+                $placeholders["date$index"] = $date;
+            }
+            $filters[] = '(' . implode(' or ', $fil) . ')';
         }
 
         $condition = implode(' AND ', $filters);
