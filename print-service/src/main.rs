@@ -42,6 +42,46 @@ struct PrintBody {
     content: String,
 }
 
+#[derive(Deserialize, Serialize)]
+struct PrintBodyBlock {
+    content: String,
+
+    #[serde(default = "font_default")]
+    font: String,
+
+    #[serde(default = "style_default")]
+    style: String,
+
+    #[serde(default = "alignment_default")]
+    alignment: String,
+
+    #[serde(default = "font_height_default")]
+    font_height: usize,
+
+    #[serde(default = "font_width_default")]
+    font_width: usize,
+}
+
+fn font_default() -> String {
+    "A".to_owned()
+}
+
+fn alignment_default() -> String {
+    "LT".to_owned()
+}
+
+fn style_default() -> String {
+    "NORMAL".to_owned()
+}
+
+fn font_width_default() -> usize {
+    0
+}
+
+fn font_height_default() -> usize {
+    0
+}
+
 #[derive(Serialize, Deserialize)]
 struct PrintResponse {
     success: bool,
@@ -67,6 +107,11 @@ async fn main() {
         .and(with_printers(printers.clone()))
         .and_then(set_current_printer_handler);
 
+    let print_blocks = warp::post()
+        .and(warp::path("print-blocks"))
+        .and(warp::body::json())
+        .and_then(print_blocks_handler);
+
     let print = warp::post()
         .and(warp::path("print"))
         .and(warp::body::json())
@@ -78,15 +123,15 @@ async fn main() {
     // GET /printer-list?force=bool => List of printers
     // GET /set-printer/printer-id => Tries to share and set the printer. Will tell you if failed.
     // GET /print => Will try to print. Will tell you if failed
+    // GET /print-blocks => Accepts blocks of text, enables simple styling
     let routes = list_printers
         .or(set_current_printer)
         .or(print)
+        .or(print_blocks)
         .or(health)
         .with(warp::cors().allow_any_origin());
 
-    print!("Server listening on http://127.0.0.1:3030");
-
-    warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;
+    warp::serve(routes).run(([127, 0, 0, 1], 30000)).await;
 }
 
 fn with_printers(
@@ -195,6 +240,78 @@ async fn set_current_printer_handler(
     }
 }
 
+async fn print_blocks_handler(
+    request_body: Vec<PrintBodyBlock>,
+) -> Result<impl warp::Reply, Infallible> {
+    let my_local_ip = local_ip();
+
+    if let Ok(my_local_ip) = my_local_ip {
+        // after you shares your printer, use the following code
+        // the IP is the your computer's IP address
+        // "Receipt Printer" is the shared name of your printer
+        // (check the control panel -> devices and printer)
+        let path = format!("//{}/Bill Printer", &my_local_ip);
+
+        // create a file and send it to the printer's path
+        // if the path is not available/error you should handle it here.
+        if let Ok(file) = File::<fs::File>::from_path(&path) {
+            // prepare the variable
+            let mut printer = Printer::new(file, None, None);
+
+            let mut do_print = |blocks: &Vec<PrintBodyBlock>| -> Result<(), Error> {
+                for block in blocks {
+                    printer
+                        .chain_font(&block.font)?
+                        .chain_align(&block.alignment)?
+                        .chain_style(&block.style)?
+                        .chain_size(block.font_width, block.font_height)?
+                        .chain_text(&block.content)?;
+                }
+
+                printer.chain_feed(3)?.chain_cut(false)?.flush()
+            };
+
+            if let Err(err) = do_print(&request_body) {
+                return Ok(with_status(
+                    warp::reply::json(&PrintResponse {
+                        message: err.to_string(),
+                        ip_error: false,
+                        success: false,
+                    }),
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                ));
+            }
+
+            Ok(with_status(
+                warp::reply::json(&PrintResponse {
+                    message: "Print success".to_owned(),
+                    ip_error: false,
+                    success: true,
+                }),
+                StatusCode::OK,
+            ))
+        } else {
+            Ok(with_status(
+                warp::reply::json(&PrintResponse {
+                    message: format!("Failed to open {}", &path),
+                    ip_error: false,
+                    success: false,
+                }),
+                StatusCode::INTERNAL_SERVER_ERROR,
+            ))
+        }
+    } else {
+        Ok(with_status(
+            warp::reply::json(&PrintResponse {
+                message: "Failed to get local IP".to_owned(),
+                ip_error: true,
+                success: false,
+            }),
+            StatusCode::INTERNAL_SERVER_ERROR,
+        ))
+    }
+}
+
 async fn print_handler(request_body: PrintBody) -> Result<impl warp::Reply, Infallible> {
     let my_local_ip = local_ip();
 
@@ -213,8 +330,8 @@ async fn print_handler(request_body: PrintBody) -> Result<impl warp::Reply, Infa
 
             let mut do_print = || -> Result<(), Error> {
                 printer
-                    .chain_font("A")?
-                    .chain_align("lt")?
+                    .chain_font("C")?
+                    .chain_align("RT")?
                     .chain_text(&request_body.content)?
                     .chain_feed(3)?
                     .chain_cut(false)?
