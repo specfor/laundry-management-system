@@ -24,6 +24,8 @@ class AccountTotalsController extends Controller
 
         $accountId = self::getParameter('account-id', dataType: 'int');
         $dates = self::getParameter('dates');
+        $month = self::getParameter('month', dataType: 'int');
+        $year = self::getParameter('year', dataType: 'int');
 
         if (empty($dates))
             $dates = null;
@@ -31,18 +33,30 @@ class AccountTotalsController extends Controller
             $dates = explode(',', $dates);
 
         AccountTotals::calculateAccountTotals();
-        self::sendSuccess(['account-totals' => AccountTotals::getTotalsByDate($accountId, $dates)]);
+        self::sendSuccess(['account-totals' => AccountTotals::getTotalsByDate($accountId, $dates,$month, $year)]);
     }
 
     public function getTotalByMonth(): void
     {
-//        self::checkPermissions(['financial_accounts' => [User::PERMISSION_READ]]);
+        self::checkPermissions(['financial_accounts' => [User::PERMISSION_READ]]);
 
         $accountId = self::getParameter('account-id', dataType: 'int');
-        $month = self::getParameter('month');
-        $year = self::getParameter('year');
+        $month = self::getParameter('month', dataType: 'int');
+        $year = self::getParameter('year', dataType: 'int');
 
         AccountTotals::calculateAccountTotals();
         self::sendSuccess(['account-totals' => AccountTotals::getTotalsByMonth($accountId, $month, $year)]);
     }
+
+    public function getTotalByYear(): void
+    {
+        self::checkPermissions(['financial_accounts' => [User::PERMISSION_READ]]);
+
+        $accountId = self::getParameter('account-id', dataType: 'int');
+        $year = self::getParameter('year', dataType: 'int');
+
+        AccountTotals::calculateAccountTotals();
+        self::sendSuccess(['account-totals' => AccountTotals::getTotalsByYear($accountId, $year)]);
+    }
+
 }

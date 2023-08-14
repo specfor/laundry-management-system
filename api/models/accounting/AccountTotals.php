@@ -107,7 +107,7 @@ class AccountTotals extends DbModel
             }
     }
 
-    public static function getTotalsByDate(int $accountId = null, array $dates = null): array
+    public static function getTotalsByDate(int $accountId = null, array $dates = null, int $month = null, int $year = null): array
     {
         $filters = [];
         $placeholders = [];
@@ -122,6 +122,13 @@ class AccountTotals extends DbModel
             }
             $filters[] = '(' . implode(' or ', $fil) . ')';
         }
+        if ($month) {
+            if ($month < 10)
+                $month = "0$month";
+            $filters[] = "date LIKE  '%-$month-%'";
+        }
+        if ($year)
+            $filters[] = "date LIKE '$year-%'";
 
         $condition = implode(' AND ', $filters);
 
@@ -129,8 +136,91 @@ class AccountTotals extends DbModel
             $condition, $placeholders, ['date', 'desc'])->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public static function getTotalsByMonth(int $accountId = null, string $month = null, string $year = null): array
+    public static function getTotalsByMonth(int $accountId = null, int $month = null, int $year = null): array
     {
+        $filters = [];
+        $placeholders = [];
 
+        if ($accountId)
+            $filters[] = "account_id=$accountId";
+        if ($year && $month) {
+            if ($month < 10)
+                $month = "0$month";
+            $filters[] = "date LIKE '$year-$month-%'";
+        } elseif ($year) {
+            $filters[] = "date LIKE  '$year-%'";
+        } elseif ($month) {
+            if ($month < 10)
+                $month = "0$month";
+            $filters[] = "date LIKE  '%-$month-%'";
+        }
+
+        $condition = implode(' AND ', $filters);
+
+        $dayRecords = self::getDataFromTable(['account_id', 'date', 'credit', 'debit'], self::TABLE_NAME,
+            $condition, $placeholders, ['date', 'desc'])->fetchAll(PDO::FETCH_ASSOC);
+
+        $monthRecords = [];
+        foreach ($dayRecords as $dayRecord) {
+            $foundInMonthRecords = false;
+            foreach ($monthRecords as &$record) {
+                if ($record['account_id'] == $dayRecord['account_id'] && $record['date'] == substr($dayRecord['date'], 0, 7)) {
+                    $foundInMonthRecords = true;
+                    $record['credit'] = bcadd($record['credit'], $dayRecord['credit']);
+                    $record['debit'] = bcadd($record['debit'], $dayRecord['debit']);
+                    break;
+                }
+
+            }
+            if (!$foundInMonthRecords) {
+                $monthRecords[] = [
+                    'account_id' => $dayRecord['account_id'],
+                    'date' => substr($dayRecord['date'], 0, 7),
+                    'credit' => $dayRecord['credit'],
+                    'debit' => $dayRecord['debit']
+                ];
+            }
+        }
+        return $monthRecords;
+    }
+
+    public static function getTotalsByYear(int $accountId = null, int $year = null): array
+    {
+        $filters = [];
+        $placeholders = [];
+
+        if ($accountId)
+            $filters[] = "account_id=$accountId";
+        if ($year) {
+            $filters[] = "date LIKE '$year-%'";
+        }
+
+        $condition = implode(' AND ', $filters);
+
+        $dayRecords = self::getDataFromTable(['account_id', 'date', 'credit', 'debit'], self::TABLE_NAME,
+            $condition, $placeholders, ['date', 'desc'])->fetchAll(PDO::FETCH_ASSOC);
+
+        $yearRecords = [];
+        foreach ($dayRecords as $dayRecord) {
+            $foundInYearRecords = false;
+            foreach ($yearRecords as &$record) {
+                if ($record['account_id'] == $dayRecord['account_id'] && $record['date'] == substr($dayRecord['date'], 0, 4)) {
+                    $foundInYearRecords = true;
+                    $record['credit'] = bcadd($record['credit'], $dayRecord['credit']);
+                    $record['debit'] = bcadd($record['debit'], $dayRecord['debit']);
+                    break;
+                }
+
+            }
+            if (!$foundInYearRecords) {
+                $yearRecords[] = [
+                    'account_id' => $dayRecord['account_id'],
+                    'date' => substr($dayRecord['date'], 0, 4),
+                    'credit' => $dayRecord['credit'],
+                    'debit' => $dayRecord['debit']
+                ];
+            }
+        }
+        return $yearRecords;
     }
 }

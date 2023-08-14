@@ -99,6 +99,7 @@ $app->router->addPostRoute('/api/v1/general-ledger/add', [LedgerRecordController
 $app->router->addGetRoute('/api/v1/account-totals', [AccountTotalsController::class, 'calculateTotals']);
 $app->router->addGetRoute('/api/v1/account-totals/day-basis', [AccountTotalsController::class, 'getTotalByDate']);
 $app->router->addGetRoute('/api/v1/account-totals/month-basis', [AccountTotalsController::class, 'getTotalByMonth']);
+$app->router->addGetRoute('/api/v1/account-totals/year-basis', [AccountTotalsController::class, 'getTotalByYear']);
 
 // Super admin routes
 $app->router->addGetRoute('/api/v1/realtime-metrics', [ServerAdminPanelController::class, 'getRealtimePerformanceMetrics']);
