@@ -17,13 +17,23 @@ let editBtn = [{
 }]
 
 let searchParam = [{
+  paramNumber:'paramOne',
   searchParameter:'Order Id',
-  searchParamType:'orderId'
+  searchParamType:'orderId',
+  type:'text'
 },{
-  searchParameter:'Payment Id'
+  paramNumber:'paramTwo',
+  searchParameter:'Payment Id',
+  searchParamType:'orderId',
+  type:'text'
+},{
+  paramNumber:'paramThree',
+  searchParameter:'Added date',
+  searchParamType:'orderId',
+  type:'date'
 }]
 
-async function getPayments(paramOne=null,paramTwo=null) {
+async function getPayments(paramOne=null,paramTwo=null,paramThree=null) {
 
   let params = {}
 
@@ -33,6 +43,10 @@ async function getPayments(paramOne=null,paramTwo=null) {
 
   if(paramTwo){
     params['payment-id'] = paramTwo
+  }
+
+  if(paramThree){
+    params['paid-date'] = paramThree
   }
 
   let response = await sendGetRequest(apiBaseUrl + "/payments",params)
@@ -86,20 +100,25 @@ async function searchPayment(params){
 
   let orderId = parseInt(params['paramOne'])
   let paymentId = parseInt(params['paramTwo'])
+  let paidDate = params['paramThree']
+  
+
+  clearInterval(typingTimer)
+  typingTimer = setTimeout(getPayments(null,null,paidDate), doneTypingInterval)
 
   if(Number.isInteger(orderId) && Number.isInteger(paymentId)){
     clearInterval(typingTimer)
-    typingTimer = setTimeout(getPayments(orderId,paymentId), doneTypingInterval)
+    typingTimer = setTimeout(getPayments(orderId,paymentId,paidDate), doneTypingInterval)
   
   
   }else if(Number.isInteger(orderId)){
     clearInterval(typingTimer)
-    typingTimer = setTimeout(getPayments(orderId,null), doneTypingInterval)
+    typingTimer = setTimeout(getPayments(orderId,null,paidDate), doneTypingInterval)
   
   
   }else if(Number.isInteger(paymentId)){
     clearInterval(typingTimer)
-    typingTimer = setTimeout(getPayments(null,paymentId), doneTypingInterval)
+    typingTimer = setTimeout(getPayments(null,paymentId,paidDate), doneTypingInterval)
   
   
   }else{

@@ -19,10 +19,40 @@ let editBtn = [{
 }]
 
 let searchParam = [{
+  type:'text',
+  paramNumber:'paramOne',
   searchParameter:'Customer Name',
   searchParamType:'customerName'
 },{
-  searchParameter:'Phone Number'
+  type:'number',
+  paramNumber:"paramTwo",
+  searchParameter:'Phone Number',
+  searchParamType:'customerName',
+},{
+  paramNumber:'paramThree',
+  searchParameter:'Email',
+  searchParamType:'customerName',
+  type:'email'
+},{
+  paramNumber:'paramFour',
+  searchParameter:'Customer Id',
+  searchParamType:'customerName',
+  type:'number'
+},{
+  paramNumber:'paramFive',
+  searchParameter:'Branch Id',
+  searchParamType:'customerName',
+  type:'number'
+},{
+  paramNumber:'paramSix',
+  searchParameter:'Address',
+  searchParamType:'customerName',
+  type:'text'
+},{
+  paramNumber:'paramSeven',
+  searchParameter:'Joined Date',
+  searchParamType:'customerName',
+  type:'date'
 }]
 
 async function getCustomers(paramOne=null,paramTwo=null) {

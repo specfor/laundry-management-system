@@ -30,10 +30,20 @@ let editBtn = [{
 }]
 
 let searchParam = [{
+  paramNumber:'paramOne',
   searchParameter:'Branch Name',
-  searchParamType:'branchName'
+  searchParamType:'branchName',
+  type:'text'
 },{
-  searchParameter:"phone-number"
+  paramNumber:'paramTwo',
+  searchParameter:"phone-number",
+  searchParamType:'branchName',
+  type:'number',
+},{
+  paramNumber:'paramThree',
+  searchParameter:"Branch Id",
+  searchParamType:'branchName',
+  type:'number',
 }]
 
 let typingTimer;
@@ -42,22 +52,26 @@ let doneTypingInterval = 500;
 async function getBranchesWithParams(params){
   let branchName = params['paramOne']
   let phoneNumber = parseInt(params['paramTwo'])
+  let branchId = parseInt(params['paramThree'])
+
+  clearInterval(typingTimer)
+  typingTimer = setTimeout(getBranches(null,null,branchId), doneTypingInterval)
 
   if(branchName && Number.isInteger(phoneNumber)){
     clearInterval(typingTimer)
-    typingTimer = setTimeout(getBranches(branchName,phoneNumber), doneTypingInterval)
+    typingTimer = setTimeout(getBranches(branchName,phoneNumber,branchId), doneTypingInterval)
   }else if(branchName){
     clearInterval(typingTimer)
-    typingTimer = setTimeout(getBranches(branchName,null), doneTypingInterval)
+    typingTimer = setTimeout(getBranches(branchName,null,branchId), doneTypingInterval)
   }else if(Number.isInteger(phoneNumber)){
     clearInterval(typingTimer)
-    typingTimer = setTimeout(getBranches(null,phoneNumber), doneTypingInterval)
+    typingTimer = setTimeout(getBranches(null,phoneNumber,branchId), doneTypingInterval)
   }else{
     getBranches()
   }
 }
 
-async function getBranches(paramOne=null,paramTwo=null) {
+async function getBranches(paramOne=null,paramTwo=null,paramThree=null) {
 
   let params = {}
 
@@ -67,6 +81,10 @@ async function getBranches(paramOne=null,paramTwo=null) {
 
   if(paramTwo){
     params['phone-number'] = paramTwo
+  }
+
+  if(paramThree){
+    params['branch-id'] = paramThree
   }
 
   let response = await sendGetRequest(apiBaseUrl + "/branches",params)

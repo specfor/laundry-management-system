@@ -1,24 +1,28 @@
 <template>
   <div class="w-full overflow-x-auto">
-    
      <div class="flex justify-between w-full">
         <div class="flex">
-
-          <button :disabled="isDisabled" class="rounded-md px-3 py-1 transition duration-300  mb-4 subpixel-antialiased	font-medium	" :class="{'bg-red-600 text-white hover:bg-red-700':isActive,'bg-stone-200 text-stone-600':!isActive}" @click="()=>{$emit(deleteMultiple[0]['onClickEvent'],selectedIds) 
+          <button :disabled="isDisabled" class="rounded-md px-3 py-1 transition duration-300  mb-4 subpixel-antialiased	font-medium	" :class="{'bg-red-600 text-white hover:bg-red-700':isActive,'bg-stone-200 text-stone-600':!isActive}" @click="()=>{$emit(deleteMultiple[0]['onClickEvent'],selectedIds);isDisabled = true;isActive=false;isEditDisabled=true;isEditActive= false;selectedIds=[] ;if(selectedIds){isDisabled=true} ;
     selectedIds = []}" >Delete</button>
 
-            <button :disabled="isEditDisabled" class="ml-5 rounded-md px-3 py-1 transition duration-300  mb-4 subpixel-antialiased	font-medium" :class="{'bg-blue-600 text-white hover:bg-blue-700':isEditActive,'bg-stone-200 text-stone-600':!isEditActive}" @click="()=>{$emit(edit[0]['onClickEvent'],selectedIds)}">Edit</button>
+            <button :disabled="isEditDisabled" class="ml-5 rounded-md px-3 py-1 transition duration-300  mb-4 subpixel-antialiased	font-medium" :class="{'bg-blue-600 text-white hover:bg-blue-700':isEditActive,'bg-stone-200 text-stone-600':!isEditActive}" @click="()=>{$emit(edit[0]['onClickEvent'],selectedIds);isDisabled=true;isEditActive= false;isActive=false;isDisabled=true;selectedIds = [];if(selectedIds){isEditDisabled=true} }">Edit</button>
 
         </div>
-        <div class="flex">
+        <div @click="isHidden = !isHidden">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+  </svg>
 
-          <label for="search" class="bg-stone-400 text-white subpixel-antialiased px-3 py-1 h-8">Search</label>
-          <input type="text" class="w-full border-2 border-stone-400 bg-stone-200  h-8" v-model="searchInput['paramOne']" :placeholder="search[0]['searchParameter']" @keyup="$emit(search[0]['searchParamType'],searchInput)">
-      
-          <label for="search" class="bg-stone-400 ml-3 text-white subpixel-antialiased px-3 py-1 h-8">Search</label>
-          <input type="text" class="w-full border-2 border-stone-400 bg-stone-200  h-8" v-model="searchInput['paramTwo']" :placeholder="search[1]['searchParameter']" @keyup="$emit(search[0]['searchParamType'],searchInput)">
-        </div>
       </div>
+        
+      </div>
+      
+      <div class="block w-full mb-2 bg-stone-100 w-1/5 mt-2" :class="{'hidden':isHidden}" >
+          <span v-for="(item,i) in search" :key="i" class="flex ml-2">          
+            <input :type="item.type" class="w-full border-2 border-stone-400 bg-stone-200  h-8 m-3" 
+            v-model="searchInput[item.paramNumber]" :placeholder="item['searchParameter']" @input="$emit(item['searchParamType'],searchInput)">
+          </span>
+        </div>
     
     <table class="table-auto border-collapse border w-full">
       
@@ -68,7 +72,7 @@ let isActive = ref(false)
 let isEditDisabled = ref(true)
 let isEditActive = ref(false)
 let searchInput = ref({})
-
+let isHidden = ref(true)
 
 function isMultipleChecked(){
 

@@ -40,10 +40,21 @@ let deleteBtn = [{
 }]
 
 let searchParam = [{
+  paramNumber:'paramOne',
   searchParameter:'Order Id',
-  searchParamType:'customerName'
+  searchParamType:'customerName',
+  type:'text'
 },{
-  searchParameter:'Branch Id'
+  paramNumber:'paramTwo',
+  searchParameter:'Branch Id',
+  searchParamType:'customerName',
+  type:'text'
+},
+{
+  paramNumber:'paramThree',
+  searchParameter:'Added date',
+  searchParamType:'customerName',
+  type:'date'
 }]
 
 let productArray = {}
@@ -59,16 +70,20 @@ async function searchOrderId(params){
   
   let orderId = parseInt(params['paramOne'])
   let branchId = parseInt(params['paramTwo'])
+  let addedDate = params['paramThree']
+
+  clearInterval(typingTimer)
+  typingTimer = setTimeout(getOrders(null,null,addedDate), doneTypingInterval)  
 
   if(Number.isInteger(orderId) && Number.isInteger(branchId)){
     clearInterval(typingTimer)
-    typingTimer = setTimeout(getOrders(orderId,branchId), doneTypingInterval)
+    typingTimer = setTimeout(getOrders(orderId,branchId,addedDate), doneTypingInterval)
   }else if(Number.isInteger(orderId)){
     clearInterval(typingTimer)
-    typingTimer = setTimeout(getOrders(orderId,null), doneTypingInterval)
+    typingTimer = setTimeout(getOrders(orderId,null,addedDate), doneTypingInterval)
   }else if(Number.isInteger(branchId)){
     clearInterval(typingTimer)
-    typingTimer = setTimeout(getOrders(null,branchId), doneTypingInterval)
+    typingTimer = setTimeout(getOrders(null,branchId,addedDate), doneTypingInterval)
   }else{
     getOrders()
   }
@@ -76,7 +91,7 @@ async function searchOrderId(params){
 }
 
 
-async function getOrders(paramOne=null,paramTwo=null) {
+async function getOrders(paramOne=null,paramTwo=null,paramThree=null) {
 
   let params = {}
 
@@ -88,6 +103,9 @@ async function getOrders(paramOne=null,paramTwo=null) {
     params['branch-id'] = paramTwo
   }
 
+  if(paramThree){
+    params['added-date'] = paramThree
+  }
 
   actions = []
   let response = await sendGetRequest(apiBaseUrl + "/orders",params)
