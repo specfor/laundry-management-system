@@ -78,10 +78,13 @@ $app->router->addPostRoute('/api/v1/payments/add', [PaymentController::class, 'a
 $app->router->addPostRoute('/api/v1/payments/update', [PaymentController::class, 'updatePayment']);
 $app->router->addPostRoute('/api/v1/payments/delete', [PaymentController::class, 'deletePayment']);
 $app->router->addGetRoute('/api/v1/reports', [ReportController::class, 'getReport']);
+$app->router->addGetRoute('/api/v1/user-roles/permissions', [UserRoleController::class, 'getAvailablePermissions']);
 $app->router->addGetRoute('/api/v1/user-roles', [UserRoleController::class, 'getUserRoles']);
 $app->router->addPostRoute('/api/v1/user-roles/add', [UserRoleController::class, 'addUserRole']);
 $app->router->addPostRoute('/api/v1/user-roles/update', [UserRoleController::class, 'updateUserRole']);
 $app->router->addPostRoute('/api/v1/user-roles/delete', [UserRoleController::class, 'deleteUserRole']);
+
+// Accounting routes
 $app->router->addGetRoute('/api/v1/taxes', [TaxController::class, 'getTaxes']);
 $app->router->addPostRoute('/api/v1/taxes/add', [TaxController::class, 'addTax']);
 $app->router->addPostRoute('/api/v1/taxes/update', [TaxController::class, 'updateTax']);
@@ -93,7 +96,10 @@ $app->router->addPostRoute('/api/v1/financial-accounts/delete', [FinancialAccoun
 $app->router->addGetRoute('/api/v1/financial-account-types', [FinancialAccountController::class, 'getAccountTypes']);
 $app->router->addGetRoute('/api/v1/general-ledger', [LedgerRecordController::class, 'getLedgerRecords']);
 $app->router->addPostRoute('/api/v1/general-ledger/add', [LedgerRecordController::class, 'addLedgerRecord']);
-$app->router->addGetRoute('/api/v1/financial-account-totals', [AccountTotalsController::class, 'calculateTotals']);
+$app->router->addGetRoute('/api/v1/account-totals', [AccountTotalsController::class, 'calculateTotals']);
+$app->router->addGetRoute('/api/v1/account-totals/day-basis', [AccountTotalsController::class, 'getTotalByDate']);
+$app->router->addGetRoute('/api/v1/account-totals/month-basis', [AccountTotalsController::class, 'getTotalByMonth']);
+$app->router->addGetRoute('/api/v1/account-totals/year-basis', [AccountTotalsController::class, 'getTotalByYear']);
 
 // Super admin routes
 $app->router->addGetRoute('/api/v1/realtime-metrics', [ServerAdminPanelController::class, 'getRealtimePerformanceMetrics']);

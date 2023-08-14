@@ -13,7 +13,50 @@ class AccountTotalsController extends Controller
         self::checkPermissions(['financial_accounts' => [User::PERMISSION_READ]]);
 
         $forceRecalculate = self::getParameter('force-recalculate', defaultValue: false, dataType: 'bool');
+        AccountTotals::calculateAccountTotals($forceRecalculate);
 
-        self::sendSuccess(['account-totals' => AccountTotals::calculateAccountTotals($forceRecalculate)]);
+        self::sendSuccess("Successfully calculated the totals.");
     }
+
+    public function getTotalByDate(): void
+    {
+        self::checkPermissions(['financial_accounts' => [User::PERMISSION_READ]]);
+
+        $accountId = self::getParameter('account-id', dataType: 'int');
+        $dates = self::getParameter('dates');
+        $month = self::getParameter('month', dataType: 'int');
+        $year = self::getParameter('year', dataType: 'int');
+
+        if (empty($dates))
+            $dates = null;
+        else
+            $dates = explode(',', $dates);
+
+        AccountTotals::calculateAccountTotals();
+        self::sendSuccess(['account-totals' => AccountTotals::getTotalsByDate($accountId, $dates,$month, $year)]);
+    }
+
+    public function getTotalByMonth(): void
+    {
+        self::checkPermissions(['financial_accounts' => [User::PERMISSION_READ]]);
+
+        $accountId = self::getParameter('account-id', dataType: 'int');
+        $month = self::getParameter('month', dataType: 'int');
+        $year = self::getParameter('year', dataType: 'int');
+
+        AccountTotals::calculateAccountTotals();
+        self::sendSuccess(['account-totals' => AccountTotals::getTotalsByMonth($accountId, $month, $year)]);
+    }
+
+    public function getTotalByYear(): void
+    {
+        self::checkPermissions(['financial_accounts' => [User::PERMISSION_READ]]);
+
+        $accountId = self::getParameter('account-id', dataType: 'int');
+        $year = self::getParameter('year', dataType: 'int');
+
+        AccountTotals::calculateAccountTotals();
+        self::sendSuccess(['account-totals' => AccountTotals::getTotalsByYear($accountId, $year)]);
+    }
+
 }

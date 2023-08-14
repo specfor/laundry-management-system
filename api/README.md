@@ -166,6 +166,9 @@ POST - /api/v1/users/delete
 Parameters
 user-id - compulsory
 
+GET - /api/v1/user-roles/permissions
+Get all permission types available
+
 GET - /api/v1/user-roles
 page-num - optional
 role-id - optional
@@ -182,6 +185,10 @@ POST - /api/v1/user-roles/update
 role-id - compulsory
 name - optional
 permissions - optional
+            {
+                "users": ["read", "write", "modify", "delete"]       "users"-> main permission class, one or more of
+                                                                    permissions from ["read", "write", "modify", "delete"]
+            }
 description - optional
 
 POST - /api/v1/user-roles/delete
@@ -354,17 +361,11 @@ account-id - compulsory
 GET - /api/v1/financial-account-types
 Returns all account categories and their sub categories.
 
-GET - /api/v1/general-ledger (-----Undergoing modifications. Wait for the new.------- )
+GET - /api/v1/general-ledger
 Parameters
 page-num
-account-id
-reference
-description
-is-debit - to filter whether records are debit or credit. use following amount filter to filter amount.
-amount-min
-amount-max
-tax-min
-tax-max
+narration
+date
 
 POST - /api/v1/general-ledger/add 
 Parameters
@@ -372,17 +373,19 @@ narration - compulsory - a message explaining why this entry is adding
 body - compulsory - structure is as folllows
         {
             "narration": "buying some blue berries",
+            "tax-type": 'tax inclusive',          ---one of 'no tax', 'tax inclusive' or 'tax exclusive'. 'no tax' will
+                                                    not add any taxes. use 'tax inclusive' when taxes are already in the 
+                                                    credit/debit amount.
             "body": [
                 {
                 "account_id": 3,
                 "debit": 2300.50,
-                "tax_inclusive": false,      ---whether debit/credit amount contains its taxes
-                "description": "ha"
+                "description": "ha",
+                "tax_id": 2                  ---optional. use when need to override the default account tax rate.
                 },
                 {
                 "account_id": 2,
                 "credit": 2300.50,
-                "tax_inclusive": false,
                 "description": ""
                 }, 
                 {...}
@@ -390,10 +393,26 @@ body - compulsory - structure is as folllows
         }     
 date - optional - "yyyy-mm-dd"
 
-GET - /api/v1/financial-account-totals  (-----Undergoing modifications. Wait for the new.------- )
+GET - /api/v1/account-totals
 By just hitting the endpoint without 'force-recalculate' will calculate total credit & debit amounts in a smart way
     preventing read of whole ledger records table.
 Parameters
 force-recalculate - optional - only use when necessary. this will read whole ledger record table and calculate total
                                 credit & debit amounts. with billions of records this can take some time.
-                                
+
+GET - /api/v1/account-totals/day-basis
+Parameters
+account-id
+dates      - 2023-08-10,2023-08-11,...  - can get details of more dates once by sending a string of dates seperated by commas.
+year 
+
+GET - /api/v1/account-totals/month-basis 
+Parameters
+account-id
+month
+year
+
+GET - /api/v1/account-totals/year-basis 
+Parameters
+account-id
+year

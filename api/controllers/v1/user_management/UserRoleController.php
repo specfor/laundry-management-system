@@ -8,6 +8,13 @@ use LogicLeap\StockManagement\models\user_management\UserRoles;
 
 class UserRoleController extends Controller
 {
+    public function getAvailablePermissions(): void
+    {
+        self::checkPermissions();
+
+        self::sendSuccess(['permissions' => User::getAllPermissions()]);
+    }
+
     public function addUserRole(): void
     {
         self::checkPermissions(['user-roles' => [User::PERMISSION_WRITE]]);
