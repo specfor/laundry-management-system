@@ -311,6 +311,7 @@ tax-name - optional
 description - optional
 rate-min - optional
 rate-max - optional
+limit
 
 POST - /api/v1/taxes/add
 Parameters
@@ -338,6 +339,7 @@ account-code
 account-type
 tax-id
 description
+limit
 
 POST - /api/v1/financial-accounts/add
 Parameters
@@ -366,6 +368,7 @@ Parameters
 page-num
 narration
 date
+limit - no of records to return
 
 POST - /api/v1/general-ledger/add 
 Parameters
