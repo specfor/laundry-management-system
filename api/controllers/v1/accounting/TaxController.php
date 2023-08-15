@@ -34,8 +34,9 @@ class TaxController extends Controller
         $description = self::getParameter('description');
         $rateMin = self::getParameter('rate-min', dataType: 'float');
         $rateMax = self::getParameter('rate-max', dataType: 'float');
+        $limit = self::getParameter('limit', defaultValue: 30, dataType: 'int');
 
-        $data = Taxes::getTaxes($pageNumber, $taxId, $name, $description, $rateMin, $rateMax);
+        $data = Taxes::getTaxes($pageNumber, $taxId, $name, $description, $rateMin, $rateMax, $limit);
         self::sendSuccess(['taxes' => $data]);
     }
 
