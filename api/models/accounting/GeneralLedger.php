@@ -24,8 +24,8 @@ class GeneralLedger extends DbModel
             $placeholders['narration'] = "%" . $narration . "%";
         }
         if ($date) {
-            $filters[] = "date LIKE :date";
-            $placeholders['date'] = "%$date%";
+            $filters[] = "date = :date";
+            $placeholders['date'] = $date;
         }
 
         $condition = implode(' AND ', $filters);
