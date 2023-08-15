@@ -101,29 +101,28 @@ async function searchPayment(params){
   let orderId = parseInt(params['paramOne'])
   let paymentId = parseInt(params['paramTwo'])
   let paidDate = params['paramThree']
+
+  if(!Number.isInteger(orderId)){
+    orderId = null
+  }
+
+  if(!Number.isInteger(paymentId)){
+    paymentId = null
+  }
+
+  if(paidDate == ''){
+    paidDate = null
+  }
   
+  if(paidDate == null && orderId == null && paymentId == null){
+    getPayments()
+    return
+  }
 
   clearInterval(typingTimer)
-  typingTimer = setTimeout(getPayments(null,null,paidDate), doneTypingInterval)
+  typingTimer = setTimeout(getPayments(orderId,paymentId,paidDate), doneTypingInterval)
 
-  if(Number.isInteger(orderId) && Number.isInteger(paymentId)){
-    clearInterval(typingTimer)
-    typingTimer = setTimeout(getPayments(orderId,paymentId,paidDate), doneTypingInterval)
-  
-  
-  }else if(Number.isInteger(orderId)){
-    clearInterval(typingTimer)
-    typingTimer = setTimeout(getPayments(orderId,null,paidDate), doneTypingInterval)
-  
-  
-  }else if(Number.isInteger(paymentId)){
-    clearInterval(typingTimer)
-    typingTimer = setTimeout(getPayments(null,paymentId,paidDate), doneTypingInterval)
-  
-  
-  }else{
-    getPayments()
-  }
+ 
 }
 
 async function editPayment(id) {

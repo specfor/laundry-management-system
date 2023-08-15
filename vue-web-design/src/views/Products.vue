@@ -37,36 +37,59 @@ let typingTimer;
 let doneTypingInterval = 500;
 
 let searchParamProduct = [{
+  paramNumber:'paramOne',
   searchParameter:'Product Name',
-  searchParamType:'productName'
+  searchParamType:'productName',
+  type:'text'
 },{
+  paramNumber:'paramTwo',
   searchParameter:'Item Price',
-
+  searchParamType:'productName',
+  type:'number'
+},{
+  paramNumber:'paramThree',
+  searchParameter:'Item Id',
+  searchParamType:'productName',
+  type:'number'
 }]
 
 let searchParamAction = [{
+  paramNumber:'paramOne',
   searchParameter:'Action Name',
-  searchParamType:'actionId'
+  searchParamType:'actionId',
+  type:'text'
 },{
+  paramNumber:'paramTwo',
   searchParameter:'Page Number',
+  searchParamType:'actionId',
+  type:"number"
 }]
 
 async function getProductsWithParams(params){
   let name = params['paramOne']
   let price = parseInt(params['paramTwo'])
+  let id = parseInt(params['paramThree'])
 
-  if(name && Number.isInteger(price)){
-    clearInterval(typingTimer)
-    typingTimer = setTimeout(getProducts(name,price), doneTypingInterval)
-  }else if(name){
-    clearInterval(typingTimer)
-    typingTimer = setTimeout(getProducts(name,null), doneTypingInterval)
-  }else if(Number.isInteger(price)){
-    clearInterval(typingTimer)
-    typingTimer = setTimeout(getProducts(null,price), doneTypingInterval)
-  }else{
-    getProducts()
+  if(!Number.isInteger(price)){
+    price = null
   }
+
+  if(!Number.isInteger(id)){
+    id = null
+  }
+
+  if(name == ''){
+    name = null
+  }
+
+  if(name == null && price == null && id == null){
+    getProducts()
+    return
+  }
+
+
+  clearInterval(typingTimer)
+  typingTimer = setTimeout(getProducts(name,price,id), doneTypingInterval)
 }
 
 let typingTimerTwo 
@@ -75,18 +98,21 @@ async function getActionsWithParams(params){
   let actionName = params['paramOne']
   let pageNum = parseInt(params['paramTwo'])
 
-  if(actionName && Number.isInteger(pageNum)){
-    clearInterval(typingTimerTwo)
-    typingTimerTwo = setTimeout(getActions(actionName,pageNum), doneTypingInterval)
-  }else if(actionName){
-    clearInterval(typingTimerTwo)
-    typingTimerTwo = setTimeout(getActions(actionName,null), doneTypingInterval)
-  }else if(Number.isInteger(pageNum)){
-    clearInterval(typingTimerTwo)
-    typingTimerTwo = setTimeout(getActions(null,pageNum), doneTypingInterval)
-  }else{
-    getActions()
+  if(actionName == ''){
+    actionName = null
   }
+
+  if(!Number.isInteger(pageNum)){
+    pageNum = null
+  }
+
+  if(actionName == null && pageNum == null){
+    getActions()
+    return
+  }
+
+  clearInterval(typingTimerTwo)
+  typingTimerTwo = setTimeout(getActions(actionName,pageNum), doneTypingInterval)
 }
 
 
@@ -210,7 +236,7 @@ async function deleteAction(ids) {
 
 }
 
-async function getProducts(paramOne=null,paramTwo=null) {
+async function getProducts(paramOne=null,paramTwo=null,paramThree = null) {
 
   let params = {}
 
@@ -220,6 +246,10 @@ async function getProducts(paramOne=null,paramTwo=null) {
 
   if(paramTwo){
     params['item-price'] = paramTwo
+  }
+
+  if(paramThree){
+    params['item-id'] = paramThree
   }
 
   let response = await sendGetRequest(apiBaseUrl + "/items",params)

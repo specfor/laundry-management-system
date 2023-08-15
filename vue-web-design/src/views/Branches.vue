@@ -54,21 +54,26 @@ async function getBranchesWithParams(params){
   let phoneNumber = parseInt(params['paramTwo'])
   let branchId = parseInt(params['paramThree'])
 
-  clearInterval(typingTimer)
-  typingTimer = setTimeout(getBranches(null,null,branchId), doneTypingInterval)
-
-  if(branchName && Number.isInteger(phoneNumber)){
-    clearInterval(typingTimer)
-    typingTimer = setTimeout(getBranches(branchName,phoneNumber,branchId), doneTypingInterval)
-  }else if(branchName){
-    clearInterval(typingTimer)
-    typingTimer = setTimeout(getBranches(branchName,null,branchId), doneTypingInterval)
-  }else if(Number.isInteger(phoneNumber)){
-    clearInterval(typingTimer)
-    typingTimer = setTimeout(getBranches(null,phoneNumber,branchId), doneTypingInterval)
-  }else{
-    getBranches()
+  if(branchName == ''){
+    branchName = null
   }
+
+  if(phoneNumber == ''){
+    phoneNumber = null
+  }
+
+  if(branchId == ''){
+    branchId = null
+  }
+
+  if(branchId == null && branchName == null && branchId == null){
+    getBranches()
+    return
+  }
+
+  clearInterval(typingTimer)
+  typingTimer = setTimeout(getBranches(branchName,phoneNumber,branchId), doneTypingInterval)
+
 }
 
 async function getBranches(paramOne=null,paramTwo=null,paramThree=null) {

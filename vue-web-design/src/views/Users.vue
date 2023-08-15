@@ -32,36 +32,103 @@ let editBtnRole = [{
   onClickEvent:'editRole'
 }]
 
-let searchParam = [{
+let searchParamUsers = [{
+  paramNumber:'paramOne',
   searchParameter:'Username',
-  searchParamType:'userName'
+  searchParamType:'userName',
+  type:'text'
 },{
-  searchParameter:'Name'
+  paramNumber:'paramTwo',
+  searchParameter:'Name',
+  searchParamType:'userName',
+  type:"text"
+},{
+  paramNumber:'paramThree',
+  searchParameter:'Email',
+  searchParamType:'userName',
+  type:"email"
+},{
+  paramNumber:'paramFour',
+  searchParameter:'Branch Id',
+  searchParamType:'userName',
+  type:"number"
+}]
+
+let searchParamRoles = [{
+  paramNumber:'paramOne',
+  searchParameter:'Role Id',
+  searchParamType:'roleName',
+  type:"number"
+},{
+  paramNumber:'paramTwo',
+  searchParameter:'Role Name',
+  searchParamType:'roleName',
+  type:"text"
 }]
 
 
-let typingTimer;
 let doneTypingInterval = 500;
+let typingTimerTwo;
+
+async function getRolesWithParams(params){
+  let roleId = parseInt(params['paramOne'])
+  let name = params['paramTwo']
+
+  if(!Number.isInteger(roleId)){
+    roleId = null
+  }
+
+  if(name == ''){
+    name = null
+  }
+
+  if(roleId == null && name == null){
+    getRoles()
+    return
+  }  
+
+  clearInterval(typingTimerTwo)
+  typingTimerTwo = setTimeout(getRoles(roleId,name), doneTypingInterval)
+
+}
+
+
+let typingTimer;
+
 
 async function getUsersWithParams(params){
   let username= params['paramOne']
   let name = params['paramTwo']
+  let email = params['paramThree']
+  let branchId = params['paramFour']
 
-  if(username && name){
-    clearInterval(typingTimer)
-    typingTimer = setTimeout(getUsers(username,name), doneTypingInterval)
-  }else if(username){
-    clearInterval(typingTimer)
-    typingTimer = setTimeout(getUsers(username,null), doneTypingInterval)
-  }else if(name){
-    clearInterval(typingTimer)
-    typingTimer = setTimeout(getUsers(null,name), doneTypingInterval)
-  }else{
-    getUsers()
+  if(!Number.isInteger(branchId)){
+    branchId = null
   }
+
+  if(username == ""){
+    username = null
+  }
+
+  if(email == ''){
+    email = null
+  }
+
+  if(name == ''){
+    name = null
+  }
+
+  if(username == null && email == null && branchId == null && name == null){
+    getUsers()
+    return
+  }
+
+  clearInterval(typingTimer)
+  typingTimer = setTimeout(getUsers(username,name,email,branchId), doneTypingInterval)
+
 }
 
-async function getUsers(paramOne=null,paramTwo=null) {
+async function getUsers(paramOne=null,paramTwo=null,paramThree=null,paramFour=null) {
 
   let params = {}
 
@@ -71,6 +138,14 @@ async function getUsers(paramOne=null,paramTwo=null) {
 
   if(paramTwo){
     params['name'] = paramTwo
+  }
+
+  if(paramThree){
+    params['email'] = paramThree
+  }
+
+  if(paramFour){
+    params['branch-id'] = paramFour
   }
 
   let response = await sendGetRequest(apiBaseUrl + "/users",params)
@@ -291,8 +366,19 @@ async function getPermissions(){
   }
 }
 
-async function getRoles(){
-  let response = await sendGetRequest(apiBaseUrl + "/user-roles")
+async function getRoles(paramOne = null ,paramTwo = null){
+
+  let params = {}
+
+if(paramOne){
+  params["role-id"] = paramOne
+}
+
+if(paramTwo){
+  params['name'] = paramTwo
+}
+
+  let response = await sendGetRequest(apiBaseUrl + "/user-roles",params)
 
 if (response.status === 'success') {
 
@@ -405,7 +491,7 @@ async function addNewRole(){
 
   <TableComponent :tableColumns="tableCol" :tableRows="tableRows" :actions="actions" :deleteMultiple="deleteBtn" :edit="editBtn"
                   @delete-user="deleteUser($event)" @edit-user="updateUser($event)"
-                  @update-user-pass="updatePasswordFunc($event)" :search="searchParam" @user-name="getUsersWithParams($event)"/>
+                  @update-user-pass="updatePasswordFunc($event)" :search="searchParamUsers" @user-name="getUsersWithParams($event)"/>
 
     <div class="flex justify-between mt-5 mb-3 ">
       <h3 class="text-2xl font-semibold">Roles</h3>
@@ -414,7 +500,7 @@ async function addNewRole(){
       </div>
       <TableComponent :tableColumns="tableColRoles" :tableRows="tableRowsRoles" :actions="actionsRoles" :deleteMultiple="deleteBtnRole" :edit="editBtnRole"
                   @delete-role="deleteRoles($event)" @edit-role="updateRoles($event)"
-                  :search="searchParam" @user-name="getUsersWithParams($event)"/>
+                  :search="searchParamRoles" @role-name="getRolesWithParams($event)"/>
               
 
 
