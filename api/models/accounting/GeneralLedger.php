@@ -119,13 +119,14 @@ class GeneralLedger extends DbModel
                         $tax = bcmul(bcdiv($record['debit'], "100"), $taxRate);
                     }
                 }
-                if (isset($record['credit'])) {
-                    $taxRecords[] = ['account_id' => $taxAccountId, 'credit' => $tax, 'description' => ''];
-                    $totalCredit = bcadd($totalCredit, $tax);
-                } else {
-                    $taxRecords[] = ['account_id' => $taxAccountId, 'debit' => $tax, 'description' => ''];
-                    $totalDebit = bcadd($totalDebit, $tax);
-                }
+                if (!$tax == '0.0000')
+                    if (isset($record['credit'])) {
+                        $taxRecords[] = ['account_id' => $taxAccountId, 'credit' => $tax, 'description' => ''];
+                        $totalCredit = bcadd($totalCredit, $tax);
+                    } else {
+                        $taxRecords[] = ['account_id' => $taxAccountId, 'debit' => $tax, 'description' => ''];
+                        $totalDebit = bcadd($totalDebit, $tax);
+                    }
             }
             if (isset($record['credit']))
                 $totalCredit = bcadd($totalCredit, $record['credit']);
