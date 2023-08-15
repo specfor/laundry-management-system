@@ -89,6 +89,7 @@ async function getEmployeesWithParams(params){
 
   if(empName== null && phoneNumber == null && email == null && address == null && branchId == null){
     getEmployees()
+    return
   }
 
   clearInterval(typingTimer)

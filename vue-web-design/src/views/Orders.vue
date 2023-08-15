@@ -86,6 +86,7 @@ async function searchOrderId(params){
 
   if(orderId==null && branchId==null && addedDate==null){
     getOrders()
+    return
   }
 
   clearInterval(typingTimer)

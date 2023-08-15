@@ -82,8 +82,9 @@ async function getRolesWithParams(params){
     name = null
   }
 
-  if(name == null && name == null){
+  if(roleId == null && name == null){
     getRoles()
+    return
   }  
 
   clearInterval(typingTimerTwo)
@@ -119,6 +120,7 @@ async function getUsersWithParams(params){
 
   if(username == null && email == null && branchId == null && name == null){
     getUsers()
+    return
   }
 
   clearInterval(typingTimer)

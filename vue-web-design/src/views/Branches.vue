@@ -68,6 +68,7 @@ async function getBranchesWithParams(params){
 
   if(branchId == null && branchName == null && branchId == null){
     getBranches()
+    return
   }
 
   clearInterval(typingTimer)

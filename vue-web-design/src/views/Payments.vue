@@ -116,6 +116,7 @@ async function searchPayment(params){
   
   if(paidDate == null && orderId == null && paymentId == null){
     getPayments()
+    return
   }
 
   clearInterval(typingTimer)

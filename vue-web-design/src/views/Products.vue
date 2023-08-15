@@ -84,6 +84,7 @@ async function getProductsWithParams(params){
 
   if(name == null && price == null && id == null){
     getProducts()
+    return
   }
 
 
@@ -107,6 +108,7 @@ async function getActionsWithParams(params){
 
   if(actionName == null && pageNum == null){
     getActions()
+    return
   }
 
   clearInterval(typingTimerTwo)

@@ -165,6 +165,7 @@ async function getCustomersWithParams(params){
 
   if(customerName == null && phoneNumber == null && email == null && address == null && cusId == null && branchId == null &&  joinedDate == null){
     getCustomers()
+    return
   }
 
   clearInterval(typingTimer)
