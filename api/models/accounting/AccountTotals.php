@@ -28,6 +28,7 @@ class AccountTotals extends DbModel
 
         $statement = self::getDataFromTable(['record_id', 'body', 'date'], 'general_ledger',
             "record_id > $lastReadLedgerRecord", orderBy: ['record_id', 'asc']);
+//        var_dump($accountTotals);
 
         while (true) {
             $ledgerData = $statement->fetch(PDO::FETCH_ASSOC);
@@ -39,47 +40,40 @@ class AccountTotals extends DbModel
             $ledgerData['body'] = json_decode($ledgerData['body'], true);
 
             foreach ($ledgerData['body'] as $ledgerEntry) {
-                $accountIndex = -1;
-                $newAccountIndex = -1;
-                foreach ($accountTotals as $index => $account) {
+                $accountRef = null;
+                $newAccountRef = null;
+                foreach ($accountTotals as &$account) {
                     if ($account['account_id'] == $ledgerEntry['account_id'] && $account['date'] == $ledgerData['date']) {
-                        $accountIndex = $index;
+                        $accountRef = $account;
                         break;
                     }
                 }
-                if ($accountIndex == -1)
-                    foreach ($newAccountTotals as $index => $account) {
-                        if ($account['account_id'] == $ledgerEntry['account_id'] && $account['date'] == $ledgerData['date']) {
-                            $newAccountIndex = $index;
+                if ($accountRef === null)
+                    foreach ($newAccountTotals as &$newAccount) {
+                        if ($newAccount['account_id'] == $ledgerEntry['account_id'] && $newAccount['date'] == $ledgerData['date']) {
+                            $newAccountRef = $newAccount;
                             break;
                         }
                     }
 
-                if ($accountIndex == -1 && $newAccountIndex == -1) {
-                    echo "adding account. \n";
+                if ($accountRef === null && $newAccountRef === null) {
                     $newAccountTotals[] = [
                         'account_id' => $ledgerEntry['account_id'],
                         'date' => $ledgerData['date'],
                         'credit' => $ledgerEntry['credit'] ?? "0.0000",
                         'debit' => $ledgerEntry['debit'] ?? "0.0000"
                     ];
-                } elseif ($accountIndex != -1) {
-                    echo "modify account.\n";
+                } elseif ($accountRef !== null) {
                     $accountTotalsUpdated = true;
                     if (isset($ledgerEntry['credit']))
-                        $accountTotals[$accountIndex]['credit'] = bcadd($accountTotals[$accountIndex]['credit'],
-                            $ledgerEntry['credit'] ?? "0.0000");
+                        $accountRef['credit'] = bcadd($accountRef['credit'], $ledgerEntry['credit']);
                     else
-                        $accountTotals[$accountIndex]['debit'] = bcadd($accountTotals[$accountIndex]['debit'],
-                            $ledgerEntry['debit'] ?? "0.0000");
-                } elseif ($newAccountIndex != -1) {
-                    echo "modify new account.\n";
+                        $accountRef['debit'] = bcadd($accountRef['debit'], $ledgerEntry['debit']);
+                } elseif ($newAccountRef !== null) {
                     if (isset($ledgerEntry['credit']))
-                        $newAccountTotals[$newAccountIndex]['credit'] = bcadd($newAccountTotals[$newAccountIndex]['credit'],
-                            $ledgerEntry['credit']);
+                        $newAccountRef['credit'] = bcadd($newAccountRef['credit'], $ledgerEntry['credit']);
                     else
-                        $newAccountTotals[$newAccountIndex]['debit'] = bcadd($newAccountTotals[$newAccountIndex]['debit'],
-                            $ledgerEntry['debit']);
+                        $newAccountRef['debit'] = bcadd($newAccountRef['debit'], $ledgerEntry['debit']);
                 }
             }
         }
@@ -93,17 +87,10 @@ class AccountTotals extends DbModel
                 self::updateTableData(self::TABLE_NAME, $account, "account_id=$accountId AND date=" . $account['date']);
             }
 
-//        var_dump($newAccountTotals);
         if (!empty($newAccountTotals))
             foreach ($newAccountTotals as &$account) {
                 $account['until_ledger_rec_id'] = $lastReadLedgerRecord;
-                try {
-
-                    self::insertIntoTable(self::TABLE_NAME, $account);
-                } catch (\Exception $e) {
-
-                    var_dump($e->getMessage());
-                }
+                self::insertIntoTable(self::TABLE_NAME, $account);
             }
     }
 
