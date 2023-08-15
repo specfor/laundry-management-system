@@ -43,12 +43,12 @@ let searchParam = [{
   paramNumber:'paramOne',
   searchParameter:'Order Id',
   searchParamType:'customerName',
-  type:'text'
+  type:'number'
 },{
   paramNumber:'paramTwo',
   searchParameter:'Branch Id',
   searchParamType:'customerName',
-  type:'text'
+  type:'number'
 },
 {
   paramNumber:'paramThree',
@@ -72,21 +72,26 @@ async function searchOrderId(params){
   let branchId = parseInt(params['paramTwo'])
   let addedDate = params['paramThree']
 
-  clearInterval(typingTimer)
-  typingTimer = setTimeout(getOrders(null,null,addedDate), doneTypingInterval)  
+  if(!Number.isInteger(orderId)){
+    orderId = null
+  }
 
-  if(Number.isInteger(orderId) && Number.isInteger(branchId)){
-    clearInterval(typingTimer)
-    typingTimer = setTimeout(getOrders(orderId,branchId,addedDate), doneTypingInterval)
-  }else if(Number.isInteger(orderId)){
-    clearInterval(typingTimer)
-    typingTimer = setTimeout(getOrders(orderId,null,addedDate), doneTypingInterval)
-  }else if(Number.isInteger(branchId)){
-    clearInterval(typingTimer)
-    typingTimer = setTimeout(getOrders(null,branchId,addedDate), doneTypingInterval)
-  }else{
+  if(!Number.isInteger(branchId)){
+    branchId = null
+  }
+
+  if(addedDate == ''){
+    addedDate = null
+  }
+
+  if(orderId==null && branchId==null && addedDate==null){
     getOrders()
   }
+
+  clearInterval(typingTimer)
+  typingTimer = setTimeout(getOrders(orderId,branchId,addedDate), doneTypingInterval)  
+
+  
    
 }
 

@@ -17,7 +17,7 @@
         
       </div>
       
-      <div class="block w-full mb-2 bg-stone-100 w-1/5 mt-2" :class="{'hidden':isHidden}" >
+      <div class="block w-full mb-2 bg-stone-100 w-1/4 mt-2" :class="{'hidden':isHidden}" >
           <span v-for="(item,i) in search" :key="i" class="flex ml-2">          
             <input :type="item.type" class="w-full border-2 border-stone-400 bg-stone-200  h-8 m-3" 
             v-model="searchInput[item.paramNumber]" :placeholder="item['searchParameter']" @input="$emit(item['searchParamType'],searchInput)">

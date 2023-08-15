@@ -55,7 +55,7 @@ let searchParam = [{
   type:'date'
 }]
 
-async function getCustomers(paramOne=null,paramTwo=null) {
+async function getCustomers(paramOne=null,paramTwo=null,paramThree=null,paramFour=null,paramFive=null,paramSix=null,paramSeven=null) {
 
   let params = {}
 
@@ -65,6 +65,26 @@ async function getCustomers(paramOne=null,paramTwo=null) {
 
   if(paramTwo){
     params['phone-number'] = paramTwo
+  }
+
+  if(paramThree){
+    params['email'] = paramThree
+  }
+
+  if(paramFour){
+    params['address'] = paramFour
+  }
+  
+  if(paramFive){
+    params['customer-id'] = paramFive
+  }
+  
+  if(paramSix){
+    params['branch-id'] = paramSix
+  }
+  
+  if(paramSeven){
+    params['join-date'] = paramSeven
   }
 
   let response = await sendGetRequest(apiBaseUrl + "/customers",params)
@@ -115,19 +135,40 @@ let doneTypingInterval = 500
 async function getCustomersWithParams(params){
   let customerName = params['paramOne']
   let phoneNumber = parseInt(params['paramTwo'])
+  let email = params['paramThree']
+  let cusId = parseInt(params['paramFour'])
+  let branchId = parseInt(params['paramFive'])
+  let address  = params['paramSix']
+  let joinedDate = params['paramSeven']
 
-  if(customerName && Number.isInteger(phoneNumber)){
-    clearInterval(typingTimer)
-    typingTimer = setTimeout(getCustomers(customerName,phoneNumber), doneTypingInterval)
-  }else if(customerName){
-    clearInterval(typingTimer)
-    typingTimer = setTimeout(getCustomers(customerName,null), doneTypingInterval)
-  }else if(Number.isInteger(phoneNumber)){
-    clearInterval(typingTimer)
-    typingTimer = setTimeout(getCustomers(null,phoneNumber), doneTypingInterval)
-  }else{
+  if(customerName == ''){
+    customerName = null
+  }
+  if(phoneNumber == ''){
+    phoneNumber = null
+  }
+  if(email == ''){
+    email = null
+  }
+  if(!Number.isInteger(cusId)){
+    cusId = null
+  }
+  if(!Number.isInteger(branchId)){
+    branchId = null
+  }
+  if(address == ''){
+    address = null
+  }
+  if(joinedDate == ''){
+    joinedDate = null
+  }
+
+  if(customerName == null && phoneNumber == null && email == null && address == null && cusId == null && branchId == null &&  joinedDate == null){
     getCustomers()
   }
+
+  clearInterval(typingTimer)
+  typingTimer = setTimeout(getCustomers(customerName,phoneNumber,email,address,cusId,branchId,joinedDate), doneTypingInterval)
 }
 
 
