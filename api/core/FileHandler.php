@@ -34,14 +34,14 @@ class FileHandler
 
     /**
      * Stream a file to the current request.
-     * @param string $filePath File path relative to 'storage/admin/' or 'storage/user/'
-     * @param bool $isAdminFile If set to true, 'storage/admin/' is used as base path, otherwise base
+     * @param string $filePath File path relative to 'storage/system/' or 'storage/user/'
+     * @param bool $isSystemFile If set to true, 'storage/system/' is used as base path, otherwise base
      *      path is 'storage/user/'
      * @return bool Return true if successfully streamed, false if any errors.
      */
-    public static function streamFile(string $filePath, bool $isAdminFile = false): bool
+    public static function streamFile(string $filePath, bool $isSystemFile = false): bool
     {
-        $basePath = self::getBaseFolder($isAdminFile);
+        $basePath = self::getBaseFolder($isSystemFile);
 
         if ($filePath[0] === '/')
             $filePath = substr($filePath, 1);
@@ -55,9 +55,19 @@ class FileHandler
         return true;
     }
 
-    public static function getFileContent(string $filePath, bool $isAdminFile = false)
+    public static function getFileContent(string $filePath, bool $isSystemFile = false): bool|string|null
     {
+        if ($filePath[0] === '/')
+            $filePath = substr($filePath, 1);
 
+        $path = self::getBaseFolder($isSystemFile). $filePath;
+        if (!file_exists($path))
+            return null;
+
+        $file = fopen($path, "r");
+        $data = fread($file, filesize($path));
+        fclose($file);
+        return $data;
     }
 
     /**
@@ -66,11 +76,11 @@ class FileHandler
      * @param string $newFileBasePath Location relative to the base path assigned by this class.
      * @param int $maxFileSize Max file size in bytes.
      * @param array $allowedMimeTypes Array of mime types to allow upload.
-     * @param bool $isAdminFile Whether to store in 'storage/admin/' or 'storage/user/'
+     * @param bool $isSystemFile Whether to store in 'storage/system/' or 'storage/user/'
      * @return array|string Return array as ['file_name' => $newFileName] when success. Error message when failed.
      */
     public static function handleFileUpload(string $uploadName, string $newFileBasePath, int $maxFileSize,
-                                            array  $allowedMimeTypes, bool $isAdminFile = false): array|string
+                                            array  $allowedMimeTypes, bool $isSystemFile = false): array|string
     {
         $tmpFilePath = $_FILES[$uploadName]['tmp_name'];
         $tmpFileSize = filesize($tmpFilePath);
@@ -89,17 +99,17 @@ class FileHandler
             return "Invalid file format.";
 
         $newFileName = bin2hex(random_bytes(20)) . uniqid() . self::getExtension($fileMimeType);
-        $newFilePath = self::getBaseFolder($isAdminFile) . $newFileBasePath . '/' . $newFileName;
+        $newFilePath = self::getBaseFolder($isSystemFile) . $newFileBasePath . '/' . $newFileName;
         if (move_uploaded_file($tmpFilePath, $newFilePath))
             return ['file_name' => $newFileName];
         else
             return "Failed to move the file to new location.";
     }
 
-    private static function getBaseFolder($isAdminFile = false): string
+    public static function getBaseFolder($isSystemFile = false): string
     {
-        if ($isAdminFile)
-            return Application::$ROOT_DIR . "/storage/admin/";
+        if ($isSystemFile)
+            return Application::$ROOT_DIR . "/storage/system/";
         else
             return Application::$ROOT_DIR . "/storage/user/";
     }
