@@ -38,7 +38,7 @@ export const useAuthorizedFetch = (url, origin, notifySuccess = false) => (creat
         },
         afterFetch(ctx) {
             // Transform the response a bit
-            console.log(ctx.response);
+            // console.log(ctx.response);
             if (ctx.data.statusCode !== undefined && ctx.data.statusMessage !== undefined && ctx.data.body !== undefined) {
                 if (ctx.data.statusCode != 200) handleRequestErrors({ origin, status: ctx.data.statusCode, statusText: ctx.data.statusMessage })
                 else if (notifySuccess) handleNotifySuccess({ origin, status: ctx.data.statusCode, statusText: ctx.data.statusMessage })

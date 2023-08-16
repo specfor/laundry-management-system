@@ -24,7 +24,7 @@ export function useTaxes() {
      * @param {number} id
      * @returns {Promise<import("../../types").FinancialAccount | undefined>} Returns undefined if no Financial Account record was found under the given ID
      */
-    const getFinancialAccount = async (id) => {
+    const getFinancialAccountById = async (id) => {
         return new Promise((resolve) => {
             const { data, isFinished } = useAuthorizedFetch(`/financial-accounts?account-id=${id}`, 'Get Financial Account').json().get();
 
@@ -74,5 +74,5 @@ export function useTaxes() {
         })
     }
 
-    return { getFinancialAccount, getFinanctialAccounts, addFinancialAccount, updateFinancialAccount, removeFinancialAccount }
+    return { getFinancialAccountById, getFinanctialAccounts, addFinancialAccount, updateFinancialAccount, removeFinancialAccount }
 }

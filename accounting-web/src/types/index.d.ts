@@ -8,13 +8,14 @@ type DateString = `${number}-${number}-${number}`;
 
 export interface LedgerRecord {
     record_id: number
-    account_id: number
-    reference: string
-    description: string
-    credit: Decimal
-    debit: Decimal
-    tax: Decimal
-    timestamp: Date
+    narration: string // "buying some blue berries"
+    date: Date
+    body: Object.Either<{
+        account_id: number
+        debit: Decimal
+        credit: Decimal
+        description: string
+    }, 'credit' | 'debit'>[] // | Either Debit or Credit, having both parameters set will result in an error
 }
 
 export interface Tax {
@@ -39,13 +40,14 @@ export interface FinancialAccount {
 
 export interface RawLedgerRecord {
     record_id: number
-    account_id: number
-    reference: string
-    description: string
-    credit: string
-    debit: string
-    tax: string
-    timestamp: string
+    narration: string // "buying some blue berries"
+    date: string // yyyy-mm-dd
+    body: Object.Either<{
+        account_id: number
+        debit: string
+        credit: string
+        description: string
+    }, 'credit' | 'debit'>[] // | Either Debit or Credit, having both parameters set will result in an error
 }
 
 export interface RawTax {
@@ -63,8 +65,21 @@ export interface LedgerRecordAddRequest {
     date?: DateString
     body: Object.Either<{
         "account_id": number
-        "debit"?: Float
-        "credit"?: Float
+        "debit": string
+        "credit": string
+        "description": string
+        "tax_id"?: number // -- - optional.use when need to override the default account tax rate.
+    }, 'credit' | 'debit'>[] // | Either Debit or Credit, having both parameters set will result in an error
+}
+
+export interface LedgerRecordAddOptions {
+    narration: string // "buying some blue berries"
+    taxType: 'tax inclusive' | 'no tax' | 'tax exclusive',   // 'no tax' will not add any taxes. use 'tax inclusive' when taxes are already in the credit / debit amount.
+    date?: Date
+    body: Object.Either<{
+        "account_id": number
+        "debit": Decimal
+        "credit": Decimal
         "description": string
         "tax_id"?: number // -- - optional.use when need to override the default account tax rate.
     }, 'credit' | 'debit'>[] // | Either Debit or Credit, having both parameters set will result in an error
