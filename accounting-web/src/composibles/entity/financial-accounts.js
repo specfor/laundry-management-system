@@ -2,7 +2,8 @@
 
 import { useAuthorizedFetch } from "../authorized-fetch"
 import { whenever } from "@vueuse/core";
-import { toValue } from "vue";
+import { logicAnd } from "@vueuse/math/index.cjs";
+import { toValue, ref } from "vue";
 
 export function useTaxes() {
     /**
@@ -11,9 +12,10 @@ export function useTaxes() {
      */
     const getFinanctialAccounts = async () => {
         return new Promise((resolve) => {
-            const { data, isFinished } = useAuthorizedFetch(`/financial-accounts`, 'Get Financial Accounts').json().get();
+            const success = ref(false);
+            const { data, isFinished } = useAuthorizedFetch(`/financial-accounts`, 'Get Financial Accounts', ref(true)).json().get();
 
-            whenever(isFinished, () => {
+            whenever(logicAnd(isFinished, success), () => {
                 resolve(/** @type {import("../../types").FinancialAccount[] }*/(toValue(data)['financial-accounts']));
             })
         })
@@ -26,9 +28,10 @@ export function useTaxes() {
      */
     const getFinancialAccountById = async (id) => {
         return new Promise((resolve) => {
-            const { data, isFinished } = useAuthorizedFetch(`/financial-accounts?account-id=${id}`, 'Get Financial Account').json().get();
+            const success =  ref(false);
+            const { data, isFinished } = useAuthorizedFetch(`/financial-accounts?account-id=${id}`, 'Get Financial Account', success).json().get();
 
-            whenever(isFinished, () => {
+            whenever(logicAnd(isFinished, success), () => {
                 const financialAccounts = /** @type {import("../../types").FinancialAccount[] }*/(toValue(data)['financial-accounts'])
                 resolve(financialAccounts.findLast(() => true));
             })
@@ -42,9 +45,10 @@ export function useTaxes() {
      */
     const addFinancialAccount = async (financialAccount) => {
         return new Promise((resolve) => {
-            const { isFinished } = useAuthorizedFetch('/financial-accounts/add', 'Add Financial Account', true).json().post(financialAccount);
+            const success =  ref(false);
+            const { isFinished } = useAuthorizedFetch('/financial-accounts/add', 'Add Financial Account', success, true).json().post(financialAccount);
 
-            whenever(isFinished, () => resolve())
+            whenever(logicAnd(isFinished, success), () => resolve())
         })
     }
 
@@ -55,9 +59,10 @@ export function useTaxes() {
      */
     const updateFinancialAccount = async (financialAccount) => {
         return new Promise((resolve) => {
-            const { isFinished } = useAuthorizedFetch('/financial-accounts/update', 'Update Financial Account', true).json().post(financialAccount);
+            const success =  ref(false);
+            const { isFinished } = useAuthorizedFetch('/financial-accounts/update', 'Update Financial Account', success, true).json().post(financialAccount);
 
-            whenever(isFinished, () => resolve())
+            whenever(logicAnd(isFinished, success), () => resolve())
         })
     }
 
@@ -68,9 +73,10 @@ export function useTaxes() {
      */
     const removeFinancialAccount = async (id) => {
         return new Promise((resolve) => {
-            const { isFinished } = useAuthorizedFetch('/financial-accounts/remove', 'Remove Financial Account', true).json().post({ 'account-id': id });
+            const success =  ref(false);
+            const { isFinished } = useAuthorizedFetch('/financial-accounts/remove', 'Remove Financial Account', success, true).json().post({ 'account-id': id });
 
-            whenever(isFinished, () => resolve())
+            whenever(logicAnd(isFinished, success), () => resolve())
         })
     }
 

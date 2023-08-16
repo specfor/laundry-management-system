@@ -28,7 +28,7 @@ whenever(isFinished, () => {
 <template>
   <Drawer v-model:open="drawerOpen">
     <template #drawer-content>
-      <DrawerMenu @onMenuItemClick="drawerOpen = false"/>
+      <DrawerMenu @onMenuItemClick="drawerOpen = false" />
     </template>
     <div class="mt-[50px] font-default">
       <router-view></router-view>

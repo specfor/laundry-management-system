@@ -9,10 +9,11 @@ const API_BASE_URL = "http://laundry-api.localhost/api/v1"
  * Sends a fetch with Authorization token added automatically
  * @param {string} url URL to send the fetch to
  * @param {string} origin Origin of the fetch request (For notifications)
+ * @param {import("vue").Ref<boolean>} successRef A Ref to be used as a container to notify of complete success. It's value will be set to true when the request has been completed successfully and no error messages were present in the response.
  * @param {boolean} [notifySuccess = false] Whether a notification should be sent on fetch success
  * @returns 
  */
-export const useAuthorizedFetch = (url, origin, notifySuccess = false) => (createFetch({
+export const useAuthorizedFetch = (url, origin, successRef, notifySuccess = false) => (createFetch({
     baseUrl: API_BASE_URL,
     combination: "chain",
     options: {
@@ -40,7 +41,11 @@ export const useAuthorizedFetch = (url, origin, notifySuccess = false) => (creat
             // Transform the response a bit
             // console.log(ctx.response);
             if (ctx.data.statusCode !== undefined && ctx.data.statusMessage !== undefined && ctx.data.body !== undefined) {
-                if (ctx.data.statusCode != 200) handleRequestErrors({ origin, status: ctx.data.statusCode, statusText: ctx.data.statusMessage })
+                successRef.value = true;
+                if (ctx.data.statusCode != 200) {
+                    successRef.value = false;
+                    handleRequestErrors({ origin, status: ctx.data.statusCode, statusText: ctx.data.statusMessage })
+                }
                 else if (notifySuccess) handleNotifySuccess({ origin, status: ctx.data.statusCode, statusText: ctx.data.statusMessage })
 
                 ctx.data = ctx.data.body
