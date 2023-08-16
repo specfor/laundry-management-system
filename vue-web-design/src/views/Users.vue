@@ -402,11 +402,34 @@ async function updateRoles(id) {
     return row[0] === id
   })[0]
 
-  console.log(roleData)
-  let role = await window.addNewForm('Update Role', 'Update', [
-    {name: 'role', text: 'Role', type: 'text', value: roleData[2]},
+  let updateFormFields = [
+    {name: 'role', text: 'Role Name', type: 'text', value: roleData[1]},
+    {text: 'Check required permissions from the followings.', type: 'message'}
+  ]
 
-  ])
+  let permissions = roleData[2]
+
+  for (const [permissionCateg, permissionArray] of Object.entries(userRoles)) {
+    let options_ = []
+    let appliedPermissions = []
+
+    for (const [appliedPermissionCateg, appliedPermissionArray] of Object.entries(permissions)) {
+      if (permissionCateg === appliedPermissionCateg) {
+        appliedPermissions = appliedPermissionArray;
+        break;
+      }
+    }
+
+    for (const permission of permissionArray) {
+      if (appliedPermissions.includes(permission))
+        options_.push({name: permission, text: permission, checked: true})
+      else
+        options_.push({name: permission, text: permission, checked: false})
+    }
+
+    updateFormFields.push({name: permissionCateg, text: permissionCateg, type: 'checkbox', options: options_})
+  }
+  let role = await window.addNewForm('Update Role', 'Update', updateFormFields)
   if (!role['accepted'])
     return
 }
