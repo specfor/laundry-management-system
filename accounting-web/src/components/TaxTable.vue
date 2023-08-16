@@ -1,6 +1,6 @@
 <template>
     <div v-for="(tax, index) in taxes" :key="index">
-        {{ tax.}}
+        {{ tax.name }} - {{ tax.tax_rate }}
     </div>
 </template>
 

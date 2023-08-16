@@ -14,7 +14,7 @@ export function useTaxes() {
         return new Promise((resolve) => {
             const success = ref(false);
             const { data, isFinished } = useAuthorizedFetch(`/financial-accounts`, 'Get Financial Accounts', ref(true)).json().get();
-
+            
             whenever(logicAnd(isFinished, success), () => {
                 resolve(/** @type {import("../../types").FinancialAccount[] }*/(toValue(data)['financial-accounts']));
             })
