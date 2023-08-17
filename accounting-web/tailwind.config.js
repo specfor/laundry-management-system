@@ -15,7 +15,13 @@ export default {
           'xs': '475px'
         }
       },
+      fontFamily: {
+        'default': ['Work Sans', 'sans-serif']
+      },
     },
   },
-  plugins: [],
+  plugins: [require("daisyui")],
+  daisyui: {
+    themes: ["corporate"],
+  },
 }
