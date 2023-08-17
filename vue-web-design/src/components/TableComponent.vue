@@ -1,3 +1,49 @@
+<script setup>
+import {defineProps, ref} from "vue";
+
+let selectedIds = ref([])
+let isDisabled = ref(true)
+let isActive = ref(false)
+let isEditDisabled = ref(true)
+let isEditActive = ref(false)
+let searchInput = ref({})
+let isHidden = ref(true)
+let filterBgColor = ref('bg-white');
+
+function isMultipleChecked() {
+
+  if (selectedIds.value.length === 1) {
+    isEditDisabled.value = false
+    isEditActive.value = true
+  } else {
+    isEditDisabled.value = true
+    isEditActive.value = false
+  }
+}
+
+function isChecked() {
+
+  if (selectedIds.value.length === 0) {
+    isActive.value = false
+    isDisabled.value = true
+  } else {
+    isActive.value = true
+    isDisabled.value = false
+  }
+}
+
+let {
+  tableColumns,
+  tableRows,
+  actions,
+  deleteMultiple,
+  edit,
+  search
+} = defineProps(['tableColumns', 'tableRows', 'actions', 'deleteMultiple', 'edit', 'search'])
+
+let modificationsColum = tableColumns.pop()
+</script>
+
 <template>
   <div class="w-full overflow-x-auto">
     <div class="flex justify-between w-full">
@@ -17,7 +63,10 @@
         </button>
 
       </div>
-      <div @click="isHidden = !isHidden">
+      <div
+          @click="isHidden = !isHidden; filterBgColor === 'bg-white' ? filterBgColor = 'bg-slate-400' : filterBgColor= 'bg-white'"
+          class="flex hover:cursor-pointer p-3 rounded-t-lg items-center" :class="filterBgColor">
+        <h4 class="font-semibold mr-2">Filters</h4>
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
              class="w-6 h-6">
           <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/>
@@ -25,14 +74,15 @@
       </div>
     </div>
 
-    <div class="block w-full mb-2 bg-stone-100 w-1/4 mt-2" :class="{'hidden':isHidden}">
-          <span v-for="(item,i) in search" :key="i" class="flex ml-2">          
-            <input :type="item.type" class="w-full border-2 border-stone-400 bg-stone-200  h-8 m-3"
-                   v-model="searchInput[item.paramNumber]" :placeholder="item['searchParameter']"
-                   @input="$emit(item['searchParamType'],searchInput)">
-          </span>
+    <div class="relative">
+    <div class="block mb-2 bg-slate-400 rounded-l-lg rounded-b-lg w-1/2 py-3 px-3 fixed right-8 z-[1030]" :class="{'hidden':isHidden}">
+      <div v-for="(item,i) in search" :key="i" class="grid grid-cols-3 ml-5">
+        <h5 v-text="item['searchParameter']" class="flex items-center"></h5>
+        <input :type="item.type" class="rounded-md border-2 border-stone-600 bg-stone-200 px-3 h-8 mt-1 col-span-2"
+               v-model="searchInput[item.paramNumber]" @input="$emit(item['searchParamType'],searchInput)">
+      </div>
     </div>
-
+    </div>
     <table class="table-auto border-collapse border w-full">
 
       <thead>
@@ -72,51 +122,6 @@
     </table>
   </div>
 </template>
-
-<script setup>
-import {defineProps, ref} from "vue";
-
-let selectedIds = ref([])
-let isDisabled = ref(true)
-let isActive = ref(false)
-let isEditDisabled = ref(true)
-let isEditActive = ref(false)
-let searchInput = ref({})
-let isHidden = ref(true)
-
-function isMultipleChecked() {
-
-  if (selectedIds.value.length === 1) {
-    isEditDisabled.value = false
-    isEditActive.value = true
-  } else {
-    isEditDisabled.value = true
-    isEditActive.value = false
-  }
-}
-
-function isChecked() {
-
-  if (selectedIds.value.length === 0) {
-    isActive.value = false
-    isDisabled.value = true
-  } else {
-    isActive.value = true
-    isDisabled.value = false
-  }
-}
-
-let {
-  tableColumns,
-  tableRows,
-  actions,
-  deleteMultiple,
-  edit,
-  search
-} = defineProps(['tableColumns', 'tableRows', 'actions', 'deleteMultiple', 'edit', 'search'])
-
-let modificationsColum = tableColumns.pop()
-</script>
 
 <style scoped>
 
