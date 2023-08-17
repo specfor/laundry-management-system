@@ -19,7 +19,10 @@
     <div class="row">
         <div class="col-10 mt-5 ">
             <div class="container">
-                <h4 class="mb-3">Available Database Migrations</h4>
+                <h4 class="mb-3">Init System Packages</h4>
+                <button id="initAccountingSystem" class="btn btn-primary">Init Accounting System</button>
+
+                <h4 class="my-3">Available Database Migrations</h4>
 
                 <table class="table table-dark table-striped table-hover">
                     <thead class="table-secondary">
@@ -68,7 +71,16 @@
     let migrationAuthToken = null
     let isApiInMaintenanceMode = null
 
-
+    let btnInitAccountingSystem = document.getElementById('initAccountingSystem')
+    btnInitAccountingSystem.addEventListener('click', async () => {
+        if (confirm('Are you sure?')) {
+            let response = await sendJsonPostRequest(apiBaseUrl + '/server-manager/init/accounting')
+            if (response.status === 200) {
+                let data = await response.json()
+                alert(data.body.message)
+            }
+        }
+    })
 
     checkMigrationToken()
     getMaintenanceMode('api')
