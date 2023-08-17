@@ -28,7 +28,6 @@ class AccountTotals extends DbModel
 
         $statement = self::getDataFromTable(['record_id', 'body', 'date'], 'general_ledger',
             "record_id > $lastReadLedgerRecord", orderBy: ['record_id', 'asc']);
-//        var_dump($accountTotals);
 
         while (true) {
             $ledgerData = $statement->fetch(PDO::FETCH_ASSOC);
@@ -44,14 +43,14 @@ class AccountTotals extends DbModel
                 $newAccountRef = null;
                 foreach ($accountTotals as &$account) {
                     if ($account['account_id'] == $ledgerEntry['account_id'] && $account['date'] == $ledgerData['date']) {
-                        $accountRef = $account;
+                        $accountRef = &$account;
                         break;
                     }
                 }
                 if ($accountRef === null)
                     foreach ($newAccountTotals as &$newAccount) {
                         if ($newAccount['account_id'] == $ledgerEntry['account_id'] && $newAccount['date'] == $ledgerData['date']) {
-                            $newAccountRef = $newAccount;
+                            $newAccountRef = &$newAccount;
                             break;
                         }
                     }
