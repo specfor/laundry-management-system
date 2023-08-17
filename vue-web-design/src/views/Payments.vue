@@ -20,12 +20,12 @@ let searchParam = [{
   paramNumber:'paramOne',
   searchParameter:'Order Id',
   searchParamType:'orderId',
-  type:'text'
+  type:'number'
 },{
   paramNumber:'paramTwo',
   searchParameter:'Payment Id',
   searchParamType:'orderId',
-  type:'text'
+  type:'number'
 },{
   paramNumber:'paramThree',
   searchParameter:'Added date',
