@@ -4,6 +4,7 @@ namespace LogicLeap\StockManagement\controllers\v1\accounting;
 
 use LogicLeap\StockManagement\controllers\v1\Controller;
 use LogicLeap\StockManagement\models\accounting\Accounting;
+use LogicLeap\StockManagement\models\user_management\User;
 
 class FinancialAccountController extends Controller
 {
