@@ -33,32 +33,71 @@ let typingTimer;
 let doneTypingInterval = 500;
 
 let searchParam = [{
+  paramNumber:'paramOne',
   searchParameter:'Employee Name',
-  searchParamType:'employeeName'
+  searchParamType:'employeeName',
+  type:'text'
 },{
-  searchParameter:'Phone Number'
+  paramNumber:'paramTwo',
+  searchParameter:'Phone Number',
+  searchParamType:'employeeName',
+  type:'Number'
+},{
+  paramNumber:'paramThree',
+  searchParameter:'Email',
+  searchParamType:'employeeName',
+  type:'email'
+},{
+  paramNumber:'paramFour',
+  searchParameter:'Address',
+  searchParamType:'employeeName',
+  type:'text'
+},{
+  paramNumber:'paramFive',
+  searchParameter:'Branch Id',
+  searchParamType:'employeeName',
+  type:'number'
 }]
 
 async function getEmployeesWithParams(params){
   let empName = params['paramOne']
   let phoneNumber = parseInt(params['paramTwo'])
+  let email = params['paramThree']
+  let address = params['paramFour']
+  let branchId = params['paramFive']
 
-  if(empName && Number.isInteger(phoneNumber)){
-    clearInterval(typingTimer)
-    typingTimer = setTimeout(getEmployees(empName,phoneNumber), doneTypingInterval)
-  }else if(empName){
-    clearInterval(typingTimer)
-    typingTimer = setTimeout(getEmployees(empName,null), doneTypingInterval)
-  }else if(Number.isInteger(phoneNumber)){
-    clearInterval(typingTimer)
-    typingTimer = setTimeout(getEmployees(null,phoneNumber), doneTypingInterval)
-  }else{
-    getEmployees()
+
+  if(empName == ''){
+    empName = null
   }
+
+  if(phoneNumber == ''){
+    phoneNumber = null
+  }
+
+  if(email == ''){
+    email = null
+  }
+
+  if(address == ''){
+    address = null
+  }
+
+  if(branchId == ''){
+    branchId = null
+  }
+
+  if(empName== null && phoneNumber == null && email == null && address == null && branchId == null){
+    getEmployees()
+    return
+  }
+
+  clearInterval(typingTimer)
+  typingTimer = setTimeout(getEmployees(empName,phoneNumber,email,address,branchId), doneTypingInterval)
 }
 
 
-async function getEmployees(paramOne=null,paramTwo=null) {
+async function getEmployees(paramOne=null,paramTwo=null,paramThree = null ,paramFour=null,paramFive=null) {
 
   let params = {}
 
@@ -68,6 +107,20 @@ async function getEmployees(paramOne=null,paramTwo=null) {
 
   if(paramTwo){
     params['phone-number'] = paramTwo
+  }
+
+  if(paramThree){
+    params['email'] = paramThree
+
+  }
+
+  if(paramFour){
+    params['address'] = paramFour
+
+  }
+
+  if(paramFive){
+    params['branch-id'] = paramFive
   }
 
   let response = await sendGetRequest(apiBaseUrl + "/employees",params)

@@ -77,6 +77,9 @@ class UserRoles extends DbModel
             if (!is_array($permissions_))
                 return "Permission structure is invalid.";
 
+            if (empty($permissions_))
+                unset($permissions[$type]);
+
             if (!in_array($type, $keys))
                 return "Invalid permission groups were sent.";
 

@@ -4,62 +4,151 @@ import {ref} from "vue";
 import {sendGetRequest, sendJsonPostRequest} from "../js-modules/base-functions.js";
 import {apiBaseUrl} from "../js-modules/website-constants.js";
 import {validateInput} from "../js-modules/form-validations.js";
+import {useRoute} from "vue-router";
 
-let tableCol = ['Select','Id', 'Username', 'Email', 'Firstname', 'Lastname', 'Role', 'Branch Id', 'Modifications']
+let tableCol = ['Select', 'Id', 'Username', 'Email', 'Firstname', 'Lastname', 'Role', 'Branch Id', 'Modifications']
 let tableRows = ref([])
 let actions = [
   {onClickEvent: 'updateUserPass', btnText: 'Update Password'}
 ]
 
+let tableColRoles = ['Select', 'Id', 'Role', 'Permissions']
+let tableRowsRoles = ref([])
+let actionRoles = [{}]
+
 let deleteBtn = [{
-  onClickEvent:'deleteUser'
+  onClickEvent: 'deleteUser'
+}]
+
+let deleteBtnRole = [{
+  onClickEvent: 'deleteRole'
 }]
 
 let editBtn = [{
-  onClickEvent:'editUser'
+  onClickEvent: 'editUser'
 }]
 
-let searchParam = [{
-  searchParameter:'Username',
-  searchParamType:'userName'
-},{
-  searchParameter:'Name'
+let editBtnRole = [{
+  onClickEvent: 'editRole'
 }]
 
-let typingTimer;
+let searchParamUsers = [{
+  paramNumber: 'paramOne',
+  searchParameter: 'Username',
+  searchParamType: 'userName',
+  type: 'text'
+}, {
+  paramNumber: 'paramTwo',
+  searchParameter: 'Name',
+  searchParamType: 'userName',
+  type: "text"
+}, {
+  paramNumber: 'paramThree',
+  searchParameter: 'Email',
+  searchParamType: 'userName',
+  type: "email"
+}, {
+  paramNumber: 'paramFour',
+  searchParameter: 'Branch Id',
+  searchParamType: 'userName',
+  type: "number"
+}]
+
+let searchParamRoles = [{
+  paramNumber: 'paramOne',
+  searchParameter: 'Role Id',
+  searchParamType: 'roleName',
+  type: "number"
+}, {
+  paramNumber: 'paramTwo',
+  searchParameter: 'Role Name',
+  searchParamType: 'roleName',
+  type: "text"
+}]
+
+
 let doneTypingInterval = 500;
+let typingTimerTwo;
 
-async function getUsersWithParams(params){
-  let username= params['paramOne']
+async function getRolesWithParams(params) {
+  let roleId = parseInt(params['paramOne'])
   let name = params['paramTwo']
 
-  if(username && name){
-    clearInterval(typingTimer)
-    typingTimer = setTimeout(getUsers(username,name), doneTypingInterval)
-  }else if(username){
-    clearInterval(typingTimer)
-    typingTimer = setTimeout(getUsers(username,null), doneTypingInterval)
-  }else if(name){
-    clearInterval(typingTimer)
-    typingTimer = setTimeout(getUsers(null,name), doneTypingInterval)
-  }else{
-    getUsers()
+  if (!Number.isInteger(roleId)) {
+    roleId = null
   }
+
+  if (name == '') {
+    name = null
+  }
+
+  if (roleId == null && name == null) {
+    getRoles()
+    return
+  }
+
+  clearInterval(typingTimerTwo)
+  typingTimerTwo = setTimeout(getRoles(roleId, name), doneTypingInterval)
+
 }
 
-async function getUsers(paramOne=null,paramTwo=null) {
+
+let typingTimer;
+
+
+async function getUsersWithParams(params) {
+  let username = params['paramOne']
+  let name = params['paramTwo']
+  let email = params['paramThree']
+  let branchId = params['paramFour']
+
+  if (!Number.isInteger(branchId)) {
+    branchId = null
+  }
+
+  if (username == "") {
+    username = null
+  }
+
+  if (email == '') {
+    email = null
+  }
+
+  if (name == '') {
+    name = null
+  }
+
+  if (username == null && email == null && branchId == null && name == null) {
+    getUsers()
+    return
+  }
+
+  clearInterval(typingTimer)
+  typingTimer = setTimeout(getUsers(username, name, email, branchId), doneTypingInterval)
+
+}
+
+async function getUsers(paramOne = null, paramTwo = null, paramThree = null, paramFour = null) {
 
   let params = {}
 
-  if(paramOne){
+  if (paramOne) {
     params["username"] = paramOne
   }
 
-  if(paramTwo){
+  if (paramTwo) {
     params['name'] = paramTwo
   }
 
-  let response = await sendGetRequest(apiBaseUrl + "/users",params)
+  if (paramThree) {
+    params['email'] = paramThree
+  }
+
+  if (paramFour) {
+    params['branch-id'] = paramFour
+  }
+
+  let response = await sendGetRequest(apiBaseUrl + "/users", params)
 
   if (response.status === 'success') {
     tableRows.value = []
@@ -162,41 +251,41 @@ async function updateUser(id) {
 
 async function deleteUser(ids) {
 
-  if(ids.length === 1){
+  if (ids.length === 1) {
     let confirm = await window.popupConfirmation('Delete User',
-    'This action is irreversible. Are you sure you want to remove this user?')
-  if (confirm) {
-    let response = await sendJsonPostRequest(apiBaseUrl + "/users/delete", {
-      "user-id": ids[0]
-    })
-    if (response.status === 'success') {
-      window.successNotification('User Removal', response.message)
-      getUsers()
-    } else {
-      window.errorNotification('User Removal', response.message)
+        'This action is irreversible. Are you sure you want to remove this user?')
+    if (confirm) {
+      let response = await sendJsonPostRequest(apiBaseUrl + "/users/delete", {
+        "user-id": ids[0]
+      })
+      if (response.status === 'success') {
+        window.successNotification('User Removal', response.message)
+        getUsers()
+      } else {
+        window.errorNotification('User Removal', response.message)
+      }
     }
-    }
-  }else{
+  } else {
     let confirm = await window.popupConfirmation('Delete User',
-    'This action is irreversible. Are you sure you want to remove these users?')
+        'This action is irreversible. Are you sure you want to remove these users?')
 
     if (confirm) {
-      ids.forEach(async(id)=>{
+      ids.forEach(async (id) => {
         let response = await sendJsonPostRequest(apiBaseUrl + "/users/delete", {
-      "user-id": id
-    })
-    if (response.status === 'success') {
-      window.successNotification('User Removal', response.message)
-      getUsers()
-    } else {
-      window.errorNotification('User Removal', response.message)
-    }
+          "user-id": id
+        })
+        if (response.status === 'success') {
+          window.successNotification('User Removal', response.message)
+          getUsers()
+        } else {
+          window.errorNotification('User Removal', response.message)
+        }
       })
-    
+
     }
   }
 
-  
+
 }
 
 async function updatePasswordFunc(id) {
@@ -225,6 +314,194 @@ async function updatePasswordFunc(id) {
     window.errorNotification('User Password Change', response.message)
 }
 
+getRoles()
+getPermissions()
+
+let userRoles = {}
+
+async function deleteRoles(ids) {
+  if (ids.length === 1) {
+    let confirm = await window.popupConfirmation('Delete Role',
+        'This action is irreversible. Are you sure you want to remove this role?')
+    if (confirm) {
+      let response = await sendJsonPostRequest(apiBaseUrl + "/user-roles/delete", {
+        "role-id": ids[0]
+      })
+      if (response.status === 'success') {
+        window.successNotification('Role Removal', response.message)
+        getRoles()
+      } else {
+        window.errorNotification('Role Removal', response.message)
+      }
+    }
+  } else {
+    let confirm = await window.popupConfirmation('Delete Role',
+        'This action is irreversible. Are you sure you want to remove these roles?')
+
+    if (confirm) {
+      ids.forEach(async (id) => {
+        let response = await sendJsonPostRequest(apiBaseUrl + "/user-roles/delete", {
+          "role-id": id
+        })
+        if (response.status === 'success') {
+          window.successNotification('Role Removal', response.message)
+          getRoles()
+        } else {
+          window.errorNotification('Role Removal', response.message)
+        }
+      })
+
+    }
+  }
+}
+
+async function getPermissions() {
+
+  let response = await sendGetRequest(apiBaseUrl + "/user-roles")
+
+  if (response.status === "success") {
+    userRoles = response.data['user-roles'][0]['permissions']
+  } else {
+    window.errorNotification('Fetch Permission Data', response.message)
+  }
+}
+
+async function getRoles(paramOne = null, paramTwo = null) {
+
+  let params = {}
+
+  if (paramOne) {
+    params["role-id"] = paramOne
+  }
+
+  if (paramTwo) {
+    params['name'] = paramTwo
+  }
+
+  let response = await sendGetRequest(apiBaseUrl + "/user-roles", params)
+
+  if (response.status === 'success') {
+
+    tableRowsRoles.value = []
+    let roles = response.data["user-roles"]
+
+    for (const role of roles) {
+
+      tableRowsRoles.value.push([role["role_id"], role["name"], role["permissions"]])
+    }
+  } else {
+    window.errorNotification('Fetch User Data', response.message)
+  }
+}
+
+async function updateRoles(id) {
+  id = parseInt(id.toString())
+
+
+  let roleData = tableRowsRoles.value.filter((row) => {
+    return row[0] === id
+  })[0]
+
+  let updateFormFields = [
+    {name: 'role', text: 'Role Name', type: 'text', value: roleData[1]},
+    {text: 'Check required permissions from the followings.', type: 'message'}
+  ]
+
+  let permissions = roleData[2]
+
+  for (const [permissionCateg, permissionArray] of Object.entries(userRoles)) {
+    let options_ = []
+    let appliedPermissions = []
+
+    for (const [appliedPermissionCateg, appliedPermissionArray] of Object.entries(permissions)) {
+      if (permissionCateg === appliedPermissionCateg) {
+        appliedPermissions = appliedPermissionArray;
+        break;
+      }
+    }
+
+    for (const permission of permissionArray) {
+      if (appliedPermissions.includes(permission))
+        options_.push({name: permission, text: permission, checked: true})
+      else
+        options_.push({name: permission, text: permission, checked: false})
+    }
+
+    updateFormFields.push({name: permissionCateg, text: permissionCateg, type: 'checkbox', options: options_})
+  }
+  let role = await window.addNewForm('Update Role', 'Update', updateFormFields)
+  if (!role['accepted'])
+    return
+}
+
+async function addNewRole() {
+
+  let tempData = [
+    {name: 'role', text: 'Role', type: 'text'}
+  ]
+
+  for (const [key, val] of Object.entries(userRoles)) {
+
+    let arrayOne = []
+    let dictOne = {}
+
+
+    val.forEach(value => {
+
+      let dictTwo = {}
+
+      dictTwo['name'] = value
+      dictTwo['text'] = value
+      dictTwo['value'] = value
+
+      arrayOne.push(dictTwo)
+    })
+
+    dictOne['text'] = `Permissions ${key}`
+    dictOne['name'] = key
+    dictOne['type'] = 'checkbox'
+    dictOne.options = arrayOne
+
+
+    tempData.push(dictOne)
+  }
+
+  console.log(tempData)
+
+  let roles = await window.addNewForm('New Role', 'Add', tempData)
+
+  if (!roles['accepted'])
+    return
+
+  let dict_one = {}
+
+  for (const [key, value] of Object.entries(roles.data)) {
+
+    if (key === 'role') {
+    } else {
+      let array_one = []
+      for (const [key, val] of Object.entries(value)) {
+        if (val == true) {
+          array_one.push(key)
+        }
+      }
+      dict_one[key] = array_one
+    }
+  }
+
+  let response = await sendJsonPostRequest(apiBaseUrl + "/user-roles/add", {
+    "name": roles.data['role'],
+    "permissions": dict_one
+  })
+
+  if (response.status === "success") {
+    getRoles()
+    window.successNotification('User Creation', response.message)
+  } else {
+    window.errorNotification('User Creation', response.message)
+  }
+}
+
 </script>
 
 <template>
@@ -234,9 +511,23 @@ async function updatePasswordFunc(id) {
     </button>
   </div>
 
-  <TableComponent :tableColumns="tableCol" :tableRows="tableRows" :actions="actions" :deleteMultiple="deleteBtn" :edit="editBtn"
+  <TableComponent :tableColumns="tableCol" :tableRows="tableRows" :actions="actions" :deleteMultiple="deleteBtn"
+                  :edit="editBtn"
                   @delete-user="deleteUser($event)" @edit-user="updateUser($event)"
-                  @update-user-pass="updatePasswordFunc($event)" :search="searchParam" @user-name="getUsersWithParams($event)"/>
+                  @update-user-pass="updatePasswordFunc($event)" :search="searchParamUsers"
+                  @user-name="getUsersWithParams($event)"/>
+
+  <div class="flex justify-between mt-5 mb-3 ">
+    <h3 class="text-2xl font-semibold">Roles</h3>
+    <button class="bg-slate-600 text-slate-100 rounded-md py-2 px-3 font-semibold" @click="addNewRole">+ New Role
+    </button>
+  </div>
+  <TableComponent :tableColumns="tableColRoles" :tableRows="tableRowsRoles" :actions="actionsRoles"
+                  :deleteMultiple="deleteBtnRole" :edit="editBtnRole"
+                  @delete-role="deleteRoles($event)" @edit-role="updateRoles($event)"
+                  :search="searchParamRoles" @role-name="getRolesWithParams($event)"/>
+
+
 </template>
 
 <style scoped>

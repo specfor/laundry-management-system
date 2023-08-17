@@ -17,13 +17,23 @@ let editBtn = [{
 }]
 
 let searchParam = [{
+  paramNumber:'paramOne',
   searchParameter:'Order Id',
-  searchParamType:'orderId'
+  searchParamType:'orderId',
+  type:'number'
 },{
-  searchParameter:'Payment Id'
+  paramNumber:'paramTwo',
+  searchParameter:'Payment Id',
+  searchParamType:'orderId',
+  type:'number'
+},{
+  paramNumber:'paramThree',
+  searchParameter:'Added date',
+  searchParamType:'orderId',
+  type:'date'
 }]
 
-async function getPayments(paramOne=null,paramTwo=null) {
+async function getPayments(paramOne=null,paramTwo=null,paramThree=null) {
 
   let params = {}
 
@@ -33,6 +43,10 @@ async function getPayments(paramOne=null,paramTwo=null) {
 
   if(paramTwo){
     params['payment-id'] = paramTwo
+  }
+
+  if(paramThree){
+    params['paid-date'] = paramThree
   }
 
   let response = await sendGetRequest(apiBaseUrl + "/payments",params)
@@ -86,25 +100,29 @@ async function searchPayment(params){
 
   let orderId = parseInt(params['paramOne'])
   let paymentId = parseInt(params['paramTwo'])
+  let paidDate = params['paramThree']
 
-  if(Number.isInteger(orderId) && Number.isInteger(paymentId)){
-    clearInterval(typingTimer)
-    typingTimer = setTimeout(getPayments(orderId,paymentId), doneTypingInterval)
-  
-  
-  }else if(Number.isInteger(orderId)){
-    clearInterval(typingTimer)
-    typingTimer = setTimeout(getPayments(orderId,null), doneTypingInterval)
-  
-  
-  }else if(Number.isInteger(paymentId)){
-    clearInterval(typingTimer)
-    typingTimer = setTimeout(getPayments(null,paymentId), doneTypingInterval)
-  
-  
-  }else{
-    getPayments()
+  if(!Number.isInteger(orderId)){
+    orderId = null
   }
+
+  if(!Number.isInteger(paymentId)){
+    paymentId = null
+  }
+
+  if(paidDate == ''){
+    paidDate = null
+  }
+  
+  if(paidDate == null && orderId == null && paymentId == null){
+    getPayments()
+    return
+  }
+
+  clearInterval(typingTimer)
+  typingTimer = setTimeout(getPayments(orderId,paymentId,paidDate), doneTypingInterval)
+
+ 
 }
 
 async function editPayment(id) {

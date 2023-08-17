@@ -59,11 +59,11 @@ class Customers extends DbModel
             $filters[] = "banned=$banned";
         }
         if ($joinDate) {
-            $filters[] = "join_date LIKE :join_date";
-            $placeholders['join_date'] = "%" . $joinDate . "%";
+            $filters[] = "joined_date LIKE :join_date";
+            $placeholders['join_date'] = "$joinDate%";
         }
         if ($branchId != 0)
-            $filters[] = "branch_id=$branchId'";
+            $filters[] = "branch_id=$branchId";
 
         $condition = implode(' AND ', $filters);
         $statement = self::getDataFromTable(['customer_id', 'email', 'phone_num', 'name', 'address', 'branch_id', 'banned', 'joined_date'],

@@ -311,6 +311,7 @@ tax-name - optional
 description - optional
 rate-min - optional
 rate-max - optional
+limit
 
 POST - /api/v1/taxes/add
 Parameters
@@ -338,6 +339,7 @@ account-code
 account-type
 tax-id
 description
+limit
 
 POST - /api/v1/financial-accounts/add
 Parameters
@@ -366,6 +368,7 @@ Parameters
 page-num
 narration
 date
+limit - no of records to return
 
 POST - /api/v1/general-ledger/add 
 Parameters
@@ -393,10 +396,26 @@ body - compulsory - structure is as folllows
         }     
 date - optional - "yyyy-mm-dd"
 
-GET - /api/v1/financial-account-totals  (-----Undergoing modifications. Wait for the new.------- )
+GET - /api/v1/account-totals
 By just hitting the endpoint without 'force-recalculate' will calculate total credit & debit amounts in a smart way
     preventing read of whole ledger records table.
 Parameters
 force-recalculate - optional - only use when necessary. this will read whole ledger record table and calculate total
                                 credit & debit amounts. with billions of records this can take some time.
-                                
+
+GET - /api/v1/account-totals/day-basis
+Parameters
+account-id
+dates      - 2023-08-10,2023-08-11,...  - can get details of more dates once by sending a string of dates seperated by commas.
+year 
+
+GET - /api/v1/account-totals/month-basis 
+Parameters
+account-id
+month
+year
+
+GET - /api/v1/account-totals/year-basis 
+Parameters
+account-id
+year

@@ -109,7 +109,7 @@ class Orders extends DbModel
             $filters[] = "order_id=$orderId";
         if ($addedDate) {
             $filters[] = "added_date LIKE :date";
-            $placeholders['date'] = "%" . $addedDate;
+            $placeholders['date'] = $addedDate . "%";
         }
         if ($branchId)
             $filters[] = "branch_id=$branchId";

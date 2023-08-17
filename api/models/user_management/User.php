@@ -21,14 +21,14 @@ class User extends DbModel
 
     public const PERMISSIONS = [
         'users' => [self::PERMISSION_WRITE, self::PERMISSION_READ, self::PERMISSION_MODIFY, self::PERMISSION_DELETE],
+        'user-roles' => [self::PERMISSION_WRITE, self::PERMISSION_READ, self::PERMISSION_MODIFY, self::PERMISSION_DELETE],
         'customers' => [self::PERMISSION_WRITE, self::PERMISSION_READ, self::PERMISSION_MODIFY, self::PERMISSION_DELETE],
         'branches' => [self::PERMISSION_WRITE, self::PERMISSION_READ, self::PERMISSION_MODIFY, self::PERMISSION_DELETE],
         'employees' => [self::PERMISSION_WRITE, self::PERMISSION_READ, self::PERMISSION_MODIFY, self::PERMISSION_DELETE],
-        'categories' => [self::PERMISSION_WRITE, self::PERMISSION_READ, self::PERMISSION_MODIFY, self::PERMISSION_DELETE],
         'products' => [self::PERMISSION_WRITE, self::PERMISSION_READ, self::PERMISSION_MODIFY, self::PERMISSION_DELETE],
+        'categories' => [self::PERMISSION_WRITE, self::PERMISSION_READ, self::PERMISSION_MODIFY, self::PERMISSION_DELETE],
         'orders' => [self::PERMISSION_WRITE, self::PERMISSION_READ, self::PERMISSION_MODIFY, self::PERMISSION_DELETE],
         'payments' => [self::PERMISSION_WRITE, self::PERMISSION_READ, self::PERMISSION_MODIFY, self::PERMISSION_DELETE],
-        'user-roles' => [self::PERMISSION_WRITE, self::PERMISSION_READ, self::PERMISSION_MODIFY, self::PERMISSION_DELETE],
         'tax' => [self::PERMISSION_WRITE, self::PERMISSION_READ, self::PERMISSION_MODIFY, self::PERMISSION_DELETE],
         'financial_accounts' => [self::PERMISSION_WRITE, self::PERMISSION_READ, self::PERMISSION_MODIFY, self::PERMISSION_DELETE],
     ];

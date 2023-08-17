@@ -42,7 +42,7 @@ class CustomerController extends Controller
         $banned = self::getParameter('banned', dataType: 'bool');
         $joinDate = self::getParameter('join-date');
 
-        if (!$branchId)
+        if ($branchId === null)
             $branchId = User::getUserBranchId(self::getUserId());
 
         $data = Customers::getCustomers($customerId, $branchId, $email, $phoneNum, $name, $address, $banned, $joinDate, $pageNum);

@@ -13,9 +13,11 @@ class m00015_accountTotals extends MigrationScheme
     {
         $sql = "CREATE TABLE IF NOT EXISTS financial_account_totals (
                     account_id int NOT NULL PRIMARY KEY,
+                    date date NOT NULL PRIMARY KEY,
                     credit decimal(30,4),
                     debit decimal(30,4),
-                    until_ledger_rec_id int NOT NULL 
+                    until_ledger_rec_id int NOT NULL,
+                    CONSTRAINT prime_acc_totals PRIMARY KEY (account_id, date)
                 )";
         try {
             self::$pdo->exec($sql);
