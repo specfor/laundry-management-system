@@ -13,3 +13,6 @@ website/vendor/
 tailwind-css/tailwindcss-windows-x64.exe
 /vue-web-design/.vscode/
 .vs/
+print-service/target
+printer-chrome-extension/node_modules
+references
