@@ -126,7 +126,6 @@ export interface UpdateTaxOptions {
 import { DefineComponent } from "vue";
 
 export type ComponentOptions<T> = T extends DefineComponent<infer _A, infer P, infer _B> ? P extends { $props: infer Props extends object } ? Object.Writable<Props> : never : never;
-
 // export type ComponentOptions<T> = T extends DefineComponent<A, infer O, B> ?
 //     O extends { $emit: infer E, $props: infer P } ?
 //         E extends (event: infer EventName, ...rest: infer Rest) ? never : never

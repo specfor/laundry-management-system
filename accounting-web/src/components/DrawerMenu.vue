@@ -19,6 +19,11 @@
             <a>Chart of Accounts</a>
         </li>
     </router-link>
+    <router-link :to="{ name: 'LedgerEntry' }" @click.native="$emit('onMenuItemClick')">
+        <li>
+            <a>Ledger Record Entry</a>
+        </li>
+    </router-link>
 </template>
 
 <script setup>

@@ -30,7 +30,7 @@ whenever(isFinished, () => {
     <template #drawer-content>
       <DrawerMenu @onMenuItemClick="drawerOpen = false" />
     </template>
-    <div class="mt-[50px] font-default">
+    <div class="mt-[50px] p-5 font-default">
       <router-view></router-view>
     </div>
   </Drawer>

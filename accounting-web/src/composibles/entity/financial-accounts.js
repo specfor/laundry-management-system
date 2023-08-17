@@ -5,7 +5,7 @@ import { whenever } from "@vueuse/core";
 import { logicAnd } from "@vueuse/math/index.cjs";
 import { toValue, ref } from "vue";
 
-export function useTaxes() {
+export function useFinancialAccounts() {
     /**
      * Get all the financial accounts
      * @returns {Promise<import("../../types").FinancialAccount[]>}
@@ -13,7 +13,7 @@ export function useTaxes() {
     const getFinanctialAccounts = async () => {
         return new Promise((resolve) => {
             const success = ref(false);
-            const { data, isFinished } = useAuthorizedFetch(`/financial-accounts`, 'Get Financial Accounts', ref(true)).json().get();
+            const { data, isFinished } = useAuthorizedFetch(`/financial-accounts?limit=9999`, 'Get Financial Accounts', success).json().get();
             
             whenever(logicAnd(isFinished, success), () => {
                 resolve(/** @type {import("../../types").FinancialAccount[] }*/(toValue(data)['financial-accounts']));
