@@ -116,7 +116,7 @@ class UserRoles extends DbModel
             ['name' => $name]);
         $data = $statement->fetch(PDO::FETCH_ASSOC);
 
-        if (!empty($data))
+        if (!empty($data) && $data['role_id'] !== $roleId)
             return "User role with name '$name' already exists.";
 
         if ($name)
