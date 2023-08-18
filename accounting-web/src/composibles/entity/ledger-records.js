@@ -6,7 +6,7 @@ import { whenever } from "@vueuse/core";
 import { ref, toValue } from "vue";
 import { logicAnd } from "@vueuse/math/index.cjs";
 
-export function useTaxes() {
+export function useLedgerRecords() {
 
     /**
      * Converts the Raw response from the server into a entity object

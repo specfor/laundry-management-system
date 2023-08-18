@@ -1,4 +1,68 @@
 <template>
+    <ModelTemplate v-slot="{ resolve, reject, args }">
+        <div class="fixed inset-0 bg-gray-300/30 flex items-center z-30">
+            <!-- Draft save Model -->
+            <template v-if="args[0] == 'draft-save'">
+                <div class="card w-96 bg-white">
+                    <div class="card-body items-center text-center">
+                        <h2 class="card-title">Save Draft</h2>
+                        <input ref="draftNameInput" type="text" placeholder="Draft Name"
+                            class="input input-bordered input-sm w-full max-w-xs" />
+                        <div class="card-actions justify-end">
+                            <button class="btn btn-primary"
+                                @click="e => draftNameInput?.value != '' || draftNameInput?.value != undefined ? resolve({ response: 'save', draftSaveName: draftNameInput?.value }) : null">Save</button>
+                            <button class="btn btn-ghost" @click="reject({ response: 'cancel' })">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Draft delete Model -->
+            <template v-else-if="args[0] == 'delete-draft-confirm'">
+                <div class="card w-96 bg-slate-300">
+                    <div class="card-body items-center text-center">
+                        <h2 class="card-title">Delete Draft</h2>
+                        <p>You're about to delete a saved Draft</p>
+                        <div class="card-actions justify-end">
+                            <button class="btn btn-error" @click="resolve({ response: 'delete' })">Delete</button>
+                            <button class="btn btn-ghost" @click="reject({ response: 'cancel' })">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Draft Load but data exists Model -->
+            <template v-else-if="args[0] == 'draft-load-data-exists-warning'">
+                <div class="card w-96 bg-slate-300">
+                    <div class="card-body items-center text-center">
+                        <h2 class="card-title">Load Draft</h2>
+                        <p>You're about to load a Draft, but there is some data already the entry table. Those records will
+                            be lost if you continue. You can either save them into another draft if you need to.</p>
+                        <div class="card-actions justify-end">
+                            <button class="btn btn-error" @click="resolve({ response: 'load' })">Load Anyway</button>
+                            <button class="btn btn-ghost" @click="reject({ response: 'cancel' })">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </ModelTemplate>
+
+     <!-- Saving records Model -->
+    <Teleport to="body">
+        <template v-if="isLoadingModelVisible">
+            <div class="fixed inset-0 bg-gray-300/30 flex items-center z-30">
+                <form method="dialog" class="modal-box flex flex-row justify-center w-auto">
+                    <span class="loading loading-spinner loading-lg"></span>
+                    <div class="ml-5 prose">
+                        <h3 class="font-bold text-xl p-0 m-0">Saving the records</h3>
+                        <p>Please wait .... </p>
+                    </div>
+                </form>
+            </div>
+        </template>
+    </Teleport>
+
     <h1 class="text-2xl m-5">Ledger Record Entry</h1>
     <div class="alert alert-warning mb-4 md:w-full w-[600px]" :class="{ 'hidden': topWarningHidden }">
         <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
@@ -58,13 +122,13 @@
                 animation="200">
                 <template #item="{ element }">
                     <tr class="entry-row">
-                        <td class="!p-3">
+                        <td class="!p-1 !pl-3">
                             <img class="entry-table-handle cursor-move " src="../assets/6-vertical-dots.svg">
                         </td>
                         <td>
                             <!-- Description -->
                             <input v-model="element.description" type="text" placeholder="Description"
-                                class="input input-ghost w-full max-w-xs" />
+                                class="input input-ghost input-sm w-full max-w-xs" />
                         </td>
                         <td>
                             <!-- Accounts -->
@@ -94,16 +158,16 @@
                         <td>
                             <!-- Debit -->
                             <input v-model="element.debit" type="text" placeholder="Debit"
-                                class="input input-ghost w-full max-w-xs"
+                                class="input input-ghost w-full max-w-xs input-sm"
                                 :class="{ 'input-error': element.debit ? !isRowDebitCreditValid(element) : false }" />
                         </td>
                         <td>
                             <!-- Credit -->
                             <input v-model="element.credit" type="text" placeholder="Credit"
-                                class="input input-ghost w-full max-w-xs"
+                                class="input input-ghost w-full max-w-xs input-sm"
                                 :class="{ 'input-error': element.credit ? !isRowDebitCreditValid(element) : false }" />
                         </td>
-                        <td class="!p-3">
+                        <td class="!p-1 !pl-3">
                             <svg @click="removeItem(element)"
                                 class="w-6 h-6 text-gray-800 dark:text-white fill-gray-800 hover:fill-red-600 cursor-pointer transition-all duration-200"
                                 aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
@@ -176,7 +240,7 @@
     </div>
 
     <div class="w-full flex justify-between px-6 m-4">
-        <button @click="saveDraft('new Draft')" class="btn btn-primary rounded-md w-[150px]">Save as
+        <button @click="saveDraft" class="btn btn-primary rounded-md w-[150px]">Save as
             Draft</button>
         <div class="flex flex-row gap-4">
             <template v-if="errorMessages.length > 0">
@@ -184,12 +248,12 @@
                     <button class="btn btn-accent rounded-md btn-disabled self-end w-[90px]">Save</button>
                 </div>
             </template>
-            <template v-else-if="!isDirty">
+            <template v-else-if="!dataExists">
                 <div class="tooltip" data-tip="Write some entries before saving">
                     <button class="btn btn-accent rounded-md btn-disabled self-end w-[90px]">Save</button>
                 </div>
             </template>
-            <button v-else @click="emitOnSaveClicked" class="btn btn-accent rounded-md  self-end w-[90px]">Save</button>
+            <button v-else @click="saveRecords" class="btn btn-accent rounded-md  self-end w-[90px]">Save</button>
             <button class="btn btn-active rounded-md self-end w-[90px]">Clear</button>
         </div>
     </div>
@@ -231,7 +295,7 @@
                     <tbody>
                         <tr v-for="(draft, index) in getDrafts()" :key="index">
                             <td>{{ draft.name }}</td>
-                            <td>{{ draft.draftedAt.toDateString() + " at " + draft.draftedAt.toTimeString() }}</td>
+                            <td>{{ formatTimeAgo(draft.date) }}</td>
                             <td>
                                 <button @click="loadDraft(draft)" class="btn btn-primary rounded-md btn-sm">Load</button>
                                 <!-- <button @click="removeDraft(draft)" class="btn btn-error rounded-md btn-sm">Remove</button> -->
@@ -256,20 +320,22 @@
 
 <script setup>
 // @ts-check
-import { useMagicKeys, useRefHistory, useStorage, watchDeep, watchOnce, whenever } from '@vueuse/core';
-import { computed, ref } from 'vue';
+import { useStorage, useConfirmDialog, formatTimeAgo, createTemplatePromise } from '@vueuse/core';
+import { computed, ref, Teleport } from 'vue';
 // https://github.com/SortableJS/vue.draggable.next
 import draggable from 'vuedraggable'
 import { useTaxes } from '../composibles/entity/taxes';
 import { useUndoRedo } from "../composibles/undo-redo";
 import { useFinancialAccounts } from '../composibles/entity/financial-accounts';
+import { useLedgerRecords } from '../composibles/entity/ledger-records';
 import { ElSelect, ElOption, ElDatePicker } from "element-plus";
 import Decimal from 'decimal.js';
 import { toReadable, toDecimal, decimalReducer } from "../util/decimal-util";
 import { NotTakeOne } from "../util/func-wrappers";
 
 const { getTaxes } = useTaxes();
-const { getFinanctialAccounts } = useFinancialAccounts()
+const { getFinanctialAccounts } = useFinancialAccounts();
+const { addLedgerRecord } = useLedgerRecords();
 
 const datePickerShortcuts = [
     {
@@ -285,6 +351,29 @@ const datePickerShortcuts = [
         },
     }
 ]
+
+// For showing models
+
+/**
+ * @typedef ModelReturnType
+ * @property {string} response
+ * @property {string} [draftSaveName]
+ */
+
+/** @typedef {"draft-load-data-exists-warning" | "saving-records" | "delete-draft-confirm" | "draft-save"} ModelType */
+
+const ModelTemplate = /** @type {ReturnType<typeof createTemplatePromise<ModelReturnType, [ModelType]>>} */(createTemplatePromise({
+    transition: {
+        name: 'model-content',
+        appear: true,
+    },
+}));
+
+/** A Ref for the Save draft Model Draft name input */
+const draftNameInput = /** @type { import('vue').Ref<HTMLInputElement | null> } */ (ref(null));
+
+// For the Loading model after clicking save records
+const { isRevealed: isLoadingModelVisible, reveal: revealLoadingModel, cancel: hideLoadingModel } = useConfirmDialog()
 
 // Types
 
@@ -336,6 +425,7 @@ const datePickerShortcuts = [
 * @typedef { Omit<RowWithProbablyValidCreditOrDebitValue, "credit"> } RowWithProbablyValidDebitValue
 */
 
+// Draft System
 
 const drafts = useStorage('record-entry-drafts', [], localStorage,
     {
@@ -366,9 +456,11 @@ const drafts = useStorage('record-entry-drafts', [], localStorage,
 
 /**
  * Saves a new Draft from the current state
- * @param {string} name
  */
-const saveDraft = (name) => {
+const saveDraft = async () => {
+    const name = await ModelTemplate.start("draft-save").then(({ response, draftSaveName }) => response == "save" ? draftSaveName : undefined).catch(() => undefined)
+    if (!name) return;
+
     drafts.value = [{
         date: entryDate.value,
         draftedAt: new Date(Date.now()),
@@ -382,8 +474,12 @@ const saveDraft = (name) => {
  * Saves a new Draft
  * @param {Draft} draft 
  */
-const loadDraft = ({ rows: rowsFromDraft, date, narration: narrationFromDraft }) => {
+const loadDraft = async ({ rows: rowsFromDraft, date, narration: narrationFromDraft }) => {
     // TODO: Check if the state is changed, if changed notify of data loss
+    if (dataExists.value &&
+        await ModelTemplate.start("draft-load-data-exists-warning").then(({ response }) => response != "load").catch(() => true))
+        return;
+
     narration.value = narrationFromDraft
     entryDate.value = date
     rows.value = rowsFromDraft
@@ -395,7 +491,9 @@ const getDrafts = () => drafts.value.slice(0, 10) // First 10 elements or if the
  * Removes a Draft
  * @param {Draft} draftToRemove 
  */
-const removeDraft = (draftToRemove) => {
+const removeDraft = async (draftToRemove) => {
+    if (await ModelTemplate.start("delete-draft-confirm").then(({ response }) => response != "delete").catch(() => true)) return;
+
     drafts.value = [...drafts.value.filter(x => x != draftToRemove)]
 }
 
@@ -425,22 +523,24 @@ const taxType = /** @type {import('vue').Ref<"no tax" | "tax exclusive" | "tax i
 
 const topWarningHidden = ref(false);
 
-const isDirty = ref(false)
-const stopWatchingForUpdates = watchDeep(rows, () => {
-    isDirty.value = true
-    stopWatchingForUpdates()
-});
-
 useUndoRedo(rows);
 
 const taxes = await getTaxes()
 const accounts = await getFinanctialAccounts()
 
-const hasErrors = computed(() => rows.value.every((row) => !isRowValid(row)))
+// Computed Values
+
+const dataExists = computed(() => {
+    /**
+     * @param {Record<string, string | number>} obj
+     */
+    const allObjectPropertiesEmptyOrUndefined = (obj) => ( /** @type {Array<keyof typeof obj>} */ (Object.keys(obj))).every(key => obj[key] != "" && obj[key] != undefined)
+    return rows.value.map(({ order, ...rest }) => rest).every(allObjectPropertiesEmptyOrUndefined)
+})
 
 /** @type {import('vue').Ref<string[]>} */
 const errorMessages = computed(() => {
-    if (!isDirty.value) return [];
+    if (!dataExists.value) return [];
 
     return /** @type {string[]} */([
         !total.value.credit.equals(total.value.debit) ? "Credit and Debit sides must equalize" : null,
@@ -549,19 +649,36 @@ const total = computed(() => {
     return { debit, credit };
 })
 
+// Table row management
+
 const addItem = () => rows.value = ([...rows.value, { order: count.value++ }]);
 
 /** @param {Row} item */
 const removeItem = (item) => rows.value = [...rows.value.filter(x => x != item)];
 
-const emitOnSaveClicked = () =>
-    emit('onSaveClickd',
-        // Remove out the order property
-        rows.value.map(row => {
-            const { order, ...rest } = row;
-            return /** @type {Object.<string, ( string | number )>}*/(rest);
-        })
-    )
+const saveRecords = async () => {
+    revealLoadingModel()
+
+    const data = /** @type {import('../types').LedgerRecordAddOptions} */ ({
+        body: [
+            ...splitComputedRowsToCreditDebit(computedRows.value).creditRows.map(({ credit, order, ...rest }) => ({
+                ...rest,
+                credit: credit.amount
+            })),
+            ...splitComputedRowsToCreditDebit(computedRows.value).debitRows.map(({ debit, order, ...rest }) => ({
+                ...rest,
+                debit: debit.amount
+            }))
+        ],
+        date: entryDate.value,
+        narration: narration.value,
+        taxType: taxType.value
+    })
+
+    await addLedgerRecord(data);
+
+    hideLoadingModel()
+}
 
 /**
  * Sets the row's tax rate to the one in the account automatically
@@ -653,5 +770,15 @@ const splitComputedRowsToCreditDebit = (rows) => ({
 .error-list-leave-to {
     opacity: 0;
     transform: translateX(30px);
+}
+
+.model-content-enter-active,
+.model-content-leave-active {
+    transition: opacity 0.5s ease;
+}
+
+.model-content-enter-from,
+.model-content-leave-to {
+    opacity: 0;
 }
 </style>
