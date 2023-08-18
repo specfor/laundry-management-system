@@ -1,4 +1,33 @@
 <template>
+    <ModelTemplate v-slot="{ promise, resolve, reject, args }">
+        <div class="fixed inset-0 bg-gray-300/30 flex items-center z-30">
+            <dialog open class="modal">
+                <template v-if="args[0].type == 'loading'">
+                    <form method="dialog" class="modal-box flex flex-row justify-center w-auto" :class="{'text-success': args[0].loaderColor == 'green', 'text-error': args[0].loaderColor == 'red', 'text-warning': args[0].loaderColor == 'yellow'}">
+                        <span class="loading loading-spinner loading-lg"></span>
+                        <div class="ml-5 prose">
+                            <h3 class="font-bold text-xl p-0 m-0">{{ args[0].header }}</h3>
+                            <p>{{ args[0].body }}</p>
+                        </div>
+                    </form>
+                </template>
+                <template v-else>
+                    <form method="dialog" class="modal-box">
+                        <h3 class="font-bold text-lg">{{ args[0].header }}</h3>
+                        <p class="py-4">{{ args[0].body }}</p>
+                        <div class="modal-action">
+                            <template v-if="args[0].type == 'warning'">
+
+                            </template>
+                            <template v-else-if="args[0].type == 'yes-no'">
+
+                            </template>
+                        </div>
+                    </form>
+                </template>
+            </dialog>
+        </div>
+    </ModelTemplate>
     <h1 class="text-2xl m-5">Ledger Record Entry</h1>
     <div class="alert alert-warning mb-4 md:w-full w-[600px]" :class="{ 'hidden': topWarningHidden }">
         <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
@@ -184,7 +213,7 @@
                     <button class="btn btn-accent rounded-md btn-disabled self-end w-[90px]">Save</button>
                 </div>
             </template>
-            <template v-else-if="!isDirty">
+            <template v-else-if="!dataExists">
                 <div class="tooltip" data-tip="Write some entries before saving">
                     <button class="btn btn-accent rounded-md btn-disabled self-end w-[90px]">Save</button>
                 </div>
@@ -231,7 +260,7 @@
                     <tbody>
                         <tr v-for="(draft, index) in getDrafts()" :key="index">
                             <td>{{ draft.name }}</td>
-                            <td>{{ draft.draftedAt.toDateString() + " at " + draft.draftedAt.toTimeString() }}</td>
+                            <td>{{ formatTimeAgo(draft.date) }}</td>
                             <td>
                                 <button @click="loadDraft(draft)" class="btn btn-primary rounded-md btn-sm">Load</button>
                                 <!-- <button @click="removeDraft(draft)" class="btn btn-error rounded-md btn-sm">Remove</button> -->
@@ -256,7 +285,7 @@
 
 <script setup>
 // @ts-check
-import { useMagicKeys, useRefHistory, useStorage, watchDeep, watchOnce, whenever } from '@vueuse/core';
+import { useStorage, watchDeep, formatTimeAgo, createTemplatePromise } from '@vueuse/core';
 import { computed, ref } from 'vue';
 // https://github.com/SortableJS/vue.draggable.next
 import draggable from 'vuedraggable'
@@ -285,6 +314,29 @@ const datePickerShortcuts = [
         },
     }
 ]
+
+// For showing models
+
+/**
+ * @typedef ModelPromiseOptionsType
+ * @property {"yes-no" | "loading" | "warning"} type
+ * @property {string} header
+ * @property {string} body
+ * @property {"green" | "red" | "yellow"} [loaderColor]
+ */
+
+const ModelTemplate = /** @type {ReturnType<typeof createTemplatePromise<string, [ModelPromiseOptionsType]>>} */(createTemplatePromise({
+    transition: {
+        name: 'model-content',
+        appear: true,
+    },
+}));
+
+ModelTemplate.start({
+    body: "Test Model",
+    header: "header",
+    type: "loading"
+})
 
 // Types
 
@@ -336,6 +388,7 @@ const datePickerShortcuts = [
 * @typedef { Omit<RowWithProbablyValidCreditOrDebitValue, "credit"> } RowWithProbablyValidDebitValue
 */
 
+// Draft System
 
 const drafts = useStorage('record-entry-drafts', [], localStorage,
     {
@@ -382,8 +435,15 @@ const saveDraft = (name) => {
  * Saves a new Draft
  * @param {Draft} draft 
  */
-const loadDraft = ({ rows: rowsFromDraft, date, narration: narrationFromDraft }) => {
+const loadDraft = async ({ rows: rowsFromDraft, date, narration: narrationFromDraft }) => {
     // TODO: Check if the state is changed, if changed notify of data loss
+    if (dataExists.value) {
+        const choice = await ModelTemplate.start({
+            body: "",
+            header: "Current ",
+            type: "warning",
+        })
+    }
     narration.value = narrationFromDraft
     entryDate.value = date
     rows.value = rowsFromDraft
@@ -425,22 +485,24 @@ const taxType = /** @type {import('vue').Ref<"no tax" | "tax exclusive" | "tax i
 
 const topWarningHidden = ref(false);
 
-const isDirty = ref(false)
-const stopWatchingForUpdates = watchDeep(rows, () => {
-    isDirty.value = true
-    stopWatchingForUpdates()
-});
-
 useUndoRedo(rows);
 
 const taxes = await getTaxes()
 const accounts = await getFinanctialAccounts()
 
-const hasErrors = computed(() => rows.value.every((row) => !isRowValid(row)))
+// Computed Values
+
+const dataExists = computed(() => {
+    /**
+     * @param {Record<string, string | number>} obj
+     */
+    const allObjectPropertiesEmptyOrUndefined = (obj) => ( /** @type {Array<keyof typeof obj>} */ (Object.keys(obj))).every(key => obj[key] != "" && obj[key] != undefined)
+    return rows.value.map(({ order, ...rest }) => rest).every(allObjectPropertiesEmptyOrUndefined)
+})
 
 /** @type {import('vue').Ref<string[]>} */
 const errorMessages = computed(() => {
-    if (!isDirty.value) return [];
+    if (!dataExists.value) return [];
 
     return /** @type {string[]} */([
         !total.value.credit.equals(total.value.debit) ? "Credit and Debit sides must equalize" : null,
@@ -549,6 +611,8 @@ const total = computed(() => {
     return { debit, credit };
 })
 
+// Table row management
+
 const addItem = () => rows.value = ([...rows.value, { order: count.value++ }]);
 
 /** @param {Row} item */
@@ -562,6 +626,8 @@ const emitOnSaveClicked = () =>
             return /** @type {Object.<string, ( string | number )>}*/(rest);
         })
     )
+
+
 
 /**
  * Sets the row's tax rate to the one in the account automatically
@@ -653,5 +719,15 @@ const splitComputedRowsToCreditDebit = (rows) => ({
 .error-list-leave-to {
     opacity: 0;
     transform: translateX(30px);
+}
+
+.model-content-enter-active,
+.model-content-leave-active {
+    transition: opacity 0.5s ease;
+}
+
+.model-content-enter-from,
+.model-content-leave-to {
+    opacity: 0;
 }
 </style>
