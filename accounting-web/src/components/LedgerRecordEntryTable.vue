@@ -1,5 +1,6 @@
 <template>
-    <div class="alert alert-warning mb-4" :class="{'hidden': topWarningHidden}">
+    <h1 class="text-2xl m-5">Ledger Record Entry</h1>
+    <div class="alert alert-warning mb-4 md:w-full w-[600px]" :class="{ 'hidden': topWarningHidden }">
         <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -24,7 +25,8 @@
             <label class="label">
                 <span class="label-text">Date of Entry</span>
             </label>
-            <el-date-picker v-model="date" type="date" placeholder="Date" :shortcuts="datePickerShortcuts" size="default" />
+            <el-date-picker v-model="entryDate" type="date" placeholder="Date" :shortcuts="datePickerShortcuts"
+                size="default" />
         </div>
 
         <div class="form-control w-[170px] max-w-xs">
@@ -38,7 +40,7 @@
             </select>
         </div>
     </div>
-    <div class="overflow-x-auto bg-slate-100 p-3">
+    <div class="overflow-x-auto bg-slate-100 p-3 transition-all duration-200" :class="{'shadow-md shadow-red-600': errorMessages.length > 0}">
         <table class="table table-lg md:table-fixed">
             <thead>
                 <tr class="text-base">
@@ -80,11 +82,11 @@
                                 <el-option v-for="item in taxes" :key="item.tax_id" :label="item.name" :value="item.tax_id">
                                     <span class="float-left mr-2">{{ item.name }}</span>
                                     <span class="text-gray-400 float-right">
-                                        {{ item.tax_rate.mul(new Decimal(100)).toDecimalPlaces(2).toString() + "%" }}
+                                        {{ item.tax_rate.toDecimalPlaces(2).toString() + "%" }}
                                     </span>
                                 </el-option>
                                 <template #empty>
-                                    No accounts ...
+                                    <span>No accounts ...</span>
                                 </template>
                             </el-select>
                         </td>
@@ -92,13 +94,13 @@
                             <!-- Debit -->
                             <input v-model="element.debit" type="text" placeholder="Debit"
                                 class="input input-ghost w-full max-w-xs"
-                                :class="{ 'input-error': creditAndDebit(element) || !isProperNumberString(element.debit) }" />
+                                :class="{ 'input-error': element.debit ? !isRowDebitCreditValid(element) : false }" />
                         </td>
                         <td>
                             <!-- Credit -->
                             <input v-model="element.credit" type="text" placeholder="Credit"
                                 class="input input-ghost w-full max-w-xs"
-                                :class="{ 'input-error': creditAndDebit(element) || !isProperNumberString(element.credit) }" />
+                                :class="{ 'input-error': element.credit ? !isRowDebitCreditValid(element) : false }" />
                         </td>
                         <td class="!p-3">
                             <svg @click="removeItem(element)"
@@ -127,9 +129,9 @@
                         </td>
                         <td class="font-bold border-b-[1px] border-gray-700">Subtotal</td>
                         <td class="text-right border-b-[1px] border-gray-700 border-l-[1px] border-l-gray-300">{{
-                            subTotal.debit.isZero() ? "-" : subTotal.debit.toDecimalPlaces(3).toString() }}</td>
+                            toReadable(subTotal.debit) }}</td>
                         <td class="text-right border-b-[1px] border-gray-700 border-l-[1px] border-l-gray-300">{{
-                            subTotal.credit.isZero() ? "-" : subTotal.credit.toDecimalPlaces(3).toString() }}</td>
+                            toReadable(subTotal.credit) }}</td>
                         <td></td>
                     </tr>
                     <tr class="table-summary-row">
@@ -137,32 +139,56 @@
                         </td>
                         <td class="font-bold border-b-2 border-gray-700">Taxes</td>
                         <td class="text-right border-b-2 border-gray-700 border-l-[1px] border-l-gray-300">{{
-                            taxTotal.debit.isZero() ? "-" : taxTotal.debit.toDecimalPlaces(3).toString() }}</td>
+                            toReadable(taxTotal.debit) }}</td>
                         <td class="text-right border-b-2 border-gray-700 border-l-[1px] border-l-gray-300">{{
-                            taxTotal.credit.isZero() ? "-" : taxTotal.credit.toDecimalPlaces(3).toString() }}</td>
+                            toReadable(taxTotal.credit) }}</td>
                         <td></td>
                     </tr>
                     <tr class="table-summary-row">
                         <td colspan="3"></td>
                         <td class="font-bold border-b-4 border-gray-700 border-double">Total</td>
                         <td class="text-right border-b-4 border-gray-700 border-double border-l-[1px] border-l-gray-300">
-                            {{ subTotal.debit.minus(taxTotal.debit).toDecimalPlaces(3).toString() + hasErrors ? "⚠" : "" }}
+                            {{ toReadable(total.debit) }}
                         </td>
                         <td class="text-right border-b-4 border-gray-700 border-double border-l-[1px] border-l-gray-300">
-                            {{ subTotal.credit.minus(taxTotal.credit).toDecimalPlaces(3).toString() + hasErrors ? "⚠" : ""
-                            }}
+                            {{ toReadable(total.credit) }}
                         </td>
                         <td></td>
                     </tr>
                 </template>
             </draggable>
         </table>
+
+        <div>
+            <!-- Error Messages -->
+            <TransitionGroup name="error-list" tag="ul">
+                <div v-for="item in errorMessages" :key="item" class="alert alert-error my-2 w-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>{{ item }}</span>
+                </div>
+            </TransitionGroup>
+        </div>
     </div>
 
-    <div class="w-full flex justify-between m-4">
-        <button class="btn btn-primary rounded-md self-start w-[150px]">Save as Draft</button>
+    <div class="w-full flex justify-between px-6 m-4">
+        <button @click="saveDraft('new Draft')" class="btn btn-primary rounded-md w-[150px]">Save as
+            Draft</button>
         <div class="flex flex-row gap-4">
-            <button @click="emitOnSaveClicked" class="btn btn-accent rounded-md  self-end w-[90px]">Save</button>
+            <template v-if="errorMessages.length > 0">
+                <div class="tooltip" data-tip="Please resolve the errors before saving">
+                    <button class="btn btn-accent rounded-md btn-disabled self-end w-[90px]">Save</button>
+                </div>
+            </template>
+            <template v-else-if="!isDirty">
+                <div class="tooltip" data-tip="Write some entries before saving">
+                    <button class="btn btn-accent rounded-md btn-disabled self-end w-[90px]">Save</button>
+                </div>
+            </template>
+            <button v-else @click="emitOnSaveClicked" class="btn btn-accent rounded-md  self-end w-[90px]">Save</button>
             <button class="btn btn-active rounded-md self-end w-[90px]">Clear</button>
         </div>
     </div>
@@ -198,14 +224,26 @@
                             <th>Name</th>
                             <th>Date</th>
                             <th></th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>Cy Ganderton</td>
-                            <td>Quality Control Specialist</td>
+                        <tr v-for="(draft, index) in getDrafts()" :key="index">
+                            <td>{{ draft.name }}</td>
+                            <td>{{ draft.draftedAt.toDateString() + " at " + draft.draftedAt.toTimeString() }}</td>
                             <td>
-                                <button class="btn btn-primary rounded-md btn-sm">Load</button>
+                                <button @click="loadDraft(draft)" class="btn btn-primary rounded-md btn-sm">Load</button>
+                                <!-- <button @click="removeDraft(draft)" class="btn btn-error rounded-md btn-sm">Remove</button> -->
+
+                            </td>
+                            <td>
+                                <svg @click="removeDraft(draft)"
+                                    class="w-5 h-5 text-gray-800 dark:text-white fill-red-500 hover:fill-red-600 cursor-pointer transition-all duration-200"
+                                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                                    viewBox="0 0 18 20">
+                                    <path
+                                        d="M17 4h-4V2a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v2H1a1 1 0 0 0 0 2h1v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6h1a1 1 0 1 0 0-2ZM7 2h4v2H7V2Zm1 14a1 1 0 1 1-2 0V8a1 1 0 0 1 2 0v8Zm4 0a1 1 0 0 1-2 0V8a1 1 0 0 1 2 0v8Z" />
+                                </svg>
                             </td>
                         </tr>
                     </tbody>
@@ -217,7 +255,7 @@
 
 <script setup>
 // @ts-check
-import { useMagicKeys, useRefHistory, whenever } from '@vueuse/core';
+import { useMagicKeys, useRefHistory, useStorage, watchDeep, watchOnce, whenever } from '@vueuse/core';
 import { computed, ref } from 'vue';
 // https://github.com/SortableJS/vue.draggable.next
 import draggable from 'vuedraggable'
@@ -225,6 +263,8 @@ import { useTaxes } from '../composibles/entity/taxes';
 import { useFinancialAccounts } from '../composibles/entity/financial-accounts';
 import { ElSelect, ElOption, ElDatePicker } from "element-plus";
 import Decimal from 'decimal.js';
+import { toReadable, toDecimal, decimalReducer } from "../util/decimal-util";
+import { NotTakeOne } from "../util/func-wrappers";
 
 const { getTaxes } = useTaxes();
 const { getFinanctialAccounts } = useFinancialAccounts()
@@ -247,6 +287,7 @@ const datePickerShortcuts = [
 const topWarningHidden = ref(false);
 
 /**
+ * Represents a Row of the table
  * @typedef Row
  * @property {number} order
  * @property {string} [description]
@@ -255,6 +296,99 @@ const topWarningHidden = ref(false);
  * @property {string} [credit]
  * @property {string} [debit]
  */
+
+/**
+ * @typedef ComputedRowCreditDebitData
+ * @property {Decimal} taxAmount Amount of tax applied
+ * @property {Decimal} amount Value with tax applied
+ * @property {Decimal} baseAmount Value without any tax
+ */
+
+/**
+ * @typedef ComputedRowBase
+ * @property {number} order
+ * @property {string} [description]
+ * @property {number} [accountId]
+ * @property {number} [taxId]
+ * @property {ComputedRowCreditDebitData} [credit]
+ * @property {ComputedRowCreditDebitData} [debit]
+ */
+
+/**
+ * Represents a Row but with more computed information on debit and credit fields
+ * @typedef {import('ts-toolbelt').O.Either<ComputedRowBase, "credit" | "debit">} ComputedRow
+ * 
+ * @typedef {import('ts-toolbelt').O.Required<Omit<ComputedRowBase, "credit">, "debit">} ComputedRowWithOnlyDebit
+ * @typedef {import('ts-toolbelt').O.Required<Omit<ComputedRowBase, "debit">, "credit">} ComputedRowWithOnlyCredit
+ */
+
+
+/**
+ * @typedef { {name: string, draftedAt: Date, date: Date, narration: string, rows: Row[]} } Draft
+ * @typedef { Omit<Draft, "date" | "draftedAt"> & { date: string, draftedAt: string } } RawDraft
+ */
+
+const drafts = useStorage('record-entry-drafts', [], localStorage,
+    {
+        serializer: {
+            /**
+             * @param {string | null} v
+             * @returns {Draft[]}
+             */
+            read: (v) => v ?
+                (/** @type {RawDraft[]}*/ (JSON.parse(v)))
+                    .map(({ date, draftedAt, ...rest }) => ({
+                        ...rest,
+                        date: new Date(date),
+                        draftedAt: new Date(draftedAt)
+                    })).sort((a, b) => b.draftedAt.getTime() - a.draftedAt.getTime()) : [],
+
+            /**
+             * @param {Draft[]} v 
+             */
+            write: (v) => JSON.stringify(v.map(({ date, draftedAt, ...rest }) => ({
+                ...rest,
+                date: date.toUTCString(),
+                draftedAt: draftedAt.toUTCString()
+            }))),
+        },
+    },
+)
+
+/**
+ * Saves a new Draft from the current state
+ * @param {string} name
+ */
+const saveDraft = (name) => {
+    drafts.value = [{
+        date: entryDate.value,
+        draftedAt: new Date(Date.now()),
+        name,
+        narration: narration.value,
+        rows: rows.value
+    }, ...drafts.value]
+}
+
+/**
+ * Saves a new Draft
+ * @param {Draft} draft 
+ */
+const loadDraft = ({ rows: rowsFromDraft, date, narration: narrationFromDraft }) => {
+    // TODO: Check if the state is changed, if changed notify of data loss
+    narration.value = narrationFromDraft
+    entryDate.value = date
+    rows.value = rowsFromDraft
+}
+
+const getDrafts = () => drafts.value.slice(0, 10) // First 10 elements or if the array is shorter than 10, the whole array
+
+/**
+ * Removes a Draft
+ * @param {Draft} draftToRemove 
+ */
+const removeDraft = (draftToRemove) => {
+    drafts.value = [...drafts.value.filter(x => x != draftToRemove)]
+}
 
 const { initialRows, ...otherProps } = defineProps({
     initialRows: {
@@ -276,9 +410,59 @@ const rows = ref(/** @type {Row[]}*/(
         .map(() => ({ order: count.value++ }))
 ));
 
+/** 
+ * Contains rows with extra details
+ * @type {import('vue').ComputedRef<ComputedRow[]>} */
+const computedRows = computed(() => {
+    const computableRows = rows.value.filter(isRowDebitCreditValid).filter(row => taxType.value == "no tax" || row.taxId != undefined)
+    return computableRows.map(({ credit, debit, taxId, ...rest }) => ({
+        ...rest,
+        taxId,
+        ...(credit ?
+            {
+                credit: {
+                    amount: taxStrategy.value.addTax(toDecimal(credit), taxId),
+                    taxAmount: taxStrategy.value.getTaxAmount(toDecimal(credit), taxId),
+                    baseAmount: taxType.value == "tax inclusive" ? toDecimal(credit).minus(taxStrategy.value.getTaxAmount(toDecimal(credit), taxId)) : toDecimal(credit)
+                }
+            } : debit ? {
+                debit: {
+                    amount: taxStrategy.value.addTax(toDecimal(debit), taxId),
+                    taxAmount: taxStrategy.value.getTaxAmount(toDecimal(debit), taxId),
+                    baseAmount: taxType.value == "tax inclusive" ? toDecimal(debit).minus(taxStrategy.value.getTaxAmount(toDecimal(debit), taxId)) : toDecimal(debit)
+                }
+            } : {})
+    }));
+})
+
+/** 
+ * Provides two methods to calculate taxes
+ * @type { import('vue').ComputedRef<{ addTax: (value: Decimal, taxId?: number) => Decimal; getTaxAmount: (value: Decimal, taxId?: number) => Decimal }>} */
+const taxStrategy = computed(() => {
+    /** @param {number} [taxId] */
+    const getTaxRate = (taxId) => taxId ? (taxes.find(tax => tax.tax_id == taxId) ?? { tax_rate: new Decimal(0) }).tax_rate : new Decimal(0);
+
+    /** 
+     * This method will calculate the tax added value
+     * @type { (value: Decimal, taxId?: number) => Decimal } */
+    const addTax = taxType.value == "tax exclusive" ? (value, taxId) => {
+        return value.mul((getTaxRate(taxId)).plus(100)).dividedBy(100)
+    } : (value, _taxId) => value;
+
+    /** 
+     * This method will calculate the tax amount
+     * @type { (value: Decimal, taxId?: number) => Decimal } */
+    const getTaxAmount =
+        taxType.value == "tax exclusive" ? (value, taxId) => value.mul(getTaxRate(taxId)).dividedBy(100) :
+            taxType.value == "tax inclusive" ? (value, taxId) => value.times(getTaxRate(taxId)).dividedBy((getTaxRate(taxId)).plus(100)) :
+                (value, _taxId) => value;
+
+    return { addTax, getTaxAmount }
+})
+
 const narration = ref("");
-const date = ref(new Date());
-const taxType = ref("tax exclusive")
+const entryDate = ref(new Date());
+const taxType = /** @type {import('vue').Ref<"no tax" | "tax exclusive" | "tax inclusive">}*/ (ref("tax exclusive"))
 const { undo, redo } = useRefHistory(rows)
 
 const { Ctrl_Z, Ctrl_Y } = useMagicKeys();
@@ -289,45 +473,72 @@ whenever(Ctrl_Y, () => redo())
 const taxes = await getTaxes()
 const accounts = await getFinanctialAccounts()
 
+const hasErrors = computed(() => rows.value.every((row) => !isRowValid(row)))
 
-const hasErrors = computed(() => rows.value.every((row) => {
-    return creditAndDebit(row) ||
-        !isProperNumberString(row.credit) ||
-        !isProperNumberString(row.debit)
-}))
+/** @type {import('vue').Ref<string[]>} */
+const errorMessages = computed(() => {
+    if (!isDirty.value) return [];
 
-/** @param {Decimal.Value} val */
-const toDecimal = (val) => new Decimal(val);
+    return /** @type {string[]} */([
+        !total.value.credit.equals(total.value.debit) ? "Credit and Debit sides must equalize" : null,
+        rows.value.some(creditAndDebit) ? "Both Debit and Credit Value cannot be set for a record" : null,
+        rows.value.some(NotTakeOne(eitherCreditOrDebitAndValid)) ? "Credit and Debit values has to be numerical" : null,
+        rows.value.some(row => !row.accountId) ? "Account ID has to be selected for every record" : null
+    ].filter(x => x != null));
+})
 
-/** 
- * @param {Row[]} rows
- */
-const validRows = (rows) =>
-    /** @type {(Omit<Row, "debit" | "credit"> & { credit: Decimal.Value; debit: Decimal.Value })[]} */
-    (rows.filter(row => !creditAndDebit(row) && isProperNumberString(row.credit) && isProperNumberString(row.debit)))
+const isDirty = ref(false)
+const stopWatchingForUpdates = watchDeep(rows, () => {
+    isDirty.value = true
+    stopWatchingForUpdates()
+});
 
 const subTotal = computed(() => {
-    if (hasErrors.value) return { credit: new Decimal(0), debit: new Decimal(0) }
+    const { creditRows, debitRows } = splitComputedRowsToCreditDebit(computedRows.value)
 
-    const credit = validRows(rows.value).map(row => row.credit).map(toDecimal).reduce(Decimal.add, new Decimal(0))
-    const debit = validRows(rows.value).map(row => row.debit).map(toDecimal).reduce(Decimal.add, new Decimal(0))
+    const credit = creditRows.map(x => x.credit.baseAmount).reduce(decimalReducer, new Decimal(0))
+    const debit = debitRows.map(x => x.debit.baseAmount).reduce(decimalReducer, new Decimal(0))
+    // if (hasErrors.value) return { credit: new Decimal(0), debit: new Decimal(0) }
+
+    // const { creditRows, debitRows } = splitRowsToCreditDebit(rows.value)
+
+    // const credit = creditRows.map(row => row.credit).map(toDecimal).reduce(decimalReducer, new Decimal(0))
+    // const debit = debitRows.map(row => row.debit).map(toDecimal).reduce(decimalReducer, new Decimal(0))
     return { debit, credit };
 })
 
 const taxTotal = computed(() => {
-    if (hasErrors.value) return { credit: new Decimal(0), debit: new Decimal(0) }
+    const { creditRows, debitRows } = splitComputedRowsToCreditDebit(computedRows.value)
 
-    /** @param {number} taxId */
-    const getTaxRate = (taxId) => taxes.find(tax => tax.tax_id == taxId)?.tax_rate
+    const credit = creditRows.map(x => x.credit.taxAmount).reduce(decimalReducer, new Decimal(0))
+    const debit = debitRows.map(x => x.debit.taxAmount).reduce(decimalReducer, new Decimal(0))
 
-    /** 
-     * @param {import('ts-toolbelt').O.Merge<Row, { debit: Decimal.Value; credit: Decimal.Value }>} row
-     * @param {keyof Row} key
-     */
-    const mapToTaxValue = (row, key) => new Decimal(row[key] ?? "0").times(getTaxRate(row.taxId ?? 0) ?? new Decimal(0)).dividedBy(100)
+    // if (hasErrors.value) return { credit: new Decimal(0), debit: new Decimal(0) }
 
-    const debit = validRows(rows.value).map(row => mapToTaxValue(row, 'debit')).reduce(Decimal.add, new Decimal(0))
-    const credit = validRows(rows.value).map(row => mapToTaxValue(row, 'credit')).reduce(Decimal.add, new Decimal(0))
+    // /** @param {number} taxId */
+    // const getTaxRate = (taxId) => taxes.find(tax => tax.tax_id == taxId)?.tax_rate
+
+    // /** @type { (row: RowWithProbablyValidCreditValue | RowWithProbablyValidDebitValue) => row is RowWithProbablyValidCreditValue } */
+    // const rowTypePredicateCredit = (row) => "credit" in row;
+
+    // /** 
+    //  * @param { RowWithProbablyValidCreditValue | RowWithProbablyValidDebitValue } row
+    //  */
+    // const mapToTaxValue = (row) => new Decimal(rowTypePredicateCredit(row) ? row.credit : row.debit).times(getTaxRate(row.taxId ?? 0) ?? new Decimal(0)).dividedBy(100)
+
+    // const { creditRows, debitRows } = splitRowsToCreditDebit(rows.value)
+
+    // const debit = debitRows.map(row => mapToTaxValue(row)).reduce(decimalReducer, new Decimal(0))
+    // const credit = creditRows.map(row => mapToTaxValue(row)).reduce(decimalReducer, new Decimal(0))
+    return { debit, credit };
+})
+
+const total = computed(() => {
+    const { creditRows, debitRows } = splitComputedRowsToCreditDebit(computedRows.value)
+
+    const credit = creditRows.map(x => x.credit.amount).reduce(decimalReducer, new Decimal(0))
+    const debit = debitRows.map(x => x.debit.amount).reduce(decimalReducer, new Decimal(0))
+
     return { debit, credit };
 })
 
@@ -363,6 +574,24 @@ const handleAccountChange = (accountId, element) => {
 const creditAndDebit = (row) => (row.credit != "" && row.credit != undefined) && (row.debit != "" && row.debit != undefined)
 
 /**
+ * If a debit value is set check if it's valid, likewise for credit value
+ * @param {Row} row 
+ */
+const eitherCreditOrDebitAndValid = (row) => isProperNumberString(row.credit) || isProperNumberString(row.debit);
+
+/**
+ * Checks if the row's credit and debit fields are valid
+ * @param {Row} row 
+ */
+const isRowDebitCreditValid = (row) => !creditAndDebit(row) && eitherCreditOrDebitAndValid(row);
+
+/**
+ * Checks if the row's data is valid
+ * @param {Row} row 
+ */
+const isRowValid = (row) => isRowDebitCreditValid(row) || !(row.accountId) || !(row.taxId) || !(row.description);
+
+/**
  * Checks if the string is a value Decimal constructor can take
  * @type {(text: string | undefined) => boolean}
  */
@@ -377,6 +606,35 @@ const isProperNumberString = (text) => {
         return false;
     }
 }
+
+// Helper Functions
+
+/**
+ * @typedef {(Omit<Row, "debit" | "credit"> & { credit: Decimal.Value; debit: Decimal.Value })} RowWithProbablyValidCreditOrDebitValue
+ * @typedef { Omit<RowWithProbablyValidCreditOrDebitValue, "debit"> } RowWithProbablyValidCreditValue
+ * @typedef { Omit<RowWithProbablyValidCreditOrDebitValue, "credit"> } RowWithProbablyValidDebitValue
+ */
+
+/**
+ * Splits the given Row array into a object containing rows with credit and debit values in seperate properties. 
+ * On the side note, only rows with valid Credit or Debit values will be present in the returned object
+ * @param {Row[]} rows 
+ * @returns {{ creditRows: RowWithProbablyValidCreditValue[], debitRows: RowWithProbablyValidDebitValue[] }}
+ */
+const splitRowsToCreditDebit = (rows) => ({
+    creditRows: /** @type {(Omit<Row, "debit"> & { credit: Decimal.Value })[]} */ (rows.filter(isRowDebitCreditValid).filter(row => isProperNumberString(row.credit)).map(({ debit, ...rest }) => ({ ...rest }))),
+    debitRows: /** @type {(Omit<Row, "credit"> & { debit: Decimal.Value })[]} */ (rows.filter(isRowDebitCreditValid).filter(row => isProperNumberString(row.debit)).map(({ credit, ...rest }) => ({ ...rest })))
+})
+
+/**
+ * Splits the ComputedRow array into credit and debit parts
+ * @param {ComputedRow[]} rows 
+ * @returns {{ creditRows: ComputedRowWithOnlyCredit[], debitRows: ComputedRowWithOnlyDebit[] }}
+ */
+const splitComputedRowsToCreditDebit = (rows) => ({
+    creditRows: rows.filter(row => "credit" in row).map(({ debit, ...rest }) => /** @type {ComputedRowWithOnlyCredit} */({ ...rest })),
+    debitRows: rows.filter(row => "debit" in row).map(({ credit, ...rest }) => /** @type {ComputedRowWithOnlyDebit} */({ ...rest }))
+})
 </script>
 
 <style scoped>
@@ -394,4 +652,15 @@ const isProperNumberString = (text) => {
 
 .entry-row td:first-of-type {
     @apply border-l-0;
-}</style>
+}
+
+.error-list-enter-active,
+.error-list-leave-active {
+  transition: all 0.5s ease;
+}
+.error-list-enter-from,
+.error-list-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+</style>
