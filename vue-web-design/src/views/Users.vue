@@ -431,7 +431,26 @@ async function updateRoles(id) {
   }
   let role = await window.addNewForm('Update Role', 'Update', updateFormFields)
   if (!role['accepted'])
-    return
+  return
+
+  console.log(role.data)
+
+  let dict_one = {}
+
+  for (const [key, value] of Object.entries(role.data)) {
+
+    if (key === 'role') {
+    } else {
+      let array_one = []
+      for (const [key, val] of Object.entries(value)) {
+        if (val == true) {
+          array_one.push(key)
+        }
+      }
+      dict_one[key] = array_one
+    }
+  }
+
 }
 
 async function addNewRole() {
@@ -466,12 +485,12 @@ async function addNewRole() {
     tempData.push(dictOne)
   }
 
-  console.log(tempData)
 
   let roles = await window.addNewForm('New Role', 'Add', tempData)
 
   if (!roles['accepted'])
     return
+
 
   let dict_one = {}
 
@@ -488,6 +507,8 @@ async function addNewRole() {
       dict_one[key] = array_one
     }
   }
+
+  console.log(dict_one)
 
   let response = await sendJsonPostRequest(apiBaseUrl + "/user-roles/add", {
     "name": roles.data['role'],
