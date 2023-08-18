@@ -174,8 +174,7 @@ async function addNewUser() {
     {name: 'lastname', text: 'Last Name', type: 'text'},
     {
       name: 'role', text: 'User Role', type: 'select', value: 'cashier',
-      options: [{text: 'Administrator', value: 'administrator'}, {text: 'Manager', value: 'manager'},
-        {text: 'Cashier', value: 'cashier'}]
+      options: roleNamesArray
     },
     {name: 'branch-id', text: 'Branch Id', type: 'number'}
   ])
@@ -216,8 +215,7 @@ async function updateUser(id) {
     {name: 'lastname', text: 'Last Name', type: 'text', value: userData[4]},
     {
       name: 'role', text: 'User Role', type: 'select', value: userData[5],
-      options: [{text: 'Administrator', value: 'administrator'}, {text: 'Manager', value: 'manager'},
-        {text: 'Cashier', value: 'cashier'}]
+      options: roleNamesArray
     },
     {name: 'branch-id', text: 'Branch Id', type: 'number', value: userData[6]}
   ])
@@ -385,9 +383,13 @@ async function getRoles(paramOne = null, paramTwo = null) {
     tableRowsRoles.value = []
     let roles = response.data["user-roles"]
 
+    
     for (const role of roles) {
-
-      tableRowsRoles.value.push([role["role_id"], role["name"], role["permissions"]])
+      let tablePermissions = ''
+      for(const[key,val] of Object.entries(role['permissions'])){
+        tablePermissions +=  `• ${key} - ${val.toString()} \n`
+      }
+      tableRowsRoles.value.push([role["role_id"], role["name"], tablePermissions])
     }
   } else {
     window.errorNotification('Fetch User Data', response.message)
@@ -408,7 +410,6 @@ async function updateRoles(id) {
   ]
 
   let permissions = roleData[2]
-
   for (const [permissionCateg, permissionArray] of Object.entries(userRoles)) {
     let options_ = []
     let appliedPermissions = []
@@ -433,13 +434,12 @@ async function updateRoles(id) {
   if (!role['accepted'])
   return
 
-  console.log(role.data)
-
   let dict_one = {}
 
   for (const [key, value] of Object.entries(role.data)) {
 
     if (key === 'role') {
+    }else if(key === 'undefined'){
     } else {
       let array_one = []
       for (const [key, val] of Object.entries(value)) {
@@ -449,6 +449,20 @@ async function updateRoles(id) {
       }
       dict_one[key] = array_one
     }
+  }
+  let response = await sendJsonPostRequest(apiBaseUrl + "/user-roles/update", {
+    "role-id":roleData[0],
+    "name": role.data['role'],
+    "permissions": dict_one
+  })
+
+  if (response.status === "success") {
+    getRoles()
+    roleNamesArray = []
+    getOnlyRoleNames()
+    window.successNotification('User Update', response.message)
+  } else {
+    window.errorNotification('User Update', response.message)
   }
 
 }
@@ -508,8 +522,6 @@ async function addNewRole() {
     }
   }
 
-  console.log(dict_one)
-
   let response = await sendJsonPostRequest(apiBaseUrl + "/user-roles/add", {
     "name": roles.data['role'],
     "permissions": dict_one
@@ -517,9 +529,28 @@ async function addNewRole() {
 
   if (response.status === "success") {
     getRoles()
+    roleNamesArray = []
+    getOnlyRoleNames()
     window.successNotification('User Creation', response.message)
   } else {
     window.errorNotification('User Creation', response.message)
+  }
+}
+
+getOnlyRoleNames()
+let roleNamesArray = []
+
+
+async function getOnlyRoleNames(){
+  let response = await sendGetRequest(apiBaseUrl + '/user-roles')
+
+  if(response.status === 'success'){
+    response.data['user-roles'].forEach((role)=>{
+      let dict_one = {}
+      dict_one['text'] = role.name
+      dict_one['value'] = role.name
+      roleNamesArray.push(dict_one)
+    })
   }
 }
 
