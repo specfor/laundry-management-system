@@ -97,6 +97,8 @@ export function useLedgerRecords() {
             const success = ref(false);
             const { isFinished } = useAuthorizedFetch('/general-ledger/add', 'Add Ledger Record', success, true).json().post(deserialize(options));
 
+            console.log(deserialize(options));
+
             whenever(logicAnd(isFinished, success), () => resolve())
         })
     }

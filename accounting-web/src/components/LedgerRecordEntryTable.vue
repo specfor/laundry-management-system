@@ -1,9 +1,9 @@
 <template>
     <ModelTemplate v-slot="{ resolve, reject, args }">
-        <div class="fixed inset-0 bg-gray-300/30 flex items-center z-30">
+        <div class="fixed inset-0 bg-gray-300/30 flex items-center justify-center z-30">
             <!-- Draft save Model -->
             <template v-if="args[0] == 'draft-save'">
-                <div class="card w-96 bg-white">
+                <div class="card w-96 bg-white shadow-lg">
                     <div class="card-body items-center text-center">
                         <h2 class="card-title">Save Draft</h2>
                         <input ref="draftNameInput" type="text" placeholder="Draft Name"
@@ -19,7 +19,7 @@
 
             <!-- Draft delete Model -->
             <template v-else-if="args[0] == 'delete-draft-confirm'">
-                <div class="card w-96 bg-slate-300">
+                <div class="card w-96 bg-white shadow-lg">
                     <div class="card-body items-center text-center">
                         <h2 class="card-title">Delete Draft</h2>
                         <p>You're about to delete a saved Draft</p>
@@ -33,7 +33,7 @@
 
             <!-- Draft Load but data exists Model -->
             <template v-else-if="args[0] == 'draft-load-data-exists-warning'">
-                <div class="card w-96 bg-slate-300">
+                <div class="card w-96 bg-white shadow-lg">
                     <div class="card-body items-center text-center">
                         <h2 class="card-title">Load Draft</h2>
                         <p>You're about to load a Draft, but there is some data already the entry table. Those records will
@@ -48,10 +48,10 @@
         </div>
     </ModelTemplate>
 
-     <!-- Saving records Model -->
+    <!-- Saving records Model -->
     <Teleport to="body">
         <template v-if="isLoadingModelVisible">
-            <div class="fixed inset-0 bg-gray-300/30 flex items-center z-30">
+            <div class="fixed inset-0 bg-gray-300/30 flex items-center justify-center z-30">
                 <form method="dialog" class="modal-box flex flex-row justify-center w-auto">
                     <span class="loading loading-spinner loading-lg"></span>
                     <div class="ml-5 prose">
@@ -240,7 +240,12 @@
     </div>
 
     <div class="w-full flex justify-between px-6 m-4">
-        <button @click="saveDraft" class="btn btn-primary rounded-md w-[150px]">Save as
+        <template v-if="!dataExists">
+            <div class="tooltip tooltip-right" data-tip="There is no data to be saved in the draft">
+                <button class="btn btn-accent rounded-md btn-disabled self-end w-[150px]">Save as Draft</button>
+            </div>
+        </template>
+        <button v-else @click="saveDraft" class="btn btn-primary rounded-md w-[150px]">Save as
             Draft</button>
         <div class="flex flex-row gap-4">
             <template v-if="errorMessages.length > 0">
@@ -415,7 +420,7 @@ const { isRevealed: isLoadingModelVisible, reveal: revealLoadingModel, cancel: h
 
 
 /**
- * @typedef { {name: string, draftedAt: Date, date: Date, narration: string, rows: Row[]} } Draft
+ * @typedef { {name: string, draftedAt: Date, date: Date, taxType: "no tax" | "tax exclusive" | "tax inclusive", narration: string, rows: Row[]} } Draft
  * @typedef { Omit<Draft, "date" | "draftedAt"> & { date: string, draftedAt: string } } RawDraft
  */
 
@@ -466,6 +471,7 @@ const saveDraft = async () => {
         draftedAt: new Date(Date.now()),
         name,
         narration: narration.value,
+        taxType: taxType.value,
         rows: rows.value
     }, ...drafts.value]
 }
@@ -474,7 +480,7 @@ const saveDraft = async () => {
  * Saves a new Draft
  * @param {Draft} draft 
  */
-const loadDraft = async ({ rows: rowsFromDraft, date, narration: narrationFromDraft }) => {
+const loadDraft = async ({ rows: rowsFromDraft, date, narration: narrationFromDraft, taxType: taxTypeFromDraft }) => {
     // TODO: Check if the state is changed, if changed notify of data loss
     if (dataExists.value &&
         await ModelTemplate.start("draft-load-data-exists-warning").then(({ response }) => response != "load").catch(() => true))
@@ -483,6 +489,7 @@ const loadDraft = async ({ rows: rowsFromDraft, date, narration: narrationFromDr
     narration.value = narrationFromDraft
     entryDate.value = date
     rows.value = rowsFromDraft
+    taxType.value = taxTypeFromDraft
 }
 
 const getDrafts = () => drafts.value.slice(0, 10) // First 10 elements or if the array is shorter than 10, the whole array
@@ -534,8 +541,8 @@ const dataExists = computed(() => {
     /**
      * @param {Record<string, string | number>} obj
      */
-    const allObjectPropertiesEmptyOrUndefined = (obj) => ( /** @type {Array<keyof typeof obj>} */ (Object.keys(obj))).every(key => obj[key] != "" && obj[key] != undefined)
-    return rows.value.map(({ order, ...rest }) => rest).every(allObjectPropertiesEmptyOrUndefined)
+    const atleastOneObjectPropertyIsNotEmpty = (obj) => ( /** @type {Array<keyof typeof obj>} */ (Object.keys(obj))).some(key => obj[key] != "" && obj[key] != undefined)
+    return rows.value.map(({ order, ...rest }) => rest).some(atleastOneObjectPropertyIsNotEmpty)
 })
 
 /** @type {import('vue').Ref<string[]>} */
@@ -546,7 +553,8 @@ const errorMessages = computed(() => {
         !total.value.credit.equals(total.value.debit) ? "Credit and Debit sides must equalize" : null,
         rows.value.some(creditAndDebit) ? "Both Debit and Credit Value cannot be set for a record" : null,
         rows.value.some(NotTakeOne(eitherCreditOrDebitAndValid)) ? "Credit and Debit values has to be numerical" : null,
-        rows.value.some(row => !row.accountId) ? "Account ID has to be selected for every record" : null
+        rows.value.some(row => !row.accountId) ? "Account ID has to be selected for every record" : null,
+        narration.value == "" || narration.value == undefined ? "Narration has to be provided" : null,
     ].filter(x => x != null));
 })
 
@@ -595,7 +603,7 @@ const taxStrategy = computed(() => {
     const getTaxAmount =
         taxType.value == "tax exclusive" ? (value, taxId) => value.mul(getTaxRate(taxId)).dividedBy(100) :
             taxType.value == "tax inclusive" ? (value, taxId) => value.times(getTaxRate(taxId)).dividedBy((getTaxRate(taxId)).plus(100)) :
-                (value, _taxId) => value;
+                (_value, _taxId) => new Decimal(0);
 
     return { addTax, getTaxAmount }
 })
@@ -659,21 +667,26 @@ const removeItem = (item) => rows.value = [...rows.value.filter(x => x != item)]
 const saveRecords = async () => {
     revealLoadingModel()
 
-    const data = /** @type {import('../types').LedgerRecordAddOptions} */ ({
+    /** @type {import('../types').LedgerRecordAddOptions} */
+    const data = {
         body: [
-            ...splitComputedRowsToCreditDebit(computedRows.value).creditRows.map(({ credit, order, ...rest }) => ({
-                ...rest,
+            ...splitComputedRowsToCreditDebit(computedRows.value).creditRows.map(({ credit, taxId, accountId, description }) => ({
+                description: description ?? "",
+                tax_id: /** @type {number} */ (taxId),
+                account_id: /** @type {number} */ (accountId),
                 credit: credit.amount
             })),
-            ...splitComputedRowsToCreditDebit(computedRows.value).debitRows.map(({ debit, order, ...rest }) => ({
-                ...rest,
+            ...splitComputedRowsToCreditDebit(computedRows.value).debitRows.map(({ debit, taxId, accountId, description }) => ({
+                description: description ?? "",
+                tax_id: /** @type {number} */ (taxId),
+                account_id: /** @type {number} */ (accountId), 
                 debit: debit.amount
             }))
         ],
         date: entryDate.value,
         narration: narration.value,
         taxType: taxType.value
-    })
+    }
 
     await addLedgerRecord(data);
 

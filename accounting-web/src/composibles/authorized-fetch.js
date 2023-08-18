@@ -42,7 +42,7 @@ export const useAuthorizedFetch = (url, origin, successRef, notifySuccess = fals
             // console.log(ctx.response);
             if (ctx.data.statusCode !== undefined && ctx.data.statusMessage !== undefined && ctx.data.body !== undefined) {
                 successRef.value = true;
-                if (ctx.data.statusCode != 200) {
+                if (ctx.data.statusCode != 200 || ctx.data.statusMessage == "error") {
                     successRef.value = false;
                     handleRequestErrors({ origin, status: ctx.data.statusCode, statusText: ctx.data.statusMessage })
                 }
