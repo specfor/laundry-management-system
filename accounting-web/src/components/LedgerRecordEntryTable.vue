@@ -40,7 +40,8 @@
             </select>
         </div>
     </div>
-    <div class="overflow-x-auto bg-slate-100 p-3 transition-all duration-200" :class="{'shadow-md shadow-red-600': errorMessages.length > 0}">
+    <div class="overflow-x-auto bg-slate-100 p-3 transition-all duration-200"
+        :class="{ 'shadow-md shadow-red-600': errorMessages.length > 0 }">
         <table class="table table-lg md:table-fixed">
             <thead>
                 <tr class="text-base">
@@ -260,6 +261,7 @@ import { computed, ref } from 'vue';
 // https://github.com/SortableJS/vue.draggable.next
 import draggable from 'vuedraggable'
 import { useTaxes } from '../composibles/entity/taxes';
+import { useUndoRedo } from "../composibles/undo-redo";
 import { useFinancialAccounts } from '../composibles/entity/financial-accounts';
 import { ElSelect, ElOption, ElDatePicker } from "element-plus";
 import Decimal from 'decimal.js';
@@ -284,7 +286,7 @@ const datePickerShortcuts = [
     }
 ]
 
-const topWarningHidden = ref(false);
+// Types
 
 /**
  * Represents a Row of the table
@@ -327,6 +329,13 @@ const topWarningHidden = ref(false);
  * @typedef { {name: string, draftedAt: Date, date: Date, narration: string, rows: Row[]} } Draft
  * @typedef { Omit<Draft, "date" | "draftedAt"> & { date: string, draftedAt: string } } RawDraft
  */
+
+/**
+* @typedef {(Omit<Row, "debit" | "credit"> & { credit: Decimal.Value; debit: Decimal.Value })} RowWithProbablyValidCreditOrDebitValue
+* @typedef { Omit<RowWithProbablyValidCreditOrDebitValue, "debit"> } RowWithProbablyValidCreditValue
+* @typedef { Omit<RowWithProbablyValidCreditOrDebitValue, "credit"> } RowWithProbablyValidDebitValue
+*/
+
 
 const drafts = useStorage('record-entry-drafts', [], localStorage,
     {
@@ -410,6 +419,37 @@ const rows = ref(/** @type {Row[]}*/(
         .map(() => ({ order: count.value++ }))
 ));
 
+const narration = ref("");
+const entryDate = ref(new Date());
+const taxType = /** @type {import('vue').Ref<"no tax" | "tax exclusive" | "tax inclusive">}*/ (ref("tax exclusive"))
+
+const topWarningHidden = ref(false);
+
+const isDirty = ref(false)
+const stopWatchingForUpdates = watchDeep(rows, () => {
+    isDirty.value = true
+    stopWatchingForUpdates()
+});
+
+useUndoRedo(rows);
+
+const taxes = await getTaxes()
+const accounts = await getFinanctialAccounts()
+
+const hasErrors = computed(() => rows.value.every((row) => !isRowValid(row)))
+
+/** @type {import('vue').Ref<string[]>} */
+const errorMessages = computed(() => {
+    if (!isDirty.value) return [];
+
+    return /** @type {string[]} */([
+        !total.value.credit.equals(total.value.debit) ? "Credit and Debit sides must equalize" : null,
+        rows.value.some(creditAndDebit) ? "Both Debit and Credit Value cannot be set for a record" : null,
+        rows.value.some(NotTakeOne(eitherCreditOrDebitAndValid)) ? "Credit and Debit values has to be numerical" : null,
+        rows.value.some(row => !row.accountId) ? "Account ID has to be selected for every record" : null
+    ].filter(x => x != null));
+})
+
 /** 
  * Contains rows with extra details
  * @type {import('vue').ComputedRef<ComputedRow[]>} */
@@ -459,39 +499,6 @@ const taxStrategy = computed(() => {
 
     return { addTax, getTaxAmount }
 })
-
-const narration = ref("");
-const entryDate = ref(new Date());
-const taxType = /** @type {import('vue').Ref<"no tax" | "tax exclusive" | "tax inclusive">}*/ (ref("tax exclusive"))
-const { undo, redo } = useRefHistory(rows)
-
-const { Ctrl_Z, Ctrl_Y } = useMagicKeys();
-
-whenever(Ctrl_Z, () => undo())
-whenever(Ctrl_Y, () => redo())
-
-const taxes = await getTaxes()
-const accounts = await getFinanctialAccounts()
-
-const hasErrors = computed(() => rows.value.every((row) => !isRowValid(row)))
-
-/** @type {import('vue').Ref<string[]>} */
-const errorMessages = computed(() => {
-    if (!isDirty.value) return [];
-
-    return /** @type {string[]} */([
-        !total.value.credit.equals(total.value.debit) ? "Credit and Debit sides must equalize" : null,
-        rows.value.some(creditAndDebit) ? "Both Debit and Credit Value cannot be set for a record" : null,
-        rows.value.some(NotTakeOne(eitherCreditOrDebitAndValid)) ? "Credit and Debit values has to be numerical" : null,
-        rows.value.some(row => !row.accountId) ? "Account ID has to be selected for every record" : null
-    ].filter(x => x != null));
-})
-
-const isDirty = ref(false)
-const stopWatchingForUpdates = watchDeep(rows, () => {
-    isDirty.value = true
-    stopWatchingForUpdates()
-});
 
 const subTotal = computed(() => {
     const { creditRows, debitRows } = splitComputedRowsToCreditDebit(computedRows.value)
@@ -610,23 +617,6 @@ const isProperNumberString = (text) => {
 // Helper Functions
 
 /**
- * @typedef {(Omit<Row, "debit" | "credit"> & { credit: Decimal.Value; debit: Decimal.Value })} RowWithProbablyValidCreditOrDebitValue
- * @typedef { Omit<RowWithProbablyValidCreditOrDebitValue, "debit"> } RowWithProbablyValidCreditValue
- * @typedef { Omit<RowWithProbablyValidCreditOrDebitValue, "credit"> } RowWithProbablyValidDebitValue
- */
-
-/**
- * Splits the given Row array into a object containing rows with credit and debit values in seperate properties. 
- * On the side note, only rows with valid Credit or Debit values will be present in the returned object
- * @param {Row[]} rows 
- * @returns {{ creditRows: RowWithProbablyValidCreditValue[], debitRows: RowWithProbablyValidDebitValue[] }}
- */
-const splitRowsToCreditDebit = (rows) => ({
-    creditRows: /** @type {(Omit<Row, "debit"> & { credit: Decimal.Value })[]} */ (rows.filter(isRowDebitCreditValid).filter(row => isProperNumberString(row.credit)).map(({ debit, ...rest }) => ({ ...rest }))),
-    debitRows: /** @type {(Omit<Row, "credit"> & { debit: Decimal.Value })[]} */ (rows.filter(isRowDebitCreditValid).filter(row => isProperNumberString(row.debit)).map(({ credit, ...rest }) => ({ ...rest })))
-})
-
-/**
  * Splits the ComputedRow array into credit and debit parts
  * @param {ComputedRow[]} rows 
  * @returns {{ creditRows: ComputedRowWithOnlyCredit[], debitRows: ComputedRowWithOnlyDebit[] }}
@@ -656,11 +646,12 @@ const splitComputedRowsToCreditDebit = (rows) => ({
 
 .error-list-enter-active,
 .error-list-leave-active {
-  transition: all 0.5s ease;
+    transition: all 0.5s ease;
 }
+
 .error-list-enter-from,
 .error-list-leave-to {
-  opacity: 0;
-  transform: translateX(30px);
+    opacity: 0;
+    transform: translateX(30px);
 }
 </style>
