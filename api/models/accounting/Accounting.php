@@ -28,7 +28,7 @@ class Accounting extends DbModel
             $filters[] = "account_id=$accountId";
         if ($name) {
             $filters[] = "name LIKE :name";
-            $placeholders['name'] = "$name%";
+            $placeholders['name'] = ucwords($name) . "%";
         }
         if ($type) {
             $filters[] = 'type LIKE :type';
@@ -36,18 +36,18 @@ class Accounting extends DbModel
         }
         if ($code) {
             $filters[] = 'code LIKE :code';
-            $placeholders['code'] = "$code%";
+            $placeholders['code'] = strtoupper($code). "%";
         }
         if ($description) {
             $filters[] = 'description LIKE :desc';
             $placeholders['desc'] = "$description%";
         }
         if ($taxId) {
-            $filters[] = "tax_id=$taxId";
+            $filters[] = "tax_id = $taxId";
         }
 
         $condition = implode(' AND ', $filters);
-        $statement = self::getDataFromTable(["*"], self::TABLE_NAME, $condition, $placeholders,
+        $statement = self::getDataFromTable([" * "], self::TABLE_NAME, $condition, $placeholders,
             ['account_id', 'asc'], [$startingIndex, $limit]);
         $accounts = $statement->fetchAll(PDO::FETCH_ASSOC);
         foreach ($accounts as &$account) {
@@ -58,13 +58,13 @@ class Accounting extends DbModel
     }
 
     public static function createAccount(string $name, string $code, string $type, int $taxId, string $description = null,
-                                         bool $deletable = true): string|array
+                                         bool   $deletable = true): string|array
     {
         $params['name'] = ucwords($name);
         $params['code'] = strtoupper($code);
 
         if (strlen($code) > 10)
-            return "Account code can not be more than 10 characters.";
+            return "Account code can not be more than 10 characters . ";
 
         $statement = self::getDataFromTable(['name', 'code'], self::TABLE_NAME,
             'name=:name OR code=:code', $params);
@@ -72,11 +72,11 @@ class Accounting extends DbModel
 
         if (!empty($data))
             if ($data['name'] == $name && $data['code'] == $code)
-                return "Account 'name' and 'code' already exists.";
+                return "Account 'name' and 'code' already exists . ";
             elseif ($data['name'] == $name)
-                return "Account 'name' already exists.";
+                return "Account 'name' already exists . ";
             else
-                return "Account 'code' already exists.";
+                return "Account 'code' already exists . ";
 
         foreach (self::ACCOUNT_TYPES as $mainType => $subTypes) {
             foreach ($subTypes as $subType) {
@@ -87,11 +87,11 @@ class Accounting extends DbModel
             }
         }
         if (!isset($params['type']))
-            return "Invalid account type.";
+            return "Invalid account type . ";
 
         $data = Taxes::getTaxes(taxId: $taxId);
         if (empty($data))
-            return "Invalid tax ID.";
+            return "Invalid tax ID . ";
 
         $params['tax_id'] = $taxId;
         $params['description'] = $description;
@@ -100,7 +100,7 @@ class Accounting extends DbModel
 
         $id = self::insertIntoTable(self::TABLE_NAME, $params);
         if ($id === false)
-            return "Failed to insert data into the database.";
+            return "Failed to insert data into the database . ";
 
         return ['account_id' => $id];
     }
@@ -108,12 +108,12 @@ class Accounting extends DbModel
     public static function updateAccount(int $accountId, string $name = null, int $taxId = null, string $description = null): string|bool
     {
         $data = self::getDataFromTable(['account_id'], self::TABLE_NAME,
-            "account_id=$accountId")->fetch(PDO::FETCH_ASSOC);
+            "account_id = $accountId")->fetch(PDO::FETCH_ASSOC);
         if (empty($data))
-            return "Invalid account ID.";
+            return "Invalid account ID . ";
 
         if (empty($name) && empty($taxId) && empty($description))
-            return "Nothing was passed to update.";
+            return "Nothing was passed to update . ";
 
         if ($name) {
             $params['name'] = ucwords($name);
@@ -125,37 +125,37 @@ class Accounting extends DbModel
         if ($taxId) {
             $data = Taxes::getTaxes(taxId: $taxId);
             if (empty($data))
-                return "Invalid tax ID.";
+                return "Invalid tax ID . ";
             $params['tax_id'] = $taxId;
         }
         if ($description)
             $params['description'] = $description;
 
-        if (self::updateTableData(self::TABLE_NAME, $params, "account_id=$accountId"))
+        if (self::updateTableData(self::TABLE_NAME, $params, "account_id = $accountId"))
             return true;
-        return "Failed to update the database.";
+        return "Failed to update the database . ";
     }
 
     public static function deleteAccount(int $accountId): bool|string
     {
         $data = self::getDataFromTable(['deletable'], self::TABLE_NAME,
-            "account_id=$accountId")->fetch(PDO::FETCH_ASSOC);
+            "account_id = $accountId")->fetch(PDO::FETCH_ASSOC);
         if (empty($data))
-            return "Invalid account ID.";
+            return "Invalid account ID . ";
 
         if (!$data['deletable'])
-            return "This account can not be deleted.";
+            return "This account can not be deleted . ";
 
         //Todo implement proper checks
 //        $ledgerRecords = GeneralLedger::getLedgerRecords(accountId: $accountId);
         if (!empty($ledgerRecords)) {
-            self::updateTableData(self::TABLE_NAME, ['deletable' => false], "account_id=$accountId");
-            return "This account can not be deleted.";
+            self::updateTableData(self::TABLE_NAME, ['deletable' => false], "account_id = $accountId");
+            return "This account can not be deleted . ";
         }
 
-        if (self::removeTableData(self::TABLE_NAME, "account_id=$accountId"))
+        if (self::removeTableData(self::TABLE_NAME, "account_id = $accountId"))
             return true;
-        return "Failed to remove data from database.";
+        return "Failed to remove data from database . ";
     }
 
     public static function getAccountTypes(): array
