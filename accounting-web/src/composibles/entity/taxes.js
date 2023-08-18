@@ -4,7 +4,7 @@ import Decimal from "decimal.js"
 import { useAuthorizedFetch } from "../authorized-fetch"
 import { whenever } from "@vueuse/core";
 import { ref, toValue } from "vue";
-import { logicAnd } from "@vueuse/math/index.cjs";
+import { logicAnd, logicNot } from "@vueuse/math/index.cjs";
 
 export function useTaxes() {
     /**
@@ -32,7 +32,7 @@ export function useTaxes() {
      * @returns {Promise<import("../../types").Tax[]>}
      */
     const getTaxes = async () => {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             const success = ref(false);
             const { data, isFinished } = useAuthorizedFetch(`/taxes?limit=9999`, 'Get Taxes', success).json().get();
 
@@ -40,6 +40,7 @@ export function useTaxes() {
                 const taxesRaw = /** @type {import("../../types").RawTax[] }*/(toValue(data).taxes)
                 resolve(taxesRaw.map(serialize));
             })
+            whenever(logicAnd(isFinished, logicNot(success)), () => reject())
         })
     }
 
@@ -49,7 +50,7 @@ export function useTaxes() {
      * @returns {Promise<import("../../types").Tax | undefined>} Returns undefined if no Tax record was found under the given ID
      */
     const getTax = async (id) => {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             const success = ref(false);
             const { data, isFinished } = useAuthorizedFetch(`/taxes?tax-id=${id}`, 'Get Tax', success).json().get();
 
@@ -57,6 +58,7 @@ export function useTaxes() {
                 const taxesRaw = /** @type {import("../../types").RawTax[] }*/(toValue(data).taxes)
                 resolve(taxesRaw.map(serialize).findLast(() => true));
             })
+            whenever(logicAnd(isFinished, logicNot(success)), () => reject())
         })
     }
 
@@ -66,11 +68,12 @@ export function useTaxes() {
      * @returns {Promise<void>}
      */
     const addTax = async (tax) => {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             const success = ref(false);
             const { isFinished } = useAuthorizedFetch('/taxes/add', 'Add Tax', success, true).json().post(deserialize(tax));
 
             whenever(logicAnd(isFinished, success), () => resolve())
+            whenever(logicAnd(isFinished, logicNot(success)), () => reject())
         })
     }
 
@@ -80,11 +83,12 @@ export function useTaxes() {
      * @returns {Promise<void>}
      */
     const updateTax = async (tax) => {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             const success = ref(false);
             const { isFinished } = useAuthorizedFetch('/taxes/update', 'Update Tax', success, true).json().post(deserialize(tax));
 
             whenever(logicAnd(isFinished, success), () => resolve())
+            whenever(logicAnd(isFinished, logicNot(success)), () => reject())
         })
     }
 
@@ -94,11 +98,12 @@ export function useTaxes() {
      * @returns {Promise<void>}
      */
     const removeTax = async (id) => {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             const success = ref(false);
             const { isFinished } = useAuthorizedFetch('/taxes/remove', 'Remove Tax', success, true).json().post({ 'tax-id': id });
 
             whenever(logicAnd(isFinished, success), () => resolve())
+            whenever(logicAnd(isFinished, logicNot(success)), () => reject())
         })
     }
 

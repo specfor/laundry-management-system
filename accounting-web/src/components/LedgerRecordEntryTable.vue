@@ -532,8 +532,8 @@ const topWarningHidden = ref(false);
 
 useUndoRedo(rows);
 
-const taxes = await getTaxes()
-const accounts = await getFinanctialAccounts()
+const taxes = await getTaxes().catch(() => [])
+const accounts = await getFinanctialAccounts().catch(() => [])
 
 // Computed Values
 
@@ -688,7 +688,7 @@ const saveRecords = async () => {
         taxType: taxType.value
     }
 
-    await addLedgerRecord(data);
+    await addLedgerRecord(data).catch(() => null);
 
     hideLoadingModel()
 }

@@ -4,7 +4,7 @@ import Decimal from "decimal.js"
 import { useAuthorizedFetch } from "../authorized-fetch"
 import { whenever } from "@vueuse/core";
 import { ref, toValue } from "vue";
-import { logicAnd } from "@vueuse/math/index.cjs";
+import { logicAnd, logicNot } from "@vueuse/math/index.cjs";
 
 export function useLedgerRecords() {
 
@@ -42,7 +42,7 @@ export function useLedgerRecords() {
      * @returns {Promise<import("../../types").LedgerRecord[]>}
      */
     const getLedgerRecords = async () => {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             const success = ref(false);
             const { data, isFinished } = useAuthorizedFetch(`/general-ledger`, 'Get Ledger Records', success).json().get();
 
@@ -50,6 +50,7 @@ export function useLedgerRecords() {
                 const rawLedgerRecords = /** @type {import("../../types").RawLedgerRecord[] }*/(toValue(data).records);
                 resolve(rawLedgerRecords.map(serialize));
             })
+            whenever(logicAnd(isFinished, logicNot(success)), () => reject())
         })
     }
 
@@ -59,7 +60,7 @@ export function useLedgerRecords() {
      * @returns {Promise<import("../../types").LedgerRecord[]>} 
      */
     const getLedgerRecordsByNarration = async (narration) => {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             const success = ref(false);
             const { data, isFinished } = useAuthorizedFetch(`/general-ledger?narration=${narration}`, 'Get Ledger Records by Narration', success).json().get();
 
@@ -67,6 +68,7 @@ export function useLedgerRecords() {
                 const rawLedgerRecords = /** @type {import("../../types").RawLedgerRecord[] }*/(toValue(data).records);
                 resolve(rawLedgerRecords.map(serialize));
             })
+            whenever(logicAnd(isFinished, logicNot(success)), () => reject())
         })
     }
 
@@ -76,7 +78,7 @@ export function useLedgerRecords() {
      * @returns {Promise<import("../../types").LedgerRecord[]>} 
      */
     const getLedgerRecordsByDate = async (date) => {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             const success = ref(false);
             const { data, isFinished } = useAuthorizedFetch(`/general-ledger?date=${date.toLocaleDateString('en-CA')}`, 'Get Ledger records by day', success).json().get();
 
@@ -84,6 +86,7 @@ export function useLedgerRecords() {
                 const rawLedgerRecords = /** @type {import("../../types").RawLedgerRecord[] }*/(toValue(data).records);
                 resolve(rawLedgerRecords.map(serialize));
             })
+            whenever(logicAnd(isFinished, logicNot(success)), () => reject())
         })
     }
 
@@ -93,13 +96,14 @@ export function useLedgerRecords() {
      * @returns {Promise<void>}
      */
     const addLedgerRecord = async (options) => {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             const success = ref(false);
             const { isFinished } = useAuthorizedFetch('/general-ledger/add', 'Add Ledger Record', success, true).json().post(deserialize(options));
 
             console.log(deserialize(options));
 
             whenever(logicAnd(isFinished, success), () => resolve())
+            whenever(logicAnd(isFinished, logicNot(success)), () => reject())
         })
     }
 
