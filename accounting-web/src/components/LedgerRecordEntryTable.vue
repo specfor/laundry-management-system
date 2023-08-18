@@ -58,13 +58,13 @@
                 animation="200">
                 <template #item="{ element }">
                     <tr class="entry-row">
-                        <td class="!p-3">
+                        <td class="!p-1 !pl-3">
                             <img class="entry-table-handle cursor-move " src="../assets/6-vertical-dots.svg">
                         </td>
                         <td>
                             <!-- Description -->
                             <input v-model="element.description" type="text" placeholder="Description"
-                                class="input input-ghost w-full max-w-xs" />
+                                class="input input-ghost input-sm w-full max-w-xs" />
                         </td>
                         <td>
                             <!-- Accounts -->
@@ -94,16 +94,16 @@
                         <td>
                             <!-- Debit -->
                             <input v-model="element.debit" type="text" placeholder="Debit"
-                                class="input input-ghost w-full max-w-xs"
+                                class="input input-ghost w-full max-w-xs input-sm"
                                 :class="{ 'input-error': element.debit ? !isRowDebitCreditValid(element) : false }" />
                         </td>
                         <td>
                             <!-- Credit -->
                             <input v-model="element.credit" type="text" placeholder="Credit"
-                                class="input input-ghost w-full max-w-xs"
+                                class="input input-ghost w-full max-w-xs input-sm"
                                 :class="{ 'input-error': element.credit ? !isRowDebitCreditValid(element) : false }" />
                         </td>
-                        <td class="!p-3">
+                        <td class="!p-1 !pl-3">
                             <svg @click="removeItem(element)"
                                 class="w-6 h-6 text-gray-800 dark:text-white fill-gray-800 hover:fill-red-600 cursor-pointer transition-all duration-200"
                                 aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
