@@ -105,7 +105,7 @@
         </div>
     </div>
     <div class="overflow-x-auto bg-slate-100 p-3 transition-all duration-200"
-        :class="{ 'shadow-md shadow-red-600': errorMessages.length > 0 }">
+        :class="{ 'table-error-glow': errorMessages.length > 0 }">
         <table class="table table-lg md:table-fixed">
             <thead>
                 <tr class="text-base">
@@ -772,6 +772,10 @@ const splitComputedRowsToCreditDebit = (rows) => ({
 
 .entry-row td:first-of-type {
     @apply border-l-0;
+}
+
+.table-error-glow {
+    box-shadow: 0 0 30px 4px #ff3a3a9f;
 }
 
 .error-list-enter-active,

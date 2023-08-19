@@ -1,5 +1,6 @@
 import { Object, Number } from 'ts-toolbelt'
 import { Decimal } from "decimal.js";
+import { Ref } from "vue";
 
 type Float = `${number}.${number}`;
 type DateString = `${number}-${number}-${number}`;
@@ -23,6 +24,14 @@ export interface Tax {
     name: string
     description: string
     tax_rate: Decimal
+}
+
+export interface FinancialAccountTypes {
+    assets: ['Current Asset', 'Fixed Asset', 'Inventory', 'Non-Current Asset', 'Prepayment'],
+    equity: ['Equity'],
+    expenses: ['Depreciation', 'Direct Costs', 'Expense', 'Overhead'],
+    liabilities: ['Current Liability', 'Liability', 'Non-Current Liability'],
+    revenue: ['Other Income', 'Revenue', 'Sales']
 }
 
 export interface FinancialAccount {
@@ -126,6 +135,12 @@ export interface UpdateTaxOptions {
 import { DefineComponent } from "vue";
 
 export type ComponentOptions<T> = T extends DefineComponent<infer _A, infer P, infer _B> ? P extends { $props: infer Props extends object } ? Object.Writable<Props> : never : never;
+
+export type RefToInner<T> = T extends Ref<infer Inner> ? Inner : never;
+
+export type PromiseAll<T extends unknown[]> = (
+  values: readonly [...T],
+) => Promise<{ [P in keyof T]: T[P] extends Promise<infer R> ? R : T[P] }>;
 
 /** Notification */
 export type NotificationProvider = {

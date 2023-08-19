@@ -2,7 +2,9 @@
     <Suspense>
         <LedgerRecordEntryTable :initial-rows="4"></LedgerRecordEntryTable>
         <template #fallback>
-            <span class="loading loading-spinner loading-lg"></span>
+            <div class="fixed top-1/2 left-1/2 flex flex-row justify-center">
+                <span class="loading loading-spinner loading-lg"></span>
+            </div>
         </template>
     </Suspense>
 </template>

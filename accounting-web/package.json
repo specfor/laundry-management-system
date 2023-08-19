@@ -9,12 +9,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^2.1.0",
     "@heroicons/vue": "^2.0.18",
     "@vueuse/components": "^10.3.0",
     "@vueuse/core": "^10.3.0",
     "@vueuse/math": "^10.3.0",
     "decimal.js": "^10.4.3",
     "element-plus": "^2.3.9",
+    "fuse.js": "^6.6.2",
     "oh-vue-icons": "^1.0.0-rc3",
     "ts-toolbelt": "^9.6.0",
     "vue": "^3.3.4",
