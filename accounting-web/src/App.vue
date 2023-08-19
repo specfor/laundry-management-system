@@ -3,13 +3,11 @@
 import Drawer from './components/Drawer.vue';
 import DrawerMenu from './components/DrawerMenu.vue';
 import NotificationPopover from './components/notifications/NotificationPopover.vue'
-import ErrorNotification from './components/notifications/ErrorNotification.vue'
-import SuccessNotification from './components/notifications/SuccessNotification.vue'
-import { ref, shallowRef, Teleport, Transition, toValue } from "vue";
-import { useConfirmDialog, useFetch, watchThrottled, whenever } from "@vueuse/core";
+import { ref, Teleport, Transition } from "vue";
+import { useFetch, whenever } from "@vueuse/core";
 import { usePersistantState } from "./composibles/persistant-state";
-import { useNotifications } from './composibles/notification';
 import { logicAnd, logicNot } from '@vueuse/math/index.cjs';
+import { useSetupNotification } from './composibles/notification-setup';
 const drawerOpen = ref(false);
 
 // Attempt login
@@ -28,69 +26,21 @@ whenever(logicAnd(isFinished, data), () => {
 })
 
 whenever(logicAnd(isFinished, logicNot(data)), () => {
-  notificationPopoverElement.value?.animateBell()
-
-  notifications.value = [{
-    createdAt: new Date(Date.now()),
-    type: "error",
-    props: {
-      origin: "Auto Login",
-      status: 0,
-      statusText: "Login Failed"
-    }
-  }, ...notifications.value]
-
-  showNotification()
-  setTimeout(hideNotification, 4000);
+  console.log("Login Error");
 })
 
 // NOTIFICATIONS
-const { isRevealed: isNotificationShown, reveal: showNotification, cancel: hideNotification } = useConfirmDialog()
-
-const { provideNotifications } = useNotifications()
-
-const notifications = ref( /** @type { { type:"error"|"success", props: import('./types').ShowNotificationOptions, createdAt: Date }[] }  */([]))
-
-const currentlyShownNotification = /** @type { import('vue').Ref<{component: import('vue').ShallowRef<any>, props: import('./types').ShowNotificationOptions} | null> } */ (ref(null))
-
-watchThrottled(
-  notifications,
-  () => {
-    if (isNotificationShown) hideNotification()
-
-    currentlyShownNotification.value = {
-      component: notifications.value[0].type == "error" ? shallowRef(ErrorNotification) : shallowRef(SuccessNotification),
-      props: notifications.value[0].props
-    }
-
-    showNotification()
-    setTimeout(hideNotification, 4000);
-  },
-  { throttle: 5000 },
-)
-
 const notificationPopoverElement = /** @type {import('vue').Ref<InstanceType<typeof NotificationPopover> | null>} */ (ref(null));
 
-provideNotifications({
-  showError: (options) => {
+const { notifications, currentlyShownNotification, isNotificationShown, hideNotification } = useSetupNotification({
+  onShowError: (ctx) => {
     notificationPopoverElement.value?.animateBell()
-
-    notifications.value = [{
-      createdAt: new Date(Date.now()),
-      type: "error",
-      props: options
-    }, ...notifications.value]
   },
-  showSuccess: (options) => {
+  onShowSuccess: (ctx) => {
     notificationPopoverElement.value?.animateBell()
-
-    notifications.value = [{
-      createdAt: new Date(Date.now()),
-      type: "success",
-      props: options
-    }, ...notifications.value]
   }
 })
+
 </script>
 
 <template>
@@ -128,13 +78,9 @@ provideNotifications({
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
+.notification-slide-leave-to,
 .notification-slide-enter-from {
   opacity: 0;
-  transform: translateY(16rem);
-}
-
-.notification-slide-leave-to {
-  opacity: 0;
-  transform: translateY(16rem);
+  transform: translateY(16rem) scale(0.8);
 }
 </style>
