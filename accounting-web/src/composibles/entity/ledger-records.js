@@ -5,9 +5,13 @@ import { useAuthorizedFetch } from "../authorized-fetch"
 import { whenever } from "@vueuse/core";
 import { ref, toValue } from "vue";
 import { logicAnd, logicNot } from "@vueuse/math/index.cjs";
+import { useNotifications } from "../notification";
 
 export function useLedgerRecords() {
 
+    /** Notification provider has to be inject here, which will most likely be run at setup() function of a Component. (inject() can only be used in setup()) */
+    const notificationInjection = useNotifications().injectNotifications()
+    
     /**
      * Converts the Raw response from the server into a entity object
      * @param {import("../../types").RawLedgerRecord} rawLedgerRecord Raw response from the backend.
@@ -44,7 +48,7 @@ export function useLedgerRecords() {
     const getLedgerRecords = async () => {
         return new Promise((resolve, reject) => {
             const success = ref(false);
-            const { data, isFinished } = useAuthorizedFetch(`/general-ledger`, 'Get Ledger Records', success).json().get();
+            const { data, isFinished } = useAuthorizedFetch(`/general-ledger`, 'Get Ledger Records', success, notificationInjection).json().get();
 
             whenever(logicAnd(isFinished, success), () => {
                 const rawLedgerRecords = /** @type {import("../../types").RawLedgerRecord[] }*/(toValue(data).records);
@@ -62,7 +66,7 @@ export function useLedgerRecords() {
     const getLedgerRecordsByNarration = async (narration) => {
         return new Promise((resolve, reject) => {
             const success = ref(false);
-            const { data, isFinished } = useAuthorizedFetch(`/general-ledger?narration=${narration}`, 'Get Ledger Records by Narration', success).json().get();
+            const { data, isFinished } = useAuthorizedFetch(`/general-ledger?narration=${narration}`, 'Get Ledger Records by Narration', success, notificationInjection).json().get();
 
             whenever(logicAnd(isFinished, success), () => {
                 const rawLedgerRecords = /** @type {import("../../types").RawLedgerRecord[] }*/(toValue(data).records);
@@ -80,7 +84,7 @@ export function useLedgerRecords() {
     const getLedgerRecordsByDate = async (date) => {
         return new Promise((resolve, reject) => {
             const success = ref(false);
-            const { data, isFinished } = useAuthorizedFetch(`/general-ledger?date=${date.toLocaleDateString('en-CA')}`, 'Get Ledger records by day', success).json().get();
+            const { data, isFinished } = useAuthorizedFetch(`/general-ledger?date=${date.toLocaleDateString('en-CA')}`, 'Get Ledger records by day', success, notificationInjection).json().get();
 
             whenever(logicAnd(isFinished, success), () => {
                 const rawLedgerRecords = /** @type {import("../../types").RawLedgerRecord[] }*/(toValue(data).records);
@@ -98,9 +102,7 @@ export function useLedgerRecords() {
     const addLedgerRecord = async (options) => {
         return new Promise((resolve, reject) => {
             const success = ref(false);
-            const { isFinished } = useAuthorizedFetch('/general-ledger/add', 'Add Ledger Record', success, true).json().post(deserialize(options));
-
-            console.log(deserialize(options));
+            const { isFinished } = useAuthorizedFetch('/general-ledger/add', 'Add Ledger Record', success, notificationInjection, true).json().post(deserialize(options));
 
             whenever(logicAnd(isFinished, success), () => resolve())
             whenever(logicAnd(isFinished, logicNot(success)), () => reject())

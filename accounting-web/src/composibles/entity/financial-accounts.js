@@ -4,8 +4,13 @@ import { useAuthorizedFetch } from "../authorized-fetch"
 import { whenever } from "@vueuse/core";
 import { logicAnd, logicNot } from "@vueuse/math/index.cjs";
 import { toValue, ref } from "vue";
+import { useNotifications } from "../notification";
 
 export function useFinancialAccounts() {
+
+    /** Notification provider has to be inject here, which will most likely be run at setup() function of a Component. (inject() can only be used in setup()) */
+    const notificationInjection = useNotifications().injectNotifications()
+
     /**
      * Get all the financial accounts
      * @returns {Promise<import("../../types").FinancialAccount[]>}
@@ -13,8 +18,8 @@ export function useFinancialAccounts() {
     const getFinanctialAccounts = async () => {
         return new Promise((resolve, reject) => {
             const success = ref(false);
-            const { data, isFinished } = useAuthorizedFetch(`/financial-accounts?limit=9999`, 'Get Financial Accounts', success).json().get();
-            
+            const { data, isFinished } = useAuthorizedFetch(`/financial-accounts?limit=9999`, 'Get Financial Accounts', success, notificationInjection).json().get();
+
             whenever(logicAnd(isFinished, success), () => {
                 resolve(/** @type {import("../../types").FinancialAccount[] }*/(toValue(data)['financial-accounts']));
             })
@@ -29,8 +34,8 @@ export function useFinancialAccounts() {
      */
     const getFinancialAccountById = async (id) => {
         return new Promise((resolve, reject) => {
-            const success =  ref(false);
-            const { data, isFinished } = useAuthorizedFetch(`/financial-accounts?account-id=${id}`, 'Get Financial Account', success).json().get();
+            const success = ref(false);
+            const { data, isFinished } = useAuthorizedFetch(`/financial-accounts?account-id=${id}`, 'Get Financial Account', success, notificationInjection).json().get();
 
             whenever(logicAnd(isFinished, success), () => {
                 const financialAccounts = /** @type {import("../../types").FinancialAccount[] }*/(toValue(data)['financial-accounts'])
@@ -47,8 +52,8 @@ export function useFinancialAccounts() {
      */
     const addFinancialAccount = async (financialAccount) => {
         return new Promise((resolve, reject) => {
-            const success =  ref(false);
-            const { isFinished } = useAuthorizedFetch('/financial-accounts/add', 'Add Financial Account', success, true).json().post(financialAccount);
+            const success = ref(false);
+            const { isFinished } = useAuthorizedFetch('/financial-accounts/add', 'Add Financial Account', success, notificationInjection, true).json().post(financialAccount);
 
             whenever(logicAnd(isFinished, success), () => resolve())
             whenever(logicAnd(isFinished, logicNot(success)), () => reject())
@@ -62,8 +67,8 @@ export function useFinancialAccounts() {
      */
     const updateFinancialAccount = async (financialAccount) => {
         return new Promise((resolve, reject) => {
-            const success =  ref(false);
-            const { isFinished } = useAuthorizedFetch('/financial-accounts/update', 'Update Financial Account', success, true).json().post(financialAccount);
+            const success = ref(false);
+            const { isFinished } = useAuthorizedFetch('/financial-accounts/update', 'Update Financial Account', success, notificationInjection, true).json().post(financialAccount);
 
             whenever(logicAnd(isFinished, success), () => resolve())
             whenever(logicAnd(isFinished, logicNot(success)), () => reject())
@@ -77,8 +82,8 @@ export function useFinancialAccounts() {
      */
     const removeFinancialAccount = async (id) => {
         return new Promise((resolve, reject) => {
-            const success =  ref(false);
-            const { isFinished } = useAuthorizedFetch('/financial-accounts/remove', 'Remove Financial Account', success, true).json().post({ 'account-id': id });
+            const success = ref(false);
+            const { isFinished } = useAuthorizedFetch('/financial-accounts/remove', 'Remove Financial Account', success, notificationInjection, true).json().post({ 'account-id': id });
 
             whenever(logicAnd(isFinished, success), () => resolve())
             whenever(logicAnd(isFinished, logicNot(success)), () => reject())

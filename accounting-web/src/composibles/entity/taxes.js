@@ -5,8 +5,13 @@ import { useAuthorizedFetch } from "../authorized-fetch"
 import { whenever } from "@vueuse/core";
 import { ref, toValue } from "vue";
 import { logicAnd, logicNot } from "@vueuse/math/index.cjs";
+import { useNotifications } from "../notification";
 
 export function useTaxes() {
+
+    /** Notification provider has to be inject here, which will most likely be run at setup() function of a Component. (inject() can only be used in setup()) */
+    const notificationInjection = useNotifications().injectNotifications()
+    
     /**
      * Converts the Raw response from the server into a entity object
      * @param {import("../../types").RawTax} rawTax Raw response from the backend.
@@ -34,7 +39,7 @@ export function useTaxes() {
     const getTaxes = async () => {
         return new Promise((resolve, reject) => {
             const success = ref(false);
-            const { data, isFinished } = useAuthorizedFetch(`/taxes?limit=9999`, 'Get Taxes', success).json().get();
+            const { data, isFinished } = useAuthorizedFetch(`/taxes?limit=9999`, 'Get Taxes', success, notificationInjection).json().get();
 
             whenever(logicAnd(isFinished, success), () => {
                 const taxesRaw = /** @type {import("../../types").RawTax[] }*/(toValue(data).taxes)
@@ -52,7 +57,7 @@ export function useTaxes() {
     const getTax = async (id) => {
         return new Promise((resolve, reject) => {
             const success = ref(false);
-            const { data, isFinished } = useAuthorizedFetch(`/taxes?tax-id=${id}`, 'Get Tax', success).json().get();
+            const { data, isFinished } = useAuthorizedFetch(`/taxes?tax-id=${id}`, 'Get Tax', success, notificationInjection).json().get();
 
             whenever(logicAnd(isFinished, success), () => {
                 const taxesRaw = /** @type {import("../../types").RawTax[] }*/(toValue(data).taxes)
@@ -70,7 +75,7 @@ export function useTaxes() {
     const addTax = async (tax) => {
         return new Promise((resolve, reject) => {
             const success = ref(false);
-            const { isFinished } = useAuthorizedFetch('/taxes/add', 'Add Tax', success, true).json().post(deserialize(tax));
+            const { isFinished } = useAuthorizedFetch('/taxes/add', 'Add Tax', success, notificationInjection, true).json().post(deserialize(tax));
 
             whenever(logicAnd(isFinished, success), () => resolve())
             whenever(logicAnd(isFinished, logicNot(success)), () => reject())
@@ -85,7 +90,7 @@ export function useTaxes() {
     const updateTax = async (tax) => {
         return new Promise((resolve, reject) => {
             const success = ref(false);
-            const { isFinished } = useAuthorizedFetch('/taxes/update', 'Update Tax', success, true).json().post(deserialize(tax));
+            const { isFinished } = useAuthorizedFetch('/taxes/update', 'Update Tax', success, notificationInjection, true).json().post(deserialize(tax));
 
             whenever(logicAnd(isFinished, success), () => resolve())
             whenever(logicAnd(isFinished, logicNot(success)), () => reject())
@@ -100,7 +105,7 @@ export function useTaxes() {
     const removeTax = async (id) => {
         return new Promise((resolve, reject) => {
             const success = ref(false);
-            const { isFinished } = useAuthorizedFetch('/taxes/remove', 'Remove Tax', success, true).json().post({ 'tax-id': id });
+            const { isFinished } = useAuthorizedFetch('/taxes/remove', 'Remove Tax', success, notificationInjection, true).json().post({ 'tax-id': id });
 
             whenever(logicAnd(isFinished, success), () => resolve())
             whenever(logicAnd(isFinished, logicNot(success)), () => reject())

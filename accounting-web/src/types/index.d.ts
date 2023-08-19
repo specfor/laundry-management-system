@@ -126,23 +126,17 @@ export interface UpdateTaxOptions {
 import { DefineComponent } from "vue";
 
 export type ComponentOptions<T> = T extends DefineComponent<infer _A, infer P, infer _B> ? P extends { $props: infer Props extends object } ? Object.Writable<Props> : never : never;
-// export type ComponentOptions<T> = T extends DefineComponent<A, infer O, B> ?
-//     O extends { $emit: infer E, $props: infer P } ?
-//         E extends (event: infer EventName, ...rest: infer Rest) ? never : never
 
-// export type ComponentOptions<T> = T extends DefineComponent<A, infer O, B> ?
-//     OptionsType<O>
-//     : never;
+/** Notification */
+export type NotificationProvider = {
+    showSuccess: (options: ShowNotificationOptions) => void,
+    showError: (options: ShowNotificationOptions) => void
+}
 
-// type OptionsType<O> = 
-//     O extends { $emit: infer E, $props: infer P} ? 
-//     "both" : 
-//     O extends { $emit: infer E } ? "emit-only" :
-//     O extends { $props: infer PP} ? "props-only" :
-//     "none";
-
-// type EmitsToObject<E> = E extends Array ? 
-
-// export type ComponentWithTemplateOptions<T> = T extends 
+export interface ShowNotificationOptions {
+    origin: string,
+    status: number,
+    statusText: string
+}
 
 export as namespace Types;
