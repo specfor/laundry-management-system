@@ -13,11 +13,11 @@ class FinancialAccountController extends Controller
         self::checkPermissions(['financial_accounts' => [User::PERMISSION_READ]]);
 
         $pageNumber = self::getParameter('page-num', defaultValue: 0, dataType: 'int');
-        $accountId = self::getParameter('account-id', dataType: 'int');
+        $accountId = self::getParameter('account_id', dataType: 'int');
         $name = self::getParameter('account-name');
         $code = self::getParameter('account-code');
         $type = self::getParameter('account-type');
-        $taxId = self::getParameter('tax-id', dataType: 'int');
+        $taxId = self::getParameter('tax_id', dataType: 'int');
         $description = self::getParameter('description');
         $limit = self::getParameter('limit', defaultValue: 30, dataType: 'int');
 
@@ -29,10 +29,10 @@ class FinancialAccountController extends Controller
     {
         self::checkPermissions(['financial_accounts' => [User::PERMISSION_WRITE]]);
 
-        $name = self::getParameter('account-name', isCompulsory: true);
-        $code = self::getParameter('account-code', isCompulsory: true);
-        $type = self::getParameter('account-type', isCompulsory: true);
-        $taxId = self::getParameter('tax-id', dataType: 'int', isCompulsory: true);
+        $name = self::getParameter('name', isCompulsory: true);
+        $code = self::getParameter('code', isCompulsory: true);
+        $type = self::getParameter('type', isCompulsory: true);
+        $taxId = self::getParameter('tax_id', dataType: 'int', isCompulsory: true);
         $description = self::getParameter('description');
 
         $status = Accounting::createAccount($name, $code, $type, $taxId, $description);
@@ -48,9 +48,9 @@ class FinancialAccountController extends Controller
     {
         self::checkPermissions(['financial_accounts' => [User::PERMISSION_MODIFY]]);
 
-        $accountId = self::getParameter('account-id', dataType: 'int', isCompulsory: true);
-        $name = self::getParameter('account-name');
-        $taxId = self::getParameter('tax-id', dataType: 'int');
+        $accountId = self::getParameter('account_id', dataType: 'int', isCompulsory: true);
+        $name = self::getParameter('name');
+        $taxId = self::getParameter('tax_id', dataType: 'int');
         $desc = self::getParameter('description');
 
         $status = Accounting::updateAccount($accountId, $name, $taxId, $desc);
@@ -64,7 +64,7 @@ class FinancialAccountController extends Controller
     {
         self::checkPermissions(['financial_accounts' => [User::PERMISSION_DELETE]]);
 
-        $accountId = self::getParameter('account-id', dataType: 'int', isCompulsory: true);
+        $accountId = self::getParameter('account_id', dataType: 'int', isCompulsory: true);
 
         $status = Accounting::deleteAccount($accountId);
         if (is_string($status))
