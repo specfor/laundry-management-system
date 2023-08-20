@@ -117,8 +117,9 @@ class Accounting extends DbModel
 
         if ($name) {
             $params['name'] = ucwords($name);
+            // $params['id'] = $accountId;
             $data = self::getDataFromTable(['account_id'], self::TABLE_NAME,
-                'name=:name', $params)->fetch(PDO::FETCH_ASSOC);
+                'name=:name AND account_id <> ' . $accountId, $params)->fetch(PDO::FETCH_ASSOC); // Please change this, I can't figure out how to bind the value
             if (!empty($data))
                 return "Account name already in use.";
         }
