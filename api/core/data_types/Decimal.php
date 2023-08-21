@@ -21,6 +21,14 @@ class Decimal
         $this->number = $number;
     }
 
+    /**
+     * @return string Returns decimal number as a string.
+     */
+    public function getDecimal():string
+    {
+        return $this->number;
+    }
+
     public function setPrecision(int $decimalPlaces): void
     {
         $this->decimalPlaces = $decimalPlaces;
@@ -28,38 +36,38 @@ class Decimal
 
     public function add(Decimal $num): Decimal
     {
-        return new Decimal((bcadd($this->number, $num->number)), $this->decimalPlaces);
+        return new Decimal(bcadd($this->number, $num->number, $this->decimalPlaces), $this->decimalPlaces);
     }
 
     public function sub(Decimal $subtrahend): Decimal
     {
-        return new Decimal((bcsub($this->number, $subtrahend->number)), $this->decimalPlaces);
+        return new Decimal(bcsub($this->number, $subtrahend->number, $this->decimalPlaces), $this->decimalPlaces);
     }
     
     public function mul(Decimal $multiplier): Decimal
     {
-        return new Decimal((bcmul($this->number, $multiplier->number)), $this->decimalPlaces);
+        return new Decimal(bcmul($this->number, $multiplier->number, $this->decimalPlaces), $this->decimalPlaces);
     }
 
     public function div(Decimal $divisor): Decimal
     {
-        return new Decimal((bcdiv($this->number, $divisor->number)), $this->decimalPlaces);
+        return new Decimal(bcdiv($this->number, $divisor->number, $this->decimalPlaces), $this->decimalPlaces);
     }
 
     public function pow(Decimal $exponent): Decimal
     {
-        return new Decimal((bcpow($this->number, $exponent->number)), $this->decimalPlaces);
+        return new Decimal(bcpow($this->number, $exponent->number, $this->decimalPlaces), $this->decimalPlaces);
     }
 
 
     public function mod(Decimal $divisor): Decimal
     {
-        return new Decimal((bcmod($this->number, $divisor->number)), $this->decimalPlaces);
+        return new Decimal(bcmod($this->number, $divisor->number, $this->decimalPlaces), $this->decimalPlaces);
     }
 
     public function sqrt(Decimal $root): Decimal
     {
-        return new Decimal((bcsqrt($this->number, $root->number)), $this->decimalPlaces);
+        return new Decimal(bcsqrt($this->number, $root->number, $this->decimalPlaces), $this->decimalPlaces);
     }
 
     public function __toString(): string
