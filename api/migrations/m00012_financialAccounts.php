@@ -19,7 +19,8 @@ class m00012_financialAccounts extends MigrationScheme
                     description varchar(255),
                     tax_id int NOT NULL,
                     archived bool NOT NULL,
-                    deletable bool NOT NULL
+                    deletable bool NOT NULL,
+                    locked bool NOT NULL
                 )";
         try {
             self::$pdo->exec($sql);
