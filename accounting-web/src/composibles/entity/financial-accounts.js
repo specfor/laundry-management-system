@@ -6,11 +6,18 @@ import { logicAnd, logicNot } from "@vueuse/math/index.cjs";
 import { toValue, ref } from "vue";
 import { useNotifications } from "../notification";
 
-export function useFinancialAccounts() {
+/**
+ * @typedef {ReturnType<(ReturnType<typeof useNotifications>)['injectNotifications']>} BatchNotificationInjection
+ */
+
+/**
+ * @param {BatchNotificationInjection} [batchNotificationInjection]
+ */
+export function useFinancialAccounts(batchNotificationInjection) {
 
     /** Notification provider has to be inject here, which will most likely be run at setup() function of a Component. (inject() can only be used in setup()) */
-    const notificationInjection = useNotifications().injectNotifications()
-
+    const notificationInjection = batchNotificationInjection ?? useNotifications().injectNotifications()
+    
     /**
      * Get all the financial accounts
      * @returns {Promise<import("../../types").FinancialAccount[]>}
@@ -83,7 +90,7 @@ export function useFinancialAccounts() {
     const removeFinancialAccount = async (id) => {
         return new Promise((resolve, reject) => {
             const success = ref(false);
-            const { isFinished } = useAuthorizedFetch('/financial-accounts/remove', 'Remove Financial Account', success, notificationInjection, true).json().post({ 'account-id': id });
+            const { isFinished } = useAuthorizedFetch('/financial-accounts/remove', 'Remove Financial Account', success, notificationInjection, true).json().post({ 'account_id': id });
 
             whenever(logicAnd(isFinished, success), () => resolve())
             whenever(logicAnd(isFinished, logicNot(success)), () => reject())

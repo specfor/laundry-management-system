@@ -1,8 +1,8 @@
 <template>
     <!-- Table Controls -->
-    <div class="w-full flex flex-row justify-end gap-3 items-end">
+    <div class="w-full flex flex-row justify-end gap-3 items-end lg:mt-7">
         <div class="grow flex flex-row justify-start gap-3">
-            <input type="checkbox" aria-label="Select" class="btn btn-sm" @click="toggleSelectMode"/>
+            <input type="checkbox" aria-label="Select" class="btn btn-sm" @click="toggleSelectMode" />
             <slot name="header-actions" :selectedRecords="selectedRecords" :records="records"></slot>
         </div>
         <input v-model="searchPhrase" type="text" placeholder="Search ..."
@@ -70,49 +70,78 @@
     </div>
 </template>
 
-<script setup generic="R extends Record<string, any>, X">
+<script lang="ts">
+// Exported Types
+export type ArrangementData = { order: number, selected: boolean };
+</script>
+
+<script setup lang="ts" generic="R, X, ID extends keyof R">
 // @ts-check
 import { useOffsetPagination } from '@vueuse/core';
-import { computed, ref } from 'vue';
+import { computed, ref, type Ref } from 'vue';
 import { useFuzzySearch } from '../composibles/fuzzy-search';
 import { ElDropdownMenu, ElDropdown } from "element-plus";
 
+type InternalRow = R & ArrangementData;
+
 // defineProps(['commandHandler', 'records', 'columnSlots'])
-const { getRecords, columnSlots, searchFields, extraDataFetcher, commandHandler, selectId } = defineProps({
-    getRecords: {
-        type: /** @type { import('vue').PropType<() => Promise<R[]>> } */ (Function),
-        required: true
+const { getRecords, columnSlots, searchFields, extraDataFetcher, commandHandler, idProperty, filter, sorter } =
+    withDefaults(defineProps<{
+        getRecords: () => Promise<R[]>
+        columnSlots: string[]
+        searchFields: (keyof R)[]
+        extraDataFetcher?: () => Promise<X>
+        commandHandler: (command: string, record: InternalRow) => void,
+        filter?: (record: InternalRow) => boolean
+        sorter?: (a: InternalRow, b: InternalRow) => number
+        idProperty: ID
+    }>(), {
+        filter: (record: InternalRow) => true,
+        sorter: (a: InternalRow, b: InternalRow) => 0
+    });
+
+// defineExpose has to be called before any top-level await keyword (https://github.com/vuejs/core/issues/4930) 
+defineExpose({
+    // These functions are just for keeping the records array inside this component in sync with the actual value
+
+    /**
+     * Removes a record from the record list
+     */
+    removeRecord: (recordId: R[ID]) => {
+        records.value = records.value.filter(record => record[idProperty] != recordId)
     },
-    columnSlots: {
-        type: /** @type { import('vue').PropType<Array<string>> } */ (Array),
-        required: true
+
+    /**
+     * Adds a new record to the record list
+     */
+    addRecord: (newRecord: R) => {
+        records.value = [{
+            ...newRecord,
+            order: records.value.length + 1,
+            selected: false
+        }, ...records.value]
     },
-    searchFields: {
-        type: /** @type { import('vue').PropType<Array<keyof R>> } */ (Array),
-        required: true
-    },
-    extraDataFetcher: {
-        type:  /** @type { import('vue').PropType<() => Promise<X>> } */ (Function),
-        required: false,
-    },
-    commandHandler: {
-        type: /** @type { import('vue').PropType<(command: string, record: R) => void> } */ (Function),
-        required: true
-    },
-    selectId: {
-        type: /** @type { import('vue').PropType<(record: R) => number | string> } */ (Function),
-        required: true
+    /**
+     * Updates a record in the records list
+     */
+    updateRecord: (updatedRecord: InternalRow) => {
+        records.value = [
+            ...records.value.map(record => record[idProperty] == updatedRecord[idProperty] ? updatedRecord : record),
+        ]
     }
 })
 
 // Cast required (https://github.com/vuejs/core/issues/2136#issuecomment-908269949)
-const records = /** @type { import('vue').Ref<(R & { selected: boolean, order: number })[]> } */ (ref((await getRecords().catch(() => [])).map((record, index) => ({ ...record, selected: false, order: index }))));
+const records = ref((await getRecords().catch(() => [])).map((record, index) => ({ ...record, selected: false, order: index }))) as Ref<InternalRow[]>;
 
 // const extraData = /** @type { X | null } */ (extraDataFetcher ? await extraDataFetcher().catch(() => null) : null)
 const extraData = extraDataFetcher ? await extraDataFetcher().catch(() => null) : null
 
+const filteredRows = computed(() => records.value.filter(filter));
+const totalRows = computed(() => filteredRows.value.length)
+
 const { currentPage, pageCount, currentPageSize } = useOffsetPagination({
-    total: records.value.length,
+    total: totalRows,
     page: 1,
     pageSize: 10
 })
@@ -120,10 +149,10 @@ const { currentPage, pageCount, currentPageSize } = useOffsetPagination({
 /** Records belonging to the current page */
 const pageData = computed(() =>
     useFuzzySearch(
-        records.value,
+        filteredRows.value,
         searchFields,
         searchPhrase.value
-    ).slice((currentPage.value - 1) * currentPageSize.value, ((currentPage.value - 1) * currentPageSize.value) + currentPageSize.value)
+    ).sort(sorter).slice((currentPage.value - 1) * currentPageSize.value, ((currentPage.value - 1) * currentPageSize.value) + currentPageSize.value)
 )
 
 const selectedRecords = computed(() => records.value.filter(record => record.selected))
@@ -139,41 +168,6 @@ const toggleSelectMode = () => {
     selectMode.value = !selectMode.value;
     deselectAll()
 }
-
-defineExpose({
-    // These functions are just for keeping the records array inside this component in sync with the actual value
-    
-    /**
-     * Removes a record from the record list
-     * @param {string | number} recordId
-     */
-    removeRecord: (recordId) => {
-        records.value = records.value.filter(record => selectId(record) == recordId)
-    },
-    /**
-     * Adds a new record to the record list
-     * @param {string | number} recordId
-     * @param {R} newRecord
-     */
-    addRecord: (recordId, newRecord) => {
-        records.value = [...records.value, {
-            ...newRecord,
-            order: records.value.length + 1,
-            selected: false
-        }]
-    },
-    /**
-     * Updates a record in the records list
-     * @param {string | number} recordId
-     * @param {R & {order: number, selected: boolean}} updatedRecord
-     */
-    editRecord: (recordId, updatedRecord) => {
-        records.value = [
-            ...records.value.filter(record => selectId(record) != recordId),
-            updatedRecord
-        ]
-    }
-})
 </script>
 
 <style scoped>
@@ -198,4 +192,5 @@ defineExpose({
    animations can be calculated correctly. */
 /* .table-rows-leave-active {
   position: absolute;
-} */</style>
+} */
+</style>

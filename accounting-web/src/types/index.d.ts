@@ -139,7 +139,7 @@ export type ComponentOptions<T> = T extends DefineComponent<infer _A, infer P, i
 export type RefToInner<T> = T extends Ref<infer Inner> ? Inner : never;
 
 export type PromiseAll<T extends unknown[]> = (
-  values: readonly [...T],
+    values: readonly [...T],
 ) => Promise<{ [P in keyof T]: T[P] extends Promise<infer R> ? R : T[P] }>;
 
 /** Notification */
@@ -153,5 +153,44 @@ export interface ShowNotificationOptions {
     status: number,
     statusText: string
 }
+
+import {
+    DefineComponent,
+    RendererElement,
+    RendererNode,
+    VNode,
+    VNodeProps,
+} from "vue";
+
+type NoUndefined<T> = T extends undefined ? never : T;
+
+type Props =
+    | (VNodeProps & {
+        [key: string]: any;
+    })
+    | null;
+
+// maybe this can be typed as `SetupContext`
+export type Context = {
+    props: any;
+    attrs: any;
+    slots: any;
+    emit: any;
+    expose: (exposed?: any) => void;
+};
+
+export type ComponentReturn = VNode<RendererNode, RendererElement, Props> & {
+    __ctx?: Context;
+};
+
+export type PseudoComponent<
+    T extends (...args: any[]) => ComponentReturn,
+    PseudoReturnType extends ComponentReturn = ReturnType<T>,
+    PseudoContext extends ComponentReturn["__ctx"] = PseudoReturnType["__ctx"],
+    PseudoProps = NoUndefined<PseudoContext>["props"],
+    PseudoExposed = Parameters<NoUndefined<PseudoContext>["expose"]>[0]
+> = DefineComponent<PseudoProps, PseudoExposed>;
+
+export type GenericComponentInstance<C> = InstanceType<PseudoComponent<C>> | null
 
 export as namespace Types;
