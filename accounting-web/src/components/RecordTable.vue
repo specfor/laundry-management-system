@@ -1,12 +1,32 @@
 <template>
     <!-- Table Controls -->
     <div class="w-full flex flex-row justify-end gap-3 items-end lg:mt-7">
-        <div class="grow flex flex-row justify-start gap-3">
-            <input type="checkbox" aria-label="Select" class="btn btn-sm" @click="toggleSelectMode" />
+        <div class="grow flex flex-row flex-wrap justify-start gap-3 pl-7">
+            <!-- I don't know which of the following two suits better -->
+            <button class="btn btn-square btn-sm transition-all duration-200" :class="{ 'btn-primary': selectMode }"
+                @click="toggleSelectMode">
+                <svg class="w-5 h-5" :class="{ 'fill-white': selectMode }" viewBox="0 0 48 48"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0 0h48v48H0z" fill="none" />
+                    <g id="Shopicon">
+                        <polygon points="30.953,11.905 30.953,8.095 8.095,8.095 8.095,39.905 39.905,39.905 39.905,20.75 36.095,20.75 36.095,36.095 
+		11.905,36.095 11.905,11.905 	" />
+                        <polygon
+                            points="41,7.172 24,24.172 17,17.172 14.171,20 21.172,27 21.171,27 24,29.828 26.828,27 43.828,10 	" />
+                    </g>
+                </svg>
+            </button>
+            <!-- <input type="checkbox" aria-label="Select" class="btn btn-sm" @click="toggleSelectMode"> -->
+
             <slot name="header-actions" :selectedRecords="selectedRecords" :records="records"></slot>
         </div>
-        <input v-model="searchPhrase" type="text" placeholder="Search ..."
-            class="input input-sm input-bordered w-full max-w-xs" />
+        <div class="join">
+            <input v-model="searchPhrase" type="text" placeholder="Search ..."
+                class="input input-sm input-bordered w-[240px] max-w-xs" />
+            <div>
+                <slot name="filter-content" :data="extraData"></slot>
+            </div>
+        </div>
         <div class="form-control w-[150px] max-w-xs">
             <label class="label">
                 <span class="label-text">Records per page</span>

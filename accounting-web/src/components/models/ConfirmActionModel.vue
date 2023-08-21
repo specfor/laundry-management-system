@@ -35,7 +35,7 @@ import { createTemplatePromise, useConfirmDialog } from '@vueuse/core';
 import { type Ref, ref } from 'vue';
 
 defineExpose({
-    show: (header: string, subHeader:string, confirmActionText?: string, cancelActionText?: string, passToSlot?: PassToSlot) => {
+    setup: (header: string, subHeader:string, confirmActionText?: string, cancelActionText?: string, passToSlot?: PassToSlot) => {
         _header.value = header;
         _subHeader.value = subHeader;
         confirmActionText ? _confirmActionText.value = confirmActionText : null;

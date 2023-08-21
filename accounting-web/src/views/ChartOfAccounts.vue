@@ -1,4 +1,73 @@
 <template>
+    <!-- Add new Account Model -->
+    <InputTemplateModel ref="addAccountModelRef" :initial-value="AddAccountModelInitialValue"
+        :validator="addAccountValidator">
+        <template #inputs="{ data, errors, setValue, mergeValue, value }">
+            <TextInput label="Account Name" :error="errors.accountName" :modelValue="value.accountName"
+                @update:modelValue="setValue({ ...value, accountName: $event })"></TextInput>
+
+            <div class="flex flex-row gap-5">
+                <div class="form-control w-full max-w-xs">
+                    <label class="label">
+                        <span class="label-text">Account Type</span>
+                    </label>
+                    <el-tree-select :modelValue="value.accountType" @update:modelValue="mergeValue($event, 'accountType')"
+                        :data="treeSelectDataForAddAccount" :render-after-expand="true"
+                        :filter-node-method="filterNodeMethod" filterable />
+                    <label class="label">
+                        <span class="label-text-alt"></span>
+                        <span v-if="errors.accountType" class="label-text-alt">{{ errors.accountType }}</span>
+                    </label>
+                </div>
+
+                <div class="form-control w-full max-w-xs">
+                    <label class="label">
+                        <span class="label-text">Tax Rate</span>
+                    </label>
+                    <el-select class="h-full border-none" :class="{ 'border-red-600 border-2': errors.taxId }"
+                        :modelValue="value.taxId" @update:modelValue="setValue({ ...value, taxId: $event })" filterable
+                        placeholder="Tax Type">
+                        <el-option v-for="item in data?.taxes" :key="item.tax_id" :label="item.name" :value="item.tax_id">
+                            <span class="float-left mr-2">{{ item.name }}</span>
+                            <span class="text-gray-400 float-right">
+                                {{ toReadable(item.tax_rate) + "%" }}
+                            </span>
+                        </el-option>
+                        <template #empty>
+                            <span>No Results ...</span>
+                        </template>
+                    </el-select>
+                    <label class="label">
+                        <span class="label-text-alt"></span>
+                        <span v-if="errors.taxId" class="label-text-alt">{{ errors.taxId }}</span>
+                    </label>
+                </div>
+            </div>
+
+            <TextInput label="Account Code" :error="errors.accountCode" :modelValue="value.accountCode"
+                @update:modelValue="setValue({ ...value, accountCode: $event })"></TextInput>
+
+            <div class="form-control w-full max-w-xs m-0">
+                <label class="label">
+                    <span class="label-text">Account Description</span>
+                </label>
+                <!-- @vue-ignore -->
+                <textarea :value="value.description" @input="setValue({ ...value, description: $event.target.value })"
+                    placeholder="Description" class="textarea textarea-bordered textarea-sm w-full max-w-xs"
+                    :class="{ 'input-error': errors.description }"></textarea>
+                <!-- <input type="text" placeholder="Account Description" class="input input-sm input-bordered w-full max-w-xs" 
+                    :class="{ 'input-error': errors.description }" /> -->
+                <label class="label">
+                    <span class="label-text-alt"></span>
+                    <span v-if="errors.description" class="label-text-alt">{{ errors.description }}</span>
+                </label>
+            </div>
+
+            <!-- <TextInput label="Account Description" :error="errors.description" :modelValue="value.description"
+                @update:modelValue="setValue({ ...value, description: $event })"></TextInput> -->
+        </template>
+    </InputTemplateModel>
+
     <!-- Edit Tax type model -->
     <ModelWithInput ref="modelWithInputRef">
         <template #input="{ data, value, setValue }">
@@ -23,6 +92,7 @@
         <RecordTable ref="recordTableRef" :command-handler="handleCommand" :get-records="loadAccounts"
             :column-slots="['name', 'type', 'tax']" :search-fields="['name', 'description']" :filter="filter"
             :sorter="sorter" :extra-data-fetcher="fetchTaxes" :id-property="'account_id'">
+
             <template #table-headers>
                 <th>Name</th>
                 <th>Type</th>
@@ -56,46 +126,69 @@
                             %
                         </button>
                     </div>
-                    <div key="filter-but">
-                        <el-popover :width="300" placement="right" :visible="filterPopoverVisible"
-                            popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px;">
-                            <template #reference>
-                                <button class="btn btn-sm btn-square group"
-                                    @click="filterPopoverVisible = !filterPopoverVisible">
-                                    <svg class="w-5 h-5 text-gray-800 dark:text-white stroke-gray-900 group-hover:fill-gray-900"
-                                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                        viewBox="0 0 20 18">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="m2.133 2.6 5.856 6.9L8 14l4 3 .011-7.5 5.856-6.9a1 1 0 0 0-.804-1.6H2.937a1 1 0 0 0-.804 1.6Z" />
-                                    </svg>
-                                </button>
-                            </template>
-                            <template #default>
-                                <div class="w-full flex flex-row justify-between">
-                                    <h2 class="text-lg font-medium">Filter Accounts</h2>
-                                    <svg @click="filterPopoverVisible = false" xmlns="http://www.w3.org/2000/svg"
-                                        class="h-6 w-6 cursor-pointer" fill="none" viewBox="0 0 24 24"
-                                        stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </div>
-                                <div class="form-control w-full max-w-xs">
-                                    <label class="label">
-                                        <span class="label-text">Account Type</span>
-                                    </label>
-                                    <el-tree-select v-model="selectedAccountTypesRaw" :data="treeSelectData" multiple
-                                        :render-after-expand="true" show-checkbox :filter-node-method="filterNodeMethod"
-                                        filterable />
-                                </div>
-                                <div class="flex flex-row justify-between mt-2">
-                                    <!-- <button class="btn btn-primary btn-sm">Apply Filters</button> -->
-                                    <button class="btn btn-sm" @click="clearFilters">Clear Filters</button>
-                                </div>
-                            </template>
-                        </el-popover>
-                    </div>
+                    <button class="btn btn-sm btn-neutral" key="add-acc-but" @click="handleAddAccount">
+                        <svg class="w-4 h-4 text-gray-800 dark:text-white stroke-white" aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                        </svg>
+                        New Account
+                    </button>
                 </TransitionGroup>
+            </template>
+
+            <template #filter-content="{ data }">
+                <el-popover :width="300" placement="bottom" :visible="filterPopoverVisible"
+                    popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px;">
+                    <template #reference>
+                        <button class="btn btn-sm btn-neutral btn-square group"
+                            @click="filterPopoverVisible = !filterPopoverVisible">
+                            <svg class="w-[17px] h-[17px] text-gray-800 dark:text-white stroke-white" aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 18">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="m2.133 2.6 5.856 6.9L8 14l4 3 .011-7.5 5.856-6.9a1 1 0 0 0-.804-1.6H2.937a1 1 0 0 0-.804 1.6Z" />
+                            </svg>
+                        </button>
+                    </template>
+                    <template #default>
+                        <div class="w-full flex flex-row justify-between">
+                            <h2 class="text-lg font-medium">Filter Accounts</h2>
+                            <svg @click="filterPopoverVisible = false" xmlns="http://www.w3.org/2000/svg"
+                                class="h-6 w-6 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </div>
+                        <div class="form-control w-full max-w-xs">
+                            <label class="label">
+                                <span class="label-text">Account Type</span>
+                            </label>
+                            <el-tree-select v-model="selectedAccountTypesRaw" :data="treeSelectData" multiple
+                                :render-after-expand="true" show-checkbox :filter-node-method="filterNodeMethod"
+                                filterable />
+                        </div>
+                        <div class="form-control w-full max-w-xs">
+                            <label class="label">
+                                <span class="label-text">Tax Rate</span>
+                            </label>
+                            <el-select class="h-full border-none" filterable placeholder="Tax Type" v-model="selectedTaxId">
+                                <el-option v-for="item in data ?? []" :key="item.tax_id" :label="item.name"
+                                    :value="item.tax_id">
+                                    <span class="float-left mr-2">{{ item.name }}</span>
+                                    <span class="text-gray-400 float-right">
+                                        {{ toReadable(item.tax_rate) + "%" }}
+                                    </span>
+                                </el-option>
+                                <template #empty>
+                                    <span>No Results ...</span>
+                                </template>
+                            </el-select>
+                        </div>
+                        <div class="flex flex-row justify-between mt-2">
+                            <!-- <button class="btn btn-primary btn-sm">Apply Filters</button> -->
+                            <button class="btn btn-sm" @click="clearFilters">Clear Filters</button>
+                        </div>
+                    </template>
+                </el-popover>
             </template>
 
             <template #tax="{ record, extra }">
@@ -141,6 +234,7 @@
 import RecordTableGeneric, { type ArrangementData } from '../components/RecordTable.vue';
 import ModelWithInputGeneric from '../components/models/ModelWithInput.vue';
 import ConfirmActionModelGeneric from '../components/models/ConfirmActionModel.vue';
+import InputTemplateModelGeneric from '../components/models/InputTemplateModel.vue';
 import { useFinancialAccounts } from '../composibles/entity/financial-accounts';
 import { ElDropdownItem, ElSelect, ElOption, ElPopover, ElTreeSelect } from "element-plus";
 import { Delete, TakeawayBox, Edit } from '@element-plus/icons-vue';
@@ -152,9 +246,19 @@ import type { FinancialAccount, GenericComponentInstance, Tax } from '../types';
 import { useBatchFetch } from '../composibles/batch-fetch';
 import { accountTypesTree } from '../util/account-types';
 import Fuse from 'fuse.js';
+import TextInput from '../components/inputs/TextInput.vue';
+import { useRouteQuery } from '@vueuse/router'
 
 // Type Inside the record table with some extra data
 type ModifiedFinancialAccount = FinancialAccount & ArrangementData;
+type AddNewAccountModelExtraData = { taxes: Tax[], existingAccountNames: string[], existingAccountCodes: string[] };
+interface AddAccountModelInitialValueType {
+    accountName?: string,
+    accountCode?: string,
+    description?: string,
+    taxId?: number,
+    accountType?: string
+}
 
 // Defining generics of above imported generic elements
 // https://play.vuejs.org/#eNp9U8Fu2zAM/RVCl3RAER96C5wAWxEM22ErstyiHDybTtTakiDKTQLD/z5KTmN72HKxRfGR4iMfW/HZ2vl7g2IhUsqdsh4IfWOhyvRhKYUnKVZSq9oa56EFOmZVZU4bLKGD0pkaZhw9k/qG+YoancqfTW17gBTzJFjhGSkiUnt0ZZYjPDfkTb3B3LgCWqkBVLEA8k7pQ7B0VuNgdyE4N5o8KI81LIeQmSpmj0PELPzCRQeUeUWlQpo8Ns1EnGpglo6Bu/3qYRcw+09DTO+KFJdjwpNIblua9D3lIxucxFaZR7YA0lGORayBux3/UkASY0d48ciT4LdLdZi/ktE8rkhdipwTqArdT+sV1ybFom9K8EVC3+Oddw3G/sSYI+Zv/7h/pXO4k+LFIaF753HdfD5zB/S9e/3rB575fHPWpmgqRt9xbpBM1YQae9iXRhdc9ggXq/0WRcTT3tL67FHTB6lQaEB2ES8Fiyn07n/Uh3Kf5k8xjrXAXfwQ4j29w6GfKJtbYC6oC4K19spf4jIkCazP1zJBEWjMkShzF/jdBD3Bybg3OCl/hH4nIu6m+YzAXyyTwZhk5Onf6Ek4zAqjq8tkIeICDPgXZyxddyAoZwHb3X6yJjYillBgqTRGfBq/qweW8z15Woertr0m6Lo0CRd/q7L7A7+qe+c=
@@ -162,8 +266,15 @@ type ModifiedFinancialAccount = FinancialAccount & ArrangementData;
 const RecordTable = RecordTableGeneric<FinancialAccount, Tax[], 'account_id'>;
 const ModelWithInput = ModelWithInputGeneric<number, Tax[]>;
 const ConfirmActionModel = ConfirmActionModelGeneric<FinancialAccount>;
+const InputTemplateModel = InputTemplateModelGeneric<AddNewAccountModelExtraData, typeof AddAccountModelInitialValue>;
+
+const AddAccountModelInitialValue: AddAccountModelInitialValueType = {}
 
 const treeSelectData = [...accountTypesTree(), { label: 'Archived', value: '["Archived"]' }]
+/**
+ * Converts the value property of nodes which is JSON Array string with one element, into a string
+ */
+const treeSelectDataForAddAccount = [...accountTypesTree().map(({ children, ...rest }) => ({ ...rest, children: children.map(({ label, value }) => ({ label, value: (JSON.parse(value) as string[])[0] })) }))]
 
 const { getFinanctialAccounts, updateFinancialAccount, removeFinancialAccount, addFinancialAccount } = useFinancialAccounts()
 const { batch, updateFinancialAccount: updateFinancialAccountBatch } = useBatchFetch(useFinancialAccounts)
@@ -177,17 +288,24 @@ const fetchTaxes = async () => await getTaxes().catch(() => [])
 const recordTableRef = ref<GenericComponentInstance<typeof RecordTable> | null>(null);
 const modelWithInputRef = ref<GenericComponentInstance<typeof ModelWithInput> | null>(null);
 const confirmActionModelRef = ref<GenericComponentInstance<typeof ConfirmActionModel> | null>(null);
-
+const addAccountModelRef = ref<GenericComponentInstance<typeof InputTemplateModel> | null>(null);
 
 const filterPopoverVisible = ref<boolean>(false);
 const selectedAccountTypesRaw = ref<string[]>([]);
 
+// Get URL Query parameters
+const taxId = useRouteQuery('tax-id', '-1', { transform: Number })
+const selectedTaxId = ref(taxId.value == -1 ? undefined : taxId)
+
+watch(selectedTaxId, (value) => taxId.value = value ?? -1);
+
 const selectedAccountTypes = computed(() => selectedAccountTypesRaw.value.map(s => JSON.parse(s) as string[]).flat().filter((value, index, array) => array.indexOf(value) === index))
 
-const filter = computed(() => (account: ModifiedFinancialAccount) =>
-    selectedAccountTypes.value.includes("Archived") ? account.archived == 1 :
-        selectedAccountTypes.value.length > 0 ? selectedAccountTypes.value.includes(account.type) : true
-)
+const filter = computed(() => (account: ModifiedFinancialAccount) => [
+    selectedAccountTypes.value.includes("Archived") ? account.archived == 1 : true,
+    selectedAccountTypes.value.length > 0 ? selectedAccountTypes.value.includes(account.type) : true,
+    selectedTaxId.value ? account.tax_id == selectedTaxId.value : true
+].every(x => x))
 
 const sorter = computed(() => (a: ModifiedFinancialAccount, b: ModifiedFinancialAccount) =>
     a.account_id > b.account_id ? 1 : -1
@@ -217,7 +335,7 @@ const handleCommand = async (command: string, record: ModifiedFinancialAccount) 
 const handleEditTaxType = async (record: ModifiedFinancialAccount) => {
     if (modelWithInputRef.value == undefined) return;
 
-    const { showLoading, finish, start } = modelWithInputRef.value?.show(
+    const { showLoading, finish, start } = modelWithInputRef.value?.setup(
         `Change the tax type of ${record.name} (${record.account_id})`,
         "Save",
         "Cancel",
@@ -246,7 +364,7 @@ const handleEditTaxType = async (record: ModifiedFinancialAccount) => {
 const handleDeleteAccount = async (record: ModifiedFinancialAccount) => {
     if (confirmActionModelRef.value == undefined) return;
 
-    const { showLoading, finish, start } = confirmActionModelRef.value?.show(
+    const { showLoading, finish, start } = confirmActionModelRef.value?.setup(
         "Delete Account",
         `You're about to delete ${record.name} (${record.account_id}) account. This action is irreversible!`,
         "Delete",
@@ -272,7 +390,7 @@ const handleDeleteAccount = async (record: ModifiedFinancialAccount) => {
 const handleArchiveAccount = async (record: ModifiedFinancialAccount) => {
     if (confirmActionModelRef.value == undefined) return;
 
-    const { showLoading, finish, start } = confirmActionModelRef.value?.show(
+    const { showLoading, finish, start } = confirmActionModelRef.value?.setup(
         `Archive ${record.name} (${record.account_id}) account.`,
         "Archive",
         "Cancel"
@@ -301,10 +419,47 @@ const handleArchiveAccount = async (record: ModifiedFinancialAccount) => {
     await doActions().catch(console.log).finally(() => finish());
 }
 
+const handleAddAccount = async () => {
+    if (addAccountModelRef.value == undefined) return;
+
+    const accounts = await loadAccounts();
+
+    const { finish, showLoading, start } = addAccountModelRef.value.setup("Add new Account", "Add Account", "Cancel", {
+        taxes: await fetchTaxes(),
+        existingAccountNames: accounts.map(account => account.name),
+        existingAccountCodes: accounts.map(account => account.code)
+    });
+
+    const { action, data } = await start().catch(() => ({ action: "cancel", data: undefined }));
+
+    // There is really no need to check whether data is undefined 
+    // This is solely for the purpose of telling Typescript compiler that data is not undefined below this point
+    if (action == "cancel" || !data) return;
+
+    showLoading("Creating new Account");
+
+    const newAccount: Omit<FinancialAccount, "account_id"> = {
+        archived: 0, // These 2 fields will get discarded by the Backend anyway 
+        code: data.accountCode,
+        deletable: 0, // These 2 fields will get discarded by the Backend anyway
+        description: data.description,
+        name: data.accountName,
+        tax_id: data.taxId,
+        type: data.accountType
+    }
+
+    const doActions = async () => {
+        const newAccountId = await addFinancialAccount(newAccount);
+        recordTableRef.value?.addRecord({ ...newAccount, account_id: newAccountId })
+    }
+
+    await doActions().catch(console.log).finally(() => finish());
+}
+
 const handleUpdateTaxTypeOfSelectedAccounts = async (records: (ModifiedFinancialAccount)[]) => {
     if (modelWithInputRef.value == undefined) return;
 
-    const { showLoading, finish, start } = modelWithInputRef.value?.show(
+    const { showLoading, finish, start } = modelWithInputRef.value?.setup(
         `Change the tax type of ${records.length} accounts`,
         "Save",
         "Cancel",
@@ -345,8 +500,33 @@ const filterNodeMethod = (value: string, data: ArrayElement<ReturnType<typeof ac
     return new Fuse([data], { keys: ["label"] }).search(value).length > 0;
 }
 
+const addAccountValidator = ({ accountName, accountType, taxId, accountCode }: typeof AddAccountModelInitialValue, { existingAccountNames, existingAccountCodes }: AddNewAccountModelExtraData) => ({
+    accountName: [
+        !accountName ? "An account name has to be provided" : "",
+        accountName == "" ? "Account name cannot be empty" : "",
+        existingAccountNames.map(s => s.toLowerCase()).includes(accountName?.toLowerCase() ?? "") ? "Account with the given name already exists" : ""
+    ].find(x => x != ""),
+
+    accountType: [
+        !accountType ? "Account type has to be selected" : "",
+    ].find(x => x != ""),
+
+    taxId: [
+        !taxId ? "Tax rate has to be selected" : "",
+    ].find(x => x != ""),
+
+    accountCode: [
+        !accountCode ? "An account code has to be provided" : "",
+        accountCode == "" ? "Account code cannot be empty" : "",
+        existingAccountCodes.includes(accountCode ?? "") ? "Account with the given code already exists" : ""
+    ].find(x => x != ""),
+
+    description: undefined, // Optional
+})
+
 const clearFilters = () => {
     selectedAccountTypesRaw.value = [];
+    selectedTaxId.value = undefined;
 }
 </script>
 
