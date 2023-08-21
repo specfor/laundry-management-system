@@ -2,6 +2,7 @@
 
 namespace LogicLeap\StockManagement\models\accounting;
 
+use LogicLeap\PhpServerCore\data_types\Decimal;
 use LogicLeap\StockManagement\models\DbModel;
 use PDO;
 
@@ -15,16 +16,22 @@ class AccountTotals extends DbModel
         $accountTotals = self::getDataFromTable(['*'], self::TABLE_NAME)->fetchAll(PDO::FETCH_ASSOC);
         $newAccountTotals = [];
 
+        foreach ($accountTotals as &$account) {
+            $account['credit'] = new Decimal($account['credit']);
+            $account['debit'] = new Decimal($account['debit']);
+        }
+
         $lastReadLedgerRecord = 0;
         if ($forceRecalculate) {
             foreach ($accountTotals as &$account) {
-                $account['credit'] = '0';
-                $account['debit'] = '0';
+                $account['credit'] = new Decimal('0');
+                $account['debit'] = new Decimal('0');
             }
         } else {
             if (!empty($accountTotals))
                 $lastReadLedgerRecord = $accountTotals[0]['until_ledger_rec_id'];
         }
+        unset($account);
 
         $statement = self::getDataFromTable(['record_id', 'body', 'date'], 'general_ledger',
             "record_id > $lastReadLedgerRecord", orderBy: ['record_id', 'asc']);
@@ -39,56 +46,73 @@ class AccountTotals extends DbModel
             $ledgerData['body'] = json_decode($ledgerData['body'], true);
 
             foreach ($ledgerData['body'] as $ledgerEntry) {
-                $accountRef = null;
-                $newAccountRef = null;
-                foreach ($accountTotals as &$account) {
+                $accountArrayKey = null;
+                $newAccountArrayKey = null;
+
+                foreach ($accountTotals as $key => $account) {
                     if ($account['account_id'] == $ledgerEntry['account_id'] && $account['date'] == $ledgerData['date']) {
-                        $accountRef = &$account;
+                        $accountArrayKey = $key;
                         break;
                     }
                 }
-                if ($accountRef === null)
-                    foreach ($newAccountTotals as &$newAccount) {
+                if ($accountArrayKey === null) {
+                    foreach ($newAccountTotals as $key => $newAccount) {
                         if ($newAccount['account_id'] == $ledgerEntry['account_id'] && $newAccount['date'] == $ledgerData['date']) {
-                            $newAccountRef = &$newAccount;
+                            $newAccountArrayKey = $key;
                             break;
                         }
                     }
+                }
 
-                if ($accountRef === null && $newAccountRef === null) {
+                if ($accountArrayKey === null && $newAccountArrayKey === null) {
                     $newAccountTotals[] = [
                         'account_id' => $ledgerEntry['account_id'],
                         'date' => $ledgerData['date'],
-                        'credit' => $ledgerEntry['credit'] ?? "0.0000",
-                        'debit' => $ledgerEntry['debit'] ?? "0.0000"
+                        'credit' => new Decimal($ledgerEntry['credit'] ?? "0.0000"),
+                        'debit' => new Decimal($ledgerEntry['debit'] ?? "0.0000")
                     ];
-                } elseif ($accountRef !== null) {
+                } elseif ($accountArrayKey !== null) {
                     $accountTotalsUpdated = true;
+                    $accountTotals[$accountArrayKey]['updated'] = true;
                     if (isset($ledgerEntry['credit']))
-                        $accountRef['credit'] = bcadd($accountRef['credit'], $ledgerEntry['credit']);
+                        $accountTotals[$accountArrayKey]['credit'] = $accountTotals[$accountArrayKey]['credit']
+                            ->add(new Decimal($ledgerEntry['credit']));
                     else
-                        $accountRef['debit'] = bcadd($accountRef['debit'], $ledgerEntry['debit']);
-                } elseif ($newAccountRef !== null) {
+                        $accountTotals[$accountArrayKey]['debit'] = $accountTotals[$accountArrayKey]['debit']
+                            ->add(new Decimal($ledgerEntry['debit']));
+                } elseif ($newAccountArrayKey !== null) {
                     if (isset($ledgerEntry['credit']))
-                        $newAccountRef['credit'] = bcadd($newAccountRef['credit'], $ledgerEntry['credit']);
+                        $newAccountTotals[$newAccountArrayKey]['credit'] = $newAccountTotals[$newAccountArrayKey]['credit']
+                            ->add(new Decimal($ledgerEntry['credit']));
                     else
-                        $newAccountRef['debit'] = bcadd($newAccountRef['debit'], $ledgerEntry['debit']);
+                        $newAccountTotals[$newAccountArrayKey]['debit'] = $newAccountTotals[$newAccountArrayKey]['debit']
+                            ->add(new Decimal($ledgerEntry['debit']));
                 }
             }
         }
 
-        if ($accountTotalsUpdated)
+        if ($accountTotalsUpdated) {
             foreach ($accountTotals as &$account) {
-                $account['until_ledger_rec_id'] = $lastReadLedgerRecord;
-                $accountId = $account['account_id'];
-                unset($account['account_id']);
+                if (isset($account['updated'])) {
+                    $account['until_ledger_rec_id'] = $lastReadLedgerRecord;
+                    $accountId = $account['account_id'];
+                    $account['credit'] = $account['credit']->getDecimal();
+                    $account['debit'] = $account['debit']->getDecimal();
+                    unset($account['account_id']);
+                    unset($account['updated']);
 
-                self::updateTableData(self::TABLE_NAME, $account, "account_id=$accountId AND date=" . $account['date']);
+                    self::updateTableData(self::TABLE_NAME, $account, "account_id=$accountId AND date=" . $account['date']);
+                }
             }
+            unset($account);
+        }
 
         if (!empty($newAccountTotals))
             foreach ($newAccountTotals as &$account) {
                 $account['until_ledger_rec_id'] = $lastReadLedgerRecord;
+                $account['credit'] = $account['credit']->getDecimal();
+                $account['debit'] = $account['debit']->getDecimal();
+
                 self::insertIntoTable(self::TABLE_NAME, $account);
             }
     }
