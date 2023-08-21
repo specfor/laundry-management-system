@@ -56,6 +56,8 @@ class Orders extends DbModel
                 $itemIds[] = "item_id=$itemId";
             }
         }
+        unset($singleItem, $itemData);
+
         $itemIds = array_unique($itemIds);
         $condition = "(" . implode(' OR ', $itemIds) . ")";
         $condition .= " AND blocked=false";

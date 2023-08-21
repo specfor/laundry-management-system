@@ -15,7 +15,9 @@ class m00014_taxes extends MigrationScheme
                     tax_id int AUTO_INCREMENT NOT NULL PRIMARY KEY,
                     name varchar(255) NOT NULL,
                     description varchar(500),
-                    tax_rate decimal(8,4) NOT NULL 
+                    tax_rate decimal(8,4) NOT NULL,
+                    deleted bool NOT NULL,
+                    locked bool NOT NULL
                 )";
         try {
             self::$pdo->exec($sql);

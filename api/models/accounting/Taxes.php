@@ -11,7 +11,7 @@ class Taxes extends DbModel
 
     public static function getTaxes(int    $pageNumber = 0, int $taxId = null, string $taxName = null,
                                     string $description = null, float $rateMin = null, float $rateMax = null,
-                                    int    $limit = 30): array
+                                    int    $limit = 30, bool $deleted = false): array
     {
         $startingIndex = $pageNumber * $limit;
         $filters = [];
@@ -33,14 +33,16 @@ class Taxes extends DbModel
         if ($rateMax)
             $filters[] = "tax_rate < $rateMax";
 
+        $filters[] = "deleted=$deleted";
+
         $condition = implode(' AND ', $filters);
 
-        $statement = self::getDataFromTable(['*'], self::TABLE_NAME, $condition, $placeholders,
-            ['tax_id', 'asc'], [$startingIndex, $limit]);
+        $statement = self::getDataFromTable(['tax_id', 'name', 'description', 'tax_rate', 'locked'],
+            self::TABLE_NAME, $condition, $placeholders, ['tax_id', 'asc'], [$startingIndex, $limit]);
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public static function createTax(string $taxName, float $rate, string $description = null): string|array
+    public static function createTax(string $taxName, float $rate, string $description = null, bool $locked = false): string|array
     {
         $data = self::getTaxes(taxName: ucwords($taxName));
         if (!empty($data))
@@ -49,6 +51,8 @@ class Taxes extends DbModel
         $params['name'] = ucwords($taxName);
         $params['description'] = $description;
         $params['tax_rate'] = $rate;
+        $params['deleted'] = false;
+        $params['locked'] = $locked;
 
         $id = self::insertIntoTable(self::TABLE_NAME, $params);
         if ($id === false)
@@ -62,6 +66,9 @@ class Taxes extends DbModel
         $data = self::getTaxes(taxId: $id);
         if (empty($data))
             return "Invalid tax id.";
+
+        if ($data[0]['locked'])
+            return "This tax can not be modified.";
 
         if (empty($taxName) && empty($description) && empty($rate))
             return "'Tax name', 'description' and 'rate' all can not be empty.";
@@ -88,7 +95,9 @@ class Taxes extends DbModel
         if (empty($data))
             return "Invalid tax id.";
 
-        //Todo check whether tax is used before delete.
-        return self::removeTableData(self::TABLE_NAME, "tax_id=$taxId");
+        if ($data[0]['locked'])
+            return "This tax can not be removed.";
+
+        return self::updateTableData(self::TABLE_NAME, ['deleted' => true], "tax_id=$taxId");
     }
 }

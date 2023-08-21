@@ -53,12 +53,13 @@ class Accounting extends DbModel
         foreach ($accounts as &$account) {
             $account['archived'] = boolval($account['archived']);
             $account['deletable'] = boolval($account['deletable']);
+            $account['locked'] = boolval($account['locked']);
         }
         return $accounts;
     }
 
     public static function createAccount(string $name, string $code, string $type, int $taxId, string $description = null,
-                                         bool   $deletable = true): string|array
+                                         bool   $deletable = true, bool $locked = false): string|array
     {
         $params['name'] = ucwords($name);
         $params['code'] = strtoupper($code);
@@ -97,6 +98,7 @@ class Accounting extends DbModel
         $params['description'] = $description;
         $params['archived'] = false;
         $params['deletable'] = $deletable;
+        $params['locked'] = $locked;
 
         $id = self::insertIntoTable(self::TABLE_NAME, $params);
         if ($id === false)
@@ -107,10 +109,13 @@ class Accounting extends DbModel
 
     public static function updateAccount(int $accountId, string $name = null, int $taxId = null, string $description = null): string|bool
     {
-        $data = self::getDataFromTable(['account_id'], self::TABLE_NAME,
+        $data = self::getDataFromTable(['account_id', 'locked'], self::TABLE_NAME,
             "account_id = $accountId")->fetch(PDO::FETCH_ASSOC);
         if (empty($data))
-            return "Invalid account ID . ";
+            return "Invalid account ID.";
+
+        if ($data[0]['locked'])
+            return "This account is immutable.";
 
         if (empty($name) && empty($taxId) && empty($description))
             return "Nothing was passed to update . ";
@@ -145,7 +150,7 @@ class Accounting extends DbModel
             return "Invalid account ID . ";
 
         if (!$data['deletable'])
-            return "This account can not be deleted . ";
+            return "This account can not be deleted.";
 
         //Todo implement proper checks
 //        $ledgerRecords = GeneralLedger::getLedgerRecords(accountId: $accountId);
