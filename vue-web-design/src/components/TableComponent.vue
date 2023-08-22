@@ -73,13 +73,14 @@ let {
     </div>
 
     <div class="relative">
-    <div class="block mb-2 bg-slate-400 rounded-l-lg rounded-b-lg w-1/2 py-3 px-3 absolute top-0 right-0 z-[1030]" :class="{'hidden':isHidden}">
-      <div v-for="(item,i) in search" :key="i" class="grid grid-cols-3 ml-5">
-        <h5 v-text="item['searchParameter']" class="flex items-center"></h5>
-        <input :type="item.type" class="rounded-md border-2 border-stone-600 bg-stone-200 px-3 h-8 mt-1 col-span-2"
-               v-model="searchInput[item.paramNumber]" @input="$emit(item['searchParamType'],searchInput)">
+      <div class="block mb-2 bg-slate-400 rounded-l-lg rounded-b-lg w-1/2 py-3 px-3 absolute top-0 right-0 z-[1030]"
+           :class="{'hidden':isHidden}">
+        <div v-for="(item,i) in search" :key="i" class="grid grid-cols-3 ml-5">
+          <h5 v-text="item['searchParameter']" class="flex items-center"></h5>
+          <input :type="item.type" class="rounded-md border-2 border-stone-600 bg-stone-200 px-3 h-8 mt-1 col-span-2"
+                 v-model="searchInput[item.paramNumber]" @input="$emit(item['searchParamType'],searchInput)">
+        </div>
       </div>
-    </div>
     </div>
     <table class="table-auto border-collapse border w-full">
 
@@ -96,8 +97,10 @@ let {
         <td colspan="100%" class="text-center pt-2 text-slate-700">No Data To Display.</td>
       </tr>
       <tr v-for="row in tableRows" :key="row[0]" class="border-y border-slate-400 bg-neutral-100 hover:bg-neutral-200">
-        <input type="checkbox" class="ml-3" :value="row[0]" v-model="selectedIds"
-               v-on:change="()=>{isChecked();isMultipleChecked()}">
+        <td class="pt-1 px-5">
+          <input type="checkbox" class="h-5 w-5" :value="row[0]" v-model="selectedIds"
+                 v-on:change="()=>{isChecked();isMultipleChecked()}">
+        </td>
         <td v-for="data in row" class="px-3 py-1 text-slate-800">
           <span v-if="data === null || data === ''">None</span>
           <span v-else>{{ data }}</span>
