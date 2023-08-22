@@ -17,9 +17,11 @@ class BranchController extends Controller
         $phoneNum = self::getParameter('phone-number');
         $managerId = self::getParameter('manager-id', dataType: 'int');
 
-        $id = Branches::addNewBranch($branchName, $address, $managerId, $phoneNum);
-        if (is_array($id))
-            self::sendSuccess(['message' => 'New branch was created successfully.', 'branch-id' => $id['branch_id']]);
+        $status = Branches::addNewBranch($branchName, $address, $managerId, $phoneNum);
+        if (is_array($status))
+            self::sendSuccess(['message' => 'New branch was created successfully.', 'branch-id' => $status['branch_id']]);
+        elseif(is_string($status))
+            self::sendError($status);
         else
             self::sendError('Failed to add new branch');
     }

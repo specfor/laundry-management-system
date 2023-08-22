@@ -19,6 +19,30 @@ export function useFinancialAccounts(batchNotificationInjection) {
     const notificationInjection = batchNotificationInjection ?? useNotifications().injectNotifications()
     
     /**
+     * Converts the Raw response from the server into a entity object
+     * @param {import("../../types").RawFinancialAccount} rawAccount Raw response from the backend.
+     * @returns {import("../../types").FinancialAccount}
+     */
+    const serialize = ({ locked, archived, deletable, ...rest }) => ({
+        ...rest,
+        locked: !!locked,
+        deletable: !!deletable,
+        archived: !!archived
+    })
+
+    /**
+     * Converts the entity to a object to be sent to the server
+     * @param {Partial<import("../../types").FinancialAccount>} accountEntity Financial account Entity
+     * @returns {Partial<import("../../types").RawFinancialAccount>}
+     */
+    const deserialize = ({ locked, archived, deletable, ...rest }) => ({
+        ...rest,
+        deletable: deletable ? +deletable : undefined,
+        locked: locked ? +locked : undefined,
+        archived: archived ? +archived : undefined
+    })
+
+    /**
      * Get all the financial accounts
      * @returns {Promise<import("../../types").FinancialAccount[]>}
      */
@@ -28,7 +52,8 @@ export function useFinancialAccounts(batchNotificationInjection) {
             const { data, isFinished } = useAuthorizedFetch(`/financial-accounts?limit=9999`, 'Get Financial Accounts', success, notificationInjection).json().get();
 
             whenever(logicAnd(isFinished, success), () => {
-                resolve(/** @type {import("../../types").FinancialAccount[] }*/(toValue(data)['financial-accounts']));
+                const rawData = /** @type {import("../../types").RawFinancialAccount[] }*/(toValue(data)['financial-accounts'])
+                resolve(rawData.map(serialize));
             })
             whenever(logicAnd(isFinished, logicNot(success)), () => reject())
         })
@@ -45,8 +70,8 @@ export function useFinancialAccounts(batchNotificationInjection) {
             const { data, isFinished } = useAuthorizedFetch(`/financial-accounts?account-id=${id}`, 'Get Financial Account', success, notificationInjection).json().get();
 
             whenever(logicAnd(isFinished, success), () => {
-                const financialAccounts = /** @type {import("../../types").FinancialAccount[] }*/(toValue(data)['financial-accounts'])
-                resolve(financialAccounts.findLast(() => true));
+                const rawData = /** @type {import("../../types").RawFinancialAccount[] }*/(toValue(data)['financial-accounts'])
+                resolve(rawData.map(serialize).findLast(() => true));
             })
             whenever(logicAnd(isFinished, logicNot(success)), () => reject())
         })
@@ -60,7 +85,7 @@ export function useFinancialAccounts(batchNotificationInjection) {
     const addFinancialAccount = async (financialAccount) => {
         return new Promise((resolve, reject) => {
             const success = ref(false);
-            const { isFinished, data } = useAuthorizedFetch('/financial-accounts/add', 'Add Financial Account', success, notificationInjection, true).json().post(financialAccount);
+            const { isFinished, data } = useAuthorizedFetch('/financial-accounts/add', 'Add Financial Account', success, notificationInjection, true).json().post(deserialize(financialAccount));
 
             whenever(logicAnd(isFinished, success), () => resolve(data.value['account_id']))
             whenever(logicAnd(isFinished, logicNot(success)), () => reject())
@@ -75,7 +100,7 @@ export function useFinancialAccounts(batchNotificationInjection) {
     const updateFinancialAccount = async (financialAccount) => {
         return new Promise((resolve, reject) => {
             const success = ref(false);
-            const { isFinished } = useAuthorizedFetch('/financial-accounts/update', 'Update Financial Account', success, notificationInjection, true).json().post(financialAccount);
+            const { isFinished } = useAuthorizedFetch('/financial-accounts/update', 'Update Financial Account', success, notificationInjection, true).json().post(deserialize(financialAccount));
 
             whenever(logicAnd(isFinished, success), () => resolve())
             whenever(logicAnd(isFinished, logicNot(success)), () => reject())

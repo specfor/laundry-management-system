@@ -121,57 +121,64 @@ class Orders extends DbModel
         }
         $condition = implode(" AND ", $filters);
 
-        $data = (self::getDataFromTable(["*"], 'orders', $condition, $placeholders, ['order_id', 'desc'],
+        $orders = (self::getDataFromTable(["*"], 'orders', $condition, $placeholders, ['order_id', 'desc'],
             [$startingIndex, $limit]))->fetchAll(PDO::FETCH_ASSOC);
 
 
         $itemIds = [];
         $customerIDs = [];
-        for ($i = 0; $i < count($data); $i++) {
-            $customerIDs[] = $data[$i]['customer_id'];
-            $data[$i]['items'] = json_decode($data[$i]['items'], true);
-            for ($i2 = 0; $i2 < count($data[$i]['items']); $i2++) {
-                $itemIds[] = $data[$i]['items'][$i2]['item_id'];
+        foreach ($orders as &$order) {
+            $customerIDs[] = $order['customer_id'];
+            $order['items'] = json_decode($order['items'], true);
+            for ($i2 = 0; $i2 < count($order['items']); $i2++) {
+                $itemIds[] = $order['items'][$i2]['item_id'];
             }
         }
+        unset($order);
         $itemIds = array_unique($itemIds);
 
         $itemData = self::getItemData($itemIds);
         $customerData = self::getCustomerData($customerIDs);
 
-        for ($i = 0; $i < count($data); $i++) {
-            for ($i2 = 0; $i2 < count($data[$i]['items']); $i2++) {
+        foreach ($orders as &$order) {
+            $paymentData = Payments::getPayments(orderId: $order['order_id'], limit: 1000);
+            foreach ($paymentData as &$paymentDatum) {
+                unset($paymentDatum['order_id']);
+            }
+            $order['payments'] = $paymentData;
+            foreach ($order['items'] as &$item) {
                 // Adding item name
                 foreach ($itemData as $oneItem) {
-                    if (isset($data[$i]['items'][$i2]['item_name']))
+                    if (isset($item['item_name']))
                         break;
-                    if ($oneItem['item_id'] == $data[$i]['items'][$i2]['item_id']) {
-                        $data[$i]['items'][$i2]['item_name'] = $oneItem['name'];
+                    if ($oneItem['item_id'] == $item['item_id']) {
+                        $item['item_name'] = $oneItem['name'];
+                        $item['categories'] = $oneItem['categories'];
                     }
                 }
-                if (!isset($data[$i]['items'][$i2]['item_name'])) {
-                    $data[$i]['items'][$i2]['item'] = "DELETED ITEM";
-                    $data[$i]['items'][$i2]['item_id'] = null;
+                if (!isset($item['item_name'])) {
+                    $item['item_name'] = "DELETED ITEM";
+                    $item['item_id'] = null;
                 }
 
                 // Adding customer name
                 foreach ($customerData as $oneCustomer) {
-                    if (isset($data[$i]['customer_name']))
+                    if (isset($order['customer_name']))
                         break;
-                    if ($oneCustomer['customer_id'] == $data[$i]['customer_id'])
-                        $data[$i]['customer_name'] = $oneCustomer['name'];
+                    if ($oneCustomer['customer_id'] == $order['customer_id'])
+                        $order['customer_name'] = $oneCustomer['name'];
                 }
-                if (!isset($data[$i]['customer_name'])) {
-                    $data[$i]['customer_name'] = "DELETED CUSTOMER";
-                    $data[$i]['customer_id'] = null;
+                if (!isset($order['customer_name'])) {
+                    $order['customer_name'] = "DELETED CUSTOMER";
+                    $order['customer_id'] = null;
                 }
 
                 // Adding order status message
-                $data[$i]['status'] = self::getOrderStatusMessage(intval($data[$i]['status']));
+                $order['status'] = self::getOrderStatusMessage(intval($order['status']));
             }
         }
-
-        return $data;
+        unset($order, $item);
+        return $orders;
     }
 
     public static function updateOrder(int $orderId, int $branchId = null, string $orderStatus = null,
@@ -326,7 +333,14 @@ class Orders extends DbModel
         foreach ($itemIds as $itemId)
             $filters[] = "item_id=$itemId";
         $condition = implode(" OR ", $filters);
-        return (self::getDataFromTable(['item_id', 'name', 'price'], 'items', $condition))->fetchAll(PDO::FETCH_ASSOC);
+        $itemData = (self::getDataFromTable(['item_id', 'name', 'price', 'category_ids'], 'items', $condition))
+            ->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($itemData as &$item) {
+            $categoryIds = explode(',', $item['category_ids']);
+            $categoryData = PriceCategories::getCategories(limit: 1000, categoryIds: $categoryIds);
+            $item['categories'] = $categoryData;
+        }
+        return $itemData;
     }
 
     private static function getCustomerData(array $customerIds): array

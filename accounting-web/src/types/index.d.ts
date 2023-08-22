@@ -22,8 +22,10 @@ export interface LedgerRecord {
 export interface Tax {
     tax_id: number
     name: string
-    description: string
+    description?: string
     tax_rate: Decimal
+    deleted: boolean
+    locked: boolean
 }
 
 export interface FinancialAccountTypes {
@@ -39,10 +41,11 @@ export interface FinancialAccount {
     name: string
     type: string
     code: string
-    description: string
+    description?: string
     tax_id: number
-    archived: number
-    deletable: number
+    archived: boolean
+    deletable: boolean
+    locked: boolean
 }
 
 // API Raw Response Objects
@@ -62,8 +65,22 @@ export interface RawLedgerRecord {
 export interface RawTax {
     tax_id: number
     name: string
-    description: string
+    description?: string
     tax_rate: string
+    deleted: number,
+    locked: number
+}
+
+export interface RawFinancialAccount {
+    account_id: number
+    name: string
+    type: string
+    code: string
+    description?: string
+    tax_id: number
+    archived: number
+    deletable: number
+    locked: number
 }
 
 // API Request Interfaces

@@ -101,18 +101,19 @@
             </template>
 
             <template #row-actions="{ record }">
-                <el-dropdown-item :icon="Delete" command="delete">Delete</el-dropdown-item>
-                <el-dropdown-item :icon="TakeawayBox" command="archive">Archive</el-dropdown-item>
-                <el-dropdown-item :icon="Edit" command="edit">Edit</el-dropdown-item>
-                <el-dropdown-item :icon="EditPen" command="edit-tax-rate">Change Tax Rate</el-dropdown-item>
+                <el-dropdown-item :icon="Delete" command="delete" :disabled="record.locked">Delete</el-dropdown-item>
+                <el-dropdown-item :icon="TakeawayBox" command="archive" :disabled="record.locked">Archive</el-dropdown-item>
+                <el-dropdown-item :icon="Edit" command="edit" :disabled="record.locked">Edit</el-dropdown-item>
+                <el-dropdown-item :icon="EditPen" command="edit-tax-rate" :disabled="record.locked">Change Tax
+                    Rate</el-dropdown-item>
             </template>
 
             <template #header-actions="{ selectedRecords }">
                 <TransitionGroup name="header-buttons">
                     <div class="tooltip" v-show="selectedRecords.length > 0" data-tip="Delete Selected Accounts"
                         key="del-but">
-                        <button :disabled="selectedRecords.length == 0" @click="handleDeleteSelectedAccounts(selectedRecords)"
-                            class="btn btn-square btn-error btn-sm">
+                        <button :disabled="selectedRecords.length == 0"
+                            @click="handleDeleteSelectedAccounts(selectedRecords)" class="btn btn-square btn-error btn-sm">
                             <svg class="w-4 h-4 text-gray-800 dark:text-white stroke-white" aria-hidden="true"
                                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -205,7 +206,14 @@
             <template #name="{ record }">
                 <span class="text-base font-medium">
                     {{ record.name }} - {{ record.account_id }}
-                    <div class="badge badge-warning gap-2" v-if="record.archived == 1">
+                    
+                    <svg v-if="record.locked" class="w-4 h-4 inline fill-gray-700 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor" viewBox="0 0 16 20">
+                        <path
+                            d="M14 7h-1.5V4.5a4.5 4.5 0 1 0-9 0V7H2a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2Zm-5 8a1 1 0 1 1-2 0v-3a1 1 0 1 1 2 0v3Zm1.5-8h-5V4.5a2.5 2.5 0 1 1 5 0V7Z" />
+                    </svg>
+
+                    <div class="badge badge-warning gap-2" v-if="record.archived">
                         <svg class="w-3 h-3 stroke-current" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                             fill="none" viewBox="0 0 20 16">
                             <path stroke="currentColor" stroke-linejoin="round" stroke-width="2"
@@ -214,7 +222,7 @@
                         Archived
                     </div>
                 </span>
-                <p class="text-ellipsis">{{ record.description.length > 100 ? record.description.slice(0, 100)
+                <p v-if="record.description" class="text-ellipsis">{{ record.description.length > 100 ? record.description.slice(0, 100)
                     +
                     "..." : record.description }} </p>
             </template>
@@ -304,7 +312,7 @@ watch(selectedTaxId, (value) => taxId.value = value ?? -1);
 const selectedAccountTypes = computed(() => selectedAccountTypesRaw.value.map(s => JSON.parse(s) as string[]).flat().filter((value, index, array) => array.indexOf(value) === index))
 
 const filter = computed(() => (account: ModifiedFinancialAccount) => [
-    selectedAccountTypes.value.includes("Archived") ? account.archived == 1 : true,
+    selectedAccountTypes.value.includes("Archived") ? account.archived : true,
     selectedAccountTypes.value.length > 0 ? selectedAccountTypes.value.includes(account.type) : true,
     selectedTaxId.value ? account.tax_id == selectedTaxId.value : true
 ].every(x => x))
@@ -418,7 +426,7 @@ const handleArchiveAccount = async (record: ModifiedFinancialAccount) => {
         //     newTaxId != -1 ?  : null;
         // }
 
-        recordTableRef.value?.updateRecord({ ...record, archived: 1 });
+        recordTableRef.value?.updateRecord({ ...record, archived: true });
     }
 
     await doActions().catch(console.log).finally(() => finish());
@@ -444,9 +452,10 @@ const handleAddAccount = async () => {
     showLoading("Creating new Account");
 
     const newAccount: Omit<FinancialAccount, "account_id"> = {
-        archived: 0, // These 2 fields will get discarded by the Backend anyway 
+        archived: false, // These 3 fields will get discarded by the Backend anyway 
         code: data.accountCode,
-        deletable: 0, // These 2 fields will get discarded by the Backend anyway
+        deletable: true, // These 3 fields will get discarded by the Backend anyway
+        locked: false, // These 3 fields will get discarded by the Backend anyway
         description: data.description,
         name: data.accountName,
         tax_id: data.taxId,
@@ -606,5 +615,4 @@ const clearFilters = () => {
 .header-buttons-leave-to {
     opacity: 0;
     transform: translateX(-30px);
-}
-</style>
+}</style>

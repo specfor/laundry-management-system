@@ -387,9 +387,9 @@ async function getRoles(paramOne = null, paramTwo = null) {
     for (const role of roles) {
       let tablePermissions = ''
       for(const[key,val] of Object.entries(role['permissions'])){
-        tablePermissions +=  `• ${key} - ${val.toString()} \n`
+        tablePermissions +=  `• ${key} - ${val.join(', ')}<br>`
       }
-      tableRowsRoles.value.push([role["role_id"], role["name"], tablePermissions])
+      tableRowsRoles.value.push([role["role_id"], role["name"], {type: 'html',data: tablePermissions}])
     }
   } else {
     window.errorNotification('Fetch User Data', response.message)
@@ -568,7 +568,7 @@ async function getOnlyRoleNames(){
                   @update-user-pass="updatePasswordFunc($event)" :search="searchParamUsers"
                   @user-name="getUsersWithParams($event)"/>
 
-  <div class="flex justify-between mt-5 mb-3 ">
+  <div class="flex justify-between mt-8 mb-3 ">
     <h3 class="text-2xl font-semibold">Roles</h3>
     <button class="bg-slate-600 text-slate-100 rounded-md py-2 px-3 font-semibold" @click="addNewRole">+ New Role
     </button>

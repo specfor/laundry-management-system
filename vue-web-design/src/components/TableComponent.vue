@@ -103,6 +103,9 @@ let {
         </td>
         <td v-for="data in row" class="px-3 py-1 text-slate-800">
           <span v-if="data === null || data === ''">None</span>
+          <span v-else-if="typeof data === 'object'">
+            <span v-if="data['type']==='html'" v-html="data['data']"></span>
+          </span>
           <span v-else>{{ data }}</span>
         </td>
         <td v-if="actions" class="px-3 py-1 sticky right-0 bg-neutral-300 flex items-center justify-center h-full">

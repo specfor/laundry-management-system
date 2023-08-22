@@ -9,6 +9,7 @@ let fields = ref([])
 let fieldValues = ref({})
 let successBtnText = ''
 let errorMessages = ref({})
+let allowAdd = ref(false)
 
 window.addNewForm = (title_, successBtn_, fields_) => {
   fieldValues.value = {}
@@ -43,14 +44,29 @@ window.addNewForm = (title_, successBtn_, fields_) => {
 }
 
 function validateInput(name) {
+  let anyError = false;
   for (const field of fields.value) {
     if (field['name'] === name) {
       if (fieldValues.value[name].length === 0)
-        errorMessages.value[name] = ''
+        if (field['required'])
+          errorMessages.value[name] = 'This field is required.'
+        else
+          errorMessages.value[name] = ''
       else if (field['validate'])
         errorMessages.value[name] = field['validate'](fieldValues.value[name]) ?? ''
+      else
+        errorMessages.value[name] = ''
     }
+    if (field['required'] ?? false)
+      if (fieldValues.value[field['name']] === '')
+        anyError = true
   }
+  for (const field of fields.value) {
+    if (errorMessages.value[field['name']] !== '')
+      anyError = true;
+  }
+  allowAdd.value = !anyError;
+  console.log(allowAdd.value)
 }
 </script>
 
@@ -70,7 +86,7 @@ function validateInput(name) {
                            leave-from="opacity-100 translate-y-0 sm:scale-100"
                            leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
             <DialogPanel
-              class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all
+                class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all
                  sm:my-8 sm:w-full sm:max-w-lg">
               <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                 <div class="text-center text-2xl font-bold mb-5 ">{{ title }}</div>
@@ -102,7 +118,7 @@ function validateInput(name) {
                         <input class="w-5 h-5 mt-0.5" :disabled="field['disabled']"
                                type="checkbox" :checked="option['checked']"
                                @input="event => fieldValues[field['name']][option['name']] = event.target.checked"
-                               >
+                        >
                         <p class="ml-2 font-semibold "
                         >{{ option['text'] }}</p>
                       </div>
@@ -141,12 +157,12 @@ function validateInput(name) {
                       {{ field['text'] }}
                     </div>
                     <input
-                      class="col-span-2 border-2 border-slate-400 rounded-md px-3 hover:border-slate-700
+                        class="col-span-2 border-2 border-slate-400 rounded-md px-3 hover:border-slate-700
                          py-0.5 hover:bg-slate-100 focus:bg-slate-200 disabled:border"
-                      :disabled="field['disabled']"
-                      :type="field['type']" :value="fieldValues[field['name']]" :min="field['min']"
-                      :max="field['max']"
-                      @input="(event) => {fieldValues[field['name']] = event.target.value; validateInput(field['name'])}">
+                        :disabled="field['disabled']"
+                        :type="field['type']" :value="fieldValues[field['name']]" :min="field['min']"
+                        :max="field['max']"
+                        @input="(event) => {fieldValues[field['name']] = event.target.value; validateInput(field['name'])}">
                     <div class="absolute top-7 right-0 z-[1000] w-2/3 px-2 rounded-b-lg bg-red-500/80 text-rose-900"
                          v-if="errorMessages[field['name']]">
                       {{ errorMessages[field['name']] }}
@@ -155,12 +171,14 @@ function validateInput(name) {
                 </div>
               </div>
               <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                <button v-if="successBtnText" type="button"
-                        class="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto"
+                <button v-if="successBtnText" type="button" :disabled="allowAdd ? false : 'disabled'"
+                        class="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold
+                         text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto disabled:hover:bg-blue-200 disabled:bg-blue-200"
                         @click="show = false; success = true;">{{ successBtnText }}
                 </button>
                 <button type="button"
-                        class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                        class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold
+                         text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
                         @click="show = false" ref="cancelButtonRef">Cancel
                 </button>
               </div>

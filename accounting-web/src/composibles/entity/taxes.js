@@ -24,8 +24,10 @@ export function useTaxes(batchNotificationInjection) {
      * @param {import("../../types").RawTax} rawTax Raw response from the backend.
      * @returns {import("../../types").Tax}
      */
-    const serialize = ({ tax_rate, ...rest }) => ({
+    const serialize = ({ tax_rate, locked, deleted, ...rest }) => ({
         ...rest,
+        locked: !!locked,
+        deleted: !!deleted,
         tax_rate: new Decimal(tax_rate)
     })
 
@@ -34,8 +36,10 @@ export function useTaxes(batchNotificationInjection) {
      * @param {Partial<import("../../types").Tax>} taxEntity Tax Entity
      * @returns {Partial<import("../../types").RawTax>}
      */
-    const deserialize = ({ tax_rate, ...rest }) => ({
+    const deserialize = ({ tax_rate, deleted, locked, ...rest }) => ({
         ...rest,
+        deleted: deleted ? +deleted : undefined,
+        locked: locked ? +locked : undefined,
         tax_rate: tax_rate ? tax_rate.toString() : undefined
     })
 
