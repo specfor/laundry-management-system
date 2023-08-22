@@ -13,10 +13,8 @@ class Decimal
     {
         $this->decimalPlaces = $decimalPlaces;
 
-        if (!preg_match('/^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$/', $number))
+        if (!preg_match('/^-?([0-9]+([.][0-9]*)?|[.][0-9]+)$/', $number))
             throw new ValueError('Invalid decimal number.');
-        if ("$number"[0] == '.')
-            $number = "0$number";
 
         $this->number = $number;
     }
