@@ -12,9 +12,9 @@ class TaxController extends Controller
     {
         self::checkPermissions(['tax' => [User::PERMISSION_WRITE]]);
 
-        $name = self::getParameter('tax-name', isCompulsory: true);
+        $name = self::getParameter('name', isCompulsory: true);
         $description = self::getParameter('description');
-        $rate = self::getParameter('tax-rate', dataType: 'float', isCompulsory: true);
+        $rate = self::getParameter('tax_rate', dataType: 'float', isCompulsory: true);
 
         $status = Taxes::createTax($name, $rate, $description);
         if (is_array($status)) {
@@ -29,8 +29,8 @@ class TaxController extends Controller
         self::checkPermissions(['tax' => [User::PERMISSION_READ]]);
 
         $pageNumber = self::getParameter('page-num', defaultValue: 0, dataType: 'int');
-        $taxId = self::getParameter('tax-id', dataType: 'int');
-        $name = self::getParameter('tax-name');
+        $taxId = self::getParameter('tax_id', dataType: 'int');
+        $name = self::getParameter('name');
         $description = self::getParameter('description');
         $rateMin = self::getParameter('rate-min', dataType: 'float');
         $rateMax = self::getParameter('rate-max', dataType: 'float');
@@ -44,10 +44,10 @@ class TaxController extends Controller
     {
         self::checkPermissions(['tax' => [User::PERMISSION_MODIFY]]);
 
-        $taxId = self::getParameter('tax-id', dataType: 'int', isCompulsory: true);
-        $name = self::getParameter('tax-name');
+        $taxId = self::getParameter('tax_id', dataType: 'int', isCompulsory: true);
+        $name = self::getParameter('name');
         $description = self::getParameter('description');
-        $rate = self::getParameter('tax-rate', dataType: 'float');
+        $rate = self::getParameter('tax_rate', dataType: 'float');
 
         $status = Taxes::updateTax($taxId, $name, $description, $rate);
         if ($status === true)
@@ -62,7 +62,7 @@ class TaxController extends Controller
     {
         self::checkPermissions(['tax' => [User::PERMISSION_DELETE]]);
 
-        $taxId = self::getParameter('tax-id', dataType: 'int', isCompulsory: true);
+        $taxId = self::getParameter('tax_id', dataType: 'int', isCompulsory: true);
 
         $status = Taxes::deleteTax($taxId);
         if (is_string($status))
