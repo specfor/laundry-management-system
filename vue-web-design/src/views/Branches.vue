@@ -109,7 +109,7 @@ getBranches()
 
 async function addNewBranch() {
   let branch = await window.addNewForm('New Branch', 'Add', [
-    {name: 'name', text: 'Branch Name', type: 'text'},
+    {name: 'name', text: 'Branch Name', type: 'text', required: true},
     {name: 'phone', text: 'Phone Number', type: 'text', validate: value => validateInput(value, 'phone-number')}
   ])
 
