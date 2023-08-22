@@ -8,8 +8,11 @@ use PDO;
 class Branches extends DbModel
 {
     public static function addNewBranch(string $name, string $address = null, int $managerId = null,
-                                        string $phoneNumber = null): bool|array
+                                        string $phoneNumber = null): bool|array|string
     {
+        if (empty($name))
+            return 'Branch name can not be empty.';
+
         $params['name'] = $name;
         if ($address)
             $params['address'] = $address;
