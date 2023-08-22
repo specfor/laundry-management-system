@@ -1,5 +1,5 @@
 <template>
-    <!-- Add new Account Model -->
+    <!-- Add new Tax type Model -->
     <InputTemplateModel ref="addTaxModelRef" :initial-value="AddTaxModelInitialValue" :validator="addTaxValidator">
         <template #inputs="{ data, errors, setValue, mergeValue, value }">
             <TextInput label="Tax Name" :error="errors.taxName" :modelValue="value.taxName"
@@ -47,13 +47,13 @@
         </template>
     </ModelWithInput>
 
-    <!-- Action Confirmation model for Deleting accounts -->
+    <!-- Action Confirmation model for Deleting tax types -->
     <ConfirmActionModel ref="confirmActionModelRef"></ConfirmActionModel>
 
     <Suspense>
         <RecordTable ref="recordTableRef" :command-handler="handleCommand" :get-records="loadTaxes"
-            :column-slots="['name', 'rate', 'using']" :search-fields="['name', 'description']"
-            :sorter="sorter" :extra-data-fetcher="fetchAccounts" :id-property="'tax_id'">
+            :column-slots="['name', 'rate', 'using']" :search-fields="['name', 'description']" :sorter="sorter"
+            :extra-data-fetcher="fetchAccounts" :id-property="'tax_id'">
 
             <template #table-headers>
                 <th>Name</th>
@@ -62,16 +62,16 @@
             </template>
 
             <template #row-actions="{ record }">
-                <el-dropdown-item :icon="Delete" command="delete">Delete</el-dropdown-item>
-                <el-dropdown-item :icon="Edit" command="edit">Edit</el-dropdown-item>
+                <el-dropdown-item :icon="Delete" command="delete" :disabled="record.locked">Delete</el-dropdown-item>
+                <el-dropdown-item :icon="Edit" command="edit" :disabled="record.locked">Edit</el-dropdown-item>
             </template>
 
             <template #header-actions="{ selectedRecords }">
                 <TransitionGroup name="header-buttons">
                     <div class="tooltip" v-show="selectedRecords.length > 0" data-tip="Delete Selected Tax types"
                         key="del-but">
-                        <button :disabled="selectedRecords.length == 0" @click="handleDeleteSelectedTaxTypes(selectedRecords)"
-                            class="btn btn-square btn-error btn-sm">
+                        <button :disabled="selectedRecords.length == 0"
+                            @click="handleDeleteSelectedTaxTypes(selectedRecords)" class="btn btn-square btn-error btn-sm">
                             <svg class="w-4 h-4 text-gray-800 dark:text-white stroke-white" aria-hidden="true"
                                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -98,14 +98,24 @@
             <template #name="{ record }">
                 <span class="text-base font-medium">
                     {{ record.name }} - {{ record.tax_id }}
+                    <svg v-if="record.locked" class="w-4 h-4 inline fill-gray-700 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor" viewBox="0 0 16 20">
+                        <path
+                            d="M14 7h-1.5V4.5a4.5 4.5 0 1 0-9 0V7H2a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2Zm-5 8a1 1 0 1 1-2 0v-3a1 1 0 1 1 2 0v3Zm1.5-8h-5V4.5a2.5 2.5 0 1 1 5 0V7Z" />
+                    </svg>
                 </span>
-                <p class="text-ellipsis">{{ record.description.length > 100 ? record.description.slice(0, 100)
+                <p v-if="record.description" class="text-ellipsis">{{ record.description.length > 100 ?
+                    record.description.slice(0, 100)
                     +
                     "..." : record.description }} </p>
             </template>
 
             <template #using="{ record, extra }">
-                <span>In use by <span class="font-medium">{{accountsUsingTaxType(record.tax_id, extra ?? [])}}</span></span>
+                <router-link :to="{ name: 'ChartOfAccounts', query: { 'tax-id': record.tax_id } }"
+                    @click.native="$emit('onMenuItemClick')">
+                    <span class="underline text-blue-600">In use by <span class="font-medium">{{
+                        accountsUsingTaxType(record.tax_id, extra ?? []) }}</span> account</span>
+                </router-link>
             </template>
         </RecordTable>
         <template #fallback>
@@ -159,7 +169,7 @@ const { getFinanctialAccounts } = useFinancialAccounts()
 const { batch, updateTax: updateTaxBatch, removeTax: removeTaxBatch } = useBatchFetch(useTaxes)
 const { getTaxes, addTax, removeTax, updateTax } = useTaxes()
 
-const loadTaxes = () => getTaxes();
+const loadTaxes = () => getTaxes().then(data => data.filter(tax => !tax.deleted));
 const fetchAccounts = async () => await getFinanctialAccounts().catch(() => [])
 
 // References to template elements
@@ -237,7 +247,9 @@ const handleAddTax = async () => {
     const newTax: Omit<Tax, "tax_id"> = {
         description: data.description,
         name: data.taxName,
-        tax_rate: new Decimal(data.taxRate)
+        tax_rate: new Decimal(data.taxRate),
+        locked: false,
+        deleted: false,
     }
 
     const doActions = async () => {
@@ -314,7 +326,7 @@ const addTaxValidator = ({ taxName, taxRate }: typeof AddTaxModelInitialValue, {
     taxRate: [
         !taxRate ? "A rate has to be provided" : "",
         taxRate == "" ? "Rate cannot be empty" : "",
-        isProperNumberString(taxRate) ? "Invalid tax rate" : ""
+        !isProperNumberString(taxRate) ? "Invalid tax rate" : ""
     ].find(x => x != ""),
 
     description: undefined, // Optional
@@ -334,5 +346,4 @@ const addTaxValidator = ({ taxName, taxRate }: typeof AddTaxModelInitialValue, {
 .header-buttons-leave-to {
     opacity: 0;
     transform: translateX(-30px);
-}
-</style>
+}</style>
