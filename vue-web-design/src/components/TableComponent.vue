@@ -40,8 +40,6 @@ let {
   edit,
   search
 } = defineProps(['tableColumns', 'tableRows', 'actions', 'deleteMultiple', 'edit', 'search'])
-
-let modificationsColum = tableColumns.pop()
 </script>
 
 <template>
@@ -75,13 +73,14 @@ let modificationsColum = tableColumns.pop()
     </div>
 
     <div class="relative">
-    <div class="block mb-2 bg-slate-400 rounded-l-lg rounded-b-lg w-1/2 py-3 px-3 fixed right-8 z-[1030]" :class="{'hidden':isHidden}">
-      <div v-for="(item,i) in search" :key="i" class="grid grid-cols-3 ml-5">
-        <h5 v-text="item['searchParameter']" class="flex items-center"></h5>
-        <input :type="item.type" class="rounded-md border-2 border-stone-600 bg-stone-200 px-3 h-8 mt-1 col-span-2"
-               v-model="searchInput[item.paramNumber]" @input="$emit(item['searchParamType'],searchInput)">
+      <div class="block mb-2 bg-slate-400 rounded-l-lg rounded-b-lg w-1/2 py-3 px-3 absolute top-0 right-0 z-[1030]"
+           :class="{'hidden':isHidden}">
+        <div v-for="(item,i) in search" :key="i" class="grid grid-cols-3 ml-5">
+          <h5 v-text="item['searchParameter']" class="flex items-center"></h5>
+          <input :type="item.type" class="rounded-md border-2 border-stone-600 bg-stone-200 px-3 h-8 mt-1 col-span-2"
+                 v-model="searchInput[item.paramNumber]" @input="$emit(item['searchParamType'],searchInput)">
+        </div>
       </div>
-    </div>
     </div>
     <table class="table-auto border-collapse border w-full">
 
@@ -89,10 +88,6 @@ let modificationsColum = tableColumns.pop()
       <tr class="border-0 border-y-2 border-t-0 border-slate-500 bg-neutral-300">
         <th class="text-left px-3 pt-4 pb-2 font-bold"
             v-for="(columnName, i) in tableColumns" :key="i">{{ columnName }}
-        </th>
-        <th class="text-left px-3 pt-4 pb-2 font-bold sticky right-0 bg-neutral-400 text-center w-[200px] max-w-fit">{{
-            modificationsColum
-          }}
         </th>
       </tr>
       </thead>
@@ -102,10 +97,15 @@ let modificationsColum = tableColumns.pop()
         <td colspan="100%" class="text-center pt-2 text-slate-700">No Data To Display.</td>
       </tr>
       <tr v-for="row in tableRows" :key="row[0]" class="border-y border-slate-400 bg-neutral-100 hover:bg-neutral-200">
-        <input type="checkbox" class="ml-3" :value="row[0]" v-model="selectedIds"
-               v-on:change="()=>{isChecked();isMultipleChecked()}">
+        <td class="pt-1 px-5">
+          <input type="checkbox" class="h-5 w-5" :value="row[0]" v-model="selectedIds"
+                 v-on:change="()=>{isChecked();isMultipleChecked()}">
+        </td>
         <td v-for="data in row" class="px-3 py-1 text-slate-800">
           <span v-if="data === null || data === ''">None</span>
+          <span v-else-if="typeof data === 'object'">
+            <span v-if="data['type']==='html'" v-html="data['data']"></span>
+          </span>
           <span v-else>{{ data }}</span>
         </td>
         <td v-if="actions" class="px-3 py-1 sticky right-0 bg-neutral-300 flex items-center justify-center h-full">
