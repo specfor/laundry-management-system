@@ -13,11 +13,13 @@
                   :search="searchParam" />
   <NewOrderModal/>
   <OrderDetailsModal/>
+  <UpdateOrderModal />
 </template>
 
 <script setup>
 import TableComponent from '../components/TableComponent.vue'
 import NewOrderModal from '../components/form_modals/NewOrder.vue'
+import UpdateOrderModal from "../components/form_modals/UpdateOrder.vue"
 import OrderDetailsModal from '../components/form_modals/OrderDetails.vue'
 import {ref} from 'vue'
 import {sendGetRequest, sendJsonPostRequest} from "../js-modules/base-functions.js";
@@ -61,6 +63,8 @@ let productArray = {}
 let orders = []
 let actions = []
 let products = []
+let customers = []
+
 
 
 let typingTimer;
@@ -153,6 +157,19 @@ async function getOrders(paramOne=null,paramTwo=null,paramThree=null) {
 }
 
 getOrders()
+getCustomers()
+
+async function getCustomers(){
+  let response = await sendGetRequest(apiBaseUrl + '/customers')
+  if(response.status === 'success'){
+    response.data.customers.forEach((customer)=>{
+      customers.push({
+        'name':customer['name'],
+        'customer-id':customer['customer_id']
+      })
+    })
+  }
+}
 
 async function moreOrderInfo(id) {
   let orderData = orders.filter((row) => {
@@ -250,8 +267,23 @@ async function addNewOrder() {
 }
 
 
-
+ 
 async function editOrder(id) {
+  
+  let orderInfo = []
+
+  let orderResponse = await sendGetRequest(apiBaseUrl + "/orders",{
+    'order-id':id
+  })
+
+  if(orderResponse.status === "success"){
+   
+     orderInfo.push(orderResponse.data.orders[0]['items'])
+  }else{
+    window.errorNotification('Fetch Order Data', orderResponse.message)
+
+  }
+
   let customerResponse = await sendGetRequest(apiBaseUrl + "/customers")
   let customers = []
 
@@ -263,47 +295,16 @@ async function editOrder(id) {
   } else {
     window.errorNotification('Fetch Customer Data', customerResponse.message)
     return
-  }
+  } 
 
-  let customer = await window.addNewForm('Select Customer', 'Proceed', [
-    {name: 'customer', text: 'Customer', type: 'select', options: customers},
-    {text: 'New Customer', type: 'heading'},
-    {name: 'name', text: 'Customer Name', type: 'text'},
-    {name: 'phone', text: 'Phone Number', type: 'number',validate:value => validateInput(value,'phone-number')},
-    {name: 'email', text: 'Email', type: 'email',validate:value => validateInput(value,'email')},
-    {name: 'address', text: 'Address', type: 'textarea'}
-  ])
+  console.log(orderInfo)
 
-  if (!customer['accepted'])
-    return
-
-
-    if (!customer.data['customer']){
-      let response = await sendJsonPostRequest(apiBaseUrl + "/customers/add", {
-    "customer-name": customer['data']['name'],
-    "phone-number": customer['data']['phone'],
-    "email": customer['data']['email'],
-    "address": customer['data']['address']
-  }, window.httpHeaders)
-
-  if (response.status === "success") {
-    window.successNotification('Add New Customer', response.message)
-  } else {
-    window.errorNotification('Add New Customer', response.message)
-  }
-    return
-  }
-
-  let order = await window.newOrderModal('Update Order',products, actions, {
-    'customer': customerResponse.data['customers'].filter((row) => {
-      return row['customer_id'] === parseInt(customer.data['customer'])
-    })[0]['name']
-  });
+  let order = await window.updateOrderModal( customers,orderInfo,'Update Order',products, actions)
 
   if (!order['accepted'])
     return
-  
-    let items = []
+
+  let items = []
   order.data.products.forEach((product) => {
     let dict = {}
     dict[product['id']] = {
@@ -314,8 +315,8 @@ async function editOrder(id) {
     items.push(dict)
   })
 
-  let response = await sendJsonPostRequest(apiBaseUrl + "/orders/update", {
-    "order-id":id,
+  let response = await sendJsonPostRequest(apiBaseUrl + "/orders/add", {
+    
     "items": items,
     "customer-id": customer.data['customer'],
     "customer-comments": order.data['comment']
@@ -323,9 +324,9 @@ async function editOrder(id) {
 
   if (response.status === "success") {
     getOrders()
-    window.successNotification('Update Payment', response.message)
+    window.successNotification('Add New Payment', response.message)
   } else {
-    window.errorNotification('Update Payment', response.message)
+    window.errorNotification('Add New Payment', response.message)
   }
 }
 
