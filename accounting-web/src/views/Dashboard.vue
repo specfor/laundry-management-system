@@ -13,12 +13,6 @@
 
 <script setup>
 // @ts-check
-import CompactLedger from '../components/CompactLedger.vue';
-import Filter from '../components/inputs/Filter.vue';
-import Select from '../components/inputs/Select.vue';
-import Input from '../components/inputs/Input.vue';
-import DateRangeSelector from '../components/inputs/DateRangeSelector.vue';
-import LedgerRecordEntryTable from '../components/LedgerRecordEntryTable.vue';
 
 const data = [
     [

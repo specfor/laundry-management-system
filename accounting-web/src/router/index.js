@@ -1,9 +1,11 @@
 import {createRouter, createWebHistory} from 'vue-router'
-import Dashboard from '../views/Dashboard.vue'
-import Tax from '../views/Tax.vue'
-import GeneralLedger from '../views/GeneralLedger.vue'
-import ChartOfAccounts from '../views/ChartOfAccounts.vue'
-import LedgerEntry from '../views/LedgerEntry.vue'
+
+const Tax = () => import('../views/Tax.vue');
+const GeneralLedger = () => import('../views/GeneralLedger.vue');
+const ChartOfAccounts = () => import('../views/ChartOfAccounts.vue');
+const LedgerEntry = () => import('../views/LedgerEntry.vue');
+const Dashboard = () => import('../views/Dashboard.vue');
+const TaxTypes = () => import('../views/TaxTypes.vue');
 
 const routes = [
     {
@@ -25,6 +27,11 @@ const routes = [
         path: '/chart-of-accounts',
         name: 'ChartOfAccounts',
         component: ChartOfAccounts
+    },
+    {
+        path: '/tax-types',
+        name: 'TaxTypes',
+        component: TaxTypes
     },
     {
         path: '/ledger-entry',

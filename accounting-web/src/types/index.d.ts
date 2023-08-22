@@ -142,6 +142,8 @@ export type PromiseAll<T extends unknown[]> = (
     values: readonly [...T],
 ) => Promise<{ [P in keyof T]: T[P] extends Promise<infer R> ? R : T[P] }>;
 
+export type AllObjectPropsTo<T extends object, P> = { [K in keyof T]: P };
+
 /** Notification */
 export type NotificationProvider = {
     showSuccess: (options: ShowNotificationOptions) => void,

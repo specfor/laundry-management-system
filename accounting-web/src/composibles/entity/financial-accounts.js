@@ -54,15 +54,15 @@ export function useFinancialAccounts(batchNotificationInjection) {
 
     /**
      * Adds a financial account
-     * @param {import("../../types").FinancialAccount} financialAccount Financial Account to be added
-     * @returns {Promise<void>}
+     * @param {Omit<import("../../types").FinancialAccount, "account_id">} financialAccount Financial Account to be added
+     * @returns {Promise<number>} Returns the created account's ID
      */
     const addFinancialAccount = async (financialAccount) => {
         return new Promise((resolve, reject) => {
             const success = ref(false);
-            const { isFinished } = useAuthorizedFetch('/financial-accounts/add', 'Add Financial Account', success, notificationInjection, true).json().post(financialAccount);
+            const { isFinished, data } = useAuthorizedFetch('/financial-accounts/add', 'Add Financial Account', success, notificationInjection, true).json().post(financialAccount);
 
-            whenever(logicAnd(isFinished, success), () => resolve())
+            whenever(logicAnd(isFinished, success), () => resolve(data.value['account_id']))
             whenever(logicAnd(isFinished, logicNot(success)), () => reject())
         })
     }

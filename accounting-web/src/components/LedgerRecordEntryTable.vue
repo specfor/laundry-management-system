@@ -335,7 +335,7 @@ import { useFinancialAccounts } from '../composibles/entity/financial-accounts';
 import { useLedgerRecords } from '../composibles/entity/ledger-records';
 import { ElSelect, ElOption, ElDatePicker } from "element-plus";
 import Decimal from 'decimal.js';
-import { toReadable, toDecimal, decimalReducer } from "../util/decimal-util";
+import { toReadable, toDecimal, decimalReducer, isProperNumberString } from "../util/decimal-util";
 import { NotTakeOne } from "../util/func-wrappers";
 
 const { getTaxes } = useTaxes();
@@ -727,22 +727,6 @@ const isRowDebitCreditValid = (row) => !creditAndDebit(row) && eitherCreditOrDeb
  * @param {Row} row 
  */
 const isRowValid = (row) => isRowDebitCreditValid(row) || !(row.accountId) || !(row.taxId) || !(row.description);
-
-/**
- * Checks if the string is a value Decimal constructor can take
- * @type {(text: string | undefined) => boolean}
- */
-const isProperNumberString = (text) => {
-    if (text === undefined) return false;
-
-    try {
-        new Decimal(text)
-        return true; // All good
-    } catch (_e) {
-        // Constructior threw an error
-        return false;
-    }
-}
 
 // Helper Functions
 

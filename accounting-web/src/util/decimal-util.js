@@ -37,3 +37,19 @@ export const toReadable = (dec) => {
     const digitGroups = whole.split("").reverse().join("").match(/.{1,3}/g)
     return digitGroups ? `${negative ? "-" : ""}${digitGroups.reverse().map(item => item.split("").reverse().join("")).join(",")}.${decimal[0]}` : `0.${decimal[0]}`
 }
+
+/**
+ * Checks if the string is a value Decimal constructor can take
+ * @type {(text: string | undefined) => boolean}
+ */
+export const isProperNumberString = (text) => {
+    if (text === undefined) return false;
+
+    try {
+        new Decimal(text)
+        return true; // All good
+    } catch (_e) {
+        // Constructior threw an error
+        return false;
+    }
+}
