@@ -40,8 +40,6 @@ let {
   edit,
   search
 } = defineProps(['tableColumns', 'tableRows', 'actions', 'deleteMultiple', 'edit', 'search'])
-
-let modificationsColum = tableColumns.pop()
 </script>
 
 <template>
@@ -89,10 +87,6 @@ let modificationsColum = tableColumns.pop()
       <tr class="border-0 border-y-2 border-t-0 border-slate-500 bg-neutral-300">
         <th class="text-left px-3 pt-4 pb-2 font-bold"
             v-for="(columnName, i) in tableColumns" :key="i">{{ columnName }}
-        </th>
-        <th class="text-left px-3 pt-4 pb-2 font-bold sticky right-0 bg-neutral-400 text-center w-[200px] max-w-fit">{{
-            modificationsColum
-          }}
         </th>
       </tr>
       </thead>
