@@ -33,7 +33,8 @@ class Taxes extends DbModel
         if ($rateMax)
             $filters[] = "tax_rate < $rateMax";
 
-        $filters[] = "deleted=$deleted";
+        $filters[] = "deleted=:deleted";
+        $placeholders['deleted'] = $deleted;
 
         $condition = implode(' AND ', $filters);
 

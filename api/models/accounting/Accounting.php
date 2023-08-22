@@ -55,6 +55,7 @@ class Accounting extends DbModel
             $account['deletable'] = boolval($account['deletable']);
             $account['locked'] = boolval($account['locked']);
         }
+        unset($account);
         return $accounts;
     }
 
