@@ -7,10 +7,17 @@ import { ref, toValue } from "vue";
 import { logicAnd, logicNot } from "@vueuse/math/index.cjs";
 import { useNotifications } from "../notification";
 
-export function useTaxes() {
+/**
+ * @typedef {ReturnType<(ReturnType<typeof useNotifications>)['injectNotifications']>} BatchNotificationInjection
+ */
+
+/**
+ * @param {BatchNotificationInjection} [batchNotificationInjection]
+ */
+export function useTaxes(batchNotificationInjection) {
 
     /** Notification provider has to be inject here, which will most likely be run at setup() function of a Component. (inject() can only be used in setup()) */
-    const notificationInjection = useNotifications().injectNotifications()
+    const notificationInjection = batchNotificationInjection ?? useNotifications().injectNotifications()
     
     /**
      * Converts the Raw response from the server into a entity object
@@ -69,15 +76,15 @@ export function useTaxes() {
 
     /**
      * Adds a tax
-     * @param {import("../../types").Tax} tax Tax to be added
-     * @returns {Promise<void>}
+     * @param {Omit<import("../../types").Tax, "tax_id">} tax Tax to be added
+     * @returns {Promise<number>}
      */
     const addTax = async (tax) => {
         return new Promise((resolve, reject) => {
             const success = ref(false);
-            const { isFinished } = useAuthorizedFetch('/taxes/add', 'Add Tax', success, notificationInjection, true).json().post(deserialize(tax));
+            const { isFinished, data } = useAuthorizedFetch('/taxes/add', 'Add Tax', success, notificationInjection, true).json().post(deserialize(tax));
 
-            whenever(logicAnd(isFinished, success), () => resolve())
+            whenever(logicAnd(isFinished, success), () => resolve(data.value['tax_id']))
             whenever(logicAnd(isFinished, logicNot(success)), () => reject())
         })
     }

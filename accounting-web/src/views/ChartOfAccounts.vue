@@ -1,6 +1,7 @@
 <template>
     <!-- Add new Account Model -->
-    <InputTemplateModel ref="addAccountModelRef" :initial-value="AddAccountModelInitialValue" :validator="addAccountValidator">
+    <InputTemplateModel ref="addAccountModelRef" :initial-value="AddAccountModelInitialValue"
+        :validator="addAccountValidator">
         <template #inputs="{ data, errors, setValue, mergeValue, value }">
             <TextInput label="Account Name" :error="errors.accountName" :modelValue="value.accountName"
                 @update:modelValue="setValue({ ...value, accountName: $event })"></TextInput>
@@ -110,7 +111,7 @@
                 <TransitionGroup name="header-buttons">
                     <div class="tooltip" v-show="selectedRecords.length > 0" data-tip="Delete Selected Accounts"
                         key="del-but">
-                        <button :disabled="selectedRecords.length == 0" @click="console.log(selectedRecords)"
+                        <button :disabled="selectedRecords.length == 0" @click="handleDeleteSelectedAccounts(selectedRecords)"
                             class="btn btn-square btn-error btn-sm">
                             <svg class="w-4 h-4 text-gray-800 dark:text-white stroke-white" aria-hidden="true"
                                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20">
@@ -278,7 +279,7 @@ const treeSelectData = [...accountTypesTree(), { label: 'Archived', value: '["Ar
 const treeSelectDataForAddAccount = [...accountTypesTree().map(({ children, ...rest }) => ({ ...rest, children: children.map(({ label, value }) => ({ label, value: (JSON.parse(value) as string[])[0] })) }))]
 
 const { getFinanctialAccounts, updateFinancialAccount, removeFinancialAccount, addFinancialAccount } = useFinancialAccounts()
-const { batch, updateFinancialAccount: updateFinancialAccountBatch } = useBatchFetch(useFinancialAccounts)
+const { batch, updateFinancialAccount: updateFinancialAccountBatch, removeFinancialAccount: removeFinancialAccountBatch } = useBatchFetch(useFinancialAccounts)
 const { getTaxes } = useTaxes()
 
 const loadAccounts = () => getFinanctialAccounts();
@@ -517,6 +518,31 @@ const handleUpdateTaxTypeOfSelectedAccounts = async (records: (ModifiedFinancial
             tax_id: newTaxId
         }))), `Update tax type of ${records.length} accounts`, true).then(() => true).catch(() => false)) {
             records.forEach(record => recordTableRef.value?.updateRecord({ ...record, tax_id: newTaxId }))
+        }
+    }
+
+    await doActions().catch(console.log).finally(() => finish());
+}
+
+const handleDeleteSelectedAccounts = async (records: (ModifiedFinancialAccount)[]) => {
+    if (confirmActionModelRef.value == undefined) return;
+
+    const { showLoading, finish, start } = confirmActionModelRef.value?.setup(
+        `Delete ${records.length} accounts?`,
+        "Delete",
+        "Cancel"
+    )
+
+    const confirm = await start().then(response => response.action == "confirm").catch(() => false);
+
+    if (!confirm) return;
+
+    showLoading(`Deleting ${records.length} accounts`)
+
+    const doActions = async () => {
+        // Delete the accounts on the database
+        if (await batch<void[]>(() => Promise.all(records.map(record => removeFinancialAccountBatch(record.account_id))), `Delete ${records.length} accounts`, true).then(() => true).catch(() => false)) {
+            records.forEach(record => recordTableRef.value?.removeRecord(record.account_id))
         }
     }
 

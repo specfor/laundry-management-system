@@ -50,8 +50,8 @@ const { initialValue, validator } = defineProps<{
 }>()
 
 defineExpose({
-    setup: (header: string, confirmActionText?: string, cancelActionText?: string, passToSlot?: PassToSlot) => {
-        _data.value = initialValue;
+    setup: (header: string, confirmActionText?: string, cancelActionText?: string, passToSlot?: PassToSlot, initialData?: V) => {
+        _data.value = initialData ?? initialValue;
         _header.value = header;
         confirmActionText ? _confirmActionText.value = confirmActionText : null;
         cancelActionText ? _cancelActionText.value = cancelActionText : null;
