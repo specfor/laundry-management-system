@@ -141,6 +141,11 @@ class Orders extends DbModel
         $customerData = self::getCustomerData($customerIDs);
 
         foreach ($orders as &$order) {
+            $paymentData = Payments::getPayments(orderId: $order['order_id'], limit: 1000);
+            foreach ($paymentData as &$paymentDatum) {
+                unset($paymentDatum['order_id']);
+            }
+            $order['payments'] = $paymentData;
             foreach ($order['items'] as &$item) {
                 // Adding item name
                 foreach ($itemData as $oneItem) {
@@ -148,7 +153,7 @@ class Orders extends DbModel
                         break;
                     if ($oneItem['item_id'] == $item['item_id']) {
                         $item['item_name'] = $oneItem['name'];
-                        $item['categories']=$oneItem['categories'];
+                        $item['categories'] = $oneItem['categories'];
                     }
                 }
                 if (!isset($item['item_name'])) {
