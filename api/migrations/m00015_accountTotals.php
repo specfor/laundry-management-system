@@ -12,8 +12,8 @@ class m00015_accountTotals extends MigrationScheme
     public static function up(): bool
     {
         $sql = "CREATE TABLE IF NOT EXISTS financial_account_totals (
-                    account_id int NOT NULL PRIMARY KEY,
-                    date date NOT NULL PRIMARY KEY,
+                    account_id int NOT NULL,
+                    date date NOT NULL,
                     credit decimal(30,4),
                     debit decimal(30,4),
                     until_ledger_rec_id int NOT NULL,
