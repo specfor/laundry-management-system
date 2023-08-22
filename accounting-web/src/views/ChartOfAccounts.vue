@@ -1,7 +1,6 @@
 <template>
     <!-- Add new Account Model -->
-    <InputTemplateModel ref="addAccountModelRef" :initial-value="AddAccountModelInitialValue"
-        :validator="addAccountValidator">
+    <InputTemplateModel ref="addAccountModelRef" :initial-value="AddAccountModelInitialValue" :validator="addAccountValidator">
         <template #inputs="{ data, errors, setValue, mergeValue, value }">
             <TextInput label="Account Name" :error="errors.accountName" :modelValue="value.accountName"
                 @update:modelValue="setValue({ ...value, accountName: $event })"></TextInput>
@@ -88,6 +87,7 @@
 
     <!-- Action Confirmation model for Deleting accounts -->
     <ConfirmActionModel ref="confirmActionModelRef"></ConfirmActionModel>
+
     <Suspense>
         <RecordTable ref="recordTableRef" :command-handler="handleCommand" :get-records="loadAccounts"
             :column-slots="['name', 'type', 'tax']" :search-fields="['name', 'description']" :filter="filter"
@@ -102,7 +102,8 @@
             <template #row-actions="{ record }">
                 <el-dropdown-item :icon="Delete" command="delete">Delete</el-dropdown-item>
                 <el-dropdown-item :icon="TakeawayBox" command="archive">Archive</el-dropdown-item>
-                <el-dropdown-item :icon="Edit" command="edit-tax-rate">Change Tax Rate</el-dropdown-item>
+                <el-dropdown-item :icon="Edit" command="edit">Edit</el-dropdown-item>
+                <el-dropdown-item :icon="EditPen" command="edit-tax-rate">Change Tax Rate</el-dropdown-item>
             </template>
 
             <template #header-actions="{ selectedRecords }">
@@ -237,7 +238,7 @@ import ConfirmActionModelGeneric from '../components/models/ConfirmActionModel.v
 import InputTemplateModelGeneric from '../components/models/InputTemplateModel.vue';
 import { useFinancialAccounts } from '../composibles/entity/financial-accounts';
 import { ElDropdownItem, ElSelect, ElOption, ElPopover, ElTreeSelect } from "element-plus";
-import { Delete, TakeawayBox, Edit } from '@element-plus/icons-vue';
+import { Delete, TakeawayBox, Edit, EditPen } from '@element-plus/icons-vue';
 import { useTaxes } from '../composibles/entity/taxes';
 import { toReadable } from '../util/decimal-util';
 import { Decimal } from 'decimal.js'
@@ -326,6 +327,9 @@ const handleCommand = async (command: string, record: ModifiedFinancialAccount) 
             break;
         case "edit-tax-rate":
             await handleEditTaxType(record);
+            break;
+        case "edit":
+            await handleEditAccount(record);
             break;
         default:
             break;
@@ -451,6 +455,39 @@ const handleAddAccount = async () => {
     const doActions = async () => {
         const newAccountId = await addFinancialAccount(newAccount);
         recordTableRef.value?.addRecord({ ...newAccount, account_id: newAccountId })
+    }
+
+    await doActions().catch(console.log).finally(() => finish());
+}
+
+const handleEditAccount = async (record: ModifiedFinancialAccount) => {
+    // We'll be using the same model used to adding an account
+    if (addAccountModelRef.value == undefined) return;
+
+    const accounts = await loadAccounts();
+
+    const { finish, showLoading, start } = addAccountModelRef.value.setup(`Edit ${record.name}`, "Save changes", "Cancel", {
+        taxes: await fetchTaxes(),
+        existingAccountNames: accounts.map(account => account.name),
+        existingAccountCodes: accounts.map(account => account.code)
+    }, record);
+
+    const { action, data } = await start().catch(() => ({ action: "cancel", data: undefined }));
+
+    // There is really no need to check whether data is undefined 
+    // This is solely for the purpose of telling Typescript compiler that data is not undefined below this point
+    if (action == "cancel" || !data) return;
+
+    showLoading("Saving changes");
+
+    const updatedAccount = {
+        ...data,
+        account_id: record.account_id
+    }
+
+    const doActions = async () => {
+        const newAccountId = await updateFinancialAccount(updatedAccount);
+        recordTableRef.value?.updateRecord({ ...record, ...data })
     }
 
     await doActions().catch(console.log).finally(() => finish());
