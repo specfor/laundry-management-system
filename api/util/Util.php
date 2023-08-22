@@ -2,6 +2,7 @@
 
 namespace LogicLeap\StockManagement\Util;
 
+use LogicLeap\PhpServerCore\data_types\Decimal;
 use LogicLeap\StockManagement\models\API;
 use Exception;
 use LogicLeap\PhpServerCore\Application;
@@ -57,10 +58,7 @@ class Util
                     $value = boolval($value);
                 }
             } elseif ($dataType == 'decimal') {
-                if (!preg_match('/^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$/', $value))
-                    throw new Exception('invalid decimal number');
-                if ("$value"[0] == '.')
-                    $value = "0$value";
+                $value = new Decimal($value);
             } elseif ($dataType == 'array') {
                 if (!is_array($value))
                     throw new Exception('array required.');
