@@ -11,7 +11,7 @@ export default defineConfig({
     vueJsx()
   ],
   test: {
-    include: ['**/*.test.ts'],
+    include: ['**/*.test.*', '**/*.spec.*'],
     environment: "happy-dom",
     globals: true
   }
