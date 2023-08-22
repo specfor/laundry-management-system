@@ -13,7 +13,9 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
+    defaults:
+       run:
+         working-directory: ./accounting_web/
     strategy:
       matrix:
         node-version: [18.x]
@@ -26,6 +28,5 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: cd accounting_web
     - run: npm ci
     - run: npm run test
