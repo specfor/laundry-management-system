@@ -73,7 +73,7 @@ let {
     </div>
 
     <div class="relative">
-    <div class="block mb-2 bg-slate-400 rounded-l-lg rounded-b-lg w-1/2 py-3 px-3 fixed right-8 z-[1030]" :class="{'hidden':isHidden}">
+    <div class="block mb-2 bg-slate-400 rounded-l-lg rounded-b-lg w-1/2 py-3 px-3 absolute top-0 right-0 z-[1030]" :class="{'hidden':isHidden}">
       <div v-for="(item,i) in search" :key="i" class="grid grid-cols-3 ml-5">
         <h5 v-text="item['searchParameter']" class="flex items-center"></h5>
         <input :type="item.type" class="rounded-md border-2 border-stone-600 bg-stone-200 px-3 h-8 mt-1 col-span-2"
