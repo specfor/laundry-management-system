@@ -16,11 +16,11 @@ class PriceCategories extends DbModel
         if ($statement->fetch(PDO::FETCH_ASSOC))
             return "There is '$categoryName' already added.";
 
-        $id =  self::insertIntoTable(self::TABLE_NAME, $params);
-        if ($id===false)
+        $id = self::insertIntoTable(self::TABLE_NAME, $params);
+        if ($id === false)
             return false;
         else
-            return ['category_id'=>$id];
+            return ['category_id' => $id];
     }
 
     public static function updateCategory(int $categoryId, string $categoryName): bool
@@ -39,15 +39,26 @@ class PriceCategories extends DbModel
         return false;
     }
 
-    public static function getCategories(int $pageNumber = 0, string $categoryName = null, int $limit = 30)
+    public static function getCategories(int   $pageNumber = 0, string $categoryName = null, int $limit = 30,
+                                         array $categoryIds = null): array
     {
         $startingIndex = $pageNumber * $limit;
-        $condition = null;
+        $filters = [];
         $placeholders = [];
         if ($categoryName) {
-            $condition = "name LIKE :name";
+            $filters[] = "name LIKE :name";
             $placeholders['name'] = strtolower($categoryName);
         }
+        if ($categoryIds) {
+            $filtersTemp = [];
+            foreach ($categoryIds as $index => $categoryId) {
+                $filtersTemp[] = "category_id=:category$index";
+                $placeholders["category$index"] = $categoryId;
+            }
+            $filters[]=implode(' or ', $filtersTemp);
+        }
+
+        $condition = implode(' and ', $filters);
         $statement = self::getDataFromTable(['*'], self::TABLE_NAME, $condition, $placeholders,
             ['category_id', 'asc'], [$startingIndex, $limit]);
         return $statement->fetchAll(PDO::FETCH_ASSOC);

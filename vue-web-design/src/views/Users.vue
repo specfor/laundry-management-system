@@ -387,7 +387,6 @@ async function getRoles(paramOne = null, paramTwo = null) {
     for (const role of roles) {
       let tablePermissions = ''
       for(const[key,val] of Object.entries(role['permissions'])){
-        console.log(val)
         tablePermissions +=  `• ${key} - ${val.join(', ')}<br>`
       }
       tableRowsRoles.value.push([role["role_id"], role["name"], {type: 'html',data: tablePermissions}])
