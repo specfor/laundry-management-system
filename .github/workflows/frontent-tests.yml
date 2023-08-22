@@ -29,4 +29,6 @@ jobs:
     - name: Run Accounting frontend tests
       working-directory: './accounting-web'
       run: npm ci
+    - name: Run tests
+      working-directory: './accounting-web'
       run: npm run test
