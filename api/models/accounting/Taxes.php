@@ -40,7 +40,11 @@ class Taxes extends DbModel
 
         $statement = self::getDataFromTable(['tax_id', 'name', 'description', 'tax_rate', 'locked'],
             self::TABLE_NAME, $condition, $placeholders, ['tax_id', 'asc'], [$startingIndex, $limit]);
-        return $statement->fetchAll(PDO::FETCH_ASSOC);
+        $records= $statement->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($records as &$record) {
+            $record['locked']=boolval($record['locked']);
+        }
+        return $records;
     }
 
     public static function createTax(string $taxName, float $rate, string $description = null, bool $locked = false): string|array
