@@ -194,7 +194,10 @@ function addProduct() {
     actions: actions_, customer: fieldValues.value['customer'],
     return_date: fieldValues.value['return_date']
   }
+  console.log(orderProducts.value['products'])
 }
+
+
 
 function removeProduct(index) {
   orderProducts.value.products.splice(index, 1)
@@ -206,6 +209,7 @@ window.newOrderModal = (orderType,products_, actions_, values = {}) => {
   if (!values.actions)
     values.actions = {}
   fieldValues.value = values
+  console.log(values,actions_,products_)
   success.value = false
   products.value = products_
   for (const product of products_) {

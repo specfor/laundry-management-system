@@ -44,6 +44,7 @@
       "forceConsistentCasingInFileNames": true,
       // See <https://github.com/vuejs/vue-cli/pull/5688>
       "skipLibCheck": true,
-      "types": ["vitest/globals"]
+      "types": ["vitest/globals"],
+      "allowJs": true
     }
   }
