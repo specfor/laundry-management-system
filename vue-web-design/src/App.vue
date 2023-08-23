@@ -26,7 +26,7 @@ if (!window.loggedIn)
 watch(window.loggedIn, async ()=>{
   showHeader.value = window.loggedIn.value
   if (window.loggedIn.value === false){
-    router.push('/')
+    await router.push('/')
     leftPadding.value = ''
   } else{
     leftPadding.value = 'ml-[200px]'
@@ -47,10 +47,10 @@ async function init() {
     if (response.status === 'success') {
       if (response.data['user-id']) {
         window.loggedIn.value = true
-        localStorage.setItem('whoami', JSON.stringify(response.data))
       }
     }
-  }
+  }else
+    await router.replace('/')
 }
 
 init()

@@ -70,25 +70,30 @@ let employeesShow = ref(false)
 let usersShow = ref(false)
 let accountingShow = ref(false)
 
-let permissions = JSON.parse(localStorage.getItem('whoami'))['permissions']
-let keys = Object.keys(permissions)
-if (keys.includes('branches'))
-  branchesShow.value = true;
-if (keys.includes('customers'))
-  customersShow.value = true;
-if (keys.includes('employees'))
-  employeesShow.value = true;
-if (keys.includes('financial_accounts'))
-  accountingShow.value = true;
-if (keys.includes('orders'))
-  ordersShow.value = true;
-if (keys.includes('payments'))
-  paymentsShow.value = true;
-if (keys.includes('products'))
-  productsShow.value = true;
-if (keys.includes('users'))
-  usersShow.value = true;
+window.initSideMenu = () => {
+  if (localStorage.getItem('whoami') !== null) {
+    let permissions = JSON.parse(localStorage.getItem('whoami'))['permissions'];
+    let keys = Object.keys(permissions)
+    if (keys.includes('branches'))
+      branchesShow.value = true;
+    if (keys.includes('customers'))
+      customersShow.value = true;
+    if (keys.includes('employees'))
+      employeesShow.value = true;
+    if (keys.includes('financial_accounts'))
+      accountingShow.value = true;
+    if (keys.includes('orders'))
+      ordersShow.value = true;
+    if (keys.includes('payments'))
+      paymentsShow.value = true;
+    if (keys.includes('products'))
+      productsShow.value = true;
+    if (keys.includes('users'))
+      usersShow.value = true;
+  }
+}
 
+window.initSideMenu()
 </script>
 
 <style scoped>

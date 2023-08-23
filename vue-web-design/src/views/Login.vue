@@ -1,6 +1,6 @@
 <script setup>
 import {ref} from "vue";
-import {sendJsonPostRequest} from '../js-modules/base-functions.js'
+import {sendGetRequest, sendJsonPostRequest} from '../js-modules/base-functions.js'
 import {apiBaseUrl} from '../js-modules/website-constants.js'
 import {useRouter} from "vue-router";
 
@@ -21,7 +21,12 @@ async function loginUser() {
     localStorage.setItem('auth-token', response.data.token)
     window.httpHeaders['Authorization'] = 'Bearer ' + response.data.token
     window.loggedIn.value = true
-    router.replace('/dashboard')
+    let responseWhoamI = await sendGetRequest(apiBaseUrl + '/whoami')
+    if (responseWhoamI.status === 'success') {
+      localStorage.setItem('whoami', JSON.stringify(responseWhoamI.data))
+      window.initSideMenu()
+    }
+    await router.replace('/dashboard')
   } else {
     window.errorNotification('Login Error', response.data.message)
   }
