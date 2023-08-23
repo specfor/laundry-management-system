@@ -47,6 +47,7 @@ async function init() {
     if (response.status === 'success') {
       if (response.data['user-id']) {
         window.loggedIn.value = true
+        localStorage.setItem('whoami', JSON.stringify(response.data))
       }
     }
   }

@@ -160,7 +160,7 @@ class User extends DbModel
 
     public static function getUsers(
         int    $pageNumber = 0, string $username = null, string $name = null, string $email = null,
-        string $role = null, int $branchId = null, int $limit = 30
+        string $role = null, int $branchId = null, int $limit = 30, int $userId = null
     ): array
     {
         $superAdminRole = self::ROLE_SUPER_ADMINISTRATOR;
@@ -169,6 +169,8 @@ class User extends DbModel
         $condition = "role!=$superAdminRole";
 
         $placeholders = [];
+        if ($userId)
+            $condition .= " AND id=$userId";
         if ($username) {
             $condition .= " AND username LIKE :username";
             $placeholders['username'] = "%" . $username . "%";
