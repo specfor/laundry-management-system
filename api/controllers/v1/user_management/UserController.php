@@ -18,8 +18,9 @@ class UserController extends Controller
         $password = self::getParameter('password', isCompulsory: true);
         $role = self::getParameter('role', isCompulsory: true);
         $branchId = self::getParameter('branch-id', dataType: 'int');
+        $userId = self::getParameter('user-id', dataType: 'int');
 
-        $status = User::createNewUser($username, $password, $role, $email, $firstname, $lastname, $branchId);
+        $status = User::createNewUser($username, $password, $role, $email, $firstname, $lastname, $branchId, $userId);
         if (is_array($status))
             self::sendSuccess($status);
         else

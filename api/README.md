@@ -141,6 +141,7 @@ email - optional
 name - optional
 role - optional
 branch-id - optional
+user-id - optional
 
 POST - /api/v1/users/add
 Parameters
