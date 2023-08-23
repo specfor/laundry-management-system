@@ -452,7 +452,6 @@ async function updateRoles(id) {
   }
   let response = await sendJsonPostRequest(apiBaseUrl + "/user-roles/update", {
     "role-id":roleData[0],
-    "name": role.data['role'],
     "permissions": dict_one
   })
 
