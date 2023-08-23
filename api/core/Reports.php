@@ -2,6 +2,7 @@
 
 namespace LogicLeap\PhpServerCore;
 
+use Dompdf\Css\Stylesheet;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
@@ -12,9 +13,8 @@ class Reports
     public function __construct()
     {
         $options = new Options();
-        $options->setIsPhpEnabled(true);
-        $options->setChroot(Application::$ROOT_DIR . '/pdf_templates');
-        
+        $options->setChroot(FileHandler::getBaseFolder(true) . 'pdf_templates');
+
         $this->pdf = new Dompdf();
         $this->pdf->setPaper('A4');
         $this->pdf->setOptions($options);
@@ -22,11 +22,8 @@ class Reports
 
     public function generatePdf(): void
     {
-        $myfile = fopen(Application::$ROOT_DIR . "/pdf_templates/homePage.php", "r");
-        $html = fread($myfile, filesize(Application::$ROOT_DIR . "/pdf_templates/homePage.php"));
-        fclose($myfile);
-
-        $html = str_replace('{{header-image}}', Application::$ROOT_DIR . '/pdf_templates/logoMain.png', $html);
+        $html = FileHandler::getFileContent('/pdf_templates/general-ledger.html', true);
+        $html = str_replace('{{base-path}}', FileHandler::getBaseFolder(true) . 'pdf_templates', $html);
 
         $this->pdf->loadHtml($html);
         $this->pdf->render();
