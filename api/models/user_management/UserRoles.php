@@ -159,7 +159,6 @@ class UserRoles extends DbModel
         return self::removeTableData(self::TABLE_NAME, "role_id=$roleId");
     }
 
-    private static array $userRoles = [];
 
     /**
      * Get user type text.
@@ -167,18 +166,9 @@ class UserRoles extends DbModel
      */
     public static function getUserRoleText(int $role): string
     {
-        if (!self::$userRoles)
-            self::$userRoles = self::getUserRoles(limit: 1000);
-
-        $roleText = null;
-        foreach (self::$userRoles as $userRole) {
-            if ($userRole['role_id'] == $role) {
-                $roleText = $userRole['name'];
-                break;
-            }
-        }
-        if (!$roleText)
+        $userRole = self::getUserRoles(roleId: $role);
+        if (empty($userRole))
             return 'NO ROLE';
-        return $roleText;
+        return $userRole[0]['name'];
     }
 }
