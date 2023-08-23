@@ -7,7 +7,7 @@ use LogicLeap\PhpServerCore\MigrationManager;
 use LogicLeap\StockManagement\models\API;
 use LogicLeap\StockManagement\models\user_management\Authorization;
 use LogicLeap\StockManagement\models\user_management\User;
-use LogicLeap\StockManagement\Util\Util;
+use LogicLeap\StockManagement\util\Util;
 
 class Controller
 {
