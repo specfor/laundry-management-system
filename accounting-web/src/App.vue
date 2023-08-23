@@ -10,24 +10,17 @@ import { logicAnd, logicNot } from '@vueuse/math/index.cjs';
 import { useSetupNotification } from './composibles/notification-setup';
 const drawerOpen = ref(false);
 
-// Attempt login
-const { data, isFinished } = useFetch('http://laundry-api.localhost/api/v1/login').json().post({
-  username: "admin_{342365(_)08",
-  password: "rlsjp6)rg_34_)(23as"
-})
-
-whenever(logicAnd(isFinished, data), () => {
+// Get auth token from local storage
+const authToken = localStorage.getItem('auth-token')
+if(!authToken) console.error("No Auth token found")
+else {
   const state = usePersistantState();
   state.value = {
     ...state.value,
     isLoggedIn: true,
-    token: data.value.body.token,
+    token: authToken
   }
-})
-
-whenever(logicAnd(isFinished, logicNot(data)), () => {
-  console.log("Login Error");
-})
+}
 
 // NOTIFICATIONS
 const notificationPopoverElement = /** @type {import('vue').Ref<InstanceType<typeof NotificationPopover> | null>} */ (ref(null));
