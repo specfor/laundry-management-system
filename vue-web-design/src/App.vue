@@ -26,7 +26,7 @@ if (!window.loggedIn)
 watch(window.loggedIn, async ()=>{
   showHeader.value = window.loggedIn.value
   if (window.loggedIn.value === false){
-    router.push('/')
+    await router.push('/')
     leftPadding.value = ''
   } else{
     leftPadding.value = 'ml-[200px]'
@@ -49,7 +49,8 @@ async function init() {
         window.loggedIn.value = true
       }
     }
-  }
+  }else
+    await router.replace('/')
 }
 
 init()

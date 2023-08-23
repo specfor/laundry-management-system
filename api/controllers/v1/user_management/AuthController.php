@@ -7,15 +7,17 @@ use LogicLeap\PhpServerCore\SecureToken;
 use LogicLeap\StockManagement\controllers\v1\Controller;
 use LogicLeap\StockManagement\models\user_management\Authorization;
 use LogicLeap\StockManagement\models\user_management\User;
+use LogicLeap\StockManagement\models\user_management\UserRoles;
 
 class AuthController extends Controller
-{   
+{
     public function whoAmI(): void
     {
         self::checkPermissions();
 
         $userId = self::getUserId();
-        self::sendSuccess(['user-id' => $userId]);
+        $permissions = UserRoles::getUserRoles(roleId: User::getUserRole($userId))[0]['permissions'];
+        self::sendSuccess(['user-id' => $userId, 'permissions' => $permissions]);
     }
 
     public function login(): void

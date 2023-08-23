@@ -22,14 +22,14 @@ use LogicLeap\StockManagement\controllers\v1\user_management\AuthController;
 use LogicLeap\StockManagement\controllers\v1\user_management\UserController;
 use LogicLeap\StockManagement\controllers\v1\user_management\UserRoleController;
 
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
 
 //Loading database details to environment variables
-$dotenv = Dotenv::createImmutable(dirname(__DIR__));
+$dotenv = Dotenv::createImmutable(dirname(__DIR__, 2));
 $dotenv->load();
 
 $config = [
-    'rootPath' => dirname(__DIR__),
+    'rootPath' => dirname(__DIR__,2),
     'db' => [
         "servername" => $_ENV['DB_SERVERNAME'],
         "username" => $_ENV['DB_USERNAME'],

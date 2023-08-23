@@ -13,6 +13,13 @@ export default defineConfig({
   test: {
     include: ['**/*.test.*', '**/*.spec.*'],
     environment: "happy-dom",
-    globals: true
-  }
+    globals: true,
+    deps: {
+      inline: ['element-plus']
+    }
+  },
+  build: {
+    outDir: "../api/public/accounting",
+  },
+  base: '/accounting'
 })
