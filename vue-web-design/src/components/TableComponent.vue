@@ -108,7 +108,7 @@ let {
           </span>
           <span v-else>{{ data }}</span>
         </td>
-        <td v-if="actions" class="px-3 py-1 sticky right-0 bg-neutral-300 flex items-center justify-center h-full">
+        <td v-if="actions" class="px-3 py-1 bg-neutral-300 flex items-center justify-center h-full">
           <div v-for="action in actions">
             <Component v-if="action['type'] === 'icon'" :is="action['icon']" class="w-6 cursor-pointer mx-1"
                        :class="action['iconColor']" @click="$emit(action['onClickEvent'], row[0])"/>
