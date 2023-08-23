@@ -17,5 +17,8 @@ export default defineConfig({
     deps: {
       inline: ['element-plus']
     }
+  },
+  build: {
+    outDir: "../api/public/accounting"
   }
 })

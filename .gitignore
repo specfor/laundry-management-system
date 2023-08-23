@@ -16,3 +16,8 @@ tailwind-css/tailwindcss-windows-x64.exe
 print-service/target
 printer-chrome-extension/node_modules
 references
+api/public/accounting
+api/public/management
+api/public/index.html
+api/public/favicon.svg
+api/public/assets

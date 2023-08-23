@@ -3,7 +3,7 @@ import { createFetch } from "@vueuse/core";
 import { usePersistantState } from "./persistant-state";
 import { useNotifications } from "./notification";
 
-const API_BASE_URL = "http://laundry-api.localhost/api/v1"
+const API_BASE_URL = "/api/v1"
 
 // Automatically adds the Authorization token
 /**
