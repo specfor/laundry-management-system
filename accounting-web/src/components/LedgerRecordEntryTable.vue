@@ -122,16 +122,17 @@
                 animation="200">
                 <template #item="{ element }">
                     <tr class="entry-row">
+                        <!-- Drag Handler icon -->
                         <td class="!p-1 !pl-3">
                             <img class="entry-table-handle cursor-move " src="../assets/6-vertical-dots.svg">
                         </td>
-                        <td>
-                            <!-- Description -->
+                        <!-- Description -->
+                        <td>    
                             <input v-model="element.description" type="text" placeholder="Description"
                                 class="input input-ghost input-sm w-full max-w-xs" />
                         </td>
+                        <!-- Accounts -->
                         <td>
-                            <!-- Accounts -->
                             <el-select class="h-full border-none" v-model="element.accountId" filterable
                                 placeholder="Account" @change="e => handleAccountChange(e, element)">
                                 <el-option v-for="item in accounts" :key="item.account_id" :label="item.name"
@@ -141,13 +142,13 @@
                                 </template>
                             </el-select>
                         </td>
+                        <!-- Tax Rate -->
                         <td>
-                            <!-- Tax Rate -->
                             <el-select class="h-full border-none" v-model="element.taxId" filterable placeholder="Tax Type">
                                 <el-option v-for="item in taxes" :key="item.tax_id" :label="item.name" :value="item.tax_id">
                                     <span class="float-left mr-2">{{ item.name }}</span>
                                     <span class="text-gray-400 float-right">
-                                        {{ item.tax_rate.toDecimalPlaces(2).toString() + "%" }}
+                                        {{ toReadable(item.tax_rate) + "%" }}
                                     </span>
                                 </el-option>
                                 <template #empty>
@@ -155,18 +156,19 @@
                                 </template>
                             </el-select>
                         </td>
+                        <!-- Debit -->
                         <td>
-                            <!-- Debit -->
                             <input v-model="element.debit" type="text" placeholder="Debit"
                                 class="input input-ghost w-full max-w-xs input-sm"
                                 :class="{ 'input-error': element.debit ? !isRowDebitCreditValid(element) : false }" />
                         </td>
+                        <!-- Credit -->
                         <td>
-                            <!-- Credit -->
                             <input v-model="element.credit" type="text" placeholder="Credit"
                                 class="input input-ghost w-full max-w-xs input-sm"
                                 :class="{ 'input-error': element.credit ? !isRowDebitCreditValid(element) : false }" />
                         </td>
+                        <!-- Remove Row Icon -->
                         <td class="!p-1 !pl-3">
                             <svg @click="removeItem(element)"
                                 class="w-6 h-6 text-gray-800 dark:text-white fill-gray-800 hover:fill-red-600 cursor-pointer transition-all duration-200"
@@ -194,9 +196,9 @@
                         </td>
                         <td class="font-bold border-b-[1px] border-gray-700">Subtotal</td>
                         <td class="text-right border-b-[1px] border-gray-700 border-l-[1px] border-l-gray-300">{{
-                            toReadable(subTotal.debit) }}</td>
+                            toReadableTotal(subTotal.debit) }}</td>
                         <td class="text-right border-b-[1px] border-gray-700 border-l-[1px] border-l-gray-300">{{
-                            toReadable(subTotal.credit) }}</td>
+                            toReadableTotal(subTotal.credit) }}</td>
                         <td></td>
                     </tr>
                     <tr class="table-summary-row">
@@ -204,19 +206,19 @@
                         </td>
                         <td class="font-bold border-b-2 border-gray-700">Taxes</td>
                         <td class="text-right border-b-2 border-gray-700 border-l-[1px] border-l-gray-300">{{
-                            toReadable(taxTotal.debit) }}</td>
+                            toReadableTotal(taxTotal.debit) }}</td>
                         <td class="text-right border-b-2 border-gray-700 border-l-[1px] border-l-gray-300">{{
-                            toReadable(taxTotal.credit) }}</td>
+                            toReadableTotal(taxTotal.credit) }}</td>
                         <td></td>
                     </tr>
                     <tr class="table-summary-row">
                         <td colspan="3"></td>
                         <td class="font-bold border-b-4 border-gray-700 border-double">Total</td>
                         <td class="text-right border-b-4 border-gray-700 border-double border-l-[1px] border-l-gray-300">
-                            {{ toReadable(total.debit) }}
+                            {{ toReadableTotal(total.debit) }}
                         </td>
                         <td class="text-right border-b-4 border-gray-700 border-double border-l-[1px] border-l-gray-300">
-                            {{ toReadable(total.credit) }}
+                            {{ toReadableTotal(total.credit) }}
                         </td>
                         <td></td>
                     </tr>
@@ -335,7 +337,7 @@ import { useFinancialAccounts } from '../composibles/entity/financial-accounts';
 import { useLedgerRecords } from '../composibles/entity/ledger-records';
 import { ElSelect, ElOption, ElDatePicker } from "element-plus";
 import Decimal from 'decimal.js';
-import { toReadable, toDecimal, decimalReducer, isProperNumberString } from "../util/decimal-util";
+import { toReadable, toReadableTotal, toDecimal, decimalReducer, isProperNumberString } from "../util/decimal-util";
 import { NotTakeOne } from "../util/func-wrappers";
 
 const { getTaxes } = useTaxes();
@@ -549,11 +551,14 @@ const dataExists = computed(() => {
 const errorMessages = computed(() => {
     if (!dataExists.value) return [];
 
+    // If an entire row is empty ignore that row
+    const rowsWithData = rows.value.filter(rowHasData)
+
     return /** @type {string[]} */([
         !total.value.credit.equals(total.value.debit) ? "Credit and Debit sides must equalize" : null,
-        rows.value.some(creditAndDebit) ? "Both Debit and Credit Value cannot be set for a record" : null,
-        rows.value.some(NotTakeOne(eitherCreditOrDebitAndValid)) ? "Credit and Debit values has to be numerical" : null,
-        rows.value.some(row => !row.accountId) ? "Account ID has to be selected for every record" : null,
+        rowsWithData.some(creditAndDebit) ? "Both Debit and Credit Value cannot be set for a record" : null,
+        rowsWithData.some(NotTakeOne(eitherCreditOrDebitAndValid)) ? "Credit and Debit values has to be numerical" : null,
+        rowsWithData.some(row => !row.accountId) ? "Account ID has to be selected for every record" : null,
         narration.value == "" || narration.value == undefined ? "Narration has to be provided" : null,
     ].filter(x => x != null));
 })
@@ -727,6 +732,12 @@ const isRowDebitCreditValid = (row) => !creditAndDebit(row) && eitherCreditOrDeb
  * @param {Row} row 
  */
 const isRowValid = (row) => isRowDebitCreditValid(row) || !(row.accountId) || !(row.taxId) || !(row.description);
+
+/**
+ * Checks if there's any data in the row
+ * @param {Row} row 
+ */
+const rowHasData = (row) => row.accountId || row.credit || row.debit || row.description || row.taxId
 
 // Helper Functions
 

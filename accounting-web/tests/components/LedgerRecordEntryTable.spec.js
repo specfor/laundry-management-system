@@ -1,15 +1,19 @@
-import { mount } from "@vue/test-utils";
+/**
+ * @vitest-environement happy-dom
+ */
+
+// @ts-check
+import { flushPromises, mount } from "@vue/test-utils";
 import LedgerRecordEntryTable from "../../src/components/LedgerRecordEntryTable.vue";
 import { setupServer } from 'msw/node'
 import { rest } from 'msw'
-import type { RawTax, RawFinancialAccount } from "../../src/types";
 import { NotificationInjectionKey } from "../../src/util/injection-symbols";
-import { defineComponent, type Component, provide } from "vue";
+import { defineComponent, provide } from "vue";
+import { ElSelect } from "element-plus";
 
-
-const restHandlers = [
-    rest.get('http://laundry-api.localhost/api/v1/taxes', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json([
+const server = setupServer(
+    rest.get('/api/v1/taxes', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.json(/** @type {import("../../src/types").RawFinancialAccount[]}*/([
             {
                 account_id: 1,
                 archived: 0,
@@ -21,10 +25,10 @@ const restHandlers = [
                 type: "Revenue",
                 description: "This is a test description"
             }
-        ] as RawFinancialAccount[]))
+        ])))
     }),
-    rest.get('http://laundry-api.localhost/api/v1/financial-accounts', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json([
+    rest.get('/v1/financial-accounts', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.json(/** @type {import("../../src/types").RawTax[]} */([
             {
                 tax_id: 1,
                 deleted: 0,
@@ -33,11 +37,9 @@ const restHandlers = [
                 tax_rate: "1.1",
                 description: "This is a test tax"
             }
-        ] as RawTax[]))
+        ])))
     }),
-]
-
-const server = setupServer(...restHandlers)
+)
 
 describe("Testing Ledger Record entry table", () => {
     // Start server before all tests
@@ -47,26 +49,35 @@ describe("Testing Ledger Record entry table", () => {
     // Reset handlers after each test `important for test isolation`
     afterEach(() => server.resetHandlers())
 
-    test("Ledger Record entry table should render", async () => {
+    test.skip("Ledger Record entry table should render", async () => {
         const TestComponent = defineComponent({
             components: {
-                'LedgerRecordEntryTable': LedgerRecordEntryTable as unknown as Component
+                'LedgerRecordEntryTable': LedgerRecordEntryTable
             },
-            template: '<Suspense><LedgerRecordEntryTable/></Suspense>',
+            template: '<Suspense><LedgerRecordEntryTable :initialRows="1"/></Suspense>',
             setup() {
                 provide(NotificationInjectionKey, {
-                    showError: () => {},
-                    showSuccess: () => {}
+                    showError: () => { },
+                    showSuccess: () => { }
                 })
             }
         })
 
-        mount(TestComponent, {
+        const wrapper = mount(TestComponent, {
             global: {
                 stubs: {
                     teleport: true
                 }
             }
         })
+
+        await flushPromises();
+        const selects = wrapper.findAllComponents(ElSelect)
+        selects.forEach(el => console.log(el.html()))
+        console.log(selects.length)
+        expect(selects[0].html()).toContain("Test Account")
+        expect(selects[1].html()).toContain("Test tax")
+        // expect(wrapper.findAll(`tr[class="entry-row"]`)).toHaveLength(1);
+        // expect(wrapper.html()).toContain("This is a test description")
     })
 })

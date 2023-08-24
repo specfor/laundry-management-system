@@ -28,6 +28,22 @@ export const decimalReducer = (dec1, dec2) => dec1.add(dec2);
  * @returns {string}
  */
 export const toReadable = (dec) => {
+    if (dec.isZero()) return "0";
+    
+    const negative = dec.isNegative();
+    dec = dec.absoluteValue(); 
+
+    const [whole, ...decimal] = dec.toFixed(3).split('.');
+    const digitGroups = whole.split("").reverse().join("").match(/.{1,3}/g)
+    return digitGroups ? `${negative ? "-" : ""}${digitGroups.reverse().map(item => item.split("").reverse().join("")).join(",")}.${decimal[0]}` : `0.${decimal[0]}`
+}
+
+/**
+ * Converts a Decimal to a more human readable string (For calculated totals and such)
+ * @param {Decimal} dec 
+ * @returns {string}
+ */
+export const toReadableTotal = (dec) => {
     if (dec.isZero()) return "-";
     
     const negative = dec.isNegative();

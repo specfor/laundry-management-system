@@ -12,7 +12,7 @@ const drawerOpen = ref(false);
 
 // Get auth token from local storage
 const authToken = localStorage.getItem('auth-token')
-if(!authToken) console.error("No Auth token found")
+if (!authToken) console.error("No Auth token found")
 else {
   const state = usePersistantState();
   state.value = {
@@ -20,6 +20,32 @@ else {
     isLoggedIn: true,
     token: authToken
   }
+}
+
+// Following code will only run in development mode
+// @ts-ignore
+if (import.meta.env.DEV) {
+  // Autologin
+  // @ts-ignore
+  const { data, isFinished } = useFetch((import.meta.env.VITE_API_BASE_URL ?? "/api/v1") + '/login').json().post({
+    // @ts-ignore
+    username: import.meta.env.VITE_USERNAME,
+    // @ts-ignore
+    password: import.meta.env.VITE_PASSWORD
+  })
+
+  whenever(logicAnd(isFinished, data), () => {
+    const state = usePersistantState();
+    state.value = {
+      ...state.value,
+      isLoggedIn: true,
+      token: data.value.body.token,
+    }
+  })
+
+  whenever(logicAnd(isFinished, logicNot(data)), () => {
+    console.log("Login Error");
+  })
 }
 
 // NOTIFICATIONS
@@ -52,7 +78,8 @@ const { notifications, currentlyShownNotification, isNotificationShown, hideNoti
       <Transition name="notification-slide" mode="in-out">
         <div class="flex justify-center" v-if="isNotificationShown && currentlyShownNotification">
           <!-- @vue-ignore -->
-          <component :is="currentlyShownNotification.component" v-bind="currentlyShownNotification.props" @close="hideNotification">
+          <component :is="currentlyShownNotification.component" v-bind="currentlyShownNotification.props"
+            @close="hideNotification">
           </component>
         </div>
       </Transition>

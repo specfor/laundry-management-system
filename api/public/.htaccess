@@ -1,5 +1,10 @@
 RewriteEngine On
     RewriteBase /
     RewriteRule ^api/(.*)$ api/index.php [L]
-    RewriteRule ^accounting/(.*)$ accounting/index.html [L]
-    RewriteRule ^(.*)$ index.html [L]
+    
+    RewriteBase /accounting/
+
+    # Redirect all requests to index.html except existing files or directories
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule . /accounting/index.html [L]

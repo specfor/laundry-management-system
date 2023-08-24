@@ -212,4 +212,7 @@ export type PseudoComponent<
 
 export type GenericComponentInstance<C> = InstanceType<PseudoComponent<C>> | null
 
+// A helper type to get the element type of an array
+export type ArrayElement<ArrayType extends readonly unknown[]> = ArrayType extends readonly (infer ElementType)[] ? ElementType : never;
+
 export as namespace Types;
