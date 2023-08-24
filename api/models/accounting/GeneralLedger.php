@@ -30,9 +30,14 @@ class GeneralLedger extends DbModel
         }
 
         $condition = implode(' AND ', $filters);
+        
         $data = self::getDataFromTable(['*'], self::TABLE_NAME, $condition, $placeholders,
             ['record_id', 'desc'], [$startingIndex, $limit])->fetchAll(PDO::FETCH_ASSOC);
-        return $data;
+        
+        $count = self::getDataFromTable(['COUNT(*)'], self::TABLE_NAME, $condition, $placeholders,
+            ['record_id', 'desc'])->fetch(PDO::FETCH_ASSOC)["COUNT(*)"];
+        
+        return [$data, $count];
     }
 
     public static function createLedgerRecord(string $narration, array $body, string $taxType = 'tax exclusive',
