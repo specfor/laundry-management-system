@@ -123,8 +123,8 @@ class Controller
                 API::STATUS_MSG_FORBIDDEN,
                 ['message' => 'You are not authorized to perform this action.']
             );
+            exit();
         }
-        exit();
     }
 
     public static function getUserId(): int
