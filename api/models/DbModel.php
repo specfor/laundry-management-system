@@ -3,6 +3,7 @@
 namespace LogicLeap\StockManagement\models;
 
 use LogicLeap\PhpServerCore\Application;
+use PDO;
 use PDOException;
 use PDOStatement;
 
@@ -188,5 +189,18 @@ abstract class DbModel
                 $statement->bindValue($placeholder, $value);
             }
         return $statement->execute();
+    }
+
+    /**
+     * Get the total number of records in the table.
+     * @param string $tableName Name of the table
+     * @return int Number of records in the table.
+     */
+    protected static function countTableRows(string $tableName): int
+    {
+        $statement = self::prepare("select count(*) as 'count' from $tableName");
+        $statement->execute();
+
+        return $statement->fetch(PDO::FETCH_ASSOC)['count'];
     }
 }
