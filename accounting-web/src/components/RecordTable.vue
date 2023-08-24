@@ -53,7 +53,7 @@
                 </tr>
             </thead>
             <TransitionGroup name="table-rows" tag="tbody">
-                <tr v-for="record in pageData" :key="record.order">
+                <tr v-for="record in pageData" :key="record[idProperty as keyof InternalRow] as number | string">
                     <th v-if="selectMode">
                         <label>
                             <input type="checkbox" class="checkbox" v-model="record.selected" />
@@ -92,7 +92,7 @@
 
 <script lang="ts">
 // Exported Types
-export type ArrangementData = { order: number, selected: boolean };
+export type ArrangementData = { selected: boolean };
 </script>
 
 <script setup lang="ts" generic="R, X, ID extends keyof R">
@@ -101,20 +101,30 @@ import { useOffsetPagination } from '@vueuse/core';
 import { computed, ref, type Ref } from 'vue';
 import { useFuzzySearch } from '../composibles/fuzzy-search';
 import { ElDropdownMenu, ElDropdown } from "element-plus";
+import type { PaginationAdapter } from '../types';
 
 type InternalRow = R & ArrangementData;
 
 // defineProps(['commandHandler', 'records', 'columnSlots'])
 const { getRecords, columnSlots, searchFields, extraDataFetcher, commandHandler, idProperty, filter, sorter } =
     withDefaults(defineProps<{
+        /** Method to get the records */
         getRecords: () => Promise<R[]>
+        /** Names of the slots of columns, there can be an arbitary number of column slots, all of them has to be provided here */
         columnSlots: string[]
+        /** Keys of the record object which should be used for fuzzy searching */
         searchFields: (keyof R)[]
+        /** Method to fetch any other required data, Result of this will be passed down to the slot */
         extraDataFetcher?: () => Promise<X>
+        /** Method that will handle the commands emitted from a row's actions */
         commandHandler: (command: string, record: InternalRow) => void,
+        /** Method that will handle the filtration of rows */
         filter?: (record: InternalRow) => boolean
+        /** Method that will handle the sortation of rows */
         sorter?: (a: InternalRow, b: InternalRow) => number
+        /** Key of the property that will act as the ID of a record. This has to be unique per record */
         idProperty: ID
+        paginator: PaginationAdapter<(record: R) => InternalRow>
     }>(), {
         filter: (record: InternalRow) => true,
         sorter: (a: InternalRow, b: InternalRow) => 0
@@ -137,7 +147,6 @@ defineExpose({
     addRecord: (newRecord: R) => {
         records.value = [{
             ...newRecord,
-            order: records.value.length + 1,
             selected: false
         }, ...records.value]
     },
@@ -152,7 +161,7 @@ defineExpose({
 })
 
 // Cast required (https://github.com/vuejs/core/issues/2136#issuecomment-908269949)
-const records = ref((await getRecords().catch(() => [])).map((record, index) => ({ ...record, selected: false, order: index }))) as Ref<InternalRow[]>;
+const records = ref((await getRecords().catch(() => [])).map(record => ({ ...record, selected: false }))) as Ref<InternalRow[]>;
 
 // const extraData = /** @type { X | null } */ (extraDataFetcher ? await extraDataFetcher().catch(() => null) : null)
 const extraData = extraDataFetcher ? await extraDataFetcher().catch(() => null) : null

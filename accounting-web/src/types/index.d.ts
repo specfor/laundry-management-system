@@ -215,4 +215,10 @@ export type GenericComponentInstance<C> = InstanceType<PseudoComponent<C>> | nul
 // A helper type to get the element type of an array
 export type ArrayElement<ArrayType extends readonly unknown[]> = ArrayType extends readonly (infer ElementType)[] ? ElementType : never;
 
+export type TransformerFunc<T, R extends T> = (arg: T) => R
+
+export type PaginationAdapter<TransformerType extends TransformerFunc> = (
+    transformer: TransformerType
+) => { currentPage: Ref<number>, pageCount: ComputedRef<number>, currentPageSize: Ref<number>, pageData: ComputedRef<T[]> }
+
 export as namespace Types;
