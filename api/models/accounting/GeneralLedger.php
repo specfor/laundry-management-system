@@ -4,6 +4,7 @@ namespace LogicLeap\StockManagement\models\accounting;
 
 use DateTime;
 use Exception;
+use LogicLeap\PhpServerCore\data_types\Decimal;
 use LogicLeap\StockManagement\models\DbModel;
 use LogicLeap\StockManagement\Util\Util;
 use PDO;
@@ -54,8 +55,8 @@ class GeneralLedger extends DbModel
             return "'tax-type' should be one of 'no tax', 'tax inclusive' or 'tax exclusive'";
 
         // Following variables must be strings as BC Maths lib only accept numbers as strings.
-        $totalCredit = "0";
-        $totalDebit = "0";
+        $totalCredit = new Decimal("0");
+        $totalDebit = new Decimal("0");
 
         // Doing basic data type and data structure validations.
         foreach ($body as &$record) {
@@ -98,46 +99,49 @@ class GeneralLedger extends DbModel
 
             if ($taxType !== 'no tax') {
                 if (isset($record['tax_id']))
-                    $taxRate = Taxes::getTaxes(taxId: $record['tax_id'])[0]['tax_rate'];
+                    $taxRate = new Decimal(Taxes::getTaxes(taxId: $record['tax_id'])[0]['tax_rate']);
                 else
-                    $taxRate = Taxes::getTaxes(taxId: $accountData[0]['tax_id'])[0]['tax_rate'];
+                    $taxRate = new Decimal(Taxes::getTaxes(taxId: $accountData[0]['tax_id'])[0]['tax_rate']);
 
                 if ($taxType === 'tax inclusive') {
                     if (isset($record['credit'])) {
                         $credit = $record['credit'];
-                        $record['credit'] = bcdiv(bcmul($record['credit'], "100"), bcadd($taxRate, "100"));
-                        $tax = bcsub($credit, $record['credit']);
+                        $record['credit'] = $record['credit']->mul(new Decimal('100'))->div($taxRate->add(new Decimal('100')));
+                        $tax = $credit->sub($record['credit']);
                     } else {
                         $debit = $record['debit'];
-                        $record['debit'] = bcdiv(bcmul($record['debit'], "100"), bcadd($taxRate, "100"));
-                        $tax = bcsub($debit, $record['debit']);
+                        $record['debit'] = $record['debit']->mul(new Decimal('100'))->div($taxRate->add(new Decimal('100')));
+                        $tax = $debit->sub($record['debit']);
                     }
                 } else {
                     if (isset($record['credit'])) {
-                        $tax = bcmul(bcdiv($record['credit'], "100"), $taxRate);
+                        $tax = $record['credit']->div(new Decimal("100"))->mul($taxRate);
                     } else {
-                        $tax = bcmul(bcdiv($record['debit'], "100"), $taxRate);
+                        $tax = $record['debit']->div(new Decimal("100"))->mul($taxRate);
                     }
                 }
-                if (!$tax == '0.0000')
+                if ($tax->getDecimal() !== '0.0000')
                     if (isset($record['credit'])) {
-                        $taxRecords[] = ['account_id' => $taxAccountId, 'credit' => $tax, 'description' => ''];
-                        $totalCredit = bcadd($totalCredit, $tax);
+                        $taxRecords[] = ['account_id' => $taxAccountId, 'credit' => $tax->getDecimal(), 'description' => ''];
+                        $totalCredit = $totalCredit->add($tax);
                     } else {
-                        $taxRecords[] = ['account_id' => $taxAccountId, 'debit' => $tax, 'description' => ''];
-                        $totalDebit = bcadd($totalDebit, $tax);
+                        $taxRecords[] = ['account_id' => $taxAccountId, 'debit' => $tax->getDecimal(), 'description' => ''];
+                        $totalDebit = $totalDebit->add($tax);
                     }
             }
-            if (isset($record['credit']))
-                $totalCredit = bcadd($totalCredit, $record['credit']);
-            else
-                $totalDebit = bcadd($totalDebit, $record['debit']);
+            if (isset($record['credit'])){
+                $totalCredit = $totalCredit->add($record['credit']);
+                $record['credit']=$record['credit']->getDecimal();
+            }else{
+                $totalDebit = $totalDebit->add($record['debit']);
+                $record['debit']=$record['debit']->getDecimal();
+            }
         }
 
         if ($taxType !== 'no tax')
             $body = array_merge($body, $taxRecords);
 
-        if ($totalDebit !== $totalCredit)
+        if ($totalDebit->getDecimal() !== $totalCredit->getDecimal())
             return "Total credits must always be equal to total debits.";
 
         $params['narration'] = $narration;
