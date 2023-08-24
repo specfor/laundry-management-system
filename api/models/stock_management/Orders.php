@@ -60,7 +60,7 @@ class Orders extends DbModel
 
         $itemIds = array_unique($itemIds);
         $condition = "(" . implode(' OR ', $itemIds) . ")";
-        $condition .= " AND blocked=false";
+        $condition .= " AND blocked=0";
         $itemDataStored = (self::getDataFromTable(['price', 'item_id'], 'items', $condition))->fetchAll(PDO::FETCH_ASSOC);
 
         if (count($itemDataStored) < count($itemIds))
@@ -208,7 +208,7 @@ class Orders extends DbModel
             }
             $itemIds = array_unique($itemIds);
             $condition = "(" . implode(' OR ', $itemIds) . ")";
-            $condition .= " AND blocked=false";
+            $condition .= " AND blocked=0";
             $itemData = (self::getDataFromTable(['price', 'item_id'], 'items', $condition))->fetchAll(PDO::FETCH_ASSOC);
 
             if (count($itemData) < count($itemIds))
