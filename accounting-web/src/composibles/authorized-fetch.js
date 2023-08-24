@@ -3,7 +3,8 @@ import { createFetch } from "@vueuse/core";
 import { usePersistantState } from "./persistant-state";
 import { useNotifications } from "./notification";
 
-const API_BASE_URL = "/api/v1"
+// @ts-ignore
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api/v1"
 
 // Automatically adds the Authorization token
 /**

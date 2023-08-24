@@ -57,7 +57,7 @@ const { name, sub, rows } = defineProps({
     sub: String,
     rows: {
         // For better IntelliSense
-        /** @type {import('vue').PropType<import('../types').LedgerRecord[]>} */
+        /** @type {import("../types").ArrayElement<import('vue').PropType<import('../types').LedgerRecord['body']>[]>} */
         type: Array
     }
 });
