@@ -10,7 +10,7 @@ class LedgerRecordController extends Controller
 {
     public function getLedgerRecords(): void
     {
-        self::checkPermissions(['financial_accounts'=>[User::PERMISSION_READ]]);
+        self::checkPermissions(['financial_accounts' => [User::PERMISSION_READ]]);
 
         $pageNumber = self::getParameter('page-num', defaultValue: 0, dataType: 'int');
         $narration = self::getParameter('narration');
@@ -18,12 +18,12 @@ class LedgerRecordController extends Controller
         $limit = self::getParameter('limit', defaultValue: 30, dataType: 'int');
 
         $data = GeneralLedger::getLedgerRecords($pageNumber, $narration, $date, $limit);
-        self::sendSuccess(['records' => $data]);
+        self::sendSuccess(['records' => $data, 'record_count' => GeneralLedger::getRecordCount()]);
     }
 
     public function addLedgerRecord(): void
     {
-        self::checkPermissions(['financial_accounts'=>[User::PERMISSION_WRITE]]);
+        self::checkPermissions(['financial_accounts' => [User::PERMISSION_WRITE]]);
 
         $narration = self::getParameter('narration', isCompulsory: true);
         $body = self::getParameter('body', dataType: 'array', isCompulsory: true);

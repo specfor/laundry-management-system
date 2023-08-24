@@ -30,7 +30,7 @@ class CustomerController extends Controller
 
     public function getCustomers(): void
     {
-        self::checkPermissions(['customers' => User::PERMISSION_READ]);
+        self::checkPermissions(['customers' =>[User::PERMISSION_READ]]);
 
         $pageNum = self::getParameter('page-num', 0, 'int');
         $customerId = self::getParameter('customer-id', dataType: 'int');

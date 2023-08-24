@@ -154,4 +154,9 @@ class GeneralLedger extends DbModel
             return "Failed to insert data into the database.";
         return ['record_id' => $id];
     }
+
+    public static function getRecordCount(): int
+    {
+        return self::countTableRows(self::TABLE_NAME);
+    }
 }
