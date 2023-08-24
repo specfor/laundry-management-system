@@ -198,7 +198,6 @@ import { apiBaseUrl } from '../../js-modules/website-constants';
       actions: actions_, customer: fieldValues.value['customer'],
       return_date: fieldValues.value['return_date']
     }
-    console.log(fieldValues.value)
   }
 
 
@@ -221,13 +220,17 @@ import { apiBaseUrl } from '../../js-modules/website-constants';
                 return "None"
               }
         }
+        let arrayOfActions = []
+        detail['categories'].forEach((category)=>{
+          arrayOfActions.push(category['name'])
+        })
         orderProducts.value['products'].push({
             'defects':defects(),
             'id': detail['item_id'],
             'product_name':detail['item_name'],
             'quantity':detail['amount'],
             'return_date':detail['return-date'],
-            'actions':""
+            'actions':arrayOfActions.toString()
         })
       })       
     })
@@ -238,7 +241,6 @@ import { apiBaseUrl } from '../../js-modules/website-constants';
     fieldValues.value = values
     success.value = false
     products.value = products_
-    console.log(fieldValues.value)
     for (const product of products_) {
       if (!productNames.value.includes(product['text'])) {
         productNames.value.push(product['text'])
@@ -251,7 +253,7 @@ import { apiBaseUrl } from '../../js-modules/website-constants';
         if (!show.value) {
           clearInterval(id)
           orderProducts.value.comment = fieldValues.value['comments']
-          resolve({data: orderProducts.value, accepted: success.value})
+          resolve({data: orderProducts.value, accepted: success.value,customer:fieldValues.value['customer']})
         }
       }, 200)
     })

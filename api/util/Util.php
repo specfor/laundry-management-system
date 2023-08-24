@@ -1,6 +1,6 @@
 <?php
 
-namespace LogicLeap\StockManagement\Util;
+namespace LogicLeap\StockManagement\util;
 
 use LogicLeap\PhpServerCore\data_types\Decimal;
 use LogicLeap\StockManagement\models\API;

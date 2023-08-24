@@ -44,6 +44,10 @@ abstract class DbModel
         $values = [];
         foreach ($params as $key => $value) {
             $attributes[] = $key;
+            if ($value === true)
+                $value = 1;
+            elseif ($value === false)
+                $value = 0;
             $values[] = $value;
 
         }
@@ -56,6 +60,10 @@ abstract class DbModel
         $statement = self::prepare($sql, true);
         if (!empty($placeholderValues)) {
             foreach ($placeholderValues as $placeholder => $value) {
+                if ($value === true)
+                    $value = 1;
+                elseif ($value === false)
+                    $value = 0;
                 $statement->bindValue($placeholder, $value);
             }
         }
@@ -101,6 +109,10 @@ abstract class DbModel
         $statement = self::prepare($sql);
         if ($conditionWithPlaceholders && !empty($placeholderValues)) {
             foreach ($placeholderValues as $placeholder => $value) {
+                if ($value === true)
+                    $value = 1;
+                elseif ($value === false)
+                    $value = 0;
                 $statement->bindValue($placeholder, $value);
             }
         }
@@ -131,10 +143,18 @@ abstract class DbModel
 
         $statement = self::prepare($sql, true);
         foreach ($data as $key => $value) {
+            if ($value === true)
+                $value = 1;
+            elseif ($value === false)
+                $value = 0;
             $statement->bindValue(":$key", $value);
         }
         if ($placeholderValues) {
             foreach ($placeholderValues as $placeholder => $value) {
+                if ($value === true)
+                    $value = 1;
+                elseif ($value === false)
+                    $value = 0;
                 $statement->bindValue($placeholder, $value);
             }
         }
@@ -161,6 +181,10 @@ abstract class DbModel
         $statement = self::prepare($sql);
         if ($placeholders)
             foreach ($placeholders as $placeholder => $value) {
+                if ($value === true)
+                    $value = 1;
+                elseif ($value === false)
+                    $value = 0;
                 $statement->bindValue($placeholder, $value);
             }
         return $statement->execute();

@@ -297,8 +297,6 @@ async function editOrder(id) {
     return
   } 
 
-  console.log(orderInfo)
-
   let order = await window.updateOrderModal( customers,orderInfo,'Update Order',products, actions)
 
   if (!order['accepted'])
@@ -318,7 +316,7 @@ async function editOrder(id) {
   let response = await sendJsonPostRequest(apiBaseUrl + "/orders/add", {
     
     "items": items,
-    "customer-id": customer.data['customer'],
+    "customer-id": parseInt(order.customer),
     "customer-comments": order.data['comment']
   })
 

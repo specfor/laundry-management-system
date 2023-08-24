@@ -7,7 +7,7 @@ use LogicLeap\PhpServerCore\MigrationManager;
 use LogicLeap\StockManagement\models\API;
 use LogicLeap\StockManagement\models\user_management\Authorization;
 use LogicLeap\StockManagement\models\user_management\User;
-use LogicLeap\StockManagement\Util\Util;
+use LogicLeap\StockManagement\util\Util;
 
 class Controller
 {
@@ -123,8 +123,8 @@ class Controller
                 API::STATUS_MSG_FORBIDDEN,
                 ['message' => 'You are not authorized to perform this action.']
             );
+            exit();
         }
-        exit();
     }
 
     public static function getUserId(): int
