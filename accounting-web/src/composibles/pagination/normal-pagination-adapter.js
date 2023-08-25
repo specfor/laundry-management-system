@@ -1,0 +1,37 @@
+// @ts-check
+import { ref, computed, watch } from "vue";
+import { useOffsetPagination, computedAsync } from "@vueuse/core";
+import { filterArray } from "../../util/array-util";
+
+/**
+ * @template {{[key: string]: any}} T 
+ * @param {() => Promise<T[]>} recordFetcher
+ * @param {import("../../types").MaybeRefOrComputedRef<(a: T, b: T) => number>} [sorter] Method that will handle the sortation of rows
+ * @param {import("../../types").MaybeRefOrComputedRef<(record: T) => boolean>} [filter] Method to filter the records
+ */
+export function useNormalPaginationAdapter(
+    recordFetcher,
+    sorter = ref(() => 0),
+    filter = ref(() => true)
+) {
+    /**
+     * @param {((record: T[]) => T[])[]} filters 
+     */
+    return async function paginator(...filters) {
+        const _records = await recordFetcher().catch(() => []);
+        
+        const { currentPage, pageCount, currentPageSize } = useOffsetPagination({
+            total: _records.length,
+            page: 1,
+            pageSize: 10
+        });
+
+        const records = /** @type {import("vue").Ref<T[]>} */ (ref([]))
+
+        watch([currentPage, currentPageSize, filter, sorter], ([newCurrentPage, newCurrentPageSize, newFilter, newSorter]) => {
+            records.value = filterArray(records.value, ...filters).filter(newFilter).sort(newSorter).slice((newCurrentPage - 1) * newCurrentPageSize, ((newCurrentPage - 1) * newCurrentPageSize) + newCurrentPageSize)
+        })
+
+        return { currentPage, pageCount, currentPageSize, records }
+    }
+}

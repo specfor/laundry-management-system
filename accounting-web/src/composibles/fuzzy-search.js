@@ -4,7 +4,7 @@ import Fuse from 'fuse.js';
 /**
  * Search a list fuzzyly. 
  * Returns the whole array if the search term is ""
- * @template {{[key: string]: any}} T
+ * @template T
  * @param {T[]} list List to be searched in
  * @param {Array<keyof T>} keys Object properties to seach in
  * @param {string} keyword Search term
