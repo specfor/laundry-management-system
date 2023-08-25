@@ -168,7 +168,7 @@
     async function getJsonResponse(url) {
         return await fetch(url, {
             headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+                'Authorization': 'Bearer ' + localStorage.getItem('auth-token')
             },
             credentials: "same-origin"
         })
