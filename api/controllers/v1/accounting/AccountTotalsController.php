@@ -33,7 +33,8 @@ class AccountTotalsController extends Controller
             $dates = explode(',', $dates);
 
         AccountTotals::calculateAccountTotals();
-        self::sendSuccess(['account-totals' => AccountTotals::getTotalsByDate($accountId, $dates,$month, $year)]);
+        [$totals, $count] = AccountTotals::getTotalsByDate($accountId, $dates, $month, $year);
+        self::sendSuccess(['account-totals' => $totals, 'record_count' => $count]);
     }
 
     public function getTotalByMonth(): void
@@ -45,7 +46,8 @@ class AccountTotalsController extends Controller
         $year = self::getParameter('year', dataType: 'int');
 
         AccountTotals::calculateAccountTotals();
-        self::sendSuccess(['account-totals' => AccountTotals::getTotalsByMonth($accountId, $month, $year)]);
+        [$totals, $count] = AccountTotals::getTotalsByMonth($accountId, $month, $year);
+        self::sendSuccess(['account-totals' => $totals, 'record_count' => $count]);
     }
 
     public function getTotalByYear(): void
@@ -56,7 +58,8 @@ class AccountTotalsController extends Controller
         $year = self::getParameter('year', dataType: 'int');
 
         AccountTotals::calculateAccountTotals();
-        self::sendSuccess(['account-totals' => AccountTotals::getTotalsByYear($accountId, $year)]);
+        [$totals, $count] = AccountTotals::getTotalsByYear($accountId, $year);
+        self::sendSuccess(['account-totals' => $totals, 'record_count' => $count]);
     }
 
 }

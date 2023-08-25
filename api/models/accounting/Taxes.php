@@ -44,7 +44,8 @@ class Taxes extends DbModel
         foreach ($records as &$record) {
             $record['locked']=boolval($record['locked']);
         }
-        return $records;
+        $count = self::countTableRows(self::TABLE_NAME,$condition,$placeholders);
+        return [$records, $count];
     }
 
     public static function createTax(string $taxName, float $rate, string $description = null, bool $locked = false): string|array

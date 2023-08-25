@@ -21,8 +21,8 @@ class FinancialAccountController extends Controller
         $description = self::getParameter('description');
         $limit = self::getParameter('limit', defaultValue: 30, dataType: 'int');
 
-        $data = Accounting::getAccounts($pageNumber, $accountId, $name, $code, $type, $description, $taxId, $limit);
-        self::sendSuccess(['financial-accounts' => $data]);
+        [$accounts, $count] = Accounting::getAccounts($pageNumber, $accountId, $name, $code, $type, $description, $taxId, $limit);
+        self::sendSuccess(['financial-accounts' => $accounts, 'record_count'=>$count]);
     }
 
     public function addFinancialAccount(): void

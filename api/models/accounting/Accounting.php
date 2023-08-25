@@ -56,7 +56,8 @@ class Accounting extends DbModel
             $account['locked'] = boolval($account['locked']);
         }
         unset($account);
-        return $accounts;
+        $count = self::countTableRows(self::TABLE_NAME,$condition,$placeholders);
+        return [$accounts, $count];
     }
 
     public static function createAccount(string $name, string $code, string $type, int $taxId, string $description = null,
