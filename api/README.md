@@ -170,6 +170,12 @@ user-id - compulsory
 GET - /api/v1/user-roles/permissions
 Get all permission types available
 
+GET - /api/v1/users/login-history
+page-num
+user-id - use this user passed user-id only if user has permission to get other user data. 
+login-date
+ip-address
+
 GET - /api/v1/user-roles
 page-num - optional
 role-id - optional

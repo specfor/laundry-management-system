@@ -255,6 +255,31 @@ class User extends DbModel
         return false;
     }
 
+    public static function getUserLoginHistory(int $userId, string $date = null, string $ipAddress = null,
+                                               int $pageNumber = 0, int $limit = 30): array
+    {
+        $startingIndex = $limit * $pageNumber;
+        $filters = [];
+        $placeholders = [];
+
+        $filters[]="user_id=$userId";
+        if ($date) {
+            $filters[] = "logged_at like :date";
+            $placeholders['date'] = "$date%";
+        }
+        if ($ipAddress) {
+            $filters[] = "ip_addr like :ip";
+            $placeholders['ip'] = $ipAddress;
+        }
+
+        $condition = implode(' AND ', $filters);
+        $data = self::getDataFromTable(['id', 'ip_addr','logged_at'], 'user_status', $condition, $placeholders, ['id', 'desc'],
+            [$startingIndex, $limit])->fetchAll(PDO::FETCH_ASSOC);
+        $count = self::countTableRows('user_status', $condition, $placeholders);
+        return [$data, $count];
+    }
+
+
     /**
      * If passed user ID is present, set instance variable values.
      * @param int $userID User ID to look for
