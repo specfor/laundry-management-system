@@ -194,11 +194,26 @@ abstract class DbModel
     /**
      * Get the total number of records in the table.
      * @param string $tableName Name of the table
+     * @param string|null $condition Condition to filter records.
+     * @param array|null $conditionPlaceholders If condition contains any placeholders, they should be passed
+     *          as [placeholder => value, ...]
      * @return int Number of records in the table.
      */
-    protected static function countTableRows(string $tableName): int
+    protected static function countTableRows(string $tableName, string $condition = null, array $conditionPlaceholders = null): int
     {
-        $statement = self::prepare("select count(*) as 'count' from $tableName");
+        $sql = "select count(*) as 'count' from $tableName";
+        if ($condition)
+            $sql.= " WHERE $condition";
+        $statement = self::prepare($sql);
+
+        if ($conditionPlaceholders)
+            foreach ($conditionPlaceholders as $placeholder => $value) {
+                if ($value === true)
+                    $value = 1;
+                elseif ($value === false)
+                    $value = 0;
+                $statement->bindValue($placeholder, $value);
+            }
         $statement->execute();
 
         return $statement->fetch(PDO::FETCH_ASSOC)['count'];

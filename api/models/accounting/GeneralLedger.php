@@ -30,13 +30,12 @@ class GeneralLedger extends DbModel
         }
 
         $condition = implode(' AND ', $filters);
-        
+
         $data = self::getDataFromTable(['*'], self::TABLE_NAME, $condition, $placeholders,
             ['record_id', 'desc'], [$startingIndex, $limit])->fetchAll(PDO::FETCH_ASSOC);
-        
-        $count = self::getDataFromTable(['COUNT(*)'], self::TABLE_NAME, $condition, $placeholders,
-            ['record_id', 'desc'])->fetch(PDO::FETCH_ASSOC)["COUNT(*)"];
-        
+
+        $count = self::countTableRows(self::TABLE_NAME, $condition, $placeholders);
+
         return [$data, $count];
     }
 
@@ -134,12 +133,12 @@ class GeneralLedger extends DbModel
                         $totalDebit = $totalDebit->add($tax);
                     }
             }
-            if (isset($record['credit'])){
+            if (isset($record['credit'])) {
                 $totalCredit = $totalCredit->add($record['credit']);
-                $record['credit']=$record['credit']->getDecimal();
-            }else{
+                $record['credit'] = $record['credit']->getDecimal();
+            } else {
                 $totalDebit = $totalDebit->add($record['debit']);
-                $record['debit']=$record['debit']->getDecimal();
+                $record['debit'] = $record['debit']->getDecimal();
             }
         }
 
@@ -158,10 +157,5 @@ class GeneralLedger extends DbModel
         if ($id === false)
             return "Failed to insert data into the database.";
         return ['record_id' => $id];
-    }
-
-    public static function getRecordCount(): int
-    {
-        return self::countTableRows(self::TABLE_NAME);
     }
 }
