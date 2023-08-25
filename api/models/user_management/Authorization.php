@@ -38,7 +38,7 @@ class Authorization extends DbModel
 
         $params['user_id'] = $userId;
         $params['auth_token'] = $authToken;
-        $params['last_active'] = $time;
+        $params['logged_at'] = $time;
         $params['ip_addr'] = $idAddress;
         $params['exp_time'] = $expTime;
 
