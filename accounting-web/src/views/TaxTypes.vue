@@ -51,8 +51,8 @@
     <ConfirmActionModel ref="confirmActionModelRef"></ConfirmActionModel>
 
     <Suspense>
-        <RecordTable ref="recordTableRef" :command-handler="handleCommand" :get-records="loadTaxes"
-            :column-slots="['name', 'rate', 'using']" :search-fields="['name', 'description']" :sorter="sorter"
+        <RecordTable ref="recordTableRef" :command-handler="handleCommand" :paginator="paginator"
+            :column-slots="['name', 'rate', 'using']" :search-fields="['name', 'description']"
             :extra-data-fetcher="fetchAccounts" :id-property="'tax_id'">
 
             <template #table-headers>
@@ -128,7 +128,7 @@
 
 <script lang="ts" setup>
 // @ts-check
-import RecordTableGeneric, { type ArrangementData } from '../components/RecordTable.vue';
+import RecordTableGeneric from '../components/RecordTable.vue';
 import ModelWithInputGeneric from '../components/models/ModelWithInput.vue';
 import ConfirmActionModelGeneric from '../components/models/ConfirmActionModel.vue';
 import InputTemplateModelGeneric from '../components/models/InputTemplateModel.vue';
@@ -145,9 +145,8 @@ import { accountTypesTree } from '../util/account-types';
 import Fuse from 'fuse.js';
 import TextInput from '../components/inputs/TextInput.vue';
 import { useRouteQuery } from '@vueuse/router'
+import { useNormalPaginationAdapter } from '../composibles/pagination/normal-pagination-adapter';
 
-// Type Inside the record table with some extra data
-type ModifiedTax = Tax & ArrangementData;
 type AddNewTaxModelExtraData = { existingTaxNames: string[] };
 interface AddTaxModelInitialValueType {
     taxName?: string,
@@ -179,8 +178,13 @@ const modelWithInputRef = ref<GenericComponentInstance<typeof ModelWithInput> | 
 const confirmActionModelRef = ref<GenericComponentInstance<typeof ConfirmActionModel> | null>(null);
 const addTaxModelRef = ref<GenericComponentInstance<typeof InputTemplateModel> | null>(null);
 
-const sorter = computed(() => (a: ModifiedTax, b: ModifiedTax) =>
+const sorter = computed(() => (a: Tax, b: Tax) =>
     a.tax_id > b.tax_id ? 1 : -1
+)
+
+const paginator = useNormalPaginationAdapter<Tax>(
+    loadTaxes,
+    sorter
 )
 
 /**
@@ -188,7 +192,7 @@ const sorter = computed(() => (a: ModifiedTax, b: ModifiedTax) =>
 * @param command Emitted command
 * @param record Record on which it was called
 */
-const handleCommand = async (command: string, record: ModifiedTax) => {
+const handleCommand = async (command: string, record: Tax) => {
     switch (command) {
         case "delete":
             await handleDeleteTax(record);
@@ -201,7 +205,7 @@ const handleCommand = async (command: string, record: ModifiedTax) => {
     }
 }
 
-const handleDeleteTax = async (record: ModifiedTax) => {
+const handleDeleteTax = async (record: Tax) => {
     if (confirmActionModelRef.value == undefined) return;
 
     const { showLoading, finish, start } = confirmActionModelRef.value?.setup(
@@ -260,7 +264,7 @@ const handleAddTax = async () => {
     await doActions().catch(console.log).finally(() => finish());
 }
 
-const handleEditTax = async (record: ModifiedTax) => {
+const handleEditTax = async (record: Tax) => {
     // We'll be using the same model used to adding an account
     if (addTaxModelRef.value == undefined) return;
 
@@ -289,7 +293,7 @@ const handleEditTax = async (record: ModifiedTax) => {
     await doActions().catch(console.log).finally(() => finish());
 }
 
-const handleDeleteSelectedTaxTypes = async (records: (ModifiedTax)[]) => {
+const handleDeleteSelectedTaxTypes = async (records: (Tax)[]) => {
     if (confirmActionModelRef.value == undefined) return;
 
     const { showLoading, finish, start } = confirmActionModelRef.value?.setup(
