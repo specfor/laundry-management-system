@@ -7,7 +7,7 @@ use LogicLeap\StockManagement\models\stock_management\Customers;
 use LogicLeap\StockManagement\models\user_management\User;
 
 class CustomerController extends Controller
-{   
+{
     public function addCustomer(): void
     {
         self::checkPermissions(['customers' => [User::PERMISSION_WRITE]]);
@@ -45,8 +45,8 @@ class CustomerController extends Controller
         if ($branchId === null)
             $branchId = User::getUserBranchId(self::getUserId());
 
-        $data = Customers::getCustomers($customerId, $branchId, $email, $phoneNum, $name, $address, $banned, $joinDate, $pageNum);
-        self::sendSuccess(['customers' => $data]);
+        [$data, $count] = Customers::getCustomers($customerId, $branchId, $email, $phoneNum, $name, $address, $banned, $joinDate, $pageNum);
+        self::sendSuccess(['customers' => $data, 'record_count' => $count]);
     }
 
     public function updateCustomer(): void

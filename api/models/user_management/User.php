@@ -211,7 +211,8 @@ class User extends DbModel
         for ($i = 0; $i < count($data); $i++) {
             $data[$i]['role'] = UserRoles::getUserRoleText($data[$i]['role']);
         }
-        return $data;
+        $count = self::countTableRows(self::TABLE_NAME, $condition, $placeholders);
+        return [$data, $count];
     }
 
     public static function updateUser(

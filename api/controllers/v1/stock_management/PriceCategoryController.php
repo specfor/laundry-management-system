@@ -15,8 +15,8 @@ class PriceCategoryController extends Controller
         $pageNum = self::getParameter('page-num', 0, 'int');
         $categoryName = self::getParameter('category-name');
 
-        $data = PriceCategories::getCategories($pageNum, $categoryName);
-        self::sendSuccess(['categories' => $data]);
+        [$data, $count] = PriceCategories::getCategories($pageNum, $categoryName);
+        self::sendSuccess(['categories' => $data, 'record_count' => $count]);
     }
 
     public function addPriceCategory(): void

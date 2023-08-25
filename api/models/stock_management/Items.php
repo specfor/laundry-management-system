@@ -153,7 +153,9 @@ class Items extends DbModel
             } else
                 unset($items[$i]);
         }
-        return array_values($items);
+        $count = self::countTableRows(self::TABLE_NAME, $condition,$placeholders);
+        return [array_values($items), $count];
+
     }
 
     private static function getPriceCategoryId(string $categoryName): int|null

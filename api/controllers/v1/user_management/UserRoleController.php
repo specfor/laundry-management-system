@@ -42,8 +42,8 @@ class UserRoleController extends Controller
         $description = self::getParameter('description');
         $permissions = self::getParameter('permissions', dataType: 'array');
 
-        $data = UserRoles::getUserRoles($pageNum, $roleId, $name, $permissions, $description);
-        self::sendSuccess(['user-roles' => $data]);
+        [$data, $count] = UserRoles::getUserRoles($pageNum, $roleId, $name, $permissions, $description);
+        self::sendSuccess(['user-roles' => $data, 'record_count' => $count]);
     }
 
     public function updateUserRole(): void

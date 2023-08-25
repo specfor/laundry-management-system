@@ -7,7 +7,7 @@ use LogicLeap\StockManagement\models\stock_management\Payments;
 use LogicLeap\StockManagement\models\user_management\User;
 
 class PaymentController extends Controller
-{   
+{
     public function getPayments(): void
     {
         self::checkPermissions(['payments' => [User::PERMISSION_READ]]);
@@ -17,7 +17,8 @@ class PaymentController extends Controller
         $paymentId = self::getParameter('payment-id', dataType: 'int');
         $paidDate = self::getParameter('paid-date');
 
-        self::sendSuccess(["payments" => Payments::getPayments($pageNumber, $paymentId, $orderId, $paidDate)]);
+        [$payments, $count] = Payments::getPayments($pageNumber, $paymentId, $orderId, $paidDate);
+        self::sendSuccess(["payments" => $payments, 'record_count' => $count]);
     }
 
     public function addPayment(): void

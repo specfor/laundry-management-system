@@ -69,7 +69,8 @@ class Payments extends DbModel
         for ($i = 0; $i < count($data); $i++) {
             $data[$i]['refunded'] = boolval($data[$i]['refunded']);
         }
-        return $data;
+        $count = self::countTableRows('payments', $condition, $placeholders);
+        return [$data, $count];
     }
 
     public static function updatePayment(int $paymentId, bool $refunded): bool

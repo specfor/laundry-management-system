@@ -55,12 +55,14 @@ class PriceCategories extends DbModel
                 $filtersTemp[] = "category_id=:category$index";
                 $placeholders["category$index"] = $categoryId;
             }
-            $filters[]=implode(' or ', $filtersTemp);
+            $filters[] = implode(' or ', $filtersTemp);
         }
 
         $condition = implode(' and ', $filters);
         $statement = self::getDataFromTable(['*'], self::TABLE_NAME, $condition, $placeholders,
             ['category_id', 'asc'], [$startingIndex, $limit]);
-        return $statement->fetchAll(PDO::FETCH_ASSOC);
+        $categories = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $count = self::countTableRows(self::TABLE_NAME, $condition, $placeholders);
+        return [$categories, $count];
     }
 }

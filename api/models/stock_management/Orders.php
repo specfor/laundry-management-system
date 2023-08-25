@@ -178,7 +178,8 @@ class Orders extends DbModel
             }
         }
         unset($order, $item);
-        return $orders;
+        $count = self::countTableRows('orders', $condition,$placeholders);
+        return [$orders,$count];
     }
 
     public static function updateOrder(int $orderId, int $branchId = null, string $orderStatus = null,

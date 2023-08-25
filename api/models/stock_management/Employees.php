@@ -99,7 +99,8 @@ class Employees extends DbModel
             if ($data[$i]['left_date'] === null)
                 $data[$i]['left_date'] = "Not Left";
         }
-        return $data;
+        $count = self::countTableRows('branches', $condition,$placeholders);
+        return [$data, $count];
     }
 
     public static function deleteEmployee(int $employeeId): bool
