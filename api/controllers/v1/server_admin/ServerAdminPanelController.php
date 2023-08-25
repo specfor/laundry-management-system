@@ -90,7 +90,7 @@ class ServerAdminPanelController extends Controller
             Authorization::markSuccessfulLogin($user->userId, $token, Request::getRequestIp());
 
             setcookie('auth_token', $token);
-            self::sendSuccess(['url' => '/api/v1/server-manager/dashboard?page=ServerManager', 'auth_token' => $token]);
+            self::sendSuccess(['url' => '/api/v1/server-manager/dashboard?page=serverManager', 'auth_token' => $token]);
         } else {
             self::sendError('Incorrect Username or Password.');
         }
