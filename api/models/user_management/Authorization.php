@@ -29,17 +29,21 @@ class Authorization extends DbModel
         return true;
     }
 
-     public static function markSuccessfulLogin(int $userId, string $authToken, string $idAddress): void
-     {
-         $now = new DateTime('now');
-         $time = $now->format('Y-m-d H:i:s');
-         $expTime = $now->add(DateInterval::createFromDateString(self::TOKEN_EXPIRE_INTERVAL. ' seconds'));
-         $expTime = $expTime->format('Y-m-d H:i:s');
+    public static function markSuccessfulLogin(int $userId, string $authToken, string $idAddress): void
+    {
+        $now = new DateTime('now');
+        $time = $now->format('Y-m-d H:i:s');
+        $expTime = $now->add(DateInterval::createFromDateString(self::TOKEN_EXPIRE_INTERVAL . ' seconds'));
+        $expTime = $expTime->format('Y-m-d H:i:s');
 
-         $sql = "INSERT INTO user_status (user_id, auth_token, last_active, ip_addr, exp_time) VALUES 
-                                                         ($userId, '$authToken', '$time', '$idAddress', '$expTime')";
-         self::exec($sql);
-     }
+        $params['user_id'] = $userId;
+        $params['auth_token'] = $authToken;
+        $params['last_active'] = $time;
+        $params['ip_addr'] = $idAddress;
+        $params['exp_time'] = $expTime;
+
+        self::insertIntoTable('user_status', $params);
+    }
 
     public static function getUserId(string $token)
     {
