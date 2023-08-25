@@ -7,7 +7,7 @@ use LogicLeap\StockManagement\models\stock_management\Items;
 use LogicLeap\StockManagement\models\user_management\User;
 
 class ItemController extends Controller
-{   
+{
     public function getItems(): void
     {
         self::checkPermissions(['products' => [User::PERMISSION_READ]]);
@@ -18,8 +18,8 @@ class ItemController extends Controller
         $price = self::getParameter('item-price', dataType: 'float');
         $blocked = self::getParameter('blocked', dataType: 'bool');
 
-        $data = Items::getItems($pageNum, $itemId, $itemName, $price, $blocked);
-        self::sendSuccess(['items' => $data]);
+        [$data, $count] = Items::getItems($pageNum, $itemId, $itemName, $price, $blocked);
+        self::sendSuccess(['items' => $data, 'record_count' => $count]);
     }
 
     public function addItem(): void

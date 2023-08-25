@@ -142,8 +142,10 @@ class AccountTotals extends DbModel
 
         $condition = implode(' AND ', $filters);
 
-        return self::getDataFromTable(['account_id', 'date', 'credit', 'debit'], self::TABLE_NAME,
+        $totals = self::getDataFromTable(['account_id', 'date', 'credit', 'debit'], self::TABLE_NAME,
             $condition, $placeholders, ['date', 'desc'])->fetchAll(PDO::FETCH_ASSOC);
+        $count = self::countTableRows(self::TABLE_NAME, $condition, $placeholders);
+        return [$totals, $count];
     }
 
     public static function getTotalsByMonth(int $accountId = null, int $month = null, int $year = null): array
@@ -191,7 +193,8 @@ class AccountTotals extends DbModel
                 ];
             }
         }
-        return $monthRecords;
+        $count = count($monthRecords);
+        return [$monthRecords, $count];
     }
 
     public static function getTotalsByYear(int $accountId = null, int $year = null): array
@@ -231,6 +234,7 @@ class AccountTotals extends DbModel
                 ];
             }
         }
-        return $yearRecords;
+        $count = count($yearRecords);
+        return [$yearRecords, $count];
     }
 }

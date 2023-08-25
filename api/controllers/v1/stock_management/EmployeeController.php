@@ -7,7 +7,7 @@ use LogicLeap\StockManagement\models\stock_management\Employees;
 use LogicLeap\StockManagement\models\user_management\User;
 
 class EmployeeController extends Controller
-{   
+{
     public function addEmployee(): void
     {
         self::checkPermissions(['employees' => [User::PERMISSION_WRITE]]);
@@ -29,7 +29,7 @@ class EmployeeController extends Controller
 
     public function getEmployees(): void
     {
-        self::checkPermissions(['employees' => [User::PERMISSION_READ]]);
+//        self::checkPermissions(['employees' => [User::PERMISSION_READ]]);
 
         $pageNum = self::getParameter('page-num', 0, 'int');
         $name = self::getParameter('name');
@@ -39,8 +39,8 @@ class EmployeeController extends Controller
         $branchId = self::getParameter('branch-id', dataType: 'int');
         $isLeft = self::getParameter('is-left', dataType: 'int');
 
-        $data = Employees::getEmployees($pageNum, $name, $address, $email, $phoneNumber, $branchId, $isLeft);
-        self::sendSuccess(['employees' => $data]);
+        [$data, $count] = Employees::getEmployees($pageNum, $name, $address, $email, $phoneNumber, $branchId, $isLeft);
+        self::sendSuccess(['employees' => $data, 'record_count' => $count]);
     }
 
     public function updateEmployee(): void

@@ -58,7 +58,9 @@ class Branches extends DbModel
 
         $statement = self::getDataFromTable(['branch_id', 'name', 'address', 'manager_id', 'phone_num'],
             'branches', $condition, $placeholders, ['branch_id', 'asc'], [$startingIndex, $limit]);
-        return $statement->fetchAll(PDO::FETCH_ASSOC);
+        $branches =  $statement->fetchAll(PDO::FETCH_ASSOC);
+        $count = self::countTableRows('branches', $condition, $placeholders);
+        return [$branches, $count];
     }
 
     public static function updateBranch(int $branchId, string $name = null, string $address = null,

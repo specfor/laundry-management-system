@@ -6,7 +6,7 @@ use LogicLeap\StockManagement\controllers\v1\Controller;
 use LogicLeap\StockManagement\models\user_management\User;
 
 class UserController extends Controller
-{   
+{
     public function addUser(): void
     {
         self::checkPermissions(['users' => [User::PERMISSION_WRITE]]);
@@ -38,8 +38,8 @@ class UserController extends Controller
         $role = self::getParameter('role');
         $branchId = self::getParameter('branch-id', dataType: 'int');
 
-        $data = User::getUsers($pageNum, $username, $name, $email, $role, $branchId);
-        self::sendSuccess(['users' => $data]);
+        [$data, $count] = User::getUsers($pageNum, $username, $name, $email, $role, $branchId);
+        self::sendSuccess(['users' => $data, 'record_count' => $count]);
     }
 
     public function deleteUser(): void

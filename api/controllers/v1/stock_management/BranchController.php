@@ -37,8 +37,8 @@ class BranchController extends Controller
         $phoneNum = self::getParameter('phone-number');
         $managerId = self::getParameter('manager-id', dataType: 'int');
 
-        $data = Branches::getBranches($pageNum, $branchId, $branchName, $address, $managerId, $phoneNum);
-        self::sendSuccess(['branches' => $data]);
+        [$data, $count] = Branches::getBranches($pageNum, $branchId, $branchName, $address, $managerId, $phoneNum);
+        self::sendSuccess(['branches' => $data, 'record_count'=>$count]);
     }
 
     public function updateBranch(): void

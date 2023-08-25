@@ -55,7 +55,8 @@ class UserRoles extends DbModel
                 }
             }
         }
-        return $data;
+        $count = self::countTableRows(self::TABLE_NAME, $condition, $placeholders);
+        return [$data, $count];
     }
 
     public static function createUserRole(string $name, array $permissions, string $description = null): bool|array|string
