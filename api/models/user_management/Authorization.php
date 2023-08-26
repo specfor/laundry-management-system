@@ -13,7 +13,7 @@ class Authorization extends DbModel
 
     public static function isValidToken($token): bool
     {
-        $sql = "SELECT exp_time FROM user_status WHERE auth_token=?";
+        $sql = "SELECT exp_time FROM user_status WHERE auth_token=? order by id desc";
         $statement = self::prepare($sql);
         $statement->bindValue(1, $token);
         $statement->execute();
@@ -29,53 +29,20 @@ class Authorization extends DbModel
         return true;
     }
 
-    // public static function markSuccessfulLogin(int $userId, string $authToken, string $idAddress): void
-    // {
-    //     $now = new DateTime('now');
-    //     $time = $now->format('Y-m-d H:i:s');
-
-    //     $sql = "SELECT user_id FROM user_status WHERE user_id=$userId";
-    //     $statement = self::prepare($sql);
-    //     $statement->execute();
-    //     $expTime = $now->add(DateInterval::createFromDateString(self::TOKEN_EXPIRE_INTERVAL. ' seconds'));
-    //     $expTime = $expTime->format('Y-m-d H:i:s');
-    //     if ($statement->fetch(PDO::FETCH_ASSOC)) {
-    //         $sql = "UPDATE user_status SET auth_token='$authToken', last_active='$time', ip_addr='$idAddress', exp_time='$expTime' WHERE user_id=$userId";
-    //     } else {
-    //         $sql = "INSERT INTO user_status (user_id, auth_token, last_active, ip_addr, exp_time) VALUES 
-    //                                                     ($userId, '$authToken', '$time', '$idAddress', '$expTime')";
-    //     }
-    //     self::exec($sql);
-    // }
-
     public static function markSuccessfulLogin(int $userId, string $authToken, string $idAddress): void
     {
         $now = new DateTime('now');
         $time = $now->format('Y-m-d H:i:s');
-        $expTime = $now->add(DateInterval::createFromDateString(self::TOKEN_EXPIRE_INTERVAL. ' seconds'));
+        $expTime = $now->add(DateInterval::createFromDateString(self::TOKEN_EXPIRE_INTERVAL . ' seconds'));
         $expTime = $expTime->format('Y-m-d H:i:s');
 
-        $sql = <<<HEREA
-        START TRANSACTION;
+        $params['user_id'] = $userId;
+        $params['auth_token'] = $authToken;
+        $params['logged_at'] = $time;
+        $params['ip_addr'] = $idAddress;
+        $params['exp_time'] = $expTime;
 
-        SET @user_id := $userId;
-        
-        -- Acquire a row lock on the specified user_id
-        SELECT * FROM user_status WHERE user_id = @user_id FOR UPDATE;
-        
-        -- Perform the insert/update
-        INSERT INTO user_status (user_id, auth_token, last_active, ip_addr, exp_time)
-        VALUES (@user_id, '$authToken', '$time', '$idAddress', '$expTime')
-        ON DUPLICATE KEY UPDATE
-          auth_token = VALUES(auth_token),
-          last_active = VALUES(last_active),
-          ip_addr = VALUES(ip_addr),
-          exp_time = VALUES(exp_time);
-        
-        COMMIT;
-        HEREA;
-
-        self::exec($sql);
+        self::insertIntoTable('user_status', $params);
     }
 
     public static function getUserId(string $token)

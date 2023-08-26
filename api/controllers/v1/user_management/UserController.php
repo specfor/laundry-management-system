@@ -83,4 +83,17 @@ class UserController extends Controller
         else
             self::sendError($status);
     }
+
+    public function getUserLoginHistory(): void
+    {
+        self::checkPermissions(['users'=>[User::PERMISSION_READ]]);
+
+        $userId = self::getParameter('user-id', dataType: 'int', isCompulsory: true);
+        $date = self::getParameter('login-date');
+        $ipAddress = self::getParameter('ip-address');
+        $pageNumber = self::getParameter('page-num', defaultValue: 0, dataType: 'int');
+
+        [$data, $count] = User::getUserLoginHistory($userId, $date, $ipAddress, $pageNumber);
+        self::sendSuccess(['history' => $data, 'record_count' => $count]);
+    }
 }

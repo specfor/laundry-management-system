@@ -83,6 +83,7 @@ $app->router->addGetRoute('/api/v1/user-roles', [UserRoleController::class, 'get
 $app->router->addPostRoute('/api/v1/user-roles/add', [UserRoleController::class, 'addUserRole']);
 $app->router->addPostRoute('/api/v1/user-roles/update', [UserRoleController::class, 'updateUserRole']);
 $app->router->addPostRoute('/api/v1/user-roles/delete', [UserRoleController::class, 'deleteUserRole']);
+$app->router->addGetRoute('/api/v1/users/login-history', [UserController::class, 'getUserLoginHistory']);
 
 // Accounting routes
 $app->router->addGetRoute('/api/v1/taxes', [TaxController::class, 'getTaxes']);

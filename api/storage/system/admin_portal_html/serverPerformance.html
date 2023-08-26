@@ -132,8 +132,10 @@
 
     })
 
+    const apiBaseUrl = window.location.origin + "/api/v1"
+
     async function getRealtimeStats() {
-        let response = await getJsonResponse('http://laundry-api.localhost/api/v1/realtime-metrics')
+        let response = await getJsonResponse(apiBaseUrl + '/realtime-metrics')
         let data = await response.json()
 
         if (data.statusMessage === 'success') {
@@ -168,7 +170,7 @@
     async function getJsonResponse(url) {
         return await fetch(url, {
             headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+                'Authorization': 'Bearer ' + localStorage.getItem('auth-token')
             },
             credentials: "same-origin"
         })

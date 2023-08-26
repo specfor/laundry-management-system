@@ -234,7 +234,7 @@
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
+                'Authorization': 'Bearer ' + localStorage.getItem('auth-token'),
                 'X-Administrator-Token': migrationAuthToken
             },
             body: JSON.stringify(jsonBody),
@@ -245,7 +245,7 @@
     async function sendGetRequest(url) {
         return await fetch(url, {
             headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
+                'Authorization': 'Bearer ' + localStorage.getItem('auth-token'),
                 'X-Administrator-Token': migrationAuthToken
             },
             credentials: "same-origin"
