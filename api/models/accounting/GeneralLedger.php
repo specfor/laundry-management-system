@@ -13,13 +13,17 @@ class GeneralLedger extends DbModel
 {
     private const TABLE_NAME = 'general_ledger';
 
-    public static function getLedgerRecords(int $pageNumber = 0, string $narration = null, string $date = null,
+    public static function getLedgerRecords(int $pageNumber = 0, int $recordId = null, string $narration = null, string $date = null,
                                             int $limit = 30): array
     {
         $startingIndex = $pageNumber * $limit;
         $filters = [];
         $placeholders = [];
 
+        if ($recordId) {
+            $filters[] = "record_id = :recordId";
+            $placeholders['recordId'] = "" . $recordId;
+        }
         if ($narration) {
             $filters[] = "narration LIKE :narration";
             $placeholders['narration'] = "%" . $narration . "%";

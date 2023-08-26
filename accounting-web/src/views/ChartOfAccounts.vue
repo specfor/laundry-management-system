@@ -90,9 +90,9 @@
     <ConfirmActionModel ref="confirmActionModelRef"></ConfirmActionModel>
 
     <Suspense>
-        <RecordTable ref="recordTableRef" :command-handler="handleCommand" :get-records="loadAccounts"
-            :column-slots="['name', 'type', 'tax']" :search-fields="['name', 'description']" :filter="filter"
-            :sorter="sorter" :extra-data-fetcher="fetchTaxes" :id-property="'account_id'">
+        <RecordTable ref="recordTableRef" :command-handler="handleCommand" :paginator="paginator"
+            :column-slots="['name', 'type', 'tax']" :search-fields="['name', 'description']"
+            :extra-data-fetcher="fetchTaxes" :id-property="'account_id'">
 
             <template #table-headers>
                 <th>Name</th>
@@ -241,7 +241,7 @@
 
 <script lang="ts" setup>
 // @ts-check
-import RecordTableGeneric, { type ArrangementData } from '../components/RecordTable.vue';
+import RecordTableGeneric from '../components/RecordTable.vue';
 import ModelWithInputGeneric from '../components/models/ModelWithInput.vue';
 import ConfirmActionModelGeneric from '../components/models/ConfirmActionModel.vue';
 import InputTemplateModelGeneric from '../components/models/InputTemplateModel.vue';
@@ -258,9 +258,8 @@ import { accountTypesTree } from '../util/account-types';
 import Fuse from 'fuse.js';
 import TextInput from '../components/inputs/TextInput.vue';
 import { useRouteQuery } from '@vueuse/router'
+import { useNormalPaginationAdapter } from '../composibles/pagination/normal-pagination-adapter';
 
-// Type Inside the record table with some extra data
-type ModifiedFinancialAccount = FinancialAccount & ArrangementData;
 type AddNewAccountModelExtraData = { taxes: Tax[], existingAccountNames: string[], existingAccountCodes: string[] };
 interface AddAccountModelInitialValueType {
     accountName?: string,
@@ -311,14 +310,20 @@ watch(selectedTaxId, (value) => taxId.value = value ?? -1);
 
 const selectedAccountTypes = computed(() => selectedAccountTypesRaw.value.map(s => JSON.parse(s) as string[]).flat().filter((value, index, array) => array.indexOf(value) === index))
 
-const filter = computed(() => (account: ModifiedFinancialAccount) => [
+const filter = computed(() => (account: FinancialAccount) => [
     selectedAccountTypes.value.includes("Archived") ? account.archived : true,
     selectedAccountTypes.value.length > 0 ? selectedAccountTypes.value.includes(account.type) : true,
     selectedTaxId.value ? account.tax_id == selectedTaxId.value : true
 ].every(x => x))
 
-const sorter = computed(() => (a: ModifiedFinancialAccount, b: ModifiedFinancialAccount) =>
+const sorter = computed(() => (a: FinancialAccount, b: FinancialAccount) =>
     a.account_id > b.account_id ? 1 : -1
+)
+
+const paginator = useNormalPaginationAdapter<FinancialAccount>(
+    loadAccounts,
+    sorter,
+    filter
 )
 
 /**
@@ -326,7 +331,7 @@ const sorter = computed(() => (a: ModifiedFinancialAccount, b: ModifiedFinancial
 * @param command Emitted command
 * @param record Record on which it was called
 */
-const handleCommand = async (command: string, record: ModifiedFinancialAccount) => {
+const handleCommand = async (command: string, record: FinancialAccount) => {
     switch (command) {
         case "delete":
             await handleDeleteAccount(record);
@@ -345,7 +350,7 @@ const handleCommand = async (command: string, record: ModifiedFinancialAccount) 
     }
 }
 
-const handleEditTaxType = async (record: ModifiedFinancialAccount) => {
+const handleEditTaxType = async (record: FinancialAccount) => {
     if (modelWithInputRef.value == undefined) return;
 
     const { showLoading, finish, start } = modelWithInputRef.value?.setup(
@@ -374,7 +379,7 @@ const handleEditTaxType = async (record: ModifiedFinancialAccount) => {
     await doActions().catch(console.log).finally(() => finish());
 }
 
-const handleDeleteAccount = async (record: ModifiedFinancialAccount) => {
+const handleDeleteAccount = async (record: FinancialAccount) => {
     if (confirmActionModelRef.value == undefined) return;
 
     const { showLoading, finish, start } = confirmActionModelRef.value?.setup(
@@ -400,7 +405,7 @@ const handleDeleteAccount = async (record: ModifiedFinancialAccount) => {
     await doActions().catch(console.log).finally(() => finish());
 }
 
-const handleArchiveAccount = async (record: ModifiedFinancialAccount) => {
+const handleArchiveAccount = async (record: FinancialAccount) => {
     if (confirmActionModelRef.value == undefined) return;
 
     const { showLoading, finish, start } = confirmActionModelRef.value?.setup(
@@ -470,7 +475,7 @@ const handleAddAccount = async () => {
     await doActions().catch(console.log).finally(() => finish());
 }
 
-const handleEditAccount = async (record: ModifiedFinancialAccount) => {
+const handleEditAccount = async (record: FinancialAccount) => {
     // We'll be using the same model used to adding an account
     if (addAccountModelRef.value == undefined) return;
 
@@ -503,7 +508,7 @@ const handleEditAccount = async (record: ModifiedFinancialAccount) => {
     await doActions().catch(console.log).finally(() => finish());
 }
 
-const handleUpdateTaxTypeOfSelectedAccounts = async (records: (ModifiedFinancialAccount)[]) => {
+const handleUpdateTaxTypeOfSelectedAccounts = async (records: (FinancialAccount)[]) => {
     if (modelWithInputRef.value == undefined) return;
 
     const { showLoading, finish, start } = modelWithInputRef.value?.setup(
@@ -533,7 +538,7 @@ const handleUpdateTaxTypeOfSelectedAccounts = async (records: (ModifiedFinancial
     await doActions().catch(console.log).finally(() => finish());
 }
 
-const handleDeleteSelectedAccounts = async (records: (ModifiedFinancialAccount)[]) => {
+const handleDeleteSelectedAccounts = async (records: (FinancialAccount)[]) => {
     if (confirmActionModelRef.value == undefined) return;
 
     const { showLoading, finish, start } = confirmActionModelRef.value?.setup(

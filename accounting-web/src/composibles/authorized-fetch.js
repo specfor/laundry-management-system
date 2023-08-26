@@ -14,9 +14,10 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api/v1"
  * @param {import("vue").Ref<boolean>} successRef A Ref to be used as a container to notify of complete success. It's value will be set to true when the request has been completed successfully and no error messages were present in the response.
  * @param {ReturnType<(ReturnType<typeof useNotifications>)['injectNotifications']>} notificationInjection Origin of the fetch request (For notifications)
  * @param {boolean} [notifySuccess = false] Whether a notification should be sent on fetch success
+ * @param {AbortSignal} [abortSignal]
  * @returns 
  */
-export const useAuthorizedFetch = (url, origin, successRef, notificationInjection ,notifySuccess = false) => {
+export const useAuthorizedFetch = (url, origin, successRef, notificationInjection, notifySuccess = false, abortSignal) => {
     
     const { showError, showSuccess } = notificationInjection;
     
@@ -72,7 +73,8 @@ export const useAuthorizedFetch = (url, origin, successRef, notificationInjectio
             }
         },
         fetchOptions: {
-            mode: 'cors'
+            mode: 'cors',
+            signal: abortSignal
         },
     }))(url)
 };

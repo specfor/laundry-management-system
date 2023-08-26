@@ -53,10 +53,10 @@
                 </tr>
             </thead>
             <TransitionGroup name="table-rows" tag="tbody">
-                <tr v-for="record in pageData" :key="record[idProperty as keyof InternalRow] as number | string">
+                <tr v-for="record in records" :key="(record[idProperty as ID] as number)">
                     <th v-if="selectMode">
                         <label>
-                            <input type="checkbox" class="checkbox" v-model="record.selected" />
+                            <input type="checkbox" class="checkbox" @change="toggleSelected(record[idProperty as ID])" />
                         </label>
                     </th>
 
@@ -64,7 +64,7 @@
                         <slot :name="slotName" :record="record" :extra="extraData"></slot>
                     </td>
 
-                    <td>
+                    <td v-if="showRowActions">
                         <el-dropdown trigger="click" @command="e => commandHandler(e, record)">
                             <span class="el-dropdown-link">
                                 <svg class="w-4 h-4 text-gray-800 dark:text-white fill-gray-800" aria-hidden="true"
@@ -90,45 +90,32 @@
     </div>
 </template>
 
-<script lang="ts">
-// Exported Types
-export type ArrangementData = { selected: boolean };
-</script>
-
 <script setup lang="ts" generic="R, X, ID extends keyof R">
 // @ts-check
-import { useOffsetPagination } from '@vueuse/core';
-import { computed, ref, type Ref } from 'vue';
+import { computed, ref, watch, type Ref } from 'vue';
 import { useFuzzySearch } from '../composibles/fuzzy-search';
 import { ElDropdownMenu, ElDropdown } from "element-plus";
 import type { PaginationAdapter } from '../types';
-
-type InternalRow = R & ArrangementData;
+import { useVModel } from '@vueuse/core';
 
 // defineProps(['commandHandler', 'records', 'columnSlots'])
-const { getRecords, columnSlots, searchFields, extraDataFetcher, commandHandler, idProperty, filter, sorter } =
-    withDefaults(defineProps<{
-        /** Method to get the records */
-        getRecords: () => Promise<R[]>
+const { columnSlots, showRowActions = true, searchFields, extraDataFetcher, commandHandler = () => {}, idProperty, paginator } =
+    defineProps<{
         /** Names of the slots of columns, there can be an arbitary number of column slots, all of them has to be provided here */
         columnSlots: string[]
-        /** Keys of the record object which should be used for fuzzy searching */
-        searchFields: (keyof R)[]
         /** Method to fetch any other required data, Result of this will be passed down to the slot */
         extraDataFetcher?: () => Promise<X>
         /** Method that will handle the commands emitted from a row's actions */
-        commandHandler: (command: string, record: InternalRow) => void,
-        /** Method that will handle the filtration of rows */
-        filter?: (record: InternalRow) => boolean
-        /** Method that will handle the sortation of rows */
-        sorter?: (a: InternalRow, b: InternalRow) => number
+        commandHandler?: (command: string, record: R) => void,
+        /** Keys of the record object which should be used for fuzzy searching */
+        searchFields: (keyof R)[]
         /** Key of the property that will act as the ID of a record. This has to be unique per record */
-        idProperty: ID
-        paginator: PaginationAdapter<(record: R) => InternalRow>
-    }>(), {
-        filter: (record: InternalRow) => true,
-        sorter: (a: InternalRow, b: InternalRow) => 0
-    });
+        idProperty: ID,
+        /** Paginator is incharge of handeling the pagination and giving this componentthe current page data */
+        paginator: PaginationAdapter<R>,
+        /** Whether the little button at end of the row should be shown */
+        showRowActions?: boolean
+    }>();
 
 // defineExpose has to be called before any top-level await keyword (https://github.com/vuejs/core/issues/4930) 
 defineExpose({
@@ -153,50 +140,43 @@ defineExpose({
     /**
      * Updates a record in the records list
      */
-    updateRecord: (updatedRecord: InternalRow) => {
+    updateRecord: (updatedRecord: R) => {
         records.value = [
             ...records.value.map(record => record[idProperty] == updatedRecord[idProperty] ? updatedRecord : record),
         ]
     }
 })
 
-// Cast required (https://github.com/vuejs/core/issues/2136#issuecomment-908269949)
-const records = ref((await getRecords().catch(() => [])).map(record => ({ ...record, selected: false }))) as Ref<InternalRow[]>;
+const emit = defineEmits<{
+    "update:searchValue": [value: string]
+}>()
 
-// const extraData = /** @type { X | null } */ (extraDataFetcher ? await extraDataFetcher().catch(() => null) : null)
-const extraData = extraDataFetcher ? await extraDataFetcher().catch(() => null) : null
-
-const filteredRows = computed(() => records.value.filter(filter));
-const totalRows = computed(() => filteredRows.value.length)
-
-const { currentPage, pageCount, currentPageSize } = useOffsetPagination({
-    total: totalRows,
-    page: 1,
-    pageSize: 10
-})
-
-/** Records belonging to the current page */
-const pageData = computed(() =>
-    useFuzzySearch(
-        filteredRows.value,
-        searchFields,
-        searchPhrase.value
-    ).sort(sorter).slice((currentPage.value - 1) * currentPageSize.value, ((currentPage.value - 1) * currentPageSize.value) + currentPageSize.value)
-)
-
-const selectedRecords = computed(() => records.value.filter(record => record.selected))
+const selectedIds = ref([]) as Ref<R[ID][]>
+const selectedRecords = computed(() => records.value.filter(record => selectedIds.value.includes(record[idProperty])))
 
 const selectMode = ref(false);
 const searchPhrase = ref("");
 
-const selectAll = () => records.value = records.value.map(record => ({ ...record, selected: !record.selected }))
+watch(searchPhrase, (newSearchPhrase) => emit("update:searchValue", newSearchPhrase))
 
-const deselectAll = () => records.value = records.value.map(record => ({ ...record, selected: false }))
+const extraData = extraDataFetcher ? await extraDataFetcher().catch(() => null) : null
+
+const { currentPage, currentPageSize, pageCount, records } =
+    await paginator(
+        // Filter function for searching
+        (recordArr) => useFuzzySearch(recordArr, searchFields, searchPhrase.value)
+    );
+
+const selectAll = () => selectedIds.value = [...records.value.map(record => record[idProperty])];
+
+const deselectAll = () => selectedIds.value = [];
 
 const toggleSelectMode = () => {
     selectMode.value = !selectMode.value;
     deselectAll()
 }
+
+const toggleSelected = (id: R[ID]) => selectedIds.value = [...(selectedIds.value.includes(id) ? selectedIds.value.filter(x => x != id) : [...selectedIds.value, id])]
 </script>
 
 <style scoped>

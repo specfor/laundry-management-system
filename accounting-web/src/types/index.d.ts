@@ -1,6 +1,6 @@
 import { Object, Number } from 'ts-toolbelt'
 import { Decimal } from "decimal.js";
-import { Ref } from "vue";
+import { Ref, ComputedRef } from "vue";
 
 type Float = `${number}.${number}`;
 type DateString = `${number}-${number}-${number}`;
@@ -10,7 +10,8 @@ type DateString = `${number}-${number}-${number}`;
 export interface LedgerRecord {
     record_id: number
     narration: string // "buying some blue berries"
-    date: Date
+    date: Date,
+    totalAmount: Decimal,
     body: Object.Either<{
         account_id: number
         debit: Decimal
@@ -53,14 +54,17 @@ export interface FinancialAccount {
 export interface RawLedgerRecord {
     record_id: number
     narration: string // "buying some blue berries"
-    date: string // yyyy-mm-dd
-    body: Object.Either<{
-        account_id: number
-        debit: string
-        credit: string
-        description: string
-    }, 'credit' | 'debit'>[] // | Either Debit or Credit, having both parameters set will result in an error
+    date: string // yyyy-mm-dd,
+    tot_amount: string,
+    body: string
 }
+
+export type RawLedgerRecordBody = Object.Either<{
+    account_id: number
+    debit: string
+    credit: string
+    description: string
+}, 'credit' | 'debit'>[] // | Either Debit or Credit, having both parameters set will result in an error
 
 export interface RawTax {
     tax_id: number
@@ -215,10 +219,14 @@ export type GenericComponentInstance<C> = InstanceType<PseudoComponent<C>> | nul
 // A helper type to get the element type of an array
 export type ArrayElement<ArrayType extends readonly unknown[]> = ArrayType extends readonly (infer ElementType)[] ? ElementType : never;
 
-export type TransformerFunc<T, R extends T> = (arg: T) => R
+export type TransformerFunc<R, RT extends R> = (arg: R) => RT
 
-export type PaginationAdapter<TransformerType extends TransformerFunc> = (
-    transformer: TransformerType
-) => { currentPage: Ref<number>, pageCount: ComputedRef<number>, currentPageSize: Ref<number>, pageData: ComputedRef<T[]> }
+export type FilterType<TF> = TF extends TransformerFunc<infer R, infer RT> ? (records: RT[]) => RT[] : never
+
+export type PaginationAdapter<Record> = (
+    ...filters: ((records: Record[]) => Record[])[]
+) => Promise<{ currentPage: Ref<number>, pageCount: ComputedRef<number>, currentPageSize: Ref<number>, records: Ref<Record[]> }>
+
+export type MaybeRefOrComputedRef<T> = Ref<T> | ComputedRef<T>
 
 export as namespace Types;

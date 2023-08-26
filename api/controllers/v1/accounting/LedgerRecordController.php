@@ -12,12 +12,13 @@ class LedgerRecordController extends Controller
     {
         self::checkPermissions(['financial_accounts' => [User::PERMISSION_READ]]);
 
+        $recordId = self::getParameter('record_id', dataType: 'int');
         $pageNumber = self::getParameter('page-num', defaultValue: 0, dataType: 'int');
         $narration = self::getParameter('narration');
         $date = self::getParameter('date');
         $limit = self::getParameter('limit', defaultValue: 30, dataType: 'int');
 
-        [$data, $count] = GeneralLedger::getLedgerRecords($pageNumber, $narration, $date, $limit);
+        [$data, $count] = GeneralLedger::getLedgerRecords($pageNumber, $recordId, $narration, $date, $limit);
         self::sendSuccess(['records' => $data, 'record_count' => $count]);
     }
 

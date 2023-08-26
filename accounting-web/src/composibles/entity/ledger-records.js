@@ -11,16 +11,17 @@ export function useLedgerRecords() {
 
     /** Notification provider has to be inject here, which will most likely be run at setup() function of a Component. (inject() can only be used in setup()) */
     const notificationInjection = useNotifications().injectNotifications()
-    
+
     /**
      * Converts the Raw response from the server into a entity object
      * @param {import("../../types").RawLedgerRecord} rawLedgerRecord Raw response from the backend.
      * @returns {import("../../types").LedgerRecord}
      */
-    const serialize = ({ date, body, ...rest }) => ({
+    const serialize = ({ date, body, tot_amount, ...rest }) => ({
         ...rest,
         date: new Date(date),
-        body: body.map(({ credit, debit, ...remainder }) => ({
+        totalAmount: new Decimal(tot_amount),
+        body: ( /** @type {import("../../types").RawLedgerRecordBody} */ (JSON.parse(body))).map(({ credit, debit, ...remainder }) => ({
             ...remainder,
             ...(credit ? { credit: new Decimal(credit) } : { debit: new Decimal(debit ?? "") })
         }))
@@ -53,6 +54,56 @@ export function useLedgerRecords() {
             whenever(logicAnd(isFinished, success), () => {
                 const rawLedgerRecords = /** @type {import("../../types").RawLedgerRecord[] }*/(toValue(data).records);
                 resolve(rawLedgerRecords.map(serialize));
+            })
+            whenever(logicAnd(isFinished, logicNot(success)), () => reject())
+        })
+    }
+
+    /**
+     * Get ledger records filtred by date or narration
+     * @param {number} limit
+     * @param {number} page
+     * @param {Date} [date]
+     * @param {string} [narration]
+     * @param {AbortSignal} [abortSignal]
+     * @returns {Promise<{records: import("../../types").LedgerRecord[], recordCount: number}>}
+     */
+    const getLedgerRecordsFiltered = async (limit, page, date, narration, abortSignal) => {
+        return new Promise((resolve, reject) => {
+            const queryString = "?" + [
+                `limit=${limit}`,
+                `page-num=${page - 1}`,
+                date ? `date=${date.toLocaleDateString('en-CA')}` : "",
+                narration ? `narration=${narration}` : ""
+            ].filter(x => x != "").join("&");
+
+            const success = ref(false);
+            const { data, isFinished } = useAuthorizedFetch(`/general-ledger${queryString}`, 'Get Ledger Records', success, notificationInjection, false, abortSignal).json().get();
+
+            whenever(logicAnd(isFinished, success), () => {
+                const rawLedgerRecords = /** @type {import("../../types").RawLedgerRecord[] }*/(toValue(data).records);
+                resolve({
+                    recordCount: /** @type {number}*/(toValue(data).record_count),
+                    records: rawLedgerRecords.map(serialize)
+                });
+            })
+
+            whenever(logicAnd(isFinished, logicNot(success)), () => reject())
+        })
+    }
+
+    /**
+     * Get ledger record count
+     * @returns {Promise<number>}
+     */
+    const getLedgerRecordCount = async () => {
+        return new Promise((resolve, reject) => {
+            const success = ref(false);
+            const { data, isFinished } = useAuthorizedFetch(`/general-ledger`, 'Get Ledger Records', success, notificationInjection).json().get();
+
+            whenever(logicAnd(isFinished, success), () => {
+                const recordCount = /** @type {number}*/(toValue(data).record_count);
+                resolve(recordCount);
             })
             whenever(logicAnd(isFinished, logicNot(success)), () => reject())
         })
@@ -109,5 +160,5 @@ export function useLedgerRecords() {
         })
     }
 
-    return { addLedgerRecord, getLedgerRecords, getLedgerRecordsByDate, getLedgerRecordsByNarration }
+    return { addLedgerRecord, getLedgerRecords, getLedgerRecordCount, getLedgerRecordsByDate, getLedgerRecordsByNarration, getLedgerRecordsFiltered }
 }
