@@ -24,6 +24,11 @@
             <a>Tax Types</a>
         </li>
     </router-link>
+    <router-link :to="{ name: 'LedgerRecords' }" @click.native="$emit('onMenuItemClick')">
+        <li>
+            <a>Ledger Records</a>
+        </li>
+    </router-link>
     <router-link :to="{ name: 'LedgerEntry' }" @click.native="$emit('onMenuItemClick')">
         <li>
             <a>Ledger Record Entry</a>

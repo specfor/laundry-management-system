@@ -26,7 +26,9 @@ export function useNormalPaginationAdapter(
             pageSize: 10
         });
 
-        const records = /** @type {import("vue").Ref<T[]>} */ (ref([]))
+        const records = /** @type {import("vue").Ref<T[]>} */ (ref(
+            filterArray(_records, ...filters).filter(filter.value).sort(sorter.value).slice((currentPage.value - 1) * currentPageSize.value, ((currentPage.value - 1) * currentPageSize.value) + currentPageSize.value)
+        ))
 
         watch([currentPage, currentPageSize, filter, sorter], ([newCurrentPage, newCurrentPageSize, newFilter, newSorter]) => {
             records.value = filterArray(records.value, ...filters).filter(newFilter).sort(newSorter).slice((newCurrentPage - 1) * newCurrentPageSize, ((newCurrentPage - 1) * newCurrentPageSize) + newCurrentPageSize)
