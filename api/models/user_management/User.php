@@ -262,7 +262,7 @@ class User extends DbModel
         $filters = [];
         $placeholders = [];
 
-        $filters[]="user_id=$userId";
+        $filters[] = "user_id=$userId";
         if ($date) {
             $filters[] = "logged_at like :date";
             $placeholders['date'] = "$date%";
@@ -273,7 +273,7 @@ class User extends DbModel
         }
 
         $condition = implode(' AND ', $filters);
-        $data = self::getDataFromTable(['id', 'ip_addr','logged_at'], 'user_status', $condition, $placeholders, ['id', 'desc'],
+        $data = self::getDataFromTable(['id', 'ip_addr', 'logged_at'], 'user_status', $condition, $placeholders, ['id', 'desc'],
             [$startingIndex, $limit])->fetchAll(PDO::FETCH_ASSOC);
         $count = self::countTableRows('user_status', $condition, $placeholders);
         return [$data, $count];
@@ -321,6 +321,37 @@ class User extends DbModel
             }
         }
         return false;
+    }
+
+    /**
+     * Check whether there is a user with given username or email. If found any user, returns his user-id
+     * @param string|null $username
+     * @param string|null $email
+     * @return int Returns user id if user is found, -1 otherwise.
+     */
+    public static function userExists(string $username = null, string $email = null): int
+    {
+        $userId = -1;
+        if (empty($username) && empty($email))
+            return $userId;
+
+        $filters = [];
+        $placeholders = [];
+        if ($username) {
+            $filters[] = "username=:username";
+            $placeholders['username'] = $username;
+        }
+        if ($email) {
+            $filters[] = 'email=:email';
+            $placeholders['email'] = $email;
+        }
+        $condition = implode(' or ', $filters);
+        $data = self::getDataFromTable(['id'], self::TABLE_NAME, $condition, $placeholders)
+            ->fetch(PDO::FETCH_ASSOC);
+
+        if (empty($data))
+            return $userId;
+        return $data['id'];
     }
 
     public static function getNumberOfUsers(int $userRole): int
