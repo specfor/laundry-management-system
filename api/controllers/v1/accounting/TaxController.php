@@ -36,8 +36,8 @@ class TaxController extends Controller
         $rateMax = self::getParameter('rate-max', dataType: 'float');
         $limit = self::getParameter('limit', defaultValue: 30, dataType: 'int');
 
-        [$taxes, $count] = Taxes::getTaxes($pageNumber, $taxId, $name, $description, $rateMin, $rateMax, $limit);
-        self::sendSuccess(['taxes' => $taxes, 'record_count'=>$count]);
+        $data = Taxes::getTaxes($pageNumber, $taxId, $name, $description, $rateMin, $rateMax, $limit);
+        self::sendSuccess($data);
     }
 
     public function updateTax(): void

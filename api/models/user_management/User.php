@@ -212,7 +212,7 @@ class User extends DbModel
             $data[$i]['role'] = UserRoles::getUserRoleText($data[$i]['role']);
         }
         $count = self::countTableRows(self::TABLE_NAME, $condition, $placeholders);
-        return [$data, $count];
+        return ['users' => $data, 'record_count' => $count];
     }
 
     public static function updateUser(
@@ -276,7 +276,7 @@ class User extends DbModel
         $data = self::getDataFromTable(['id', 'ip_addr', 'logged_at'], 'user_status', $condition, $placeholders, ['id', 'desc'],
             [$startingIndex, $limit])->fetchAll(PDO::FETCH_ASSOC);
         $count = self::countTableRows('user_status', $condition, $placeholders);
-        return [$data, $count];
+        return ['history' => $data, 'record_count' => $count];
     }
 
 

@@ -18,8 +18,8 @@ class OrderController extends Controller
         $addedDate = self::getParameter('added-date');
         $orderStatus = self::getParameter('order-status');
 
-        [$orders, $count] = Orders::getOrders($pageNumber, $orderId, $addedDate, $branchId, $orderStatus);
-        self::sendSuccess(['orders' => $orders, 'record_count' => $count]);
+        $data = Orders::getOrders($pageNumber, $orderId, $addedDate, $branchId, $orderStatus);
+        self::sendSuccess($data);
     }
 
     public function addOrder(): void

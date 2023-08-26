@@ -33,8 +33,8 @@ class AccountTotalsController extends Controller
             $dates = explode(',', $dates);
 
         AccountTotals::calculateAccountTotals();
-        [$totals, $count] = AccountTotals::getTotalsByDate($accountId, $dates, $month, $year);
-        self::sendSuccess(['account-totals' => $totals, 'record_count' => $count]);
+        $data = AccountTotals::getTotalsByDate($accountId, $dates, $month, $year);
+        self::sendSuccess(['account-totals' => $data['totals'], 'record_count' => $data['record_count']]);
     }
 
     public function getTotalByMonth(): void
@@ -46,8 +46,8 @@ class AccountTotalsController extends Controller
         $year = self::getParameter('year', dataType: 'int');
 
         AccountTotals::calculateAccountTotals();
-        [$totals, $count] = AccountTotals::getTotalsByMonth($accountId, $month, $year);
-        self::sendSuccess(['account-totals' => $totals, 'record_count' => $count]);
+        $data = AccountTotals::getTotalsByMonth($accountId, $month, $year);
+        self::sendSuccess(['account-totals' => $data['totals'], 'record_count' => $data['record_count']]);
     }
 
     public function getTotalByYear(): void
@@ -58,8 +58,9 @@ class AccountTotalsController extends Controller
         $year = self::getParameter('year', dataType: 'int');
 
         AccountTotals::calculateAccountTotals();
-        [$totals, $count] = AccountTotals::getTotalsByYear($accountId, $year);
-        self::sendSuccess(['account-totals' => $totals, 'record_count' => $count]);
+        $data = AccountTotals::getTotalsByYear($accountId, $year);
+        self::sendSuccess(['account-totals' => $data['totals'], 'record_count' => $data['record_count']]);
+
     }
 
 }

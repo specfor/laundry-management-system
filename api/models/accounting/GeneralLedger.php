@@ -40,7 +40,7 @@ class GeneralLedger extends DbModel
 
         $count = self::countTableRows(self::TABLE_NAME, $condition, $placeholders);
 
-        return [$data, $count];
+        return ['records'=>$data, 'record_count'=>$count];
     }
 
     public static function createLedgerRecord(string $narration, array $body, string $taxType = 'tax exclusive',

@@ -145,7 +145,7 @@ class AccountTotals extends DbModel
         $totals = self::getDataFromTable(['account_id', 'date', 'credit', 'debit'], self::TABLE_NAME,
             $condition, $placeholders, ['date', 'desc'])->fetchAll(PDO::FETCH_ASSOC);
         $count = self::countTableRows(self::TABLE_NAME, $condition, $placeholders);
-        return [$totals, $count];
+        return ['totals' => $totals, 'record_count' => $count];
     }
 
     public static function getTotalsByMonth(int $accountId = null, int $month = null, int $year = null): array
@@ -194,7 +194,7 @@ class AccountTotals extends DbModel
             }
         }
         $count = count($monthRecords);
-        return [$monthRecords, $count];
+        return ['totals' => $monthRecords, 'record_count' => $count];
     }
 
     public static function getTotalsByYear(int $accountId = null, int $year = null): array
@@ -235,6 +235,6 @@ class AccountTotals extends DbModel
             }
         }
         $count = count($yearRecords);
-        return [$yearRecords, $count];
+        return ['totals' => $yearRecords, 'record_count' => $count];
     }
 }

@@ -56,7 +56,7 @@ class UserRoles extends DbModel
             }
         }
         $count = self::countTableRows(self::TABLE_NAME, $condition, $placeholders);
-        return [$data, $count];
+        return ['user-roles' => $data, 'record_count' => $count];
     }
 
     public static function createUserRole(string $name, array $permissions, string $description = null): bool|array|string
@@ -168,8 +168,8 @@ class UserRoles extends DbModel
     public static function getUserRoleText(int $role): string
     {
         $userRole = self::getUserRoles(roleId: $role);
-        if (empty($userRole))
+        if (empty($userRole['user-roles']))
             return 'NO ROLE';
-        return $userRole[0]['name'];
+        return $userRole['user-roles'][0]['name'];
     }
 }

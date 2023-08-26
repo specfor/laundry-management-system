@@ -39,8 +39,8 @@ class UserController extends Controller
         $role = self::getParameter('role');
         $branchId = self::getParameter('branch-id', dataType: 'int');
 
-        [$data, $count] = User::getUsers($pageNum, $username, $name, $email, $role, $branchId);
-        self::sendSuccess(['users' => $data, 'record_count' => $count]);
+        $data = User::getUsers($pageNum, $username, $name, $email, $role, $branchId);
+        self::sendSuccess($data);
     }
 
     public function deleteUser(): void
@@ -94,8 +94,8 @@ class UserController extends Controller
         $ipAddress = self::getParameter('ip-address');
         $pageNumber = self::getParameter('page-num', defaultValue: 0, dataType: 'int');
 
-        [$data, $count] = User::getUserLoginHistory($userId, $date, $ipAddress, $pageNumber);
-        self::sendSuccess(['history' => $data, 'record_count' => $count]);
+        $data = User::getUserLoginHistory($userId, $date, $ipAddress, $pageNumber);
+        self::sendSuccess($data);
     }
 
     public function sendPasswordResetLink(): void

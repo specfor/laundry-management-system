@@ -141,7 +141,7 @@ class Orders extends DbModel
         $customerData = self::getCustomerData($customerIDs);
 
         foreach ($orders as &$order) {
-            $paymentData = Payments::getPayments(orderId: $order['order_id'], limit: 1000);
+            $paymentData = Payments::getPayments(orderId: $order['order_id'], limit: 1000)['payments'];
             foreach ($paymentData as &$paymentDatum) {
                 unset($paymentDatum['order_id']);
             }
@@ -178,8 +178,8 @@ class Orders extends DbModel
             }
         }
         unset($order, $item);
-        $count = self::countTableRows('orders', $condition,$placeholders);
-        return [$orders,$count];
+        $count = self::countTableRows('orders', $condition, $placeholders);
+        return ['orders' => $orders, 'record_count' => $count];
     }
 
     public static function updateOrder(int $orderId, int $branchId = null, string $orderStatus = null,
