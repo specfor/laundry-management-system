@@ -94,6 +94,37 @@
                             </div>
                         </div>
 
+                        <!-- Sort by record created date ASC/DSC -->
+                        <div class="form-control w-full max-w-xs flex">
+                            <label class="label">
+                                <span class="label-text">Sort by record created date</span>
+                            </label>
+                            <div class="flex flex-row items-center gap-4">
+                                <el-radio-group v-model="createdAtSortRef" size="small">
+                                    <el-radio-button label="ASC">
+                                        <svg class="w-3 h-3 text-gray-800 dark:text-white stroke-black" aria-hidden="true"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M13 7 7.674 1.3a.91.91 0 0 0-1.348 0L1 7" />
+                                        </svg>
+                                    </el-radio-button>
+                                    <el-radio-button label="DSC">
+                                        <svg class="w-3 h-3 text-gray-800 dark:text-white stroke-black" aria-hidden="true"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="m1 1 5.326 5.7a.909.909 0 0 0 1.348 0L13 1" />
+                                        </svg>
+                                    </el-radio-button>
+                                </el-radio-group>
+                                <svg @click="dateSortRef = undefined"
+                                    class="w-4 h-4 cursor-pointer text-gray-800 dark:text-white fill-gray-800"
+                                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                    <path
+                                        d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 11.793a1 1 0 1 1-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 0 1-1.414-1.414L8.586 10 6.293 7.707a1 1 0 0 1 1.414-1.414L10 8.586l2.293-2.293a1 1 0 0 1 1.414 1.414L11.414 10l2.293 2.293Z" />
+                                </svg>
+                            </div>
+                        </div>
+
                         <!-- Sort by narration ASC/DSC -->
                         <div class="form-control w-full max-w-xs flex">
                             <label class="label">
@@ -166,12 +197,12 @@
 
             <template #date="{ record }">
                 <span class="text-base block">
-                    <UseTimeAgo v-slot="{ timeAgo }" :time="record.date">
-                        {{ timeAgo }}
-                    </UseTimeAgo>
+                    {{ record.date.toDateString() }}
                 </span>
                 <span class="text-sm text-slate-700">
-                    {{ record.date.toDateString() + record.date.toTimeString() }}
+                    <UseTimeAgo v-slot="{ timeAgo }" :time="record.createdAt">
+                        Created: {{ timeAgo }}
+                    </UseTimeAgo>
                 </span>
             </template>
 
@@ -212,13 +243,14 @@ import router from '../router';
 import { UseTimeAgo } from "@vueuse/components";
 import { alphabeticalSorter, dateSorter, decimalSorter } from '../util/sorters';
 import { useToggleGroupRef } from '../composibles/toggle-group-ref';
+import { useCreateSorter } from '../composibles/create-sorter';
 
 // Defining generics of above imported generic elements
 // https://play.vuejs.org/#eNp9U8Fu2zAM/RVCl3RAER96C5wAWxEM22ErstyiHDybTtTakiDKTQLD/z5KTmN72HKxRfGR4iMfW/HZ2vl7g2IhUsqdsh4IfWOhyvRhKYUnKVZSq9oa56EFOmZVZU4bLKGD0pkaZhw9k/qG+YoancqfTW17gBTzJFjhGSkiUnt0ZZYjPDfkTb3B3LgCWqkBVLEA8k7pQ7B0VuNgdyE4N5o8KI81LIeQmSpmj0PELPzCRQeUeUWlQpo8Ns1EnGpglo6Bu/3qYRcw+09DTO+KFJdjwpNIblua9D3lIxucxFaZR7YA0lGORayBux3/UkASY0d48ciT4LdLdZi/ktE8rkhdipwTqArdT+sV1ybFom9K8EVC3+Oddw3G/sSYI+Zv/7h/pXO4k+LFIaF753HdfD5zB/S9e/3rB575fHPWpmgqRt9xbpBM1YQae9iXRhdc9ggXq/0WRcTT3tL67FHTB6lQaEB2ES8Fiyn07n/Uh3Kf5k8xjrXAXfwQ4j29w6GfKJtbYC6oC4K19spf4jIkCazP1zJBEWjMkShzF/jdBD3Bybg3OCl/hH4nIu6m+YzAXyyTwZhk5Onf6Ek4zAqjq8tkIeICDPgXZyxddyAoZwHb3X6yJjYillBgqTRGfBq/qweW8z15Woertr0m6Lo0CRd/q7L7A7+qe+c=
 // https://github.com/vuejs/rfcs/discussions/436#discussioncomment-6317743
 const RecordTable = RecordTableGeneric<LedgerRecord, never, 'record_id'>;
 
-const { getLedgerRecordCount, getLedgerRecordsFiltered } = useLedgerRecords()
+const { getLedgerRecordsFiltered } = useLedgerRecords()
 
 // References to template elements
 // https://github.com/vuejs/core/issues/8373
@@ -230,32 +262,14 @@ const searchPhrase = ref("");
 const selectedDate = ref(undefined) as Ref<undefined | Date>
 
 // Refs for Sorting types
-const [dateSortRef, narrationSortRef, totalAmountSortRef] = useToggleGroupRef<"ASC" | "DSC">(3);
-
-// By default records will be sorted by date Descendingly
-dateSortRef.value = "DSC";
-
-const sortMode = computed(() => [
-    dateSortRef.value ? ["Date", dateSortRef.value] as const : null,
-    narrationSortRef.value ? ["Narration", narrationSortRef.value] as const : null,
-    totalAmountSortRef.value ? ["Total Amount", totalAmountSortRef.value] as const : null,
-].find(x => x != null) ?? [undefined, undefined])
-
-const sorter = computed(() => {
-    const [sortBy, sortDirection] = sortMode.value;
-    // A little helper function
-    const sortSideSwtich = (direction: "ASC" | "DSC" | undefined, sorter: () => number) => direction == "ASC" || !direction ? sorter() : -sorter()
-
-    switch (sortBy) {
-        case "Date":
-            return (a: LedgerRecord, b: LedgerRecord) => sortSideSwtich(sortDirection, () => dateSorter(a.date, b.date))
-        case "Narration":
-            return (a: LedgerRecord, b: LedgerRecord) => sortSideSwtich(sortDirection, () => alphabeticalSorter(a.narration, b.narration))
-        case "Total Amount":
-            return (a: LedgerRecord, b: LedgerRecord) => sortSideSwtich(sortDirection, () => decimalSorter(a.totalAmount, b.totalAmount))
-        default:
-            return (a: LedgerRecord, b: LedgerRecord) => sortSideSwtich(sortDirection, () => dateSorter(a.date, b.date))
-    }
+const { createdAtSortRef, dateSortRef, narrationSortRef, totalAmountSortRef, sorter, clearAll } = useCreateSorter<LedgerRecord, "date">({
+    createdAt: dateSorter,
+    date: dateSorter,
+    narration: alphabeticalSorter,
+    totalAmount: decimalSorter
+}, {
+    propertyKey: "date",
+    sorter: dateSorter
 })
 
 const abortController = new AbortController()
@@ -274,8 +288,6 @@ const loadAccount = computed(() => {
         )
 })
 
-watch([loadAccount, sorter], () => console.log('Changed'))
-
 const paginator = useCustomPaginationAdapter<LedgerRecord>(
     loadAccount,
     abortController,
@@ -292,12 +304,7 @@ const handleAddNewRecord = () => {
     router.push({ name: 'LedgerEntry' })
 }
 
-const clearFilters = () => {
-    selectedDate.value = undefined;
-    dateSortRef.value = undefined;
-    narrationSortRef.value = undefined;
-    totalAmountSortRef.value = undefined;
-}
+const clearFilters = () => clearAll()
 </script>
 
 <style scoped>

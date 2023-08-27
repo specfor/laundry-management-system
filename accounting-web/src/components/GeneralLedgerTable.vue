@@ -40,39 +40,38 @@
                             <td>{{ record.description }}</td>
                             <td>
                                 <span>{{ record.account.name }}</span>
-                                <p v-if="record.account.description" class="text-ellipsis">{{ record.account.description.length > 100 ?
+                                <p v-if="record.account.description" class="text-ellipsis">{{
+                                    record.account.description.length > 100 ?
                                     record.account.description.slice(0, 60)
                                     +
                                     "..." : record.account.description }} </p>
                             </td>
                             <td>
-                                <!-- Check if the account's tax rate has been overridden -->
-                                <template v-if="record.account.tax_id != record.tax.tax_id">
-                                    <div class="tooltip tooltip-top" data-tip="Overridden">
-                                        <span class="text-base block">
-                                            {{ record.tax.name }}
-                                        </span>
-                                        <span class="text-sm text-slate-700">
-                                            {{ toReadable(record.tax.tax_rate) }}%
-                                        </span>
-                                    </div>
-                                </template>
-                                <template v-else>
+                                <div class="flex flex-row justify-start gap-2 items-center">
                                     <span class="text-base block">
                                         {{ record.tax.name }}
                                     </span>
-                                    <span class="text-sm text-slate-700">
-                                        {{ toReadable(record.tax.tax_rate) }}%
-                                    </span>
-                                </template>
+                                    <!-- Check if the account's tax rate has been overridden -->
+                                    <div v-if="record.account.tax_id != record.tax.tax_id" class="tooltip tooltip-top"
+                                        data-tip="Overridden">
+                                        <svg class="w-4 h-4 text-gray-800 dark:text-white stroke-error" aria-hidden="true"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M8 9h2v5m-2 0h4M9.408 5.5h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <span class="text-sm text-slate-700">
+                                    {{ toReadable(record.tax.tax_rate) }}%
+                                </span>
                             </td>
                             <td class="!text-right">
                                 <span class="!text-base">{{ record.credit ? toReadable(record.credit) : "" }}</span>
-                                
+
                             </td>
                             <td class="!text-right">
                                 <span class="!text-base">{{ record.debit ? toReadable(record.debit) : "" }}</span>
-                                
+
                             </td>
                         </tr>
 
@@ -123,7 +122,7 @@
 import Decimal from "decimal.js";
 import { useLedgerRecords } from "../composibles/entity/ledger-records";
 import { useTaxes } from "../composibles/entity/taxes";
-import type { FinancialAccount, LedgerRecord, Tax } from "../types";
+import type { FinancialAccount, LedgerRecord, LedgerRecordWithTaxAndAccountData, Tax } from "../types";
 import type { Object } from 'ts-toolbelt'
 import { UseTimeAgo } from '@vueuse/components'
 import { useFinancialAccounts } from "../composibles/entity/financial-accounts";
@@ -140,17 +139,16 @@ type EnrichedLedgerRecord = {
     },
     createdAt: Date
     body: Object.Either<{
-        account: FinancialAccount
+        account: Pick<FinancialAccount, "name" | "tax_id" | "description">
         debit: Decimal
         credit: Decimal
         description: string
-        tax: Tax
+        tax: Pick<Tax, "tax_rate" | "name" | "tax_id">
     }, 'credit' | 'debit'>[]
 }
 
 const { getLedgerRecordById } = useLedgerRecords();
-const { getTax } = useTaxes()
-const { getFinancialAccountById, getSalesTaxAccount } = useFinancialAccounts()
+const { getSalesTaxAccount } = useFinancialAccounts()
 
 const { ids } = defineProps<{
     ids: number[]
@@ -158,23 +156,7 @@ const { ids } = defineProps<{
 
 const records =
     await Promise.all(ids.map(id => getLedgerRecordById(id).catch(() => undefined)))
-        .then(data => data.filter(x => x) as LedgerRecord[])
-
-const taxes = await Promise.all(
-    records.map(
-        record => record.body
-            .map(x => x.tax_id)
-            .map(id => getTax(id).catch(() => undefined))
-    ).flat()
-).then(data => data.filter(x => x) as Tax[])
-
-const accounts = await Promise.all(
-    records.map(
-        record => record.body
-            .map(x => x.account_id)
-            .map(id => getFinancialAccountById(id).catch(() => undefined))
-    ).flat()
-).then(data => data.filter(x => x) as FinancialAccount[])
+        .then(data => data.filter(x => x) as LedgerRecordWithTaxAndAccountData[])
 
 const salesTaxAccount = await getSalesTaxAccount().catch(() => undefined);
 
@@ -201,10 +183,18 @@ const enrichedRecords: EnrichedLedgerRecord[] = records.map(({ body, ...rest }) 
             debit: debitTaxTotal,
             credit: creditTaxTotal
         },
-        body: normalRecords.map(({ account_id, tax_id, ...remainder }) => ({
+        body: normalRecords.map(({ account_name, tax_id, tax_name, tax_rate, account_description, account_tax_id, ...remainder }) => ({
             ...remainder,
-            account: accounts.find(acc => acc.account_id == account_id),
-            tax: taxes.find(tax => tax.tax_id == tax_id)
+            account: {
+                name: account_name,
+                description: account_description,
+                tax_id: account_tax_id
+            },
+            tax: {
+                tax_id,
+                tax_rate,
+                name: tax_name
+            }
         })).filter(item => item.account && item.tax) as EnrichedLedgerRecord['body']
     }
 })
@@ -249,7 +239,7 @@ const netTotal = enrichedRecords.reduce((acc, curr) => acc.add(curr.totalAmount)
     @apply p-3;
 }
 
-.entry-summary-row td{
+.entry-summary-row td {
     @apply py-1 text-gray-600 px-3;
 }
 
