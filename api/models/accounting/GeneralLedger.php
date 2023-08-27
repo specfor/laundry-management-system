@@ -42,9 +42,35 @@ class GeneralLedger extends DbModel
         $data = self::getDataFromTable(['*'], self::TABLE_NAME, $condition, $placeholders,
             ['record_id', 'desc'], [$startingIndex, $limit])->fetchAll(PDO::FETCH_ASSOC);
 
+        foreach ($data as &$record) {
+            if ($record['tax_type'] === self::TAX_TYPE_NO_TAX)
+                $record['tax_type'] = 'no tax';
+            elseif ($record['tax_type'] === self::TAX_TYPE_TAX_INCLUSIVE)
+                $record['tax_type'] = 'tax inclusive';
+            elseif ($record['tax_type'] === self::TAX_TYPE_TAX_EXCLUSIVE)
+                $record['tax_type'] = 'tax exclusive';
+        }
+        unset($record);
+
+        if (!empty($data))
+            $data[0]['body'] = json_decode($data[0]['body'], true);
+
+        if ($recordId && !empty($data)) {
+            foreach ($data[0]['body'] as &$record) {
+                if (isset($record['tax_id'])) {
+                    $taxData = Taxes::getTaxes(taxId: $record['tax_id'])['taxes'][0];
+                    $record['tax_name'] = $taxData['name'];
+                    $record['tax_rate'] = $taxData['tax_rate'];
+                }
+                $accountData = Accounting::getAccounts(accountId: $record['account_id'])['accounts'][0];
+                $record['account_name'] = $accountData['name'];
+            }
+            unset($record);
+        }
+
         $count = self::countTableRows(self::TABLE_NAME, $condition, $placeholders);
 
-        return ['records'=>$data, 'record_count'=>$count];
+        return ['records' => $data, 'record_count' => $count];
     }
 
     public static function createLedgerRecord(string $narration, array $body, string $taxType = 'tax exclusive',

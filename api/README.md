@@ -375,6 +375,7 @@ Parameters
 page-num
 narration
 date
+record-id
 limit - no of records to return
 
 POST - /api/v1/general-ledger/add 
