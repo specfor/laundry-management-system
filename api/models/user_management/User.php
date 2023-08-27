@@ -2,6 +2,11 @@
 
 namespace LogicLeap\StockManagement\models\user_management;
 
+use DateInterval;
+use DateTime;
+use LogicLeap\PhpServerCore\FileHandler;
+use LogicLeap\PhpServerCore\SecureToken;
+use LogicLeap\PhpServerCore\SendMail;
 use LogicLeap\StockManagement\models\DbModel;
 use PDO;
 
@@ -253,6 +258,44 @@ class User extends DbModel
         if (self::updateTableData('users', $updateFields, "id=$userId"))
             return true;
         return false;
+    }
+
+    public static function sendPassResetEmail(string $usernameOrEmail): bool|string
+    {
+        $userId = self::userExists($usernameOrEmail, $usernameOrEmail);
+
+        if ($userId > 0) {
+            $userEmail = self::getUsers(userId: $userId)['users'][0]['email'];
+            if ($userEmail) {
+                // Invalidate old reset tokens
+                $oldTokens = self::getDataFromTable(['id'], 'reset_pass_tokens', "user_id=$userId",
+                    orderBy: ['id', 'desc'])->fetch(PDO::FETCH_ASSOC);
+                if (!empty($oldTokens)) {
+                    if (!self::updateTableData('reset_pass_tokens', ['valid' => false], "id=" . $oldTokens['id']))
+                        return 'An error occurred while creating the password reset link.';
+                }
+
+                // Create new reset token
+                $token = SecureToken::generateToken();
+                $template = FileHandler::getFileContent("/mail_templates/passReset.html", true);
+                $resetLink = "https://" . SYSTEM_DOMAIN . "/api/v1/profile/password-reset?token=$token";
+                $template = str_replace('{{pass-reset-link}}', $resetLink, $template);
+
+                $now = new DateTime('now');
+                $expTime = $now->add(DateInterval::createFromDateString(24 * 60 * 60 . ' seconds'));
+                $expTime = $expTime->format('Y-m-d H:i:s');
+
+                $params = ['user_id' => $userId, 'token' => $token, 'expire_at' => $expTime, 'used' => false, 'valid' => true];
+                if (self::insertIntoTable('reset_pass_tokens', $params) === false)
+                    return 'An error occurred while creating the password reset link.';
+
+                $mail = new SendMail($userEmail, 'noreply@' . SYSTEM_DOMAIN,
+                    'Password Reset Link', $template, isHTML: true);
+                if (!$mail->sendMail())
+                    return "Failed to send the email with the password reset link.";
+            }
+        }
+        return true;
     }
 
     public static function getUserLoginHistory(int $userId, string $date = null, string $ipAddress = null,

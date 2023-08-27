@@ -2,6 +2,7 @@
 
 namespace LogicLeap\StockManagement\controllers\v1\user_management;
 
+use LogicLeap\PhpServerCore\FileHandler;
 use LogicLeap\PhpServerCore\SendMail;
 use LogicLeap\StockManagement\controllers\v1\Controller;
 use LogicLeap\StockManagement\models\user_management\User;
@@ -104,12 +105,11 @@ class UserController extends Controller
 
         $usernameOrEmail = self::getParameter('username-or-email', isCompulsory: true);
 
-        $mail = new SendMail('vihanga2003nimsara@gmail.com', 'noreply@newsystem.logicleapsolutions.lk',
-            'Password Reset', 'Use the following link to reset your password.\n\nhttps://newsystem.logicleapsolutions.lk/dashboard/');
-        $status = $mail->sendMail();
-        if ($status)
-            self::sendSuccess('Mail sent.');
+        $status = User::sendPassResetEmail($usernameOrEmail);
+        if ($status === true)
+            self::sendSuccess('If there is any user with the given username/email, password reset link ' .
+                'will be sent to the email linked to the account.');
         else
-            self::sendError('failed to send the mail.');
+            self::sendError($status);
     }
 }

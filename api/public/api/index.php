@@ -28,6 +28,8 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 $dotenv = Dotenv::createImmutable(dirname(__DIR__, 2));
 $dotenv->load();
 
+define("SYSTEM_DOMAIN", $_ENV['SYSTEM_DOMAIN']);
+
 $config = [
     'rootPath' => dirname(__DIR__,2),
     'db' => [
@@ -84,6 +86,7 @@ $app->router->addPostRoute('/api/v1/user-roles/add', [UserRoleController::class,
 $app->router->addPostRoute('/api/v1/user-roles/update', [UserRoleController::class, 'updateUserRole']);
 $app->router->addPostRoute('/api/v1/user-roles/delete', [UserRoleController::class, 'deleteUserRole']);
 $app->router->addGetRoute('/api/v1/users/login-history', [UserController::class, 'getUserLoginHistory']);
+$app->router->addPostRoute('/api/v1/login/send-reset-mail', [UserController::class, 'sendPasswordResetLink']);
 
 // Accounting routes
 $app->router->addGetRoute('/api/v1/taxes', [TaxController::class, 'getTaxes']);
