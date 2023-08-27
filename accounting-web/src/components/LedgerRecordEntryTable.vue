@@ -679,13 +679,13 @@ const saveRecords = async () => {
                 description: description ?? "",
                 tax_id: /** @type {number} */ (taxId),
                 account_id: /** @type {number} */ (accountId),
-                credit: credit.amount
+                credit: credit.baseAmount
             })),
             ...splitComputedRowsToCreditDebit(computedRows.value).debitRows.map(({ debit, taxId, accountId, description }) => ({
                 description: description ?? "",
                 tax_id: /** @type {number} */ (taxId),
                 account_id: /** @type {number} */ (accountId), 
-                debit: debit.amount
+                debit: debit.baseAmount
             }))
         ],
         date: entryDate.value,
