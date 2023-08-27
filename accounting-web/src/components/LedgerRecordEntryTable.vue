@@ -111,10 +111,10 @@
                 <tr class="text-base">
                     <th class="md:w-4"></th>
                     <th class="md:w-[320px]">Description</th>
-                    <th>Account</th>
-                    <th>Tax Rate</th>
-                    <th>Debit LKR</th>
-                    <th>Credit LKR</th>
+                    <th class="px-0 pl-1">Account</th>
+                    <th class="px-0 pl-1">Tax Rate</th>
+                    <th class="px-0 pl-1">Debit LKR</th>
+                    <th class="px-0 pl-1">Credit LKR</th>
                     <th class="md:w-4"></th>
                 </tr>
             </thead>
