@@ -141,8 +141,8 @@ class GeneralLedger extends DbModel
                 else
                     $taxRate = new Decimal(Taxes::getTaxes(taxId: $accountData[0]['tax_id'])['taxes'][0]['tax_rate']);
 
+                $params['tax_type'] = self::TAX_TYPE_TAX_EXCLUSIVE;
                 if ($taxType === 'tax inclusive') {
-                    $params['tax_type'] = self::TAX_TYPE_TAX_INCLUSIVE;
                     if (isset($record['credit'])) {
                         $credit = $record['credit'];
                         $record['credit'] = $record['credit']->mul(new Decimal('100'))->div($taxRate->add(new Decimal('100')));
@@ -153,7 +153,6 @@ class GeneralLedger extends DbModel
                         $tax = $debit->sub($record['debit']);
                     }
                 } else {
-                    $params['tax_type'] = self::TAX_TYPE_TAX_EXCLUSIVE;
                     if (isset($record['credit'])) {
                         $tax = $record['credit']->div(new Decimal("100"))->mul($taxRate);
                     } else {
