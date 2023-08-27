@@ -15,7 +15,7 @@ export function useCustomPaginationAdapter(
     sorter = ref((_a, _b) => 0),
 ) {
     /**
-     * @param {((record: T[]) => T[])[]} _filters 
+     * @param {(import("../../types").MaybeRefOrComputedRef<(record: T[]) => T[]>)[]} _filters 
      */
     return async function paginator(..._filters) {
         const recordCount = ref(0);
