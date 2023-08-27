@@ -42,18 +42,18 @@ class GeneralLedger extends DbModel
         $data = self::getDataFromTable(['*'], self::TABLE_NAME, $condition, $placeholders,
             ['record_id', 'desc'], [$startingIndex, $limit])->fetchAll(PDO::FETCH_ASSOC);
 
-        foreach ($data as &$record) {
-            if ($record['tax_type'] === self::TAX_TYPE_NO_TAX)
-                $record['tax_type'] = 'no tax';
-            elseif ($record['tax_type'] === self::TAX_TYPE_TAX_INCLUSIVE)
-                $record['tax_type'] = 'tax inclusive';
-            elseif ($record['tax_type'] === self::TAX_TYPE_TAX_EXCLUSIVE)
-                $record['tax_type'] = 'tax exclusive';
+        if (!empty($data)) {
+            foreach ($data as &$record) {
+                if ($record['tax_type'] === self::TAX_TYPE_NO_TAX)
+                    $record['tax_type'] = 'no tax';
+                elseif ($record['tax_type'] === self::TAX_TYPE_TAX_INCLUSIVE)
+                    $record['tax_type'] = 'tax inclusive';
+                elseif ($record['tax_type'] === self::TAX_TYPE_TAX_EXCLUSIVE)
+                    $record['tax_type'] = 'tax exclusive';
+                $record['body'] = json_decode($record['body'], true);
+            }
+            unset($record);
         }
-        unset($record);
-
-        if (!empty($data))
-            $data[0]['body'] = json_decode($data[0]['body'], true);
 
         if ($recordId && !empty($data)) {
             foreach ($data[0]['body'] as &$record) {
@@ -187,6 +187,7 @@ class GeneralLedger extends DbModel
             return "Total credits must always be equal to total debits.";
 
         $params['narration'] = $narration;
+        $params['created_at'] = time();
         $params['body'] = json_encode($body);
         $params['tot_amount'] = $totalCredit;
         $params['date'] = $date;
