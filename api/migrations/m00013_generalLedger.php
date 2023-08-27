@@ -16,7 +16,8 @@ class m00013_generalLedger extends MigrationScheme
                     narration varchar(255) NOT NULL,
                     body json NOT NULL,
                     tot_amount decimal(30,4),
-                    date date NOT NULL
+                    date date NOT NULL,
+                    tax_type int NOT NULL 
                 )";
         try {
             self::$pdo->exec($sql);
