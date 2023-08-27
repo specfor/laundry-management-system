@@ -226,7 +226,7 @@ export type TransformerFunc<R, RT extends R> = (arg: R) => RT
 export type FilterType<TF> = TF extends TransformerFunc<infer R, infer RT> ? (records: RT[]) => RT[] : never
 
 export type PaginationAdapter<Record> = (
-    ...filters: ((records: Record[]) => Record[])[]
+    ...filters: (MaybeRefOrComputedRef<(records: Record[]) => Record[]>)[]
 ) => Promise<{ currentPage: Ref<number>, pageCount: ComputedRef<number>, currentPageSize: Ref<number>, records: Ref<Record[]> }>
 
 export type MaybeRefOrComputedRef<T> = Ref<T> | ComputedRef<T>

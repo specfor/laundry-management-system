@@ -15,7 +15,7 @@ export function useNormalPaginationAdapter(
     filter = ref(() => true)
 ) {
     /**
-     * @param {((record: T[]) => T[])[]} filters 
+     * @param {(import("../../types").MaybeRefOrComputedRef<(record: T[]) => T[]>)[]} filters 
      */
     return async function paginator(...filters) {
         const _records = await recordFetcher().catch(() => []);
@@ -27,11 +27,11 @@ export function useNormalPaginationAdapter(
         });
 
         const records = /** @type {import("vue").Ref<T[]>} */ (ref(
-            filterArray(_records, ...filters).filter(filter.value).sort(sorter.value).slice((currentPage.value - 1) * currentPageSize.value, ((currentPage.value - 1) * currentPageSize.value) + currentPageSize.value)
+            filterArray(_records, ...filters.map(refs => refs.value)).filter(filter.value).sort(sorter.value).slice((currentPage.value - 1) * currentPageSize.value, ((currentPage.value - 1) * currentPageSize.value) + currentPageSize.value)
         ))
 
-        watch([currentPage, currentPageSize, filter, sorter], ([newCurrentPage, newCurrentPageSize, newFilter, newSorter]) => {
-            records.value = filterArray(records.value, ...filters).filter(newFilter).sort(newSorter).slice((newCurrentPage - 1) * newCurrentPageSize, ((newCurrentPage - 1) * newCurrentPageSize) + newCurrentPageSize)
+        watch([currentPage, currentPageSize, filter, sorter, ...filters], ([newCurrentPage, newCurrentPageSize, newFilter, newSorter, ...newFilters]) => {
+            records.value = filterArray(_records, ...newFilters).filter(newFilter).sort(newSorter).slice((newCurrentPage - 1) * newCurrentPageSize, ((newCurrentPage - 1) * newCurrentPageSize) + newCurrentPageSize)
         })
 
         return { currentPage, pageCount, currentPageSize, records }
