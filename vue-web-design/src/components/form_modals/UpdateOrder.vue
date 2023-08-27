@@ -221,7 +221,7 @@ import { apiBaseUrl } from '../../js-modules/website-constants';
               }
         }
         let arrayOfActions = []
-        detail['categories'].forEach((category)=>{
+        detail['categories']['categories'].forEach((category)=>{
           arrayOfActions.push(category['name'])
         })
         orderProducts.value['products'].push({
