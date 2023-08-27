@@ -72,8 +72,8 @@ class Customers extends DbModel
         foreach ($data as &$customer) {
             $customer['banned'] = boolval($customer['banned']);
         }
-        $count = self::countTableRows(self::TABLE_NAME, $condition,$placeholders);
-        return [$data, $count];
+        $count = self::countTableRows(self::TABLE_NAME, $condition, $placeholders);
+        return ['customers' => $data, 'record_count' => $count];
     }
 
     public static function updateCustomer(int    $customerId, string $name = null, string $email = null,

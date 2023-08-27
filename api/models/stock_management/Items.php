@@ -87,7 +87,7 @@ class Items extends DbModel
         }
 
         if ($itemName)
-           self::updateTableData(self::TABLE_NAME, $params, 'name=:oldName',
+            self::updateTableData(self::TABLE_NAME, $params, 'name=:oldName',
                 ['oldName' => $savedData['name']]);
 
         if ($prices)
@@ -153,8 +153,8 @@ class Items extends DbModel
             } else
                 unset($items[$i]);
         }
-        $count = self::countTableRows(self::TABLE_NAME, $condition,$placeholders);
-        return [array_values($items), $count];
+        $count = self::countTableRows(self::TABLE_NAME, $condition, $placeholders);
+        return ['items' => array_values($items), 'record_count' => $count];
 
     }
 

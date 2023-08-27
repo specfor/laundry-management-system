@@ -17,8 +17,8 @@ class PaymentController extends Controller
         $paymentId = self::getParameter('payment-id', dataType: 'int');
         $paidDate = self::getParameter('paid-date');
 
-        [$payments, $count] = Payments::getPayments($pageNumber, $paymentId, $orderId, $paidDate);
-        self::sendSuccess(["payments" => $payments, 'record_count' => $count]);
+        $data = Payments::getPayments($pageNumber, $paymentId, $orderId, $paidDate);
+        self::sendSuccess($data);
     }
 
     public function addPayment(): void

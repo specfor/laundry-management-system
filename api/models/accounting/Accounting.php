@@ -36,7 +36,7 @@ class Accounting extends DbModel
         }
         if ($code) {
             $filters[] = 'code LIKE :code';
-            $placeholders['code'] = strtoupper($code). "%";
+            $placeholders['code'] = strtoupper($code) . "%";
         }
         if ($description) {
             $filters[] = 'description LIKE :desc';
@@ -56,8 +56,8 @@ class Accounting extends DbModel
             $account['locked'] = boolval($account['locked']);
         }
         unset($account);
-        $count = self::countTableRows(self::TABLE_NAME,$condition,$placeholders);
-        return [$accounts, $count];
+        $count = self::countTableRows(self::TABLE_NAME, $condition, $placeholders);
+        return ['accounts' => $accounts, 'record_count' => $count];
     }
 
     public static function createAccount(string $name, string $code, string $type, int $taxId, string $description = null,

@@ -2,6 +2,7 @@
 
 namespace LogicLeap\StockManagement\controllers\v1\user_management;
 
+use LogicLeap\PhpServerCore\SendMail;
 use LogicLeap\StockManagement\controllers\v1\Controller;
 use LogicLeap\StockManagement\models\user_management\User;
 
@@ -38,8 +39,8 @@ class UserController extends Controller
         $role = self::getParameter('role');
         $branchId = self::getParameter('branch-id', dataType: 'int');
 
-        [$data, $count] = User::getUsers($pageNum, $username, $name, $email, $role, $branchId);
-        self::sendSuccess(['users' => $data, 'record_count' => $count]);
+        $data = User::getUsers($pageNum, $username, $name, $email, $role, $branchId);
+        self::sendSuccess($data);
     }
 
     public function deleteUser(): void
@@ -86,14 +87,29 @@ class UserController extends Controller
 
     public function getUserLoginHistory(): void
     {
-        self::checkPermissions(['users'=>[User::PERMISSION_READ]]);
+        self::checkPermissions(['users' => [User::PERMISSION_READ]]);
 
         $userId = self::getParameter('user-id', dataType: 'int', isCompulsory: true);
         $date = self::getParameter('login-date');
         $ipAddress = self::getParameter('ip-address');
         $pageNumber = self::getParameter('page-num', defaultValue: 0, dataType: 'int');
 
-        [$data, $count] = User::getUserLoginHistory($userId, $date, $ipAddress, $pageNumber);
-        self::sendSuccess(['history' => $data, 'record_count' => $count]);
+        $data = User::getUserLoginHistory($userId, $date, $ipAddress, $pageNumber);
+        self::sendSuccess($data);
+    }
+
+    public function sendPasswordResetLink(): void
+    {
+        self::checkPermissions(onlyServerAdmins: true);
+
+        $usernameOrEmail = self::getParameter('username-or-email', isCompulsory: true);
+
+        $mail = new SendMail('vihanga2003nimsara@gmail.com', 'noreply@newsystem.logicleapsolutions.lk',
+            'Password Reset', 'Use the following link to reset your password.\n\nhttps://newsystem.logicleapsolutions.lk/dashboard/');
+        $status = $mail->sendMail();
+        if ($status)
+            self::sendSuccess('Mail sent.');
+        else
+            self::sendError('failed to send the mail.');
     }
 }

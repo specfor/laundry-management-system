@@ -63,6 +63,6 @@ class PriceCategories extends DbModel
             ['category_id', 'asc'], [$startingIndex, $limit]);
         $categories = $statement->fetchAll(PDO::FETCH_ASSOC);
         $count = self::countTableRows(self::TABLE_NAME, $condition, $placeholders);
-        return [$categories, $count];
+        return ['categories' => $categories, 'record_count' => $count];
     }
 }

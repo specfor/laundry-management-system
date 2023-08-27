@@ -29,7 +29,7 @@ class Branches extends DbModel
             return ['branch_id' => $id];
     }
 
-    public static function getBranches(int $pageNumber = 0, int $branchId =null ,string $name = null, string $address = null,
+    public static function getBranches(int $pageNumber = 0, int $branchId = null, string $name = null, string $address = null,
                                        int $managerId = null, string $phoneNumber = null, int $limit = 30): array
     {
         $startingIndex = $pageNumber * $limit;
@@ -39,18 +39,18 @@ class Branches extends DbModel
             $filters[] = "branch_id=$branchId";
         if ($name) {
             $filters[] = "name LIKE :name";
-            $placeholders['name'] = "%".$name."%";
+            $placeholders['name'] = "%" . $name . "%";
         }
         if ($address) {
             $filters[] = "address LIKE :address";
-            $placeholders['address'] = "%".$address."%";
+            $placeholders['address'] = "%" . $address . "%";
         }
         if ($managerId) {
             $filters[] = "manager_id=$managerId";
         }
         if ($phoneNumber) {
             $filters[] = "phone_num LIKE :phone_num";
-            $placeholders['phone_num'] = $phoneNumber."%";
+            $placeholders['phone_num'] = $phoneNumber . "%";
         }
         $condition = null;
         if ($filters)
@@ -58,9 +58,9 @@ class Branches extends DbModel
 
         $statement = self::getDataFromTable(['branch_id', 'name', 'address', 'manager_id', 'phone_num'],
             'branches', $condition, $placeholders, ['branch_id', 'asc'], [$startingIndex, $limit]);
-        $branches =  $statement->fetchAll(PDO::FETCH_ASSOC);
+        $branches = $statement->fetchAll(PDO::FETCH_ASSOC);
         $count = self::countTableRows('branches', $condition, $placeholders);
-        return [$branches, $count];
+        return ['branches' => $branches, 'record_count' => $count];
     }
 
     public static function updateBranch(int $branchId, string $name = null, string $address = null,

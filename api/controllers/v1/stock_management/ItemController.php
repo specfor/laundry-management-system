@@ -18,8 +18,8 @@ class ItemController extends Controller
         $price = self::getParameter('item-price', dataType: 'float');
         $blocked = self::getParameter('blocked', dataType: 'bool');
 
-        [$data, $count] = Items::getItems($pageNum, $itemId, $itemName, $price, $blocked);
-        self::sendSuccess(['items' => $data, 'record_count' => $count]);
+        $data= Items::getItems($pageNum, $itemId, $itemName, $price, $blocked);
+        self::sendSuccess($data);
     }
 
     public function addItem(): void

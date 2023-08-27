@@ -18,8 +18,8 @@ class LedgerRecordController extends Controller
         $date = self::getParameter('date');
         $limit = self::getParameter('limit', defaultValue: 30, dataType: 'int');
 
-        [$data, $count] = GeneralLedger::getLedgerRecords($pageNumber, $recordId, $narration, $date, $limit);
-        self::sendSuccess(['records' => $data, 'record_count' => $count]);
+        $data = GeneralLedger::getLedgerRecords($pageNumber, $recordId, $narration, $date, $limit);
+        self::sendSuccess($data);
     }
 
     public function addLedgerRecord(): void

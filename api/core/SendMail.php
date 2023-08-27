@@ -13,14 +13,15 @@ class SendMail
     private array $headers;
     private bool $isHTMl;
 
-    public function __construct(string $receiverEmail, string $senderEmail,
-                                string $subject, string $message, string $replyToEmail = '')
+    public function __construct(string $receiverEmail, string $senderEmail, string $subject, string $message,
+                                string $replyToEmail = '',bool $isHTML = false)
     {
         $this->receiverEmail = $receiverEmail;
         $this->senderEmail = $senderEmail;
         $this->subject = $subject;
         $this->message = $message;
         $this->replyToEmail = $replyToEmail;
+        $this->isHTMl = $isHTML;
     }
 
     private function craftHeaders(): void
@@ -36,10 +37,8 @@ class SendMail
         }
     }
 
-    public function sendMail(bool $isHTML = false)
+    public function sendMail(): bool
     {
-        $this->isHTMl = $isHTML;
-
         $this->craftHeaders();
         if ($this->headers)
             return mail($this->receiverEmail, $this->subject, $this->message, implode("\r\n", $this->headers));

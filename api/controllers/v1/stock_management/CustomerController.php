@@ -45,8 +45,8 @@ class CustomerController extends Controller
         if ($branchId === null)
             $branchId = User::getUserBranchId(self::getUserId());
 
-        [$data, $count] = Customers::getCustomers($customerId, $branchId, $email, $phoneNum, $name, $address, $banned, $joinDate, $pageNum);
-        self::sendSuccess(['customers' => $data, 'record_count' => $count]);
+        $data = Customers::getCustomers($customerId, $branchId, $email, $phoneNum, $name, $address, $banned, $joinDate, $pageNum);
+        self::sendSuccess($data);
     }
 
     public function updateCustomer(): void
