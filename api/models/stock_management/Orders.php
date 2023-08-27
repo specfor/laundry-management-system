@@ -22,7 +22,7 @@ class Orders extends DbModel
     public static function addNewOrder(array  $items, int $customerId, float $totalPrice = null, int $branchId = null,
                                        string $comments = null, string $orderStatus = "order added"): bool|string|array
     {
-        if (empty(Customers::getCustomers($customerId)))
+        if (empty(Customers::getCustomers($customerId)['customers']))
             return "Invalid customer-id";
         else
             $params['customer_id'] = $customerId;
@@ -33,7 +33,7 @@ class Orders extends DbModel
             $params['status'] = self::getOrderStatusId($orderStatus);
 
         if ($branchId) {
-            if (empty(Branches::getBranches(branchId: $branchId)))
+            if (empty(Branches::getBranches(branchId: $branchId)['branches']))
                 return "Invalid branch Id.";
             $params['branch_id'] = $branchId;
         }
@@ -185,13 +185,13 @@ class Orders extends DbModel
     public static function updateOrder(int $orderId, int $branchId = null, string $orderStatus = null,
                                        int $customerId = null, array $items = null, float $totalPrice = null): bool|string
     {
-        $orderData = self::getOrders(orderId: $orderId)[0];
+        $orderData = self::getOrders(orderId: $orderId)['orders'][0];
         if (empty($orderData))
             return "Invalid order id.";
 
         $params = [];
 
-        if (empty(Customers::getCustomers($customerId)))
+        if (empty(Customers::getCustomers($customerId)['customers']))
             return "Invalid customer-id";
         else
             $params['customer_id'] = $customerId;
@@ -240,7 +240,7 @@ class Orders extends DbModel
         if ($totalPrice)
             $params['total_price'] = $totalPrice;
         if ($branchId) {
-            if (empty(Branches::getBranches(branchId: $branchId)))
+            if (empty(Branches::getBranches(branchId: $branchId)['branches']))
                 return "Invalid branch Id.";
             $params['branch_id'] = $branchId;
         }
