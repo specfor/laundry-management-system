@@ -172,17 +172,7 @@ async function getCustomers(){
 }
 
 async function moreOrderInfo(id) {
-  let orderData = orders.filter((row) => {
-    if (row['order_id'] === id){
-        for (let item of row['items']) {
-            item['actions'] = products.find((product)=>{
-                return product['value'] === item['item_id']
-            })['actions'].join(', ')
-        }
-        return row
-    }
-  })[0]
-  window.orderDetailsModal(orderData)
+  return
 }
 
 async function addNewOrder() {
@@ -313,8 +303,10 @@ async function editOrder(id) {
     items.push(dict)
   })
 
-  let response = await sendJsonPostRequest(apiBaseUrl + "/orders/add", {
-    
+
+
+  let response = await sendJsonPostRequest(apiBaseUrl + "/orders/update", {
+    "order-id":id[0],
     "items": items,
     "customer-id": parseInt(order.customer),
     "customer-comments": order.data['comment']

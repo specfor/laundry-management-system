@@ -194,7 +194,6 @@ function addProduct() {
     actions: actions_, customer: fieldValues.value['customer'],
     return_date: fieldValues.value['return_date']
   }
-  console.log(orderProducts.value['products'])
 }
 
 
