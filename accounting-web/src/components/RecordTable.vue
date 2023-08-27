@@ -46,7 +46,7 @@
                 <tr>
                     <th v-if="selectMode">
                         <label>
-                            <input type="checkbox" class="checkbox" @click="selectAll" />
+                            <input type="checkbox" class="checkbox" :checked="selectedIds.length == records.length" @click="toggleSelectAll" />
                         </label>
                     </th>
                     <slot name="table-headers"></slot>
@@ -56,7 +56,7 @@
                 <tr v-for="record in records" :key="(record[idProperty as ID] as number)">
                     <th v-if="selectMode">
                         <label>
-                            <input type="checkbox" class="checkbox" @change="toggleSelected(record[idProperty as ID])" />
+                            <input type="checkbox" class="checkbox" :checked="selectedIds.includes(record[idProperty as ID])" @change="toggleSelected(record[idProperty as ID])" />
                         </label>
                     </th>
 
@@ -170,6 +170,8 @@ const { currentPage, currentPageSize, pageCount, records } =
 const selectAll = () => selectedIds.value = [...records.value.map(record => record[idProperty])];
 
 const deselectAll = () => selectedIds.value = [];
+
+const toggleSelectAll = () => selectedIds.value.length == records.value.length ? deselectAll() : selectAll();
 
 const toggleSelectMode = () => {
     selectMode.value = !selectMode.value;

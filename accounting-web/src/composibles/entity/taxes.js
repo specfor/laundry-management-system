@@ -68,7 +68,7 @@ export function useTaxes(batchNotificationInjection) {
     const getTax = async (id) => {
         return new Promise((resolve, reject) => {
             const success = ref(false);
-            const { data, isFinished } = useAuthorizedFetch(`/taxes?tax-id=${id}`, 'Get Tax', success, notificationInjection).json().get();
+            const { data, isFinished } = useAuthorizedFetch(`/taxes?tax_id=${id}`, 'Get Tax', success, notificationInjection).json().get();
 
             whenever(logicAnd(isFinished, success), () => {
                 const taxesRaw = /** @type {import("../../types").RawTax[] }*/(toValue(data).taxes)

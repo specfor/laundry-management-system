@@ -67,11 +67,38 @@ export function useFinancialAccounts(batchNotificationInjection) {
     const getFinancialAccountById = async (id) => {
         return new Promise((resolve, reject) => {
             const success = ref(false);
-            const { data, isFinished } = useAuthorizedFetch(`/financial-accounts?account-id=${id}`, 'Get Financial Account', success, notificationInjection).json().get();
+            const { data, isFinished } = useAuthorizedFetch(`/financial-accounts?account_id=${id}`, 'Get Financial Account', success, notificationInjection).json().get();
 
             whenever(logicAnd(isFinished, success), () => {
                 const rawData = /** @type {import("../../types").RawFinancialAccount[] }*/(toValue(data)['financial-accounts'])
                 resolve(rawData.map(serialize).findLast(() => true));
+            })
+            whenever(logicAnd(isFinished, logicNot(success)), () => reject())
+        })
+    }
+
+    /**
+     * Get Sales Tax account
+     * @returns {Promise<import("../../types").FinancialAccount | undefined>} Returns undefined if Sales Tax account was not found
+     */
+    const getSalesTaxAccount = async () => {
+        return new Promise((resolve, reject) => {
+            const success = ref(false);
+            const { data, isFinished } = useAuthorizedFetch(`/financial-accounts?name=Sales Tax`, 'Get Sales Tax Account', success, notificationInjection).json().get();
+
+            whenever(logicAnd(isFinished, success), () => {
+                if((/** @type {import("../../types").RawFinancialAccount[] }*/(toValue(data)['financial-accounts'])).length == 0) {
+                    // Show an error message because the Sales Tax account was not found
+                    notificationInjection.showError({
+                        origin: "Get Sales Tax account",
+                        status: 0,
+                        statusText: "Couldn't find Sales Tax account"
+                    })
+                    reject()
+                }
+
+                const rawData = /** @type {import("../../types").RawFinancialAccount[] }*/(toValue(data)['financial-accounts'])
+                resolve(rawData.map(serialize).find(() => true));
             })
             whenever(logicAnd(isFinished, logicNot(success)), () => reject())
         })
@@ -122,5 +149,5 @@ export function useFinancialAccounts(batchNotificationInjection) {
         })
     }
 
-    return { getFinancialAccountById, getFinanctialAccounts, addFinancialAccount, updateFinancialAccount, removeFinancialAccount }
+    return { getFinancialAccountById, getFinanctialAccounts, addFinancialAccount, updateFinancialAccount, removeFinancialAccount, getSalesTaxAccount }
 }
