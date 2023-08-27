@@ -17,6 +17,7 @@ export interface LedgerRecord {
         debit: Decimal
         credit: Decimal
         description: string
+        tax_id: number
     }, 'credit' | 'debit'>[] // | Either Debit or Credit, having both parameters set will result in an error
 }
 
@@ -64,6 +65,7 @@ export type RawLedgerRecordBody = Object.Either<{
     debit: string
     credit: string
     description: string
+    tax_id: number
 }, 'credit' | 'debit'>[] // | Either Debit or Credit, having both parameters set will result in an error
 
 export interface RawTax {

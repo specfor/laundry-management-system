@@ -93,6 +93,33 @@ export function useLedgerRecords() {
     }
 
     /**
+     * Get a ledger record by ID
+     * @param {number} id
+     * @returns {Promise<import("../../types").LedgerRecord>} 
+     */
+    const getLedgerRecordById = async (id) => {
+        return new Promise((resolve, reject) => {
+            const success = ref(false);
+            const { data, isFinished } = useAuthorizedFetch(`/general-ledger?record_id=${id}`, 'Get Ledger records by ID', success, notificationInjection).json().get();
+
+            whenever(logicAnd(isFinished, success), () => {
+                if((/** @type {number} */ (toValue(data).record_count)) == 0) {
+                    // Show an error message
+                    notificationInjection.showError({
+                        origin: "Get Ledger records by ID",
+                        status: 0,
+                        statusText: "No such Ledger record exist with ID of " + id
+                    })
+                    reject()
+                }
+                const rawLedgerRecords = /** @type {import("../../types").RawLedgerRecord[] }*/(toValue(data).records);
+                resolve(rawLedgerRecords.map(serialize)[0]);
+            })
+            whenever(logicAnd(isFinished, logicNot(success)), () => reject())
+        })
+    }
+
+    /**
      * Get ledger record count
      * @returns {Promise<number>}
      */
@@ -160,5 +187,5 @@ export function useLedgerRecords() {
         })
     }
 
-    return { addLedgerRecord, getLedgerRecords, getLedgerRecordCount, getLedgerRecordsByDate, getLedgerRecordsByNarration, getLedgerRecordsFiltered }
+    return { addLedgerRecord, getLedgerRecords, getLedgerRecordCount, getLedgerRecordsByDate, getLedgerRecordsByNarration, getLedgerRecordsFiltered, getLedgerRecordById }
 }
