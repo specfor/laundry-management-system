@@ -12,7 +12,7 @@ class LedgerRecordController extends Controller
     {
         self::checkPermissions(['financial_accounts' => [User::PERMISSION_READ]]);
 
-        $recordId = self::getParameter('record_id', dataType: 'int');
+        $recordId = self::getParameter('record-id', dataType: 'int');
         $pageNumber = self::getParameter('page-num', defaultValue: 0, dataType: 'int');
         $narration = self::getParameter('narration');
         $date = self::getParameter('date');

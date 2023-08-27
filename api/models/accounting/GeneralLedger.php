@@ -13,6 +13,10 @@ class GeneralLedger extends DbModel
 {
     private const TABLE_NAME = 'general_ledger';
 
+    private const TAX_TYPE_NO_TAX = 0;
+    private const TAX_TYPE_TAX_INCLUSIVE = 1;
+    private const TAX_TYPE_TAX_EXCLUSIVE = 2;
+
     public static function getLedgerRecords(int $pageNumber = 0, int $recordId = null, string $narration = null, string $date = null,
                                             int $limit = 30): array
     {
@@ -38,9 +42,35 @@ class GeneralLedger extends DbModel
         $data = self::getDataFromTable(['*'], self::TABLE_NAME, $condition, $placeholders,
             ['record_id', 'desc'], [$startingIndex, $limit])->fetchAll(PDO::FETCH_ASSOC);
 
+        if (!empty($data)) {
+            foreach ($data as &$record) {
+                if ($record['tax_type'] === self::TAX_TYPE_NO_TAX)
+                    $record['tax_type'] = 'no tax';
+                elseif ($record['tax_type'] === self::TAX_TYPE_TAX_INCLUSIVE)
+                    $record['tax_type'] = 'tax inclusive';
+                elseif ($record['tax_type'] === self::TAX_TYPE_TAX_EXCLUSIVE)
+                    $record['tax_type'] = 'tax exclusive';
+                $record['body'] = json_decode($record['body'], true);
+            }
+            unset($record);
+        }
+
+        if ($recordId && !empty($data)) {
+            foreach ($data[0]['body'] as &$record) {
+                if (isset($record['tax_id'])) {
+                    $taxData = Taxes::getTaxes(taxId: $record['tax_id'])['taxes'][0];
+                    $record['tax_name'] = $taxData['name'];
+                    $record['tax_rate'] = $taxData['tax_rate'];
+                }
+                $accountData = Accounting::getAccounts(accountId: $record['account_id'])['accounts'][0];
+                $record['account_name'] = $accountData['name'];
+            }
+            unset($record);
+        }
+
         $count = self::countTableRows(self::TABLE_NAME, $condition, $placeholders);
 
-        return ['records'=>$data, 'record_count'=>$count];
+        return ['records' => $data, 'record_count' => $count];
     }
 
     public static function createLedgerRecord(string $narration, array $body, string $taxType = 'tax exclusive',
@@ -112,6 +142,7 @@ class GeneralLedger extends DbModel
                     $taxRate = new Decimal(Taxes::getTaxes(taxId: $accountData[0]['tax_id'])['taxes'][0]['tax_rate']);
 
                 if ($taxType === 'tax inclusive') {
+                    $params['tax_type'] = self::TAX_TYPE_TAX_INCLUSIVE;
                     if (isset($record['credit'])) {
                         $credit = $record['credit'];
                         $record['credit'] = $record['credit']->mul(new Decimal('100'))->div($taxRate->add(new Decimal('100')));
@@ -122,6 +153,7 @@ class GeneralLedger extends DbModel
                         $tax = $debit->sub($record['debit']);
                     }
                 } else {
+                    $params['tax_type'] = self::TAX_TYPE_TAX_EXCLUSIVE;
                     if (isset($record['credit'])) {
                         $tax = $record['credit']->div(new Decimal("100"))->mul($taxRate);
                     } else {
@@ -136,7 +168,9 @@ class GeneralLedger extends DbModel
                         $taxRecords[] = ['account_id' => $taxAccountId, 'debit' => $tax->getDecimal(), 'description' => ''];
                         $totalDebit = $totalDebit->add($tax);
                     }
-            }
+            } else
+                $params['tax_type'] = self::TAX_TYPE_NO_TAX;
+
             if (isset($record['credit'])) {
                 $totalCredit = $totalCredit->add($record['credit']);
                 $record['credit'] = $record['credit']->getDecimal();
@@ -153,6 +187,7 @@ class GeneralLedger extends DbModel
             return "Total credits must always be equal to total debits.";
 
         $params['narration'] = $narration;
+        $params['created_at'] = time();
         $params['body'] = json_encode($body);
         $params['tot_amount'] = $totalCredit;
         $params['date'] = $date;

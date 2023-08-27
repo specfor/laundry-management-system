@@ -2,23 +2,16 @@
 
 use LogicLeap\PhpServerCore\MigrationScheme;
 
-class m00013_generalLedger extends MigrationScheme
+class m00018_generalLedger_addRecordAddedDate extends MigrationScheme
 {
     public static function isReversible(): bool
     {
-        return true;
+        return false;
     }
 
     public static function up(): bool
     {
-        $sql = "CREATE TABLE IF NOT EXISTS general_ledger (
-                    record_id int AUTO_INCREMENT NOT NULL PRIMARY KEY,
-                    narration varchar(255) NOT NULL,
-                    body json NOT NULL,
-                    tot_amount decimal(30,4),
-                    date date NOT NULL,
-                    tax_type int NOT NULL 
-                )";
+        $sql = "alter table general_ledger add column created_at int not null";
         try {
             self::$pdo->exec($sql);
             return true;
@@ -29,7 +22,7 @@ class m00013_generalLedger extends MigrationScheme
 
     public static function down(): bool
     {
-        $sql = "DROP TABLE IF EXISTS general_ledger";
+        $sql = "";
         try {
             self::$pdo->exec($sql);
             return true;
