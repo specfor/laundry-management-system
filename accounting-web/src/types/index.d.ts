@@ -12,12 +12,34 @@ export interface LedgerRecord {
     narration: string // "buying some blue berries"
     date: Date,
     totalAmount: Decimal,
+    createdAt: Date
     body: Object.Either<{
         account_id: number
         debit: Decimal
         credit: Decimal
         description: string
         tax_id: number
+    }, 'credit' | 'debit'>[] // | Either Debit or Credit, having both parameters set will result in an error
+}
+
+export interface LedgerRecordWithTaxAndAccountData {
+    record_id: number
+    narration: string // "buying some blue berries"
+    date: Date,
+    totalAmount: Decimal,
+    createdAt: Date
+    tax_type: "no tax" | "tax inclusive" | "tax exclusive"
+    body: Object.Either<{
+        account_id: number
+        account_name: string
+        account_description: string
+        account_tax_id: number
+        debit: Decimal
+        credit: Decimal
+        description: string
+        tax_id: number
+        tax_name: string
+        tax_rate: Decimal
     }, 'credit' | 'debit'>[] // | Either Debit or Credit, having both parameters set will result in an error
 }
 
@@ -56,17 +78,46 @@ export interface RawLedgerRecord {
     record_id: number
     narration: string // "buying some blue berries"
     date: string // yyyy-mm-dd,
-    tot_amount: string,
-    body: string
+    tot_amount: string
+    tax_type: "no tax" | "tax inclusive" | "tax exclusive"
+    created_at: number
+    body: Object.Either<{
+        account_id: number
+        debit: string
+        credit: string
+        description: string
+        tax_id: number
+    }, 'credit' | 'debit'>[]
 }
 
-export type RawLedgerRecordBody = Object.Either<{
-    account_id: number
-    debit: string
-    credit: string
-    description: string
-    tax_id: number
-}, 'credit' | 'debit'>[] // | Either Debit or Credit, having both parameters set will result in an error
+export interface RawLedgerRecordWithTaxAndAccountData {
+    record_id: number
+    narration: string
+    date: string
+    tot_amount: string
+    tax_type: "no tax" | "tax inclusive" | "tax exclusive"
+    created_at: number
+    body: Object.Either<{
+        account_id: number
+        account_name: string
+        account_description: string
+        account_tax_id: number
+        debit: string
+        credit: string
+        description: string
+        tax_id: number
+        tax_name: string
+        tax_rate: string
+    }, 'credit' | 'debit'>[] // | Either Debit or Credit, having both parameters set will result in an error
+}
+
+// export type RawLedgerRecordBody = Object.Either<{
+//     account_id: number
+//     debit: string
+//     credit: string
+//     description: string
+//     tax_id: number
+// }, 'credit' | 'debit'>[] // | Either Debit or Credit, having both parameters set will result in an error
 
 export interface RawTax {
     tax_id: number
@@ -230,5 +281,13 @@ export type PaginationAdapter<Record> = (
 ) => Promise<{ currentPage: Ref<number>, pageCount: ComputedRef<number>, currentPageSize: Ref<number>, records: Ref<Record[]> }>
 
 export type MaybeRefOrComputedRef<T> = Ref<T> | ComputedRef<T>
+
+export type CreateSorterOptions<R> = Partial<{ 
+    [K in keyof R]: (a: R[K], b: R[K]) => number
+}>
+
+export type AppendAllObjectPropsWith<O, Append extends string> = {
+    [key in keyof O as `${key}${Append}`]: O[key]
+}
 
 export as namespace Types;

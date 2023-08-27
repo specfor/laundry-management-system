@@ -29,6 +29,23 @@ export function useLedgerRecords() {
     })
 
     /**
+     * Converts the Raw response from the server into a entity object
+     * @param {import("../../types").RawLedgerRecordWithTaxAndAccountData} rawLedgerRecord Raw response from the backend.
+     * @returns {import("../../types").LedgerRecordWithTaxAndAccountData}
+     */
+    const serializeWithData = ({ date, body, tot_amount, created_at, ...rest }) => ({
+        ...rest,
+        createdAt: new Date(created_at * 1000),
+        date: new Date(date),
+        totalAmount: new Decimal(tot_amount),
+        body: body.map(({ credit, debit, tax_rate, ...remainder }) => ({
+            ...remainder,
+            tax_rate: new Decimal(tax_rate),
+            ...(credit ? { credit: new Decimal(credit) } : { debit: new Decimal(debit ?? "") })
+        }))
+    })
+
+    /**
      * Converts the entity to a object to be sent to the server
      * @param {import("../../types").LedgerRecordAddOptions} ledgerRecordAddOptions Ledger record add options
      * @returns {import("../../types").LedgerRecordAddRequest}
@@ -96,7 +113,7 @@ export function useLedgerRecords() {
     /**
      * Get a ledger record by ID
      * @param {number} id
-     * @returns {Promise<import("../../types").LedgerRecord>} 
+     * @returns {Promise<import("../../types").LedgerRecordWithTaxAndAccountData>} 
      */
     const getLedgerRecordById = async (id) => {
         return new Promise((resolve, reject) => {
@@ -113,8 +130,8 @@ export function useLedgerRecords() {
                     })
                     reject()
                 }
-                const rawLedgerRecords = /** @type {import("../../types").RawLedgerRecord[] }*/(toValue(data).records);
-                resolve(rawLedgerRecords.map(serialize)[0]);
+                const rawLedgerRecords = /** @type {import("../../types").RawLedgerRecordWithTaxAndAccountData[] }*/(toValue(data).records);
+                resolve(rawLedgerRecords.map(serializeWithData)[0]);
             })
             whenever(logicAnd(isFinished, logicNot(success)), () => reject())
         })
