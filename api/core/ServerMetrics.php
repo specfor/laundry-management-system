@@ -85,6 +85,7 @@ class ServerMetrics
 
     public static function getCpuUsage(): bool|array
     {
+        $coreCount = self::getCpuCoreCount();
         if (stristr(PHP_OS, "win")) {
             $cmd = "wmic cpu get loadpercentage /all";
             @exec($cmd, $output);
@@ -102,11 +103,22 @@ class ServerMetrics
 
             $cpu = sys_getloadavg();
             return [
-                "1min" => $cpu[0] * 100,
-                "5min" => $cpu[1] * 100,
-                "15min" => $cpu[2] * 100
+                "1min" => $cpu[0] / $coreCount * 100,
+                "5min" => $cpu[1] / $coreCount * 100,
+                "15min" => $cpu[2] / $coreCount * 100
             ];
         }
         return false;
+    }
+
+    public static function getCpuCoreCount(): int
+    {
+        $ncpu = 1;
+        if (is_file('/proc/cpuinfo')) {
+            $cpuInfo = file_get_contents('/proc/cpuinfo');
+            preg_match_all('/^processor/m', $cpuInfo, $matches);
+            $ncpu = count($matches[0]);
+        }
+        return $ncpu;
     }
 }
