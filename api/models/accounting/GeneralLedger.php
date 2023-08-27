@@ -64,6 +64,8 @@ class GeneralLedger extends DbModel
                 }
                 $accountData = Accounting::getAccounts(accountId: $record['account_id'])['accounts'][0];
                 $record['account_name'] = $accountData['name'];
+                $record['account_tax_id'] = $accountData['tax_id'];
+                $record['account_description'] = $accountData['description'];
             }
             unset($record);
         }
