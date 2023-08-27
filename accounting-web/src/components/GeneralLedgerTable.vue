@@ -25,9 +25,10 @@
                             </td>
                             <td colspan="5" class="pl-3">
                                 <span class="font-medium">{{ row.narration }}</span>
+                                <span class="text-base inline"> | {{ row.date.toDateString() }}</span>
                                 <span class="block text-xs text-gray-700">
-                                    <UseTimeAgo v-slot="{ timeAgo }" :time="row.date">
-                                        {{ timeAgo }}
+                                    <UseTimeAgo v-slot="{ timeAgo }" :time="row.createdAt">
+                                        Created: {{ timeAgo }}
                                     </UseTimeAgo>
                                 </span>
                             </td>
@@ -47,7 +48,7 @@
                             <td>
                                 <!-- Check if the account's tax rate has been overridden -->
                                 <template v-if="record.account.tax_id != record.tax.tax_id">
-                                    <div class="tooltip tooltip-open tooltip-top" data-tip="Overridden">
+                                    <div class="tooltip tooltip-top" data-tip="Overridden">
                                         <span class="text-base block">
                                             {{ record.tax.name }}
                                         </span>
@@ -136,7 +137,8 @@ type EnrichedLedgerRecord = {
     totalTaxes: {
         debit: Decimal
         credit: Decimal
-    }
+    },
+    createdAt: Date
     body: Object.Either<{
         account: FinancialAccount
         debit: Decimal
