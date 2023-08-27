@@ -96,20 +96,20 @@ class GeneralLedger extends DbModel
             }
         }
 
-        $taxAccountId = Accounting::getAccounts(name: 'sales tax')[0]['account_id'];
+        $taxAccountId = Accounting::getAccounts(name: 'sales tax')['accounts'][0]['account_id'];
         $taxRecords = [];
 
         // Doing all the calculations.
         foreach ($body as &$record) {
-            $accountData = Accounting::getAccounts(accountId: $record['account_id']);
+            $accountData = Accounting::getAccounts(accountId: $record['account_id'])['accounts'];
             if (empty($accountData))
                 return $record['account_id'] . " is an invalid account ID.";
 
             if ($taxType !== 'no tax') {
                 if (isset($record['tax_id']))
-                    $taxRate = new Decimal(Taxes::getTaxes(taxId: $record['tax_id'])[0]['tax_rate']);
+                    $taxRate = new Decimal(Taxes::getTaxes(taxId: $record['tax_id'])['taxes'][0]['tax_rate']);
                 else
-                    $taxRate = new Decimal(Taxes::getTaxes(taxId: $accountData[0]['tax_id'])[0]['tax_rate']);
+                    $taxRate = new Decimal(Taxes::getTaxes(taxId: $accountData[0]['tax_id'])['taxes'][0]['tax_rate']);
 
                 if ($taxType === 'tax inclusive') {
                     if (isset($record['credit'])) {
