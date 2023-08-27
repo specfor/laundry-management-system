@@ -17,11 +17,12 @@ export function useLedgerRecords() {
      * @param {import("../../types").RawLedgerRecord} rawLedgerRecord Raw response from the backend.
      * @returns {import("../../types").LedgerRecord}
      */
-    const serialize = ({ date, body, tot_amount, ...rest }) => ({
+    const serialize = ({ date, body, tot_amount, created_at, ...rest }) => ({
         ...rest,
+        createdAt: new Date(created_at * 1000),
         date: new Date(date),
         totalAmount: new Decimal(tot_amount),
-        body: ( /** @type {import("../../types").RawLedgerRecordBody} */ (JSON.parse(body))).map(({ credit, debit, ...remainder }) => ({
+        body: body.map(({ credit, debit, ...remainder }) => ({
             ...remainder,
             ...(credit ? { credit: new Decimal(credit) } : { debit: new Decimal(debit ?? "") })
         }))
@@ -100,7 +101,7 @@ export function useLedgerRecords() {
     const getLedgerRecordById = async (id) => {
         return new Promise((resolve, reject) => {
             const success = ref(false);
-            const { data, isFinished } = useAuthorizedFetch(`/general-ledger?record_id=${id}`, 'Get Ledger records by ID', success, notificationInjection).json().get();
+            const { data, isFinished } = useAuthorizedFetch(`/general-ledger?record-id=${id}`, 'Get Ledger records by ID', success, notificationInjection).json().get();
 
             whenever(logicAnd(isFinished, success), () => {
                 if((/** @type {number} */ (toValue(data).record_count)) == 0) {
