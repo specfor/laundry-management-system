@@ -82,8 +82,8 @@
                                 <td></td>
                                 <td colspan="2"></td>
                                 <td>Taxes</td>
-                                <td>{{ toReadable(row.totalTaxes) }}</td>
-                                <td>{{ toReadable(row.totalTaxes) }}</td>
+                                <td>{{ toReadable(row.totalTaxes.debit) }}</td>
+                                <td>{{ toReadable(row.totalTaxes.credit) }}</td>
                             </tr>
 
                             <!-- Entry totals -->
@@ -100,8 +100,8 @@
                     <tr class="summary-row">
                         <td colspan="3"></td>
                         <td class="font-semibold">Total Taxes</td>
-                        <td class="top-bottom-border">{{ toReadable(totalTaxes) }}</td>
-                        <td class="top-bottom-border">{{ toReadable(totalTaxes) }}</td>
+                        <td class="top-bottom-border">{{ toReadable(totalTaxes.debit) }}</td>
+                        <td class="top-bottom-border">{{ toReadable(totalTaxes.credit) }}</td>
                     </tr>
 
                     <!-- Final total of totals -->
@@ -133,7 +133,10 @@ type EnrichedLedgerRecord = {
     narration: string
     date: Date
     totalAmount: Decimal
-    totalTaxes: Decimal
+    totalTaxes: {
+        debit: Decimal
+        credit: Decimal
+    }
     body: Object.Either<{
         account: FinancialAccount
         debit: Decimal
@@ -190,11 +193,12 @@ const enrichedRecords: EnrichedLedgerRecord[] = records.map(({ body, ...rest }) 
         }, new Decimal(0))
     ]
 
-    if (!debitTaxTotal.eq(creditTaxTotal)) console.error("Tax Credit Debit total mismatch!", debitTaxTotal, creditTaxTotal, taxRecords, normalRecords, salesTaxAccount)
-
     return {
         ...rest,
-        totalTaxes: debitTaxTotal,
+        totalTaxes: {
+            debit: debitTaxTotal,
+            credit: creditTaxTotal
+        },
         body: normalRecords.map(({ account_id, tax_id, ...remainder }) => ({
             ...remainder,
             account: accounts.find(acc => acc.account_id == account_id),
@@ -203,7 +207,14 @@ const enrichedRecords: EnrichedLedgerRecord[] = records.map(({ body, ...rest }) 
     }
 })
 
-const totalTaxes = enrichedRecords.reduce((acc, curr) => acc.add(curr.totalTaxes), new Decimal(0))
+const totalTaxes = enrichedRecords.reduce((acc, curr) => ({
+    credit: acc.credit.add(curr.totalTaxes.credit),
+    debit: acc.debit.add(curr.totalTaxes.debit)
+}), {
+    credit: new Decimal(0),
+    debit: new Decimal(0)
+})
+
 const netTotal = enrichedRecords.reduce((acc, curr) => acc.add(curr.totalAmount), new Decimal(0))
 </script>
 
