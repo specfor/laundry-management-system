@@ -161,10 +161,15 @@ watch(searchPhrase, (newSearchPhrase) => emit("update:searchValue", newSearchPhr
 
 const extraData = extraDataFetcher ? await extraDataFetcher().catch(() => null) : null
 
+const searchFilter = computed(() => {
+    const currentSearchPhrase = searchPhrase.value
+    return (recordArr: R[]) => useFuzzySearch(recordArr, searchFields, currentSearchPhrase)
+})
+
 const { currentPage, currentPageSize, pageCount, records } =
     await paginator(
         // Filter function for searching
-        (recordArr) => useFuzzySearch(recordArr, searchFields, searchPhrase.value)
+        searchFilter
     );
 
 const selectAll = () => selectedIds.value = [...records.value.map(record => record[idProperty])];

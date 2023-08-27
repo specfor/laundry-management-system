@@ -206,9 +206,9 @@
             <template #name="{ record }">
                 <span class="text-base font-medium">
                     {{ record.name }} - {{ record.account_id }}
-                    
-                    <svg v-if="record.locked" class="w-4 h-4 inline fill-gray-700 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                        fill="currentColor" viewBox="0 0 16 20">
+
+                    <svg v-if="record.locked" class="w-4 h-4 inline fill-gray-700 text-gray-800 dark:text-white"
+                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 20">
                         <path
                             d="M14 7h-1.5V4.5a4.5 4.5 0 1 0-9 0V7H2a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2Zm-5 8a1 1 0 1 1-2 0v-3a1 1 0 1 1 2 0v3Zm1.5-8h-5V4.5a2.5 2.5 0 1 1 5 0V7Z" />
                     </svg>
@@ -222,7 +222,8 @@
                         Archived
                     </div>
                 </span>
-                <p v-if="record.description" class="text-ellipsis">{{ record.description.length > 100 ? record.description.slice(0, 100)
+                <p v-if="record.description" class="text-ellipsis">{{ record.description.length > 100 ?
+                    record.description.slice(0, 100)
                     +
                     "..." : record.description }} </p>
             </template>
@@ -304,17 +305,22 @@ const selectedAccountTypesRaw = ref<string[]>([]);
 
 // Get URL Query parameters
 const taxId = useRouteQuery('tax-id', '-1', { transform: Number })
-const selectedTaxId = ref(taxId.value == -1 ? undefined : taxId)
+const selectedTaxId = ref(taxId.value == -1 ? undefined : taxId.value)
 
 watch(selectedTaxId, (value) => taxId.value = value ?? -1);
 
 const selectedAccountTypes = computed(() => selectedAccountTypesRaw.value.map(s => JSON.parse(s) as string[]).flat().filter((value, index, array) => array.indexOf(value) === index))
 
-const filter = computed(() => (account: FinancialAccount) => [
-    selectedAccountTypes.value.includes("Archived") ? account.archived : true,
-    selectedAccountTypes.value.length > 0 ? selectedAccountTypes.value.includes(account.type) : true,
-    selectedTaxId.value ? account.tax_id == selectedTaxId.value : true
-].every(x => x))
+const filter = computed(() => {
+    const currentselectedAccountTypes = selectedAccountTypes.value;
+    const currentselectedTaxId = selectedTaxId.value;
+
+    return (account: FinancialAccount) => [
+        currentselectedAccountTypes.includes("Archived") ? account.archived : true,
+        currentselectedAccountTypes.length > 0 ? currentselectedAccountTypes.includes(account.type) : true,
+        currentselectedTaxId ? account.tax_id == currentselectedTaxId : true
+    ].every(x => x)
+})
 
 const sorter = computed(() => (a: FinancialAccount, b: FinancialAccount) =>
     a.account_id > b.account_id ? 1 : -1
@@ -620,4 +626,5 @@ const clearFilters = () => {
 .header-buttons-leave-to {
     opacity: 0;
     transform: translateX(-30px);
-}</style>
+}
+</style>
