@@ -4,7 +4,7 @@
             <a>Dashboard</a>
         </li>
     </router-link>
-    <router-link :to="{ name: 'GeneralLedger' }" @click.native="$emit('onMenuItemClick')">
+    <!-- <router-link :to="{ name: 'GeneralLedger' }" @click.native="$emit('onMenuItemClick')">
         <li>
             <a>General Ledger</a>
         </li>
@@ -13,7 +13,7 @@
         <li>
             <a>Tax</a>
         </li>
-    </router-link>
+    </router-link> -->
     <router-link :to="{ name: 'ChartOfAccounts' }" @click.native="$emit('onMenuItemClick')">
         <li>
             <a>Chart of Accounts</a>
