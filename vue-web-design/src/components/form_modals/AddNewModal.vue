@@ -66,7 +66,6 @@ function validateInput(name) {
       anyError = true;
   }
   allowAdd.value = !anyError;
-  console.log(allowAdd.value)
 }
 </script>
 

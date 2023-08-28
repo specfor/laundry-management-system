@@ -10,6 +10,7 @@ import Employees from '../views/Employees.vue'
 import Payments from '../views/Payments.vue'
 import Orders from '../views/Orders.vue'
 import OrderInfo from '../views/OrderInfo.vue'
+import Profile from '../views/Profile.vue'
 
 const routes = [
     {
@@ -65,6 +66,11 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         // component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    },
+    {
+        path:'/profile',
+        name:'Profile',
+        component:Profile
     },
     {
         path: '/:catchall(.*)*',
