@@ -133,7 +133,7 @@ class User extends DbModel
                 return 'Provided email address is invalid.';
         $params['email'] = $email;
 
-        $userRoles = UserRoles::getUserRoles(limit: 1000);
+        $userRoles = UserRoles::getUserRoles(limit: 1000)['user-roles'];
 
         $roleId = null;
         foreach ($userRoles as $userRole) {
@@ -190,7 +190,7 @@ class User extends DbModel
         }
         if ($role) {
             $roleId = null;
-            $userRoles = UserRoles::getUserRoles(limit: 1000);
+            $userRoles = UserRoles::getUserRoles(limit: 1000)['user-roles'];
 
             foreach ($userRoles as $userRole) {
                 if ($userRole['name'] == strtolower($role)) {
@@ -231,7 +231,7 @@ class User extends DbModel
         if ($password)
             $updateFields['password'] = self::generatePasswordHash($password);
         if ($role) {
-            $userRoles = UserRoles::getUserRoles(limit: 1000);
+            $userRoles = UserRoles::getUserRoles(limit: 1000)['user-roles'];
 
             $roleId = null;
             foreach ($userRoles as $userRole) {
