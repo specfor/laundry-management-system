@@ -128,7 +128,7 @@ class GeneralLedger extends DbModel
             }
         }
 
-        $taxAccountId = Accounting::getAccounts(name: 'sales tax')['accounts'][0]['account_id'];
+        $taxAccountId = Accounting::getAccounts(name: 'sales tax', matchExactName: true)['accounts'][0]['account_id'];
         $taxRecords = [];
 
         // Doing all the calculations.

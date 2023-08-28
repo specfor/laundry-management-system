@@ -18,7 +18,8 @@ class Accounting extends DbModel
     ];
 
     public static function getAccounts(int    $pageNumber = 0, int $accountId = null, string $name = null, string $code = null,
-                                       string $type = null, string $description = null, int $taxId = null, int $limit = 30): array
+                                       string $type = null, string $description = null, int $taxId = null, int $limit = 30,
+                                       bool   $matchExactName = false): array
     {
         $startingIndex = $pageNumber * $limit;
         $filters = [];
@@ -28,7 +29,10 @@ class Accounting extends DbModel
             $filters[] = "account_id=$accountId";
         if ($name) {
             $filters[] = "name LIKE :name";
-            $placeholders['name'] = ucwords($name) . "%";
+            if ($matchExactName)
+                $placeholders['name'] = ucwords($name);
+            else
+                $placeholders['name'] = ucwords($name) . "%";
         }
         if ($type) {
             $filters[] = 'type LIKE :type';
