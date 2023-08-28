@@ -262,15 +262,17 @@ const searchPhrase = ref("");
 const selectedDate = ref(undefined) as Ref<undefined | Date>
 
 // Refs for Sorting types
-const { createdAtSortRef, dateSortRef, narrationSortRef, totalAmountSortRef, sorter, clearAll } = useCreateSorter<LedgerRecord, "date">({
+const { createdAtSortRef, dateSortRef, narrationSortRef, totalAmountSortRef, sorter, clearAll } = useCreateSorter<LedgerRecord, "createdAt">({
     createdAt: dateSorter,
     date: dateSorter,
     narration: alphabeticalSorter,
     totalAmount: decimalSorter
 }, {
-    propertyKey: "date",
+    propertyKey: "createdAt",
     sorter: dateSorter
 })
+
+createdAtSortRef.value = 'DSC';
 
 const abortController = new AbortController()
 

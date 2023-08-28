@@ -22,3 +22,4 @@ api/public/index.html
 api/public/favicon.svg
 api/public/assets
 api-stress-tests/node_modules
+printing-service-chrome-extension/node_modules
