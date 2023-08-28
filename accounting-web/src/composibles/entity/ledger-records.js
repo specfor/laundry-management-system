@@ -38,9 +38,13 @@ export function useLedgerRecords() {
         createdAt: new Date(created_at * 1000),
         date: new Date(date),
         totalAmount: new Decimal(tot_amount),
-        body: body.map(({ credit, debit, tax_rate, ...remainder }) => ({
+        body: body.map(({ credit, debit, account_description, account_tax_id, tax_rate, tax_name, tax_id, ...remainder }) => ({
             ...remainder,
-            tax_rate: new Decimal(tax_rate),
+            account_description: account_description ?? "",
+            account_tax_id,
+            tax_id: tax_id ?? account_tax_id,
+            tax_name: tax_name ?? "Tax Exempt",
+            tax_rate: new Decimal(tax_rate ?? "0"),
             ...(credit ? { credit: new Decimal(credit) } : { debit: new Decimal(debit ?? "") })
         }))
     })

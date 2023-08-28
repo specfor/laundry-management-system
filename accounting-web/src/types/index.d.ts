@@ -100,14 +100,14 @@ export interface RawLedgerRecordWithTaxAndAccountData {
     body: Object.Either<{
         account_id: number
         account_name: string
-        account_description: string
+        account_description?: string
         account_tax_id: number
         debit: string
         credit: string
         description: string
-        tax_id: number
-        tax_name: string
-        tax_rate: string
+        tax_id?: number
+        tax_name?: string
+        tax_rate?: string
     }, 'credit' | 'debit'>[] // | Either Debit or Credit, having both parameters set will result in an error
 }
 
