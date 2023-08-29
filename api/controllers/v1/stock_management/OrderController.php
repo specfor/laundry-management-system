@@ -16,9 +16,8 @@ class OrderController extends Controller
         $orderId = self::getParameter('order-id', dataType: 'int');
         $branchId = self::getParameter('branch-id', dataType: 'int');
         $addedDate = self::getParameter('added-date');
-        $orderStatus = self::getParameter('order-status');
 
-        $data = Orders::getOrders($pageNumber, $orderId, $addedDate, $branchId, $orderStatus);
+        $data = Orders::getOrders($pageNumber, $orderId, $addedDate, $branchId);
         self::sendSuccess($data);
     }
 
@@ -86,12 +85,5 @@ class OrderController extends Controller
         $noOfDaysBackward = self::getParameter('no-days-backward', defaultValue: 7, dataType: 'int');
 
         self::sendSuccess(['order-counts' => Orders::getOrderCount($branchId, $noOfDaysBackward)]);
-    }
-
-    public function getOrderStatusMessages(): void
-    {
-        self::checkPermissions(['orders' => [User::PERMISSION_READ]]);
-
-        self::sendSuccess(['status-messages' => Orders::getStatusMessages()]);
     }
 }

@@ -20,17 +20,15 @@ class Orders extends DbModel
     public const STATUS_CANCELLED = 8;
 
     public static function addNewOrder(array  $items, int $customerId, float $totalPrice = null, int $branchId = null,
-                                       string $comments = null, string $orderStatus = "order added"): bool|string|array
+                                       string $comments = null): bool|string|array
     {
         if (empty(Customers::getCustomers($customerId)['customers']))
             return "Invalid customer-id";
         else
             $params['customer_id'] = $customerId;
 
-        if (self::getOrderStatusId($orderStatus) == -1)
-            return "Invalid order status.";
-        else
-            $params['status'] = self::getOrderStatusId($orderStatus);
+        $orderStatus = [['time' => time(), 'message' => 'New order created.']];
+        $params['status'] = json_encode($orderStatus);
 
         if ($branchId) {
             if (empty(Branches::getBranches(branchId: $branchId)['branches']))
@@ -102,7 +100,7 @@ class Orders extends DbModel
     }
 
     public static function getOrders(int $pageNumber = 0, int $orderId = null, string $addedDate = null,
-                                     int $branchId = null, string $orderStatus = null, int $limit = 30): array
+                                     int $branchId = null, int $limit = 30): array
     {
         $startingIndex = $pageNumber * $limit;
         $filters = [];
@@ -115,10 +113,7 @@ class Orders extends DbModel
         }
         if ($branchId)
             $filters[] = "branch_id=$branchId";
-        if ($orderStatus) {
-            $orderStatus = self::getOrderStatusId($orderStatus);
-            $filters[] = "status=$orderStatus";
-        }
+
         $condition = implode(" AND ", $filters);
 
         $orders = (self::getDataFromTable(["*"], 'orders', $condition, $placeholders, ['order_id', 'desc'],
@@ -173,8 +168,7 @@ class Orders extends DbModel
                     $order['customer_id'] = null;
                 }
 
-                // Adding order status message
-                $order['status'] = self::getOrderStatusMessage(intval($order['status']));
+                $order['status'] = json_decode($order['status'], true);
             }
         }
         unset($order, $item);
@@ -191,10 +185,11 @@ class Orders extends DbModel
 
         $params = [];
 
-        if (empty(Customers::getCustomers($customerId)['customers']))
-            return "Invalid customer-id";
-        else
-            $params['customer_id'] = $customerId;
+        if ($customerId)
+            if (empty(Customers::getCustomers($customerId)['customers']))
+                return "Invalid customer-id";
+            else
+                $params['customer_id'] = $customerId;
 
         if ($items) {
             $itemIds = [];
@@ -245,10 +240,8 @@ class Orders extends DbModel
             $params['branch_id'] = $branchId;
         }
         if ($orderStatus) {
-            if (self::getOrderStatusId($orderStatus) == -1)
-                return "Invalid order status.";
-            else
-                $params['status'] = self::getOrderStatusId($orderStatus);
+            $orderData['status'][] = ['time' => time(), 'message' => $orderStatus];
+            $params['status'] = json_encode($orderData['status']);
         }
 
         $condition = "order_id=$orderId";
@@ -268,64 +261,12 @@ class Orders extends DbModel
         return $counts;
     }
 
-    public static function getStatusMessages(): array
-    {
-        return ["order added", "payment pending", "payment completed", "processing order", "finished processing order",
-            "order completed", "order on hold", "order rejected", "order cancelled"];
-    }
-
     public static function deleteOrder(int $orderId): bool
     {
         $sql = "DELETE FROM orders WHERE order_id=$orderId";
         if (self::exec($sql))
             return true;
         return false;
-    }
-
-    private static function getOrderStatusMessage(int $statusId): string
-    {
-        if ($statusId == self::STATUS_ORDER_ADDED)
-            return "order added";
-        elseif ($statusId == self::STATUS_PENDING_PAYMENT)
-            return "payment pending";
-        elseif ($statusId == self::STATUS_PAYMENT_COMPLETED)
-            return "payment completed";
-        elseif ($statusId == self::STATUS_PROCESSING)
-            return "processing order";
-        elseif ($statusId == self::STATUS_COMPLETED_PROCESSING)
-            return "finished processing order";
-        elseif ($statusId == self::STATUS_COMPLETED)
-            return "order completed";
-        elseif ($statusId == self::STATUS_ON_HOLD)
-            return "order on hold";
-        elseif ($statusId == self::STATUS_REJECTED)
-            return "order rejected";
-        elseif ($statusId == self::STATUS_CANCELLED)
-            return "order cancelled";
-        return "unknown order status";
-    }
-
-    private static function getOrderStatusId(string $statusMessage): int
-    {
-        if ($statusMessage == "order added")
-            return self::STATUS_ORDER_ADDED;
-        elseif ($statusMessage == "payment pending")
-            return self::STATUS_PENDING_PAYMENT;
-        elseif ($statusMessage == "payment completed")
-            return self::STATUS_PAYMENT_COMPLETED;
-        elseif ($statusMessage == "processing order")
-            return self::STATUS_PROCESSING;
-        elseif ($statusMessage == "finished processing order")
-            return self::STATUS_COMPLETED_PROCESSING;
-        elseif ($statusMessage == "order completed")
-            return self::STATUS_COMPLETED;
-        elseif ($statusMessage == "order on hold")
-            return self::STATUS_ON_HOLD;
-        elseif ($statusMessage == "order rejected")
-            return self::STATUS_REJECTED;
-        elseif ($statusMessage == "order cancelled")
-            return self::STATUS_CANCELLED;
-        return -1;
     }
 
     private static function getItemData(array $itemIds): array

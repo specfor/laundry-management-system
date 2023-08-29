@@ -70,7 +70,6 @@ $app->router->addPostRoute('/api/v1/items/add', [ItemController::class, 'addItem
 $app->router->addPostRoute('/api/v1/items/update', [ItemController::class, 'updateItem']);
 $app->router->addPostRoute('/api/v1/items/delete', [ItemController::class, 'deleteItem']);
 $app->router->addGetRoute('/api/v1/orders', [OrderController::class, 'getOrders']);
-$app->router->addGetRoute('/api/v1/orders/status-messages', [OrderController::class, 'getOrderStatusMessages']);
 $app->router->addGetRoute('/api/v1/orderCount', [OrderController::class, 'getOrderCount']);
 $app->router->addPostRoute('/api/v1/orders/add', [OrderController::class, 'addOrder']);
 $app->router->addPostRoute('/api/v1/orders/update', [OrderController::class, 'updateOrder']);
