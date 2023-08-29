@@ -84,10 +84,10 @@ export function useOrder(batchNotificationInjection) {
     const getOrders = async (pageNum) => {
         return new Promise((resolve, reject) => {
             const success = ref(false);
-            const { data, isFinished } = useAuthorizedFetch(`/customers?page-num=${pageNum}`, 'Get Customers', success, notificationInjection).json().get();
+            const { data, isFinished } = useAuthorizedFetch(`/orders?page-num=${pageNum}`, 'Get Orders', success, notificationInjection).json().get();
 
             whenever(logicAnd(isFinished, success), () => {
-                const raw = /** @type {import("../../../types/entity").OrderRaw[] }*/(toValue(data).customers)
+                const raw = /** @type {import("../../../types/entity").OrderRaw[] }*/(toValue(data).orders)
                 const count = /** @type {number} */ (toValue(data).record_count)
                 resolve([raw.map(serialize), count]);
             })
@@ -96,32 +96,28 @@ export function useOrder(batchNotificationInjection) {
     }
 
     /**
-     * @typedef SearchCustomersOptions
-     * @property {string} [name]
-     * @property {string} [phoneNum]
-     * @property {string} [address]
-     * @property {string} [email]
+     * @typedef SearchOrdersOptions
+     * @property {number} [id]
+     * @property {Date} [addedDate]
      */
 
     /**
-     * Get customers matching the given query
-     * @param {SearchCustomersOptions} options
+     * Get orders matching the given query
+     * @param {SearchOrdersOptions} options
      * @returns {Promise<import("../../../types/entity").Order[]>}
      */
-    const searchOrders = async ({ address, email, name, phoneNum }) => {
+    const searchOrders = async ({ addedDate, id }) => {
         return new Promise((resolve, reject) => {
             const query = "?" + [
-                address ? `address=${address}` : undefined,
-                email ? `email=${email}` : undefined,
-                name ? `name=${name}` : undefined,
-                phoneNum ? `phone-number=${phoneNum}` : undefined
+                addedDate ? `added-date=${addedDate.toLocaleDateString('en-CA')}` : undefined,
+                id ? `order-id=${id}` : undefined,
             ].filter(x => x).join("&")
 
             const success = ref(false);
-            const { data, isFinished } = useAuthorizedFetch(`/customers${query}`, 'Search Customers', success, notificationInjection).json().get();
+            const { data, isFinished } = useAuthorizedFetch(`/orders${query}`, 'Search Orders', success, notificationInjection).json().get();
 
             whenever(logicAnd(isFinished, success), () => {
-                const raw = /** @type {import("../../../types/entity").OrderRaw[] }*/(toValue(data).customers)
+                const raw = /** @type {import("../../../types/entity").OrderRaw[] }*/(toValue(data).orders)
                 resolve(raw.map(serialize));
             })
             whenever(logicAnd(isFinished, logicNot(success)), () => reject())
@@ -129,19 +125,19 @@ export function useOrder(batchNotificationInjection) {
     }
 
     /**
-     * Adds a Order
+     * Adds an Order
      * @param {import("../../../types/entity").AddOrderOptions} options
-     * @returns {Promise<void>}
+     * @returns {Promise<number>} Return the added order ID
      */
-    const addLedgerRecord = async (options) => {
+    const addOrder = async (options) => {
         return new Promise((resolve, reject) => {
             const success = ref(false);
-            const { isFinished } = useAuthorizedFetch('/general-ledger/add', 'Add Ledger Record', success, notificationInjection, true).json().post(deserialize(options));
+            const { isFinished, data } = useAuthorizedFetch('/orders/add', 'Add New Order', success, notificationInjection, true).json().post(deserializeAddOptions(options));
 
-            whenever(logicAnd(isFinished, success), () => resolve())
+            whenever(logicAnd(isFinished, success), () => resolve(/** @type {number}*/(toValue(data)["order-id"])))
             whenever(logicAnd(isFinished, logicNot(success)), () => reject())
         })
     }
 
-    return { getOrders, searchOrders }
+    return { getOrders, searchOrders, addOrder }
 }
