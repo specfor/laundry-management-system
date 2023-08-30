@@ -9,6 +9,7 @@ class Router
 {
     public Request $request;
     protected static array $routes = [];
+    protected static array $wildCardRoutes = [];
 
     /**
      * Create a new Router instance
@@ -27,9 +28,15 @@ class Router
      */
     public function addGetRoute(string $path, array $callback): void
     {
-        self::$routes['get'][$path] = $callback;
-        $callback[1] = "optionsRequest";
-        self::$routes['options'][$path] = $callback;
+        if (str_contains($path, '$')) {
+            self::$wildCardRoutes['get'][$path] = $callback;
+            $callback[1] = "optionsRequest";
+            self::$wildCardRoutes['options'][$path] = $callback;
+        } else {
+            self::$routes['get'][$path] = $callback;
+            $callback[1] = "optionsRequest";
+            self::$routes['options'][$path] = $callback;
+        }
     }
 
     /**
@@ -40,9 +47,15 @@ class Router
      */
     public function addPostRoute(string $path, array $callback): void
     {
-        self::$routes['post'][$path] = $callback;
-        $callback[1] = "optionsRequest";
-        self::$routes['options'][$path] = $callback;
+        if (str_contains($path, '$')) {
+            self::$wildCardRoutes['post'][$path] = $callback;
+            $callback[1] = "optionsRequest";
+            self::$wildCardRoutes['options'][$path] = $callback;
+        } else {
+            self::$routes['post'][$path] = $callback;
+            $callback[1] = "optionsRequest";
+            self::$routes['options'][$path] = $callback;
+        }
     }
 
     /**
@@ -55,17 +68,43 @@ class Router
         $path = $this->request->getPath();
         $method = $this->request->getMethod();
         $callback = self::$routes[$method][$path] ?? false;
+
+        $arguments = [];
+
         if ($callback === false) {
-            $pathPieces = explode('/', $path);
-            if ($pathPieces[0] === 'api'){
-                self::endPointNotFound();
-            }else{
-                throw new NotFoundException();
+            $found = false;
+            foreach (self::$wildCardRoutes as $routeMethod => $wildCardRoute) {
+                if ($method === $routeMethod) {
+                    foreach ($wildCardRoute as $pathRegex => $callback_) {
+                        $pathRegex = str_replace('/', '\/', $pathRegex);
+                        $pathRegex = str_replace('$', '([\w\.-]{1,})', $pathRegex);
+                        $pathRegex = "/^$pathRegex$/";
+                        if (preg_match($pathRegex, $path, $matches)) {
+                            unset($matches[0]);
+                            $arguments = array_values($matches);
+                            $callback = $callback_;
+                            $found = true;
+                            break;
+                        }
+                    }
+                }
+                if ($found)
+                    break;
             }
         }
         if (is_array($callback)) {
             $controller = new $callback[0];
-            $controller->{$callback[1]}();
+            if ($arguments)
+                $controller->{$callback[1]}($arguments);
+            else
+                $controller->{$callback[1]}();
+        } elseif ($callback === false) {
+            $pathPieces = explode('/', $path);
+            if ($pathPieces[0] === 'api') {
+                self::endPointNotFound();
+            } else {
+                throw new NotFoundException();
+            }
         }
     }
 
