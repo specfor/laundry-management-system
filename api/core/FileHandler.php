@@ -104,7 +104,13 @@ class FileHandler
             $newFileBasePath = substr($newFileBasePath, 0, -1);
 
         $newFileName = bin2hex(random_bytes(20)) . uniqid() . self::getExtension($fileMimeType);
-        $newFilePath = self::getBaseFolder($isSystemFile) . $newFileBasePath . '/' . $newFileName;
+
+        $newFileBasePath = self::getBaseFolder($isSystemFile) . $newFileBasePath . '/';
+        if (!is_dir($newFileBasePath)) {
+            mkdir($newFileBasePath, 0777, true);
+        }
+
+        $newFilePath = $newFileBasePath . $newFileName;
         if (move_uploaded_file($tmpFilePath, $newFilePath))
             return ['file_name' => $newFileName];
         else
