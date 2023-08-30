@@ -51,6 +51,9 @@ class FileHandler
         if (!$path)
             return false;
 
+        $fileMimeType = finfo_file(finfo_open(FILEINFO_MIME_TYPE), $path);
+        header('Content-Type: ' . $fileMimeType);
+
         readfile($path);
         return true;
     }
@@ -132,7 +135,7 @@ class FileHandler
         $filePath = self::getBaseFolder($isSystemFile) . $filePath;
         $filePath = realpath($filePath);
         if ($filePath) {
-            unlink($filePath );
+            unlink($filePath);
             return true;
         }
         return false;
