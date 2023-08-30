@@ -60,7 +60,7 @@ class FileHandler
         if ($filePath[0] === '/')
             $filePath = substr($filePath, 1);
 
-        $path = self::getBaseFolder($isSystemFile). $filePath;
+        $path = self::getBaseFolder($isSystemFile) . $filePath;
         if (!file_exists($path))
             return null;
 
@@ -97,6 +97,11 @@ class FileHandler
 
         if (!in_array($fileMimeType, $allowedMimeTypes))
             return "Invalid file format.";
+
+        if ($newFileBasePath[0] === '/')
+            $newFileBasePath = substr($newFileBasePath, 1);
+        if ($newFileBasePath[-1] === '/')
+            $newFileBasePath = substr($newFileBasePath, 0, -1);
 
         $newFileName = bin2hex(random_bytes(20)) . uniqid() . self::getExtension($fileMimeType);
         $newFilePath = self::getBaseFolder($isSystemFile) . $newFileBasePath . '/' . $newFileName;
