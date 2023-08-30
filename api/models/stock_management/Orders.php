@@ -279,7 +279,7 @@ class Orders extends DbModel
             ->fetchAll(PDO::FETCH_ASSOC);
         foreach ($itemData as &$item) {
             $categoryIds = explode(',', $item['category_ids']);
-            $categoryData = PriceCategories::getCategories(limit: 1000, categoryIds: $categoryIds);
+            $categoryData = PriceCategories::getCategories(limit: 1000, categoryIds: $categoryIds)['categories'];
             $item['categories'] = $categoryData;
         }
         return $itemData;
