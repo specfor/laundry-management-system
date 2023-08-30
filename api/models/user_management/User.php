@@ -8,6 +8,7 @@ use LogicLeap\PhpServerCore\FileHandler;
 use LogicLeap\PhpServerCore\SecureToken;
 use LogicLeap\PhpServerCore\SendMail;
 use LogicLeap\StockManagement\models\DbModel;
+use LogicLeap\StockManagement\models\stock_management\Branches;
 use PDO;
 
 class User extends DbModel
@@ -174,8 +175,10 @@ class User extends DbModel
         $condition = "role!=$superAdminRole";
 
         $placeholders = [];
-        if ($userId)
-            $condition .= " AND id=$userId";
+        if ($userId !== null) {
+            $condition .= " AND id=:id";
+            $placeholders['id'] = $userId;
+        }
         if ($username) {
             $condition .= " AND username LIKE :username";
             $placeholders['username'] = "%" . $username . "%";
@@ -205,7 +208,7 @@ class User extends DbModel
             $condition .= " AND branch_id=$branchId";
 
         $statement = self::getDataFromTable(
-            ['id', 'username', 'firstname', 'lastname', 'role', 'branch_id', 'email'],
+            ['id', 'username', 'firstname', 'lastname', 'role', 'branch_id', 'email', 'profile_pic'],
             'users',
             $condition,
             $placeholders,
@@ -213,9 +216,11 @@ class User extends DbModel
             [$startingIndex, $limit]
         );
         $data = $statement->fetchAll(PDO::FETCH_ASSOC);
-        for ($i = 0; $i < count($data); $i++) {
-            $data[$i]['role'] = UserRoles::getUserRoleText($data[$i]['role']);
+        foreach ($data as &$user) {
+            $user['role'] = UserRoles::getUserRoleText($user['role']);
+            $user['branch_name'] = Branches::getBranches(branchId: $user['branch_id'])['branches'][0]['name'] ?? null;
         }
+
         $count = self::countTableRows(self::TABLE_NAME, $condition, $placeholders);
         return ['users' => $data, 'record_count' => $count];
     }
@@ -322,6 +327,30 @@ class User extends DbModel
         return ['history' => $data, 'record_count' => $count];
     }
 
+    public static function getUserProfile(int $userId)
+    {
+        return self::getUsers(userId: $userId)['users'][0];
+    }
+
+    public static function uploadUserProfilePicture($userId): bool|string|array
+    {
+        $status = FileHandler::handleFileUpload('profile-picture', '/profile_pictures', 10 * 1024 * 1024,
+            [FileHandler::EXTENSIONS_MIME_TYPES['.jpg'], FileHandler::EXTENSIONS_MIME_TYPES['.png']]);
+
+        if (is_string($status))
+            return $status;
+
+        $profilePic = self::getDataFromTable(['profile_pic'], self::TABLE_NAME, "id=$userId")->fetch(PDO::FETCH_ASSOC);
+        if (!empty($profilePic['profile_pic'])) {
+            FileHandler::deleteFile('/profile_pictures/' . $profilePic['profile_pic']);
+        }
+
+        if (self::updateTableData(self::TABLE_NAME, ['profile_pic' => $status['file_name']], "id=$userId"))
+            return ['photo' => $status['file_name']];
+
+        FileHandler::deleteFile('/profile_pictures/' . $status['file_name']);
+        return false;
+    }
 
     /**
      * If passed user ID is present, set instance variable values.

@@ -86,6 +86,8 @@ $app->router->addPostRoute('/api/v1/user-roles/update', [UserRoleController::cla
 $app->router->addPostRoute('/api/v1/user-roles/delete', [UserRoleController::class, 'deleteUserRole']);
 $app->router->addGetRoute('/api/v1/users/login-history', [UserController::class, 'getUserLoginHistory']);
 $app->router->addPostRoute('/api/v1/login/send-reset-mail', [UserController::class, 'sendPasswordResetLink']);
+$app->router->addPostRoute('/api/v1/profile/profile-picture', [UserController::class, 'uploadProfilePicture']);
+$app->router->addPostRoute('/api/v1/users/update/profile-picture', [UserController::class, 'uploadUserProfilePicture']);
 
 // Accounting routes
 $app->router->addGetRoute('/api/v1/taxes', [TaxController::class, 'getTaxes']);

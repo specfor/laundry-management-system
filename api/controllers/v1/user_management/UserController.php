@@ -112,4 +112,38 @@ class UserController extends Controller
         else
             self::sendError($status);
     }
+
+    public function uploadProfilePicture(): void
+    {
+        self::checkPermissions();
+
+        $userId = self::getUserId();
+        self::handleUploadUserProfilePicture($userId);
+    }
+
+    public function uploadUserProfilePicture(): void
+    {
+        self::checkPermissions(['users' => [User::PERMISSION_MODIFY]]);
+
+        $userId = $_SERVER['HTTP_USER_ID'] ?? null;
+        if ($userId === null)
+            self::sendError("Missing 'user-id' header.");
+
+        self::handleUploadUserProfilePicture(intval($userId));
+    }
+
+    private static function handleUploadUserProfilePicture(int $userId): void
+    {
+        $user = User::getUsers(userId: $userId)['users'];
+        if (empty($user))
+            self::sendError('Invalid user Id.');
+
+        $status = User::uploadUserProfilePicture($userId);
+        if (is_array($status))
+            self::sendSuccess(['message' => 'Successfully updated the profile photo.', 'profile-photo' => $status['photo']]);
+        elseif ($status === false)
+            self::sendError('Failed to update the profile photo.');
+        else
+            self::sendError($status);
+    }
 }
