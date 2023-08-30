@@ -19,9 +19,13 @@ class Orders extends DbModel
     public const STATUS_REJECTED = 7;
     public const STATUS_CANCELLED = 8;
 
-    public static function addNewOrder(array  $items, int $customerId, float $totalPrice = null, int $branchId = null,
-                                       string $comments = null): bool|string|array
-    {
+    public static function addNewOrder(
+        array  $items,
+        int $customerId,
+        float $totalPrice = null,
+        int $branchId = null,
+        string $comments = null
+    ): bool|string|array {
         if (empty(Customers::getCustomers($customerId)['customers']))
             return "Invalid customer-id";
         else
@@ -37,24 +41,22 @@ class Orders extends DbModel
         }
 
         $itemIds = [];
-        foreach ($items as &$singleItem) {
-            foreach ($singleItem as $itemId => &$itemData) {
-                if (!is_int($itemId))
-                    return "All item ids must be integers.";
-                if (!isset($itemData['amount'], $itemData['return-date'], $itemData['defects']))
-                    return "Every item should contain 'amount', 'return-date', 'defects'";
-                if ($itemData['amount'] < 1)
-                    return "All amounts must be greater than 0";
-                if (!is_array($itemData['defects']))
-                    return "Defects should be an array.";
-                if (!is_string($itemData['return-date']))
-                    return "'return-date' should be a string.";
+        foreach ($items as $item) {
+            if (!is_int($item['id']))
+                return "All item ids must be integers.";
+            if (!isset($item['amount'], $item['return-date'], $item['defects']))
+                return "Every item should contain 'amount', 'return-date', 'defects'";
+            if ($item['amount'] < 1)
+                return "All amounts must be greater than 0";
+            if (!is_array($item['defects']))
+                return "Defects should be an array.";
+            if (!is_string($item['return-date']))
+                return "'return-date' should be a string.";
 
-                $itemData['amount'] = intval($itemData['amount']);
-                $itemIds[] = "item_id=$itemId";
-            }
+            $itemData['amount'] = intval($item['amount']);
+            $itemIds[] = "item_id=". $item['id'];
         }
-        unset($singleItem, $itemData);
+        // unset($singleItem, $itemData);
 
         $itemIds = array_unique($itemIds);
         $condition = "(" . implode(' OR ', $itemIds) . ")";
@@ -67,16 +69,14 @@ class Orders extends DbModel
         $calculatedTotalPrice = 0;
         $newItemData = [];
 
-        foreach ($items as $singleItem) {
-            foreach ($singleItem as $itemId => $itemData) {
-                foreach ($itemDataStored as $item) {
-                    if ($itemId == $item['item_id']) {
-                        $item['amount'] = $itemData['amount'];
-                        $item['return-date'] = $itemData['return-date'];
-                        $item['defects'] = $itemData['defects'];
-                        $calculatedTotalPrice += intval($itemData['amount']) * floatval($item['price']);
-                        $newItemData[] = $item;
-                    }
+        foreach ($items as $itemFromRequest) {
+            foreach ($itemDataStored as $item) {
+                if ($itemFromRequest['id'] == $item['item_id']) {
+                    $item['amount'] = $itemFromRequest['amount'];
+                    $item['return-date'] = $itemFromRequest['return-date'];
+                    $item['defects'] = $itemFromRequest['defects'];
+                    $calculatedTotalPrice += intval($itemFromRequest['amount']) * floatval($item['price']);
+                    $newItemData[] = $item;
                 }
             }
         }
@@ -99,9 +99,13 @@ class Orders extends DbModel
             return ['order_id' => $id];
     }
 
-    public static function getOrders(int $pageNumber = 0, int $orderId = null, string $addedDate = null,
-                                     int $branchId = null, int $limit = 30): array
-    {
+    public static function getOrders(
+        int $pageNumber = 0,
+        int $orderId = null,
+        string $addedDate = null,
+        int $branchId = null,
+        int $limit = 30
+    ): array {
         $startingIndex = $pageNumber * $limit;
         $filters = [];
         $placeholders = [];
@@ -116,8 +120,14 @@ class Orders extends DbModel
 
         $condition = implode(" AND ", $filters);
 
-        $orders = (self::getDataFromTable(["*"], 'orders', $condition, $placeholders, ['order_id', 'desc'],
-            [$startingIndex, $limit]))->fetchAll(PDO::FETCH_ASSOC);
+        $orders = (self::getDataFromTable(
+            ["*"],
+            'orders',
+            $condition,
+            $placeholders,
+            ['order_id', 'desc'],
+            [$startingIndex, $limit]
+        ))->fetchAll(PDO::FETCH_ASSOC);
 
 
         $itemIds = [];
@@ -176,9 +186,14 @@ class Orders extends DbModel
         return ['orders' => $orders, 'record_count' => $count];
     }
 
-    public static function updateOrder(int $orderId, int $branchId = null, string $orderStatus = null,
-                                       int $customerId = null, array $items = null, float $totalPrice = null): bool|string
-    {
+    public static function updateOrder(
+        int $orderId,
+        int $branchId = null,
+        string $orderStatus = null,
+        int $customerId = null,
+        array $items = null,
+        float $totalPrice = null
+    ): bool|string {
         $orderData = self::getOrders(orderId: $orderId)['orders'][0];
         if (empty($orderData))
             return "Invalid order id.";
