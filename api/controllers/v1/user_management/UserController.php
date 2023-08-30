@@ -113,6 +113,12 @@ class UserController extends Controller
             self::sendError($status);
     }
 
+    public function getProfile(): void
+    {
+        self::checkPermissions();
+        self::sendSuccess(User::getUserProfile(self::getUserId()));
+    }
+
     public function uploadProfilePicture(): void
     {
         self::checkPermissions();

@@ -329,7 +329,7 @@ class User extends DbModel
 
     public static function getUserProfile(int $userId)
     {
-        return self::getUsers(userId: $userId)['users'][0];
+        return self::getUsers(userId: $userId)['users'];
     }
 
     public static function uploadUserProfilePicture($userId): bool|string|array

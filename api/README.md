@@ -176,8 +176,11 @@ user-id - use this user passed user-id only if user has permission to get other 
 login-date
 ip-address
 
+GET - /api/v1/profile
+get user profile
+
 POST - /api/v1/profile/profile-picture  ********* must be a multipart request (not json) ********
-profile-picture - compulsory  - mulitpart parameter
+profile-picture - compulsory  - multipart parameter
 
 POST - /api/v1/users/update/profile-picture  ********* must be a multipart request (not json) ********
 profile-picture - compulsory - multipart parameter
