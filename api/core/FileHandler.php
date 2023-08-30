@@ -117,7 +117,28 @@ class FileHandler
             return "Failed to move the file to new location.";
     }
 
-    public static function getBaseFolder($isSystemFile = false): string
+    /**
+     * @param string $filePath File path relative to storage/system(or user)/
+     * @param bool $isSystemFile Whether to store in 'storage/system/' or 'storage/user/'
+     * @return bool True if successfully deleted the file, false otherwise.
+     */
+    public static function deleteFile(string $filePath, bool $isSystemFile = false): bool
+    {
+        if ($filePath[0] === '/')
+            $filePath = substr($filePath, 1);
+        if ($filePath[-1] === '/')
+            $filePath = substr($filePath, 0, -1);
+
+        $filePath = self::getBaseFolder($isSystemFile) . $filePath;
+        $filePath = realpath($filePath);
+        if ($filePath) {
+            unlink($filePath );
+            return true;
+        }
+        return false;
+    }
+
+    public static function getBaseFolder(bool $isSystemFile = false): string
     {
         if ($isSystemFile)
             return Application::$ROOT_DIR . "/storage/system/";
