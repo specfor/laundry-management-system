@@ -179,6 +179,9 @@ ip-address
 GET - /api/v1/profile
 get user profile
 
+GET - /api/v1/profile/images/(image-name)
+get profile pictures of users.
+
 POST - /api/v1/profile/profile-picture  ********* must be a multipart request (not json) ********
 profile-picture - compulsory  - multipart parameter
 

@@ -125,6 +125,14 @@ class UserController extends Controller
         self::sendSuccess($userInfo);
     }
 
+    public function getProfilePicture(array $args): void
+    {
+        self::checkPermissions();
+
+        if(!FileHandler::streamFile("/profile_pictures/".$args[0]))
+            self::sendError('Invalid file name');
+    }
+
     public function uploadProfilePicture(): void
     {
         self::checkPermissions();
