@@ -164,7 +164,7 @@ class User extends DbModel
         return ['message' => 'New user created successfully.', 'user-id' => $id];
     }
 
-    public static function getUsers(
+    public static function  getUsers(
         int    $pageNumber = 0, string $username = null, string $name = null, string $email = null,
         string $role = null, int $branchId = null, int $limit = 30, int $userId = null
     ): array
@@ -329,7 +329,7 @@ class User extends DbModel
 
     public static function getUserProfile(int $userId)
     {
-        return self::getUsers(userId: $userId)['users'];
+        return self::getUsers(userId: $userId)['users'][0];
     }
 
     public static function uploadUserProfilePicture($userId): bool|string|array

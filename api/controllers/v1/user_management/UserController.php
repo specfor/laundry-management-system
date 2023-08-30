@@ -116,7 +116,13 @@ class UserController extends Controller
     public function getProfile(): void
     {
         self::checkPermissions();
-        self::sendSuccess(User::getUserProfile(self::getUserId()));
+
+        $userId = self::getUserId();
+
+        $loginHistory = User::getUserLoginHistory($userId)['history'];
+        $userInfo = User::getUserProfile($userId);
+        $userInfo['login-history'] = $loginHistory;
+        self::sendSuccess($userInfo);
     }
 
     public function uploadProfilePicture(): void
