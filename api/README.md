@@ -176,6 +176,15 @@ user-id - use this user passed user-id only if user has permission to get other 
 login-date
 ip-address
 
+POST - /api/v1/login/reset-password/check-token
+check whether the password reset token is valid or not
+token - compulsory
+
+POST - /api/v1/login/reset-password/new-password
+set the new password for the user of the password reset token
+token - compulsory
+password - complusory
+
 GET - /api/v1/profile
 get user profile
 

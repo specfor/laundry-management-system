@@ -164,7 +164,7 @@ class User extends DbModel
         return ['message' => 'New user created successfully.', 'user-id' => $id];
     }
 
-    public static function  getUsers(
+    public static function getUsers(
         int    $pageNumber = 0, string $username = null, string $name = null, string $email = null,
         string $role = null, int $branchId = null, int $limit = 30, int $userId = null
     ): array
@@ -233,8 +233,16 @@ class User extends DbModel
     {
         $updateFields = [];
 
-        if ($password)
+        if ($password) {
+            if (strlen($password) < self::MIN_PASSWORD_LENGTH) {
+                return 'Password should be at least ' . self::MIN_PASSWORD_LENGTH . ' characters long.';
+            }
+
+            if (strlen($password) > self::MAX_PASSWORD_LENGTH) {
+                return 'Password should not be longer than ' . self::MAX_PASSWORD_LENGTH . ' characters.';
+            }
             $updateFields['password'] = self::generatePasswordHash($password);
+        }
         if ($role) {
             $userRoles = UserRoles::getUserRoles(limit: 1000)['user-roles'];
 
@@ -283,7 +291,7 @@ class User extends DbModel
                 // Create new reset token
                 $token = SecureToken::generateToken();
                 $template = FileHandler::getFileContent("/mail_templates/passReset.html", true);
-                $resetLink = "https://" . SYSTEM_DOMAIN . "/api/v1/profile/password-reset?token=$token";
+                $resetLink = "https://" . SYSTEM_DOMAIN . "/login/reset-password/token/$token";
                 $template = str_replace('{{pass-reset-link}}', $resetLink, $template);
 
                 $now = new DateTime('now');
@@ -301,6 +309,39 @@ class User extends DbModel
             }
         }
         return true;
+    }
+
+    public static function isValidPassResetToken(string $token): bool|string
+    {
+        $tokenData = self::getDataFromTable(['expire_at', 'used', 'valid'], 'reset_pass_tokens',
+            'token=:token', ['token' => $token])->fetch(PDO::FETCH_ASSOC);
+        if (empty($tokenData))
+            return "Invalid password reset token.";
+        $now = (new DateTime('now'))->format('Y-m-d H:i:s');
+
+        if (!$tokenData['valid'])
+            return "This password reset token is no longer valid.";
+        if ($tokenData['used'])
+            return "This password reset token has already been used.";
+        if ($now > $tokenData['expire_at'])
+            return "Password reset token is expired";
+
+        return true;
+    }
+
+    public static function resetUserPassword(string $token, string $password): bool|string
+    {
+        if (self::isValidPassResetToken($token) !== true)
+            return "Invalid password reset token.";
+
+        $userId = self::getDataFromTable(['user_id'], 'reset_pass_tokens', 'token=:token', ['token' => $token])
+            ->fetch(PDO::FETCH_ASSOC)['user_id'];
+        $status = self::updateUser($userId, password: $password);
+        if ($status === true) {
+            self::updateTableData('reset_pass_tokens', ['used' => true], 'token=:token', ['token' => $token]);
+            return true;
+        }
+        return $status;
     }
 
     public static function getUserLoginHistory(int $userId, string $date = null, string $ipAddress = null,

@@ -113,6 +113,29 @@ class UserController extends Controller
             self::sendError($status);
     }
 
+    public function checkPassResetTokenValidity()
+    {
+        $token = self::getParameter('token', isCompulsory: true);
+
+        $status = User::isValidPassResetToken($token);
+        if ($status === true)
+            self::sendSuccess('This token is valid.');
+        else
+            self::sendError($status);
+    }
+
+    public function resetPassword(): void
+    {
+        $token = self::getParameter('token', isCompulsory: true);
+        $newPassword = self::getParameter('password', isCompulsory: true);
+
+        $status = User::resetUserPassword($token, $newPassword);
+        if ($status === true) {
+            self::sendSuccess('Successfully updated the user password.');
+        } else
+            self::sendError($status);
+    }
+
     public function getProfile(): void
     {
         self::checkPermissions();
@@ -129,7 +152,7 @@ class UserController extends Controller
     {
         self::checkPermissions();
 
-        if(!FileHandler::streamFile("/profile_pictures/".$args[0]))
+        if (!FileHandler::streamFile("/profile_pictures/" . $args[0]))
             self::sendError('Invalid file name');
     }
 

@@ -86,6 +86,8 @@ $app->router->addPostRoute('/api/v1/user-roles/update', [UserRoleController::cla
 $app->router->addPostRoute('/api/v1/user-roles/delete', [UserRoleController::class, 'deleteUserRole']);
 $app->router->addGetRoute('/api/v1/users/login-history', [UserController::class, 'getUserLoginHistory']);
 $app->router->addPostRoute('/api/v1/login/send-reset-mail', [UserController::class, 'sendPasswordResetLink']);
+$app->router->addPostRoute('/api/v1/login/reset-password/new-password', [UserController::class, 'resetPassword']);
+$app->router->addPostRoute('/api/v1/login/reset-password/check-token', [UserController::class, 'checkPassResetTokenValidity']);
 $app->router->addGetRoute('/api/v1/profile', [UserController::class, 'getProfile']);
 $app->router->addGetRoute('/api/v1/profile/images/$', [UserController::class, 'getProfilePicture']);
 $app->router->addPostRoute('/api/v1/profile/profile-picture', [UserController::class, 'uploadProfilePicture']);
