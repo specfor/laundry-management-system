@@ -113,7 +113,7 @@ class UserController extends Controller
             self::sendError($status);
     }
 
-    public function checkPassResetTokenValidity()
+    public function checkPassResetTokenValidity(): void
     {
         $token = self::getParameter('token', isCompulsory: true);
 
@@ -122,6 +122,19 @@ class UserController extends Controller
             self::sendSuccess('This token is valid.');
         else
             self::sendError($status);
+    }
+
+    public function updateCurrentPassword(): void
+    {
+        self::checkPermissions();
+
+        $currentPassword = self::getParameter('current-password', isCompulsory: true);
+        $newPassword = self::getParameter('new-password', isCompulsory: true);
+
+        $status = User::updateUserPassword(self::getUserId(), $currentPassword, $newPassword);
+        if ($status===true)
+            self::sendSuccess("Successfully updated the account password.");
+        self::sendError($status);
     }
 
     public function resetPassword(): void

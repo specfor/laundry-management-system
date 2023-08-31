@@ -273,6 +273,27 @@ class User extends DbModel
         return false;
     }
 
+    public static function updateUserPassword(int $userId, string $currentPassword, string $newPassword): bool|string
+    {
+        $user = self::getUsers(userId: $userId)['users'];
+        if (empty($user))
+            return "Invalid user id.";
+
+        if ($currentPassword === $newPassword)
+            return "New password is same as the current password.";
+
+        $userData = self::getDataFromTable(['id', 'password'], self::TABLE_NAME, 'id=:id',
+            ['id' => $userId])->fetch(PDO::FETCH_ASSOC);
+        if (!password_verify($currentPassword, $userData['password'])) {
+            return "Current password of the account is invalid.";
+        }
+
+        $passHash = self::generatePasswordHash($newPassword);
+        if(self::updateTableData(self::TABLE_NAME, ['password' => $passHash], "id=$userId"))
+            return true;
+        return "Failed to update account password.";
+    }
+
     public static function sendPassResetEmail(string $usernameOrEmail): bool|string
     {
         $userId = self::userExists($usernameOrEmail, $usernameOrEmail);

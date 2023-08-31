@@ -183,10 +183,15 @@ token - compulsory
 POST - /api/v1/login/reset-password/new-password
 set the new password for the user of the password reset token
 token - compulsory
-password - complusory
+password - compulsory
 
 GET - /api/v1/profile
 get user profile
+
+POST - /api/v1/profile/update-password
+update current user password
+current-password - compulsory
+new-password - compulsory
 
 GET - /api/v1/profile/images/(image-name)
 get profile pictures of users.
