@@ -16,7 +16,7 @@ class AuthController extends Controller
         self::checkPermissions();
 
         $userId = self::getUserId();
-        $permissions = UserRoles::getUserRoles(roleId: User::getUserRole($userId))['user-roles'][0]['permissions'];
+        $permissions = UserRoles::getUserRoles(roleId: User::getUserRole($userId))['user-roles'][0]['permissions'] ?? [];
         self::sendSuccess(['user-id' => $userId, 'permissions' => $permissions]);
     }
 
