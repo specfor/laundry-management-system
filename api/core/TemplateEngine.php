@@ -15,7 +15,14 @@ class TemplateEngine
     public const TEMPLATE_MAIL = 1;
     public const TEMPLATE_PDF = 2;
 
-    public static function generateTemplate(string $templateName, int $templateType, array $placeholders): string|null
+    /**
+     * Get rendered template.
+     * @param string $templateName File name of the template
+     * @param int $templateType Type of the template. Must be one of TEMPLATE_... constants defined in the class
+     * @param array $contextArray An associative array of placeholders and their values.
+     * @return string|null Return rendered template. null if any error.
+     */
+    public static function generateTemplate(string $templateName, int $templateType, array $contextArray): string|null
     {
         $loader = new FilesystemLoader(self::getTemplateBasePath($templateType));
         $twig = new Environment($loader, [
@@ -27,8 +34,9 @@ class TemplateEngine
             return null;
         }catch (RuntimeError){
             rmdir(FileHandler::getBaseFolder(true) . 'cache/twig_cache');
+            return null;
         }
-        return $template->render($placeholders);
+        return $template->render($contextArray);
     }
 
     private static function getTemplateBasePath(int $templateType): string
