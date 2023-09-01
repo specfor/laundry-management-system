@@ -23,8 +23,10 @@ class TemplateEngine
         ]);
         try {
             $template = $twig->load($templateName);
-        } catch (LoaderError|SyntaxError|RuntimeError) {
+        } catch (LoaderError|SyntaxError) {
             return null;
+        }catch (RuntimeError){
+            rmdir(FileHandler::getBaseFolder(true) . 'cache/twig_cache');
         }
         return $template->render($placeholders);
     }
@@ -32,9 +34,9 @@ class TemplateEngine
     private static function getTemplateBasePath(int $templateType): string
     {
         return match ($templateType) {
-            self::TEMPLATE_ACCOUNTING => FileHandler::getBaseFolder(true) . 'accounting_templates/',
-            self::TEMPLATE_MAIL => FileHandler::getBaseFolder(true) . 'mail_templates/',
-            self::TEMPLATE_PDF => FileHandler::getBaseFolder(true) . 'pdf_templates/',
+            self::TEMPLATE_ACCOUNTING => FileHandler::getBaseFolder(true) . 'templates/accounting/',
+            self::TEMPLATE_MAIL => FileHandler::getBaseFolder(true) . 'templates/mail/',
+            self::TEMPLATE_PDF => FileHandler::getBaseFolder(true) . 'templates/pdf/',
             default => throw new Error('invalid template type.')
         };
     }
