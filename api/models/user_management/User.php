@@ -7,6 +7,7 @@ use DateTime;
 use LogicLeap\PhpServerCore\FileHandler;
 use LogicLeap\PhpServerCore\SecureToken;
 use LogicLeap\PhpServerCore\SendMail;
+use LogicLeap\PhpServerCore\TemplateEngine;
 use LogicLeap\StockManagement\models\DbModel;
 use LogicLeap\StockManagement\models\stock_management\Branches;
 use PDO;
@@ -289,7 +290,7 @@ class User extends DbModel
         }
 
         $passHash = self::generatePasswordHash($newPassword);
-        if(self::updateTableData(self::TABLE_NAME, ['password' => $passHash], "id=$userId"))
+        if (self::updateTableData(self::TABLE_NAME, ['password' => $passHash], "id=$userId"))
             return true;
         return "Failed to update account password.";
     }
@@ -311,9 +312,9 @@ class User extends DbModel
 
                 // Create new reset token
                 $token = SecureToken::generateToken();
-                $template = FileHandler::getFileContent("/mail_templates/passReset.html", true);
                 $resetLink = "https://" . SYSTEM_DOMAIN . "/login/reset-password/token/$token";
-                $template = str_replace('{{pass-reset-link}}', $resetLink, $template);
+                $template = TemplateEngine::generateTemplate('passReset.html',
+                    TemplateEngine::TEMPLATE_MAIL, ['pass-reset-link' => $resetLink]);
 
                 $now = new DateTime('now');
                 $expTime = $now->add(DateInterval::createFromDateString(24 * 60 * 60 . ' seconds'));
