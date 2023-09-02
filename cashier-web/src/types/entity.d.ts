@@ -120,36 +120,46 @@ export type Payment = {
 
 /* TYPES ACCEPTED BY ENTITY FUNCTIONS */
 
-interface AddOrderOptionsItems {
-    [index: string]: {
-        amount: number,
-        returnDate: Date,
-        defects: string[]
-    }
+interface AddOrderOptionsItem {
+    id: number
+    amount: number,
+    returnDate: Date,
+    defects: string[]
 }
 
 export type AddOrderOptions = {
-    items: AddOrderOptionsItems
+    items: AddOrderOptionsItem[]
     customerId: number
     totalPrice?: Decimal
     branchId?: number // optional - only if user is not someone asigned to a branch, if user is assigned to a branch then send branch - id will not be used.
     comments?: string // optional
 }
 
+export type AddPaymentOptions = {
+    orderId: number
+    paidAmount: Decimal
+    paidDate: Date
+}
+
 /* REQUESTS SEND TO SERVER TYPES */
 
 export type AddOrderRequestData = {
     items: {
-        [index: string]: {
-            amount: number,
-            'return-date': string,
-            defects: string[]
-        }
-    }
+        id: number
+        amount: number,
+        'return-date': string,
+        defects: string[]
+    }[]
     "customer-id": number
     "total-price"?: string
     "branch-id"?: number // optional - only if user is not someone asigned to a branch, if user is assigned to a branch then send branch - id will not be used.
     "customer-comments"?: string // optional
+}
+
+export type AddPaymentRequestData = {
+    "order-id": number
+    "paid-amount": string
+    "paid-date": string
 }
 
 export as namespace Entity;

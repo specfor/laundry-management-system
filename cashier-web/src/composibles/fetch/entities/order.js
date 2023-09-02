@@ -70,10 +70,10 @@ export function useOrder(batchNotificationInjection) {
         "customer-comments": comments,
         "customer-id": customerId,
         "total-price": totalPrice ? totalPrice.toString() : undefined,
-        items: Object.fromEntries(Object.entries(items).map(([key, { returnDate, ...rest }]) => ([key, {
+        items: items.map(({ returnDate, ...rest }) => ({
             ...rest,
             "return-date": returnDate.toLocaleDateString('en-CA')
-        }])))
+        }))
     })
 
     /**

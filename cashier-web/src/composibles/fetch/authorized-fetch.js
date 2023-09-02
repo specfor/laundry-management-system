@@ -1,8 +1,8 @@
-// @ts-check
+// @ts-nocheck
 import { createFetch } from "@vueuse/core";
-import { apiBaseUrl } from "../../js-modules/website-constants";
-
-const API_BASE_URL = /** @type {string} */ (apiBaseUrl);
+import { useAuthentication } from "../authentication";
+// @ts-ignore
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api/v1"
 
 // Automatically adds the Authorization token
 /**
@@ -24,10 +24,9 @@ export const useAuthorizedFetch = (url, origin, successRef, notificationInjectio
         combination: "chain",
         options: {
             async beforeFetch({ options, cancel }) {
-                // @ts-ignore
-                const token = /** @type {string | null} */ (window.httpHeaders['Authorization'])
-
-                if (!token) {
+                const { authToken } = useAuthentication()
+                
+                if (!authToken) {
                     showError({
                         origin: origin,
                         status: 0,
@@ -40,7 +39,7 @@ export const useAuthorizedFetch = (url, origin, successRef, notificationInjectio
 
                 options.headers = {
                     ...options.headers,
-                    Authorization: `Bearer ${token}`,
+                    Authorization: `Bearer ${authToken}`,
                 }
 
                 return { options }
@@ -58,6 +57,13 @@ export const useAuthorizedFetch = (url, origin, successRef, notificationInjectio
                 // console.log(ctx.response);
                 if (ctx.data.statusCode !== undefined && ctx.data.statusMessage !== undefined && ctx.data.body !== undefined) {
                     successRef.value = true;
+                    
+                    if (ctx.data.statusCode != 403) {
+                        // Auth Token has expired
+                        const { invalidateToken } = useAuthentication()
+                        invalidateToken();
+                    }
+                    
                     if (ctx.data.statusCode != 200 || ctx.data.statusMessage == "error") {
                         successRef.value = false;
                         showError({ origin, status: ctx.data.statusCode, statusText: ctx.data.statusMessage })
