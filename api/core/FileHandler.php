@@ -86,6 +86,7 @@ class FileHandler
                                             array  $allowedMimeTypes, bool $isSystemFile = false): array|string
     {
         $tmpFilePath = $_FILES[$uploadName]['tmp_name'] ?? null;
+        $receivedFileName = $_FILES[$uploadName]['name'] ?? null;
         if ($tmpFilePath === null)
             return "No file was uploaded.";
 
@@ -118,7 +119,7 @@ class FileHandler
 
         $newFilePath = $newFileBasePath . $newFileName;
         if (move_uploaded_file($tmpFilePath, $newFilePath))
-            return ['file_name' => $newFileName];
+            return ['file_name' => $newFileName, 'received_file_name' => $receivedFileName];
         else
             return "Failed to move the file to new location.";
     }
