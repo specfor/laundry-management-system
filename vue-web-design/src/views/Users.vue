@@ -163,6 +163,26 @@ async function getUsers(paramOne = null, paramTwo = null, paramThree = null, par
   }
 }
 
+function getFiles(file){
+  
+    const fd = new FormData()
+
+    file.target.files.forEach((f)=>{
+      console.log(f)
+      fd.append(file.target.name,f,file.name)
+    })
+
+    const xhr = new XMLHttpRequest()
+    xhr.onload = ()=>{
+      if(xhr.status >= 200 && xhr.status > 300){}
+    }
+    console.log(fd)
+
+    xhr.open("POST",apiBaseUrl+'/users/update/profile-picture',true)
+    xhr.send(fd)
+
+}
+
 getUsers()
 
 async function addNewUser() {
@@ -176,12 +196,15 @@ async function addNewUser() {
       name: 'role', text: 'User Role', type: 'select', value: 'cashier',
       options: roleNamesArray
     },
-    {name: 'branch-id', text: 'Branch Id', type: 'number'}
+    {name: 'branch-id', text: 'Branch Id', type: 'number'},
+    {name: 'pro-pic', text: 'Profile Picture', type: 'file'}    
   ])
 
   if (!user['accepted'])
     return
 
+    console.log(user)
+ 
   let response = await sendJsonPostRequest(apiBaseUrl + "/users/add", {
     "username": user.data['username'],
     "password": user.data['password'],
@@ -193,8 +216,36 @@ async function addNewUser() {
   })
 
   if (response.status === "success") {
-    getUsers()
-    window.successNotification('User Creation', response.message)
+
+    if(user.data['pro-pic'] !== ""){
+      let response = await sendGetRequest(apiBaseUrl + '/users')
+
+      if(response.status === 'success'){
+
+        let headers = window.httpHeaders
+        headers['user-id'] = response.data.users.reverse()[0]['id']
+
+        // getFiles(user.data['pro-pic'])
+
+        // let propicAddReq = await sendJsonPostRequest(apiBaseUrl + '/users/update/profile-picture',{
+        //   'profile-picture':user.data['pro-pic']
+        // },headers)   
+
+        if(propicAddReq.status === 'success'){
+          getUsers()
+          window.successNotification('Update User Data', response.message)
+        }else{
+          window.errorNotification('Update User Data', response.message)
+
+        }
+        
+      }else{
+        window.errorNotification('Fetch Data', response.message)
+      }
+    }else{
+      getUsers()
+      window.successNotification('User Creation', response.message)
+    }  
   } else {
     window.errorNotification('User Creation', response.message)
   }
