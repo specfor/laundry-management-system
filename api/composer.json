@@ -20,6 +20,8 @@
       "ext-pdo": "*",
         "dompdf/dompdf": "dev-master",
       "ext-bcmath": "*",
-      "ext-fileinfo": "*"
+      "ext-fileinfo": "*",
+      "ext-dom": "*",
+        "twig/twig": "3.x-dev"
     }
 }

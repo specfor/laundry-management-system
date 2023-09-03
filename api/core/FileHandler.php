@@ -85,7 +85,10 @@ class FileHandler
     public static function handleFileUpload(string $uploadName, string $newFileBasePath, int $maxFileSize,
                                             array  $allowedMimeTypes, bool $isSystemFile = false): array|string
     {
-        $tmpFilePath = $_FILES[$uploadName]['tmp_name'];
+        $tmpFilePath = $_FILES[$uploadName]['tmp_name'] ?? null;
+        if ($tmpFilePath === null)
+            return "No file was uploaded.";
+
         $tmpFileSize = filesize($tmpFilePath);
         $fileMimeType = finfo_file(finfo_open(FILEINFO_MIME_TYPE), $tmpFilePath);
 

@@ -13,7 +13,7 @@ class Reports
     public function __construct()
     {
         $options = new Options();
-        $options->setChroot(FileHandler::getBaseFolder(true) . 'pdf_templates');
+        $options->setChroot(FileHandler::getBaseFolder(true) . 'pdf');
 
         $this->pdf = new Dompdf();
         $this->pdf->setPaper('A4');
@@ -22,9 +22,8 @@ class Reports
 
     public function generatePdf(): void
     {
-        $html = FileHandler::getFileContent('/pdf_templates/general-ledger.html', true);
-        $html = str_replace('{{base-path}}', FileHandler::getBaseFolder(true) . 'pdf_templates', $html);
-
+        $html = TemplateEngine::generateTemplate('general-ledger.html', TemplateEngine::TEMPLATE_PDF,
+            ['base-path' => FileHandler::getBaseFolder(true) . 'templates/pdf']);
         $this->pdf->loadHtml($html);
         $this->pdf->render();
         $this->pdf->stream('page.pdf');
