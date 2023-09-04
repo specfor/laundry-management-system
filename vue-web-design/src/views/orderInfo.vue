@@ -1,9 +1,9 @@
 <template> 
 
 <div class="block rounded-md  w-full">
-    <h1  class="text-center text-4xl text-stone-900 subpixel-antialiased font-bold mt-2">Order Details</h1>
+    <h1  class="text-center text-2xl text-stone-900 subpixel-antialiased font-bold mt-2">Order Details</h1>
     <div v-if="!isThereData">
-        <h1 class="text-center text-xl text-stone-800 subpixel-antialiased font-semibold mt-6">NO DATA TO DISPLAY.</h1>
+        <h1 class="text-center text-md text-stone-800 subpixel-antialiased font-semibold mt-6">NO DATA TO DISPLAY.</h1>
     </div>
     <div v-if="isThereData">
         <div class="flex justify-between mt-5 ">
@@ -80,7 +80,7 @@
                         <td class="px-3 py-1 text-slate-800">{{ item['item_name'] }}</td>
                         <td class="px-3 py-1 text-slate-800">{{ item['price'] }}</td>
                         <td class="px-3 py-1 text-slate-800">{{
-                            formatDict(item)
+                            formatDict(item['categories'])
                          }}</td>
                         <td class="px-3 py-1 text-slate-800">{{ item['amount'] }}</td>
                         <td class="px-3 py-1 text-slate-800">{{ nullValueFix(item['defects']) }}</td>
@@ -92,7 +92,6 @@
         </div>
     </div>
     </div>
-    
 </div>
   
 </template>
@@ -119,9 +118,9 @@ moreOrderInfo()
 
 function formatDict(dict){
     let dictOne = []
-    dict['categories']['categories'].forEach((action)=>{
-        dictOne.push(action['name'])
-    });
+    dict.forEach((category)=>{
+        dictOne.push(category.name)
+    })
     return dictOne.toString()
 }
 
@@ -145,6 +144,7 @@ async function moreOrderInfo(){
         })
         if(response.status === 'success'){
             if(response.data.orders.length === 0){
+                console.log(response.data)
                 isThereData.value = false
                 return
             }else{

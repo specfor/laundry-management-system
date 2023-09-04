@@ -11,17 +11,25 @@
   "dependencies": {
     "@headlessui/vue": "^1.7.13",
     "@heroicons/vue": "^2.0.18",
+    "@vueuse/components": "^10.4.1",
+    "@vueuse/core": "^10.4.1",
+    "@vueuse/math": "^10.4.1",
     "chart.js": "^4.3.0",
+    "decimal.js": "^10.4.3",
     "tw-elements": "^1.0.0-beta2",
     "vue": "^3.2.47",
     "vue-chartjs": "^5.2.0",
     "vue-router": "^4.2.1"
   },
   "devDependencies": {
+    "@iconify-json/mdi": "^1.1.54",
     "@vitejs/plugin-vue": "^4.1.0",
     "autoprefixer": "^10.4.14",
+    "daisyui": "^3.6.3",
     "postcss": "^8.4.23",
     "tailwindcss": "^3.3.2",
+    "ts-toolbelt": "^9.6.0",
+    "unplugin-icons": "^0.16.6",
     "vite": "^4.3.2"
   }
 }
