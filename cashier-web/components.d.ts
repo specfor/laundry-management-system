@@ -7,7 +7,13 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    copy: typeof import('./src/components/NotificationPopover copy.vue')['default']
+    IconMdiBell: typeof import('~icons/mdi/bell')['default']
+    IconMdiBellOutline: typeof import('~icons/mdi/bell-outline')['default']
+    IconMdiCog: typeof import('~icons/mdi/cog')['default']
+    IconMdiConnection: typeof import('~icons/mdi/connection')['default']
     NotificationPopover: typeof import('./src/components/NotificationPopover.vue')['default']
+    Popover: typeof import('./src/components/Popover.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }

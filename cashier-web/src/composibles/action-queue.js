@@ -1,5 +1,5 @@
 // @ts-check
-import { useOnline, useStorage, watchImmediate, whenever } from "@vueuse/core"
+import { useOnline, useStorage } from "@vueuse/core"
 import { computed, ref, watch } from "vue"
 
 /** 
@@ -56,28 +56,3 @@ export const useActionQueue = (action, onSuccess, onError, localStorageKey) => {
         pending
     }
 }
-
-// {
-//     serializer: {
-//         /**
-//          * @param {string | null} v
-//          * @returns {Draft[]}
-//          */
-//         read: (v) => v ?
-//             (/** @type {RawDraft[]}*/ (JSON.parse(v)))
-//                 .map(({ date, draftedAt, ...rest }) => ({
-//                     ...rest,
-//                     date: new Date(date),
-//                     draftedAt: new Date(draftedAt)
-//                 })).sort((a, b) => b.draftedAt.getTime() - a.draftedAt.getTime()) : [],
-
-//             /**
-//              * @param {Draft[]} v
-//              */
-//             write: (v) => JSON.stringify(v.map(({ date, draftedAt, ...rest }) => ({
-//                 ...rest,
-//                 date: date.toUTCString(),
-//                 draftedAt: draftedAt.toUTCString()
-//             }))),
-//     },
-// },

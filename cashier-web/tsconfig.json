@@ -10,8 +10,11 @@
   ],
   "compilerOptions": {
     "types": [
-      "unplugin-icons/types/vue"
+      "unplugin-icons/types/vue",
+      "@intlify/unplugin-vue-i18n/messages"
     ],
-    "allowJs": true
+    "allowJs": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true
   }
 }

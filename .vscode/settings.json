@@ -1,0 +1,13 @@
+{
+    "i18n-ally.enabledFrameworks": [
+        "vue",
+        "vue-sfc"
+    ],
+    "i18n-ally.localesPaths": [
+        "cashier-web/src/locales"
+    ],
+    "i18n-ally.extract.autoDetect": false,
+    "i18n-ally.keystyle": "nested",
+    "i18n-ally.dirStructure": "auto",
+    "i18n-ally.pathMatcher": "{locale}.json"
+}

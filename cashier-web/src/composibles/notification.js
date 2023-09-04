@@ -1,7 +1,7 @@
 // @ts-check
 
 import { inject, provide } from "vue"
-import { NotificationInjectionKey } from "../js-modules/injection-keys"
+import { NotificationInjectionKey } from "../util/injection-keys"
 
 export const useNotifications = () => {
     

@@ -1,26 +1,15 @@
 <script setup lang="ts">
+import { useStorage } from '@vueuse/core';
 import { useI18n } from 'vue-i18n';
 import { RouterLink, RouterView } from 'vue-router'
 
 const { locale } = useI18n({
-  useScope: 'global'
+    useScope: 'global'
 })
 
-const { t } = useI18n()
+useStorage('app-locale', locale)
 
 </script>
-
-<i18n locale="en">
-{
-  "hello": "Hello World"
-}
-</i18n>
-
-<i18n locale="si">
-{
-  "hello": "Hello Kohomada"
-}
-</i18n>
 
 <template>
   <router-view v-slot="{ Component }">
