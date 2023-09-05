@@ -12,6 +12,7 @@ import Header from "./components/Header.vue";
 import SideMenu from "./components/SideMenu.vue";
 import LoadingScreen from './components/LoadingScreen.vue'
 import Alerts from "./components/Alerts.vue";
+import FileUploader from "./components/form_modals/FileUploader.vue";
 
 let router = useRouter()
 
@@ -72,6 +73,7 @@ init()
   <ConfirmationModal/>
   <AddNewModal/>
   <DataShowModal/>
+  <FileUploader/>
 </template>
 
 <style scoped>
