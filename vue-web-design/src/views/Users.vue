@@ -4,7 +4,6 @@ import {ref} from "vue";
 import {sendGetRequest, sendJsonPostRequest} from "../js-modules/base-functions.js";
 import {apiBaseUrl} from "../js-modules/website-constants.js";
 import {validateInput} from "../js-modules/form-validations.js";
-import {useRoute} from "vue-router";
 
 let tableCol = ['Select', 'Id', 'Username', 'Email', 'Firstname', 'Lastname', 'Role', 'Branch Id', 'Modifications']
 let tableRows = ref([])
@@ -163,25 +162,6 @@ async function getUsers(paramOne = null, paramTwo = null, paramThree = null, par
   }
 }
 
-function getFiles(file){
-  
-    const fd = new FormData()
-
-    file.target.files.forEach((f)=>{
-      console.log(f)
-      fd.append(file.target.name,f,file.name)
-    })
-
-    const xhr = new XMLHttpRequest()
-    xhr.onload = ()=>{
-      if(xhr.status >= 200 && xhr.status > 300){}
-    }
-    console.log(fd)
-
-    xhr.open("POST",apiBaseUrl+'/users/update/profile-picture',true)
-    xhr.send(fd)
-
-}
 
 getUsers()
 
@@ -197,14 +177,11 @@ async function addNewUser() {
       options: roleNamesArray
     },
     {name: 'branch-id', text: 'Branch Id', type: 'number'},
-    {name: 'pro-pic', text: 'Profile Picture', type: 'file'}    
   ])
 
   if (!user['accepted'])
     return
 
-    console.log(user)
- 
   let response = await sendJsonPostRequest(apiBaseUrl + "/users/add", {
     "username": user.data['username'],
     "password": user.data['password'],
@@ -216,37 +193,10 @@ async function addNewUser() {
   })
 
   if (response.status === "success") {
-
-    if(user.data['pro-pic'] !== ""){
-      let response = await sendGetRequest(apiBaseUrl + '/users')
-
-      if(response.status === 'success'){
-
-        let headers = window.httpHeaders
-        headers['user-id'] = response.data.users.reverse()[0]['id']
-
-        // getFiles(user.data['pro-pic'])
-
-        // let propicAddReq = await sendJsonPostRequest(apiBaseUrl + '/users/update/profile-picture',{
-        //   'profile-picture':user.data['pro-pic']
-        // },headers)   
-
-        if(propicAddReq.status === 'success'){
-          getUsers()
-          window.successNotification('Update User Data', response.message)
-        }else{
-          window.errorNotification('Update User Data', response.message)
-
-        }
-        
-      }else{
-        window.errorNotification('Fetch Data', response.message)
-      }
-    }else{
-      getUsers()
-      window.successNotification('User Creation', response.message)
-    }  
+    getUsers()
+    window.successNotification("User Creation",response.message)
   } else {
+    getUsers()
     window.errorNotification('User Creation', response.message)
   }
 }

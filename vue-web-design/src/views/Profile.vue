@@ -4,31 +4,31 @@
       Profile</h1>
     <div class='flex justify-around'>
       <div class="mt-20">
-        <div class="flex justify-center">
+        <div class="flex">
           <label for="name" class="text-lg font-semibold">Username:</label>
           <label for="name" class="text-stone-700 text-lg font-semibold ml-2">{{ username }}</label>
         </div>
-        <div class="flex justify-center mt-5">
+        <div class="flex  mt-5">
           <label for="name" class="text-lg font-semibold">First Name:</label>
           <label for="name" class="text-stone-700 text-lg font-semibold ml-2">{{ firstname }}</label>
         </div>
-        <div class="flex justify-center mt-5">
+        <div class="flex  mt-5">
           <label for="name" class="text-lg font-semibold">Last Name:</label>
           <label for="name" class="text-stone-700 text-lg font-semibold ml-2">{{ lastname }}</label>
         </div>
-        <div class="flex justify-center mt-5">
+        <div class="flex  mt-5">
           <label for="name" class="text-lg font-semibold">Email:</label>
           <label for="name" class="text-stone-700 text-lg font-semibold ml-2">{{ email }}</label>
         </div>
-        <div class="flex justify-center mt-5">
+        <div class="flex  mt-5">
           <label for="name" class="text-lg font-semibold">User Id:</label>
           <label for="name" class="text-stone-700 text-lg font-semibold ml-2">{{ userId }}</label>
         </div>
-        <div class="flex justify-center mt-5">
+        <div class="flex  mt-5">
           <label for="name" class="text-lg font-semibold">Role:</label>
           <label for="name" class="text-stone-700 text-lg font-semibold ml-2">{{ role }}</label>
         </div>
-        <div class="flex justify-center mt-5">
+        <div class="flex  mt-5">
           <label for="name" class="text-lg font-semibold">Branch Id:</label>
           <label for="name" class="text-stone-700 text-lg font-semibold ml-2">{{ branchId }}</label>
         </div>
@@ -52,22 +52,23 @@
           </table>
         </div>
       </div>
-      <div class="w-40 h-40  mt-20 rounded-md border-2 border-stone-400 ">
-        <img src="" alt="profile picture" class="object-contain">
-      </div>
+      <div class="inline-block">
+          <img src="" alt="profile picture" class="w-40 object-cover mt-20 rounded-md border-2 border-stone-400" id="imageDisplayDiv">
+          <div class="flex mt-10">
+            <div>
+              <button class="bg-sky-600 text-sm hover:bg-sky-800 text-white rounded-md p-2 mt-2 mb-2 duration-300" @click="uploadProfilePicture()">
+                Upload Profile Picture
+              </button>
+            </div>
+            <div>
+              <button class="ml-3 bg-sky-600 text-sm hover:bg-sky-800 text-white rounded-md p-2 mt-2 mb-2 duration-300" @click="updatePasswordFunc()">
+                Change Password
+              </button>
+            </div>
+          </div>        
+        </div>
     </div>
-    <div class="flex justify-around">
-      <div>
-        <button class="bg-sky-600 hover:bg-sky-800 text-white rounded-md p-3 mt-6 mb-6" @click="uploadProfilePicture()">
-          Upload Profile Picture
-        </button>
-      </div>
-      <div>
-        <button class="bg-red-600 hover:bg-red-800 text-white rounded-md p-3 mt-6 mb-6" @click="updatePasswordFunc()">
-          Change Password
-        </button>
-      </div>
-    </div>
+    
   </div>
 </template>
 
@@ -85,7 +86,7 @@ let email = ref('')
 let userId = ref('')
 let branchId = ref('')
 let loginHistory = ref([])
-
+let proPic = ref('')
 
 async function updatePasswordFunc() {
   let user = await window.addNewForm('Update User Password', 'Update', [
@@ -126,7 +127,14 @@ async function uploadProfilePicture() {
     return
 
   let response = await proPic.data
-  console.log(response)
+
+  if(response.statusMessage === 'success'){
+    getUserInfo()
+    window.successNotification('Profile Picture', response.body.message)
+  }else{
+    window.errorNotification('Profile Picture', response.body.message)
+
+  }
 }
 
 
@@ -136,8 +144,10 @@ async function getUserInfo() {
 
   let response = await sendGetRequest(apiBaseUrl + '/profile')
 
+  
+
   if (response.status === 'success') {
-    console.log(response)
+    //console.log(response)
     username.value = response.data['username']
     firstname.value = response.data['firstname']
     lastname.value = response.data['lastname']
@@ -147,8 +157,20 @@ async function getUserInfo() {
     branchId.value = response.data['branch_id']
     loginHistory.value = response.data['login-history']
 
+    await fetch(apiBaseUrl+'/profile/images/'+ response.data['profile_pic'],{
+      headers:window.httpHeaders
+    }).then(data => {
+      data.blob().then(blob =>{
+        let imgUrl = URL.createObjectURL(blob)
+        const container = document.getElementById("imageDisplayDiv");
+        container.src = imgUrl
+      }).catch(err => {})
+    })
+    .catch(err => {
+      })
   }
 }
+
 
 </script>
 
