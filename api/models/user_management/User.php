@@ -395,7 +395,7 @@ class User extends DbModel
         return self::getUsers(userId: $userId)['users'][0];
     }
 
-    public static function uploadUserProfilePicture($userId): bool|string|array
+    public static function uploadUserProfilePicture(int $userId): bool|string|array
     {
         $status = FileHandler::handleFileUpload('profile-picture', '/profile_pictures', 10 * 1024 * 1024,
             [FileHandler::EXTENSIONS_MIME_TYPES['.jpg'], FileHandler::EXTENSIONS_MIME_TYPES['.png']]);
@@ -413,6 +413,75 @@ class User extends DbModel
 
         FileHandler::deleteFile('/profile_pictures/' . $status['file_name']);
         return false;
+    }
+
+    public static function uploadUserFiles(int $userId): bool|string
+    {
+        $user = self::getUsers(userId: $userId)['users'];
+        if (empty($user))
+            return "Invalid user id.";
+
+        $status = FileHandler::handleFileUpload('documents', '/user_documents', 10 * 1024 * 1024,
+            [FileHandler::EXTENSIONS_MIME_TYPES['.jpg'], FileHandler::EXTENSIONS_MIME_TYPES['.png'],
+                FileHandler::EXTENSIONS_MIME_TYPES['.pdf']]);
+
+        if (is_string($status))
+            return $status;
+
+        $insertParams = [
+            'file_name' => $status['file_name'],
+            'received_file_name' => $status['received_file_name'],
+            'user_id' => $userId,
+            'uploaded_date' => (new DateTime('now'))->format('Y-m-d H:i:s'),
+            'deleted' => false
+        ];
+
+        if (self::insertIntoTable('user_files', $insertParams))
+            return true;
+        return 'Failed to upload the file.';
+    }
+
+    public static function getUploadedFileList(int $userId = null): array|string
+    {
+        $condition = "deleted = 0";
+        if ($userId) {
+            $users = self::getUsers(userId: $userId)['users'];
+            if (empty($users))
+                return 'Invalid user.';
+            $condition .= " AND user_id = " . $users[0]['id'];
+        }
+        $files = self::getDataFromTable(['id', 'user_id', 'file_name', 'received_file_name', 'uploaded_date'],
+            'user_files', $condition)->fetchAll(PDO::FETCH_ASSOC);
+        return ['files' => $files];
+    }
+
+    public static function streamFile(int $fileId): string|null
+    {
+        $file = self::getDataFromTable(['file_name', 'deleted'], 'user_files', "id=$fileId")
+            ->fetch(PDO::FETCH_ASSOC);
+        if (empty($file))
+            return "Invalid document ID.";
+        if ($file['deleted'])
+            return "Document has been deleted.";
+
+        FileHandler::streamFile('user_documents/' . $file['file_name']);
+        return null;
+    }
+
+    public static function deleteDocument(int $documentID): bool|string
+    {
+        $file = self::getDataFromTable(['id', 'deleted', 'file_name'], 'user_files', "id=$documentID")
+            ->fetch(PDO::FETCH_ASSOC);
+        if (empty($file))
+            return "Invalid document ID.";
+        if ($file['deleted'])
+            return "Document has been already deleted.";
+
+        if (FileHandler::deleteFile('user_documents/' . $file['file_name'])) {
+            self::updateTableData('user_files', ['deleted' => true], "id=$documentID");
+            return true;
+        } else
+            return "Failed to delete the document.";
     }
 
     /**

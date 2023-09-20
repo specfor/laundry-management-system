@@ -203,6 +203,19 @@ POST - /api/v1/users/update/profile-picture  ********* must be a multipart reque
 profile-picture - compulsory - multipart parameter
 user-id - compulsory - must be passed as a header
 
+POST - /api/v1/users/uploads  ********* must be a multipart request (not json) ********
+documents - compulsory  - multipart parameter
+
+GET - /api/v1/users/uploads
+List all files uploaded.
+user-id - optional (filter files related to a single user)
+
+POST - /api/v1/users/uploads/(document-id)
+Get the document
+
+POST - /api/v1/users/uploads/delete
+document-id - compulsory
+
 GET - /api/v1/user-roles
 page-num - optional
 role-id - optional

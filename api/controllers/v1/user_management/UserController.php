@@ -3,9 +3,9 @@
 namespace LogicLeap\StockManagement\controllers\v1\user_management;
 
 use LogicLeap\PhpServerCore\FileHandler;
-use LogicLeap\PhpServerCore\SendMail;
 use LogicLeap\StockManagement\controllers\v1\Controller;
 use LogicLeap\StockManagement\models\user_management\User;
+use LogicLeap\StockManagement\util\Util;
 
 class UserController extends Controller
 {
@@ -132,7 +132,7 @@ class UserController extends Controller
         $newPassword = self::getParameter('new-password', isCompulsory: true);
 
         $status = User::updateUserPassword(self::getUserId(), $currentPassword, $newPassword);
-        if ($status===true)
+        if ($status === true)
             self::sendSuccess("Successfully updated the account password.");
         self::sendError($status);
     }
@@ -199,6 +199,57 @@ class UserController extends Controller
             self::sendSuccess(['message' => 'Successfully updated the profile photo.', 'profile-photo' => $status['photo']]);
         elseif ($status === false)
             self::sendError('Failed to update the profile photo.');
+        else
+            self::sendError($status);
+    }
+
+    public function uploadFiles(): void
+    {
+        self::checkPermissions(['users' => [User::PERMISSION_MODIFY]]);
+
+        $userId = $_SERVER['HTTP_USER_ID'] ?? null;
+        if ($userId === null)
+            self::sendError("Missing 'user-id' header.");
+
+        $status = User::uploadUserFiles(intval($userId));
+        if ($status === true)
+            self::sendSuccess('Successfully uploaded the file.');
+        else
+            self::sendError($status);
+    }
+
+    public function getUploadFileList(): void
+    {
+        self::checkPermissions(['users' => [User::PERMISSION_READ]]);
+
+        $userId = self::getParameter('user-id', dataType: 'int');
+        $response = User::getUploadedFileList($userId);
+        if (is_string($response))
+            self::sendError($response);
+        else
+            self::sendSuccess($response);
+    }
+
+    public function getFile(array $args): void
+    {
+        self::checkPermissions(['users' => [User::PERMISSION_READ]]);
+
+        $documentID = Util::getConvertedTo($args[0], 'int');
+        if ($documentID === null)
+            self::sendError('Invalid document id.');
+        $status = User::streamFile($documentID);
+        if ($status !== null)
+            self::sendError($status);
+    }
+
+    public function deleteFile(): void
+    {
+        self::checkPermissions(['users' => [User::PERMISSION_MODIFY]]);
+
+        $documentID = self::getParameter('document-id', dataType: 'int', isCompulsory: true);
+        $status = User::deleteDocument($documentID);
+        if ($status===true)
+            self::sendSuccess('Successfully deleted the document.');
         else
             self::sendError($status);
     }

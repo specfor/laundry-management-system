@@ -4,6 +4,7 @@ use Dotenv\Dotenv;
 use LogicLeap\PhpServerCore\Application;
 use LogicLeap\StockManagement\controllers\v1\accounting\AccountTotalsController;
 use LogicLeap\StockManagement\controllers\v1\accounting\FinancialAccountController;
+use LogicLeap\StockManagement\controllers\v1\accounting\InvoiceController;
 use LogicLeap\StockManagement\controllers\v1\accounting\LedgerRecordController;
 use LogicLeap\StockManagement\controllers\v1\accounting\TaxController;
 use LogicLeap\StockManagement\controllers\v1\Controller;
@@ -93,6 +94,10 @@ $app->router->addPostRoute('/api/v1/profile/update-password', [UserController::c
 $app->router->addGetRoute('/api/v1/profile/images/$', [UserController::class, 'getProfilePicture']);
 $app->router->addPostRoute('/api/v1/profile/profile-picture', [UserController::class, 'uploadProfilePicture']);
 $app->router->addPostRoute('/api/v1/users/update/profile-picture', [UserController::class, 'uploadUserProfilePicture']);
+$app->router->addPostRoute('/api/v1/users/uploads', [UserController::class, 'uploadFiles']);
+$app->router->addGetRoute('/api/v1/users/uploads', [UserController::class, 'getUploadFileList']);
+$app->router->addGetRoute('/api/v1/users/uploads/$', [UserController::class, 'getFile']);
+$app->router->addPostRoute('/api/v1/users/uploads/delete', [UserController::class, 'deleteFile']);
 
 // Accounting routes
 $app->router->addGetRoute('/api/v1/taxes', [TaxController::class, 'getTaxes']);
@@ -110,6 +115,7 @@ $app->router->addGetRoute('/api/v1/account-totals', [AccountTotalsController::cl
 $app->router->addGetRoute('/api/v1/account-totals/day-basis', [AccountTotalsController::class, 'getTotalByDate']);
 $app->router->addGetRoute('/api/v1/account-totals/month-basis', [AccountTotalsController::class, 'getTotalByMonth']);
 $app->router->addGetRoute('/api/v1/account-totals/year-basis', [AccountTotalsController::class, 'getTotalByYear']);
+$app->router->addPostRoute('/api/v1/invoices/new', [InvoiceController::class, 'sendInvoice']);
 
 // Super admin routes
 $app->router->addGetRoute('/api/v1/realtime-metrics', [ServerAdminPanelController::class, 'getRealtimePerformanceMetrics']);
