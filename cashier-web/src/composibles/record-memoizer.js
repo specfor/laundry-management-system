@@ -29,8 +29,22 @@ export const useRecordMemoizer = (localStorageKey, idSelector) => {
      */
     const pin = (record) => pinned.value = [idSelector(record), ...pinned.value]
 
+    /**
+     * Pins a record
+     * @param {RecordType} record 
+     */
+    const unpin = (record) => pinned.value = [...pinned.value.filter(x => x !== idSelector(record) )]
+
+    /**
+     * Checks whether a record is pinned
+     * @param {RecordType} record 
+     */
+    const isPinned = (record) => pinned.value.includes(idSelector(record))
+
     return {
         pin,
+        unpin,
+        isPinned,
         use,
         recents,
         pinned,
