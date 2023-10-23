@@ -25,9 +25,10 @@ class TemplateEngine
     public static function generateTemplate(string $templateName, int $templateType, array $contextArray): string|null
     {
         $loader = new FilesystemLoader(self::getTemplateBasePath($templateType));
-        $twig = new Environment($loader, [
-            'cache' => FileHandler::getBaseFolder(true) . 'cache/twig_cache',
-        ]);
+        $twig = new Environment($loader);
+        // , [
+        //            'cache' => FileHandler::getBaseFolder(true) . 'cache/twig_cache',
+        //        ]
         try {
             $template = $twig->load($templateName);
         } catch (LoaderError|SyntaxError) {
