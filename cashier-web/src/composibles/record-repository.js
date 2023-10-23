@@ -12,7 +12,7 @@ import { ref } from "vue"
  * @param {number} [cacheInvalidateAfter] 
  * @param {() => Promise<RecordType[]>} [onInvalidate] Method to be run after cache has been invalidated. Should be a method that take 0 arguments.
  * 
- * @returns {import("../types/util").RecordRepositoryReturnMethods<RecordType, T> & { invalidate: () => void }}
+ * @returns {import("../types/util").RecordRepositoryReturnMethods<RecordType, T> & { invalidate: () => void, getRecords: () => RecordType[] }}
  */
 export const useRecordRepository = (methods, idSelector, cacheInvalidateAfter = 5000, onInvalidate) => {
     const records = /** @type {import("vue").Ref<RecordType[]>} */ (ref([]));
@@ -67,6 +67,7 @@ export const useRecordRepository = (methods, idSelector, cacheInvalidateAfter = 
 
     return {
         ...( /** @type {import("../types/util").RecordRepositoryReturnMethods<RecordType, T>} */ (methods_)),
-        invalidate
+        invalidate,
+        getRecords: () => records.value
     }
 }

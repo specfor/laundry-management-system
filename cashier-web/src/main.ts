@@ -1,5 +1,6 @@
 import './assets/main.css'
 import 'element-plus/theme-chalk/dark/css-vars.css'
+import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 
 // @ts-ignore (IDE Complains here for no reason)
 import en from './locales/en.json';

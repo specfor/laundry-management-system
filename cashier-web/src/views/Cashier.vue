@@ -14,7 +14,7 @@
             <div>
                 <NotificationPopover :notification-components="notifications">
                     <template #reference="{ count }">
-                        <div class="flex flex-row justify-center gap-3">
+                        <div class="flex flex-row justify-center gap-3 cursor-pointer">
                             <TransitionGroup name="notification-icons">
                                 <div class="badge badge-error gap-2 p-3 font-medium" key="offline" v-if="!isOnline">
                                     <icon-mdi-connection class="w-5 h-5 lg:w-7 lg:h-7 text-warning-content" />
@@ -42,7 +42,7 @@
             <Popover :width="300" header="Settings">
                 <template #reference>
                     <icon-mdi-cog
-                        class="w-7 h-7 lg:w-7 lg:h-7 text-base-content transition-transform duration-150 hover:-rotate-45 focus:border-none" />
+                        class="w-7 h-7 lg:w-7 lg:h-7 text-base-content transition-transform duration-150 hover:-rotate-45 focus:border-none cursor-pointer" />
                 </template>
                 <div class="w-full">
                     <div class="form-control w-full max-w-xs">

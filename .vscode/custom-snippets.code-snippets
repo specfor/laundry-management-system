@@ -13,5 +13,11 @@
 			"<i18n locale=\"en\">\n{}\n</i18n>\n\n<i18n locale=\"si\">\n{}\n</i18n>",
 		],
 		"description": "Creates the custom i18n blocks for English and Sinhala languages"
+	},
+	"Vue SFC template": {
+		"scope": "vue",
+		"prefix": "init",
+		"body": "<template>\n\n</template>\n\n<script setup lang=\"ts\">\n\n</script>\n\n<style scoped>\n\n</style>",
+		"description": "Creates the basic template for a Vue SFC"
 	}
 }
